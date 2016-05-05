@@ -1,0 +1,6 @@
+# Ignore Folders
+src
+
+# Ignore Files
+.remarkrc
+rmblobby.svg
