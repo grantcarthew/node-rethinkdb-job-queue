@@ -1,12 +1,9 @@
+const Queue = require('./queue')
 const thinky = require('thinky')
 const optionsParser = require('./options-parser')
-const Queue = require('./queue')
 
 function QueueFactory (options) {
-  if (!new.target) {
-    return new QueueFactory(options)
-  }
-  this.options = optionsParser(options)
+  this.options = optionsParser.connect(options)
   this.thinky = thinky({
     host: options.dbHost,
     port: options.dbPort,
@@ -14,10 +11,12 @@ function QueueFactory (options) {
   })
 }
 
-QueueFactory.prototype.create = function (queueName) {
-  return new Queue(queueName)
+QueueFactory.prototype.create = function (options) {
+  let queueOptions = optionsParser.create(options)
+  queueOptions.thinky = this.thinky
+  return new Queue(queueOptions)
 }
 
-module.exports.connect = function (options) {
+module.exports = function (options) {
   return new QueueFactory(options)
 }

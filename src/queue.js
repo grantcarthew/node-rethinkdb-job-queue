@@ -1,4 +1,4 @@
-var events = require('events')
+var EventEmitter = require('events')
 var util = require('util')
 
 var Job = require('./job')
@@ -7,37 +7,15 @@ var lua = require('./lua')
 var helpers = require('./helpers')
 var barrier = helpers.barrier
 
-const queue = require('./queue')
-const thinkyFactory = require('thinky')
-var verifiedOptions = {}
-var connected = false
-
-function Queue (name, thinky) {
-  if (!new.target) {
-    return new Queue(name, thinky)
-  }
-
-  this.name = name
+function Queue (options) {
+  this.options = options
   this.paused = false
   this.jobs = {}
-  this.thinky = thinky
 
-  var boolProps = ['isWorker', 'getEvents', 'sendEvents', 'removeOnSuccess', 'catchExceptions']
+  let boolProps = ['isWorker', 'getEvents', 'sendEvents', 'removeOnSuccess', 'catchExceptions']
   boolProps.forEach(function (prop) {
     this.options[prop] = typeof options[prop] === 'boolean' ? options[prop] : defaults[prop]
   }.bind(this))
-
-  /* istanbul ignore if */
-  if (this.options.redis.socket) {
-    this.options.redis.params = [this.options.redis.socket, this.options.redis.options]
-  } else {
-    this.options.redis.port = this.options.redis.port || 6379
-    this.options.redis.host = this.options.redis.host || '127.0.0.1'
-    this.options.redis.params = [
-      this.options.redis.port, this.options.redis.host, this.options.redis.options
-    ]
-  }
-  this.options.redis.db = this.options.redis.db || 0
 
   // Wait for Lua loading and client connection; bclient and eclient/subscribe if needed
   var reportReady = barrier(
@@ -68,7 +46,7 @@ function Queue (name, thinky) {
   lua.buildCache(this.options.serverKey, this.client, reportReady)
 }
 
-util.inherits(Queue, events.EventEmitter)
+util.inherits(Queue, EventEmitter)
 
 Queue.prototype.onMessage = function (channel, message) {
   message = JSON.parse(message)
