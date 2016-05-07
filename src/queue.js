@@ -23,27 +23,31 @@ function Queue (options) {
     this.emit.bind(this, 'ready')
   )
 
-  var makeClient = function (clientName) {
-    this[clientName] = redis.createClient.apply(redis, this.options.redis.params)
-    this[clientName].on('error', this.emit.bind(this, 'error'))
-    this[clientName].select(this.options.redis.db, reportReady)
-  }.bind(this)
+  // TODO: Remove this
+  // var makeClient = function (clientName) {
+  //   this[clientName] = redis.createClient.apply(redis, this.options.redis.params)
+  //   this[clientName].on('error', this.emit.bind(this, 'error'))
+  //   this[clientName].select(this.options.redis.db, reportReady)
+  // }.bind(this)
 
-  makeClient('client')
+  // makeClient('client')
 
   if (this.options.isWorker) {
-    makeClient('bclient')
+    // TODO: Is iwWorker needed with RethinkDB?
+    // makeClient('bclient')
   }
 
   if (this.options.getEvents) {
-    makeClient('eclient')
-    this.eclient.subscribe(this.toKey('events'))
-    this.eclient.on('message', this.onMessage.bind(this))
-    this.eclient.on('subscribe', reportReady)
+    // TODO: PubSub events.
+    // makeClient('eclient')
+    // this.eclient.subscribe(this.toKey('events'))
+    // this.eclient.on('message', this.onMessage.bind(this))
+    // this.eclient.on('subscribe', reportReady)
   }
 
-  this.options.serverKey = this.options.redis.socket || this.options.redis.host + ':' + this.options.redis.port
-  lua.buildCache(this.options.serverKey, this.client, reportReady)
+  // TODO: Remove.
+  // this.options.serverKey = this.options.redis.socket || this.options.redis.host + ':' + this.options.redis.port
+  // lua.buildCache(this.options.serverKey, this.client, reportReady)
 }
 
 util.inherits(Queue, EventEmitter)
@@ -75,7 +79,6 @@ Queue.prototype.close = function (cb) {
   cb = cb || helpers.defaultCb
   this.paused = true
 
-  /* istanbul ignore next */
   var closeTimeout = setTimeout(function () {
     return cb(Error('Timed out closing redis connections'))
   }, 5000)
@@ -135,7 +138,6 @@ Queue.prototype.getJob = function (jobId, cb) {
     return process.nextTick(cb.bind(null, null, this.jobs[jobId]))
   } else {
     Job.fromId(this, jobId, function (err, job) {
-      /* istanbul ignore if */
       if (err) return cb(err)
       self.jobs[jobId] = job
       return cb(err, job)
@@ -146,7 +148,6 @@ Queue.prototype.getJob = function (jobId, cb) {
 Queue.prototype.getNextJob = function (cb) {
   var self = this
   this.bclient.brpoplpush(this.toKey('waiting'), this.toKey('active'), 0, function (err, jobId) {
-    /* istanbul ignore if */
     if (err) return cb(err)
     return Job.fromId(self, Number(jobId), cb)
   })
