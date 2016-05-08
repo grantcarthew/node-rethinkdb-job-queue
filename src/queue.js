@@ -165,7 +165,7 @@ Queue.prototype.runJob = function (job, cb) {
   var preventStalling = function () {
     self.client.srem(self.toKey('stalling'), job.id, function () {
       if (!handled) {
-        psTimeout = setTimeout(preventStalling, self.options.stallInterval / 2)
+        psTimeout = setTimeout(preventStalling, self.options.stallInterval * 1000 / 2)
       }
     })
   }
@@ -321,7 +321,7 @@ Queue.prototype.checkStalledJobs = function (interval, cb) {
 
   this.client.evalsha(lua.shas.checkStalledJobs, 4,
     this.toKey('stallTime'), this.toKey('stalling'), this.toKey('waiting'), this.toKey('active'),
-    Date.now(), this.options.stallInterval, function (err) {
+    Date.now(), this.options.stallInterval * 1000, function (err) {
       /* istanbul ignore if */
       if (err) return cb(err)
 

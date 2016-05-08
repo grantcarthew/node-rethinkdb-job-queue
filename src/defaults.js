@@ -1,5 +1,5 @@
 module.exports = {
-  stallInterval: 5000,
+  stallInterval: 30,
   prefix: 'bq',
   isWorker: true,
   getEvents: true,

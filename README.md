@@ -108,10 +108,10 @@ The options are passed to the `create()` function as a JavaScript object. None o
 
 A table inside the `connected` database will be created for each queue based on the `queueName` option.
 
-|Key            |Description                                                     |Defaults |
-|---------------|----------------------------------------------------------------|---------|
-|`queueName`    |Name (or reason) of the queue                                   |JobQueue |
-|`stallInterval`|Maximum working time in ms before the job is concidered stalled |5000     |
+|Key            |Description                                                          |Defaults |
+|---------------|---------------------------------------------------------------------|---------|
+|`queueName`    |Name (or reason) of the queue                                        |JobQueue |
+|`stallInterval`|Maximum working time in seconds before the job is concidered stalled |30       |
 
 ```js
 const jobQueue = require('rethinkdb-job-queue')
