@@ -1,17 +1,18 @@
-const server = require('./reqlite')
 const test = require('tape')
 const jobQueue = require('../src/job-queue')
+const Promise = require('bluebird')
 
 test('queue test', (t) => {
   t.plan(1)
 
   let qFactory = jobQueue.connect({
-    dbPort: '28016',
-    dbName: 'UnitTests'
+    dbName: 'JobQueueUnitTests'
   })
 
   let testQueue = qFactory.create({
-    queueName: 'test'
+    queueName: 'UnitTest'
+  }).then((result) => {
+    console.dir(result)
   })
 
   console.dir(JSON.parse(JSON.stringify(testQueue)))

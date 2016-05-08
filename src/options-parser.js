@@ -10,7 +10,7 @@ module.exports.connect = function (options) {
   return {
     dbHost: options.dbHost || 'localhost',
     dbPort: options.dbPort || '28015',
-    dbName: options.dbName
+    dbName: options.dbName || 'JobQueue'
   }
 }
 
