@@ -16,12 +16,20 @@ QueueFactory.prototype.create = function (options) {
   return this._assertDb().then(() => {
     return new Queue(queueOptions)
   })
+
+
+  r.dbList().contains('example_database')
+  .do(function(databaseExists) {
+    return r.branch(
+      databaseExists,
+      { dbs_created: 0 },
+      r.dbCreate('example_database')
+    );
+  }).run()
 }
 
 // Ensures the database specified exists
 QueueFactory.prototype._assertDb = function () {
-  let self = this
-
   return this.assertDbPromise.then((dbAsserted) => {
     if (dbAsserted) {
       return undefined

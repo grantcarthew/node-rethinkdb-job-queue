@@ -62,9 +62,11 @@ npm install rethinkdb-job-queue --save
 ### `connect(options)`
 
 __Returns__: A job queue factory object.
+
 The `connect(options)` function can be called multiple times to connect to more than one instance of RethinkDB.
 
-The options are passed to the connect function as a JavaScript `object`. None of the options are required.
+The options are passed to the `connect()` function as a JavaScript `object`. None of the options are required.
+
 If the `dbName` database does not exist, it will be created.
 
 |Key            |Description                                              |Defaults |
@@ -102,12 +104,25 @@ __Returns__: Promise resolving to a `Queue` object.
 
 Once you have a queue factory returned from the `connect(options)` function, you can call `create(queueName)` to create the job queue.
 
+The options are passed to the `create()` function as a JavaScript object. None of the options are required.
+
+A table inside the `connected` database will be created for each queue based on the `queueName` option.
+
+|Key            |Description                                                     |Defaults |
+|---------------|----------------------------------------------------------------|---------|
+|`queueName`    |Name (or reason) of the queue                                   |JobQueue |
+|`stallInterval`|Maximum working time in ms before the job is concidered stalled |5000     |
+
 ```js
 const jobQueue = require('rethinkdb-job-queue')
 const localQFactory = jobQueue.connect()
+const emailJobQOptions = {
+  queueName: 'EmailJobQueje'
+}
 var emailJobQueue = {}
 
-localQFactory.create('EmailJobQueue').then((newQueue) => {
+localQFactory.create(emailJobQueue).then((newQueue) => {
+  // Use the new job queue to start queuing jobs.
   emailJobQueue = newQueue
 }).catch(console.error)
 ```

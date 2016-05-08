@@ -1,5 +1,7 @@
 var EventEmitter = require('events')
 var util = require('util')
+const Promise = require('bluebird')
+const logger = require('./logger')
 
 var Job = require('./job')
 var defaults = require('./defaults')
@@ -11,17 +13,19 @@ function Queue (options) {
   this.options = options
   this.paused = false
   this.jobs = {}
+  this.assertTablePromise = Promise.resolve(true)
 
   let boolProps = ['isWorker', 'getEvents', 'sendEvents', 'removeOnSuccess', 'catchExceptions']
   boolProps.forEach(function (prop) {
     this.options[prop] = typeof options[prop] === 'boolean' ? options[prop] : defaults[prop]
   }.bind(this))
 
-  // Wait for Lua loading and client connection; bclient and eclient/subscribe if needed
-  var reportReady = barrier(
-    2 + this.options.isWorker + this.options.getEvents * 2,
-    this.emit.bind(this, 'ready')
-  )
+  // TODO: Remove this
+  // // Wait for Lua loading and client connection; bclient and eclient/subscribe if needed
+  // var reportReady = barrier(
+  //   2 + this.options.isWorker + this.options.getEvents * 2,
+  //   this.emit.bind(this, 'ready')
+  // )
 
   // TODO: Remove this
   // var makeClient = function (clientName) {
@@ -45,9 +49,9 @@ function Queue (options) {
     // this.eclient.on('subscribe', reportReady)
   }
 
-  // TODO: Remove.
-  // this.options.serverKey = this.options.redis.socket || this.options.redis.host + ':' + this.options.redis.port
-  // lua.buildCache(this.options.serverKey, this.client, reportReady)
+// TODO: Remove.
+// this.options.serverKey = this.options.redis.socket || this.options.redis.host + ':' + this.options.redis.port
+// lua.buildCache(this.options.serverKey, this.client, reportReady)
 }
 
 util.inherits(Queue, EventEmitter)
@@ -332,6 +336,32 @@ Queue.prototype.checkStalledJobs = function (interval, cb) {
 
 Queue.prototype.toKey = function (str) {
   return this.options.keyPrefix + str
+}
+
+// Ensures the database specified exists
+Queue.prototype._assertTable = function () {
+  return this.assertTablePromise.then((tableAsserted) => {
+    if (tableAsserted) {
+      return undefined
+    }
+
+    this.assertTablePromise = this.r.tableList().contains(this.options.queueName)
+      .do((tableExists) => {
+        return this.r.branch(
+          tableExists,
+          { dbs_created: 0 },
+          this.r.tableCreate(this.options.queueName)
+        )
+      }).run().then((result) => {
+        console.log('HERE IS THE RESULT')
+        console.dir(result)
+        result.dbs_created > 0
+          ? logger('Table created: ' + this.options.dbName)
+          : logger('Table exists: ' + this.options.dbName)
+        return true
+    })
+    return this.assertTablePromise
+  })
 }
 
 module.exports = Queue
