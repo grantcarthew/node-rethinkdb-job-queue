@@ -5,17 +5,14 @@ const Promise = require('bluebird')
 test('queue test', (t) => {
   t.plan(1)
 
-  let qFactory = jobQueue.connect({
-    dbName: 'JobQueueUnitTests'
-  })
-
-  let testQueue = qFactory.create({
-    queueName: 'UnitTest'
-  }).then((result) => {
-    console.dir(result)
-  })
+  let testQueue = jobQueue('JobQueueUnitTests')
 
   console.dir(JSON.parse(JSON.stringify(testQueue)))
+
+  testQueue.createJob({foo: 'bar'}).then((result) => {
+    console.log('RESULT!!!!!!!!!!!!!!!!');
+    console.dir(JSON.parse(JSON.stringify(result)))
+  })
 
   t.pass('All Done')
 })

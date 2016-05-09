@@ -13,19 +13,10 @@ function QueueFactory (options) {
 QueueFactory.prototype.create = function (options) {
   let queueOptions = optionsParser.create(options)
   queueOptions.r = this.r
+  queueOptions.dbName = this.options.dbName
   return this._assertDb().then(() => {
     return new Queue(queueOptions)
   })
-
-
-  r.dbList().contains('example_database')
-  .do(function(databaseExists) {
-    return r.branch(
-      databaseExists,
-      { dbs_created: 0 },
-      r.dbCreate('example_database')
-    );
-  }).run()
 }
 
 // Ensures the database specified exists
