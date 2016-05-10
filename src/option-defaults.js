@@ -1,8 +1,8 @@
 module.exports = {
   db: {
-    dbHost: 'localhost',
-    dbPort: '28015',
-    dbName: 'rjqJobQueue'
+    host: 'localhost',
+    port: '28015',
+    db: 'rjqJobQueue'
   },
   queue: {
     queueName: 'rjqJobQueue',

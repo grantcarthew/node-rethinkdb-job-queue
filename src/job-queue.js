@@ -15,16 +15,11 @@ function Queue (options, dbConfig = optionDefaults.db) {
   if (!new.target) {
     return new Queue(options, dbConfig)
   }
-  if (typeof options === 'string') {
-    this.options = optionDefaults.queue
-    this.options.queueName = options
-  } else {
-    this.options = optionParser.parseQueueOptions(options)
-  }
-  this.dbConfig = dbConfig
+  this.options = optionParser.parseQueueOptions(options)
+  this.dbConfig = optionParser.parseDbConfig(dbConfig)
   this.paused = false
-  this.jobs = {}
-  this.r = rethinkdbdash(dbConfig)
+  this.jobs = {} // TODO: Remove
+  this.r = rethinkdbdash(this.dbConfig)
   this.assertDbPromise = Promise.resolve(false)
 
   let boolProps = ['isWorker', 'getEvents', 'sendEvents', 'removeOnSuccess', 'catchExceptions']
@@ -68,7 +63,12 @@ function Queue (options, dbConfig = optionDefaults.db) {
 
 util.inherits(Queue, EventEmitter)
 
-Queue.prototype.onMessage = function (err, message) {
+Queue.prototype.onMessage = function (err, change) {
+  console.log('------------- QUEUE CHANGE -------------')
+  console.dir(change)
+  console.log('----------------------------------------')
+  return
+
   message = JSON.parse(message)
   if (message.event === 'failed' || message.event === 'retrying') {
     message.data = Error(message.data)
@@ -360,19 +360,15 @@ Queue.prototype._assertDb = function () {
     }
 
     this.assertDbPromise = dbSetup.assertDatabase(this.r,
-      this.dbConfig.dbName)
+      this.dbConfig.db)
     .then(() => {
       return dbSetup.assertTable(this.r,
-      this.dbConfig.dbName,
+      this.dbConfig.db,
       this.options.queueName).then(() => {
         return dbSetup.queueChangeFeed(this.r,
-        this.dbConfig.dbName,
+        this.dbConfig.db,
         this.options.queueName,
-        (err, change) => {
-          console.log('------------- QUEUE CHANGE -------------')
-          console.dir(change)
-          console.log('----------------------------------------')
-        })
+        this.onMessage)
       })
     })
     return this.assertDbPromise

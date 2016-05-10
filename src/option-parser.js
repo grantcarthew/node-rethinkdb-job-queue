@@ -1,10 +1,10 @@
 const optionDefaults = require('./option-defaults')
 
-module.exports.parseDbOptions = function (options = {}) {
+module.exports.parseDbConfig = function (options = {}) {
   return {
-    dbHost: options.dbHost || optionDefaults.db.dbHost,
-    dbPort: options.dbPort || optionDefaults.db.dbPort,
-    dbName: options.dbName || optionDefaults.db.dbName
+    host: options.host || optionDefaults.db.host,
+    port: options.port || optionDefaults.db.port,
+    db: options.db || optionDefaults.db.db
   }
 }
 

@@ -5,7 +5,7 @@ const Promise = require('bluebird')
 test('queue test', (t) => {
   t.plan(1)
 
-  let testQueue = jobQueue('JobQueueUnitTests')
+  let testQueue = jobQueue({ queueName: 'JobQueueUnitTests' })
   testQueue.on('', () => {})
 
   //console.dir(JSON.parse(JSON.stringify(testQueue)))

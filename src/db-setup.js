@@ -1,42 +1,42 @@
 const logger = require('./logger')
 
-module.exports.assertDatabase = function (r, dbName) {
+module.exports.assertDatabase = function (r, db) {
   return r.dbList()
-  .contains(dbName)
+  .contains(db)
   .do((databaseExists) => {
     return r.branch(
       databaseExists,
       { dbs_created: 0 },
-      r.dbCreate(dbName)
+      r.dbCreate(db)
     )
   }).run().then((dbCreateResult) => {
     dbCreateResult.dbs_created > 0
-      ? logger('Database created: ' + dbName)
-      : logger('Database exists: ' + dbName)
+      ? logger('Database created: ' + db)
+      : logger('Database exists: ' + db)
     return true
   })
 }
 
-module.exports.assertTable = function (r, dbName, tableName) {
-  return r.db(dbName).tableList()
-  .contains(tableName)
+module.exports.assertTable = function (r, db, queueName) {
+  return r.db(db).tableList()
+  .contains(queueName)
   .do((tableExists) => {
     return r.branch(
       tableExists,
       { tables_created: 0 },
-      r.db(dbName)
-        .tableCreate(tableName)
+      r.db(db)
+        .tableCreate(queueName)
     )
   }).run().then((tableCreateResult) => {
     tableCreateResult.tables_created > 0
-      ? logger('Table created: ' + tableName)
-      : logger('Table exists: ' + tableName)
+      ? logger('Table created: ' + queueName)
+      : logger('Table exists: ' + queueName)
     return true
   })
 }
 
-module.exports.queueChangeFeed = function (r, dbName, tableName, cb) {
-  return r.db(dbName).table(tableName)
+module.exports.queueChangeFeed = function (r, db, queueName, cb) {
+  return r.db(db).table(queueName)
     .changes().run().then((feed) => {
       feed.each(cb)
     })

@@ -24,7 +24,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 -   [Requirements](#requirements)
 -   [Installation](#installation)
 -   [API](#api)
-    -   [connect](#connect)
+    -   [queue](#queue)
     -   [create](#create)
 -   [Plans](#plans)
 -   [Testing](#testing)
@@ -57,42 +57,79 @@ npm install rethinkdb-job-queue --save
 
 ## API
 
-<a name="connect" />
+<a name="queue" />
 
-### `connect(options)`
+### `Queue(options, dbConfig)`
 
-__Returns__: A job queue factory object.
+__Returns__: A new job `Queue` JavaScript object.
 
-The `connect(options)` function can be called multiple times to connect to more than one instance of RethinkDB.
+The `Queue(options, dbConfig)` function can be called multiple times to create multiple job queues connected to multiple instances of RethinkDB.
 
-The options are passed to the `connect()` function as a JavaScript `object`. None of the options are required.
+The `options` and `dbConfig` parameters are optional. See the table below.
+
+Both the `options` and `dbConfig` are passed to the `Queue(options, dbConfig)` function as JavaScript `objects`.
 
 If the `dbName` database does not exist, it will be created.
 
-|Key            |Description                                              |Defaults |
-|---------------|---------------------------------------------------------|---------|
-|`dbHost`       |Name or IP address of the RethinkDB server               |localhost|
-|`dbPort`       |TCP port number for the RethinkDB server instance        |28015    |
-|`dbName`       |The name of the database to hold the job queues          |JobQueue |
+#### Queue `options`
+
+|Key            |Description                                                          |Defaults    |
+|---------------|---------------------------------------------------------------------|------------|
+|`queueName`    |Name of the queue                                                    |rjqJobQueue |
+|`stallInterval`|Maximum working time in seconds before the job is considered stalled |30          |
+
+#### Database `dbConfig`
+
+|Key            |Description                                        |Defaults    |
+|---------------|---------------------------------------------------|------------|
+|`host`         |Name or IP address of the RethinkDB server         |localhost   |
+|`port`         |TCP port number for the RethinkDB server instance  |28015       |
+|`db`           |The name of the database to hold the job queues    |rjqJobQueue |
+
+Example using defaults:
 
 ```js
 const jobQueue = require('rethinkdb-job-queue')
 
-// Connects to the local instance of RethinkDB.
-// host: localhost
-// port: 28015
-const localOptions = {
-  dbName: 'MyDatabase'
-}
-const localQFactory = jobQueue.connect(localOptions)
+// Connects to the local instance of RethinkDB with the following defaults.
+// Database host: localhost
+// Database port: 28015
+// Database name: rjqJobQueue
+// Queue Name: rjqJobQueue
+const queue = jobQueue()
+// Now use the 'queue' object to create jobs.
 
-// Connects to a remote instance of RethinkDB.
-const remoteOptions = {
-  dbHost: '192.168.1.5',
-  dbPort: '4000',
-  dbName: 'AppProd'
+```
+
+Example using `dbName` and `queueName`:
+
+```js
+// Connects to the local instance of RethinkDB.
+const dbConfig = {
+  db: 'AppMail'
 }
-const remoteQFactory = jobQueue.connect(remoteOptions)
+const options = {
+  queueName: 'NewsLetterJobs'
+}
+const newsLetterQueue = jobQueue(options, dbConfig)
+// Now use the 'newsLetterQueue' object to create jobs.
+
+```
+
+Example connecting to a remote RethinkDB instance:
+
+```js
+// Connects to a remote instance of RethinkDB.
+const dbConfig = {
+  host: '192.168.1.5',
+  port: '4000',
+  db: 'AppProd'
+}
+const options = {
+  queueName: 'ProcessJobs'
+}
+const processJobsQueue = jobQueue(options, dbConfig)
+// Now use the 'processJobsQueue' object to create jobs.
 
 ```
 
