@@ -2,10 +2,10 @@ module.exports = {
   db: {
     dbHost: 'localhost',
     dbPort: '28015',
-    dbName: 'JobQueue'
+    dbName: 'rjqJobQueue'
   },
   queue: {
-    queueName: 'JobQueue',
+    queueName: 'rjqJobQueue',
     stallInterval: 30,
     prefix: 'bq',
     isWorker: true,

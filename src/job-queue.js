@@ -9,6 +9,7 @@ const optionDefaults = require('./option-defaults')
 const Job = require('./job')
 const helpers = require('./helpers')
 const barrier = helpers.barrier
+const dbSetup = require('./db-setup')
 
 function Queue (options, dbConfig = optionDefaults.db) {
   if (!new.target) {
@@ -67,7 +68,7 @@ function Queue (options, dbConfig = optionDefaults.db) {
 
 util.inherits(Queue, EventEmitter)
 
-Queue.prototype.onMessage = function (channel, message) {
+Queue.prototype.onMessage = function (err, message) {
   message = JSON.parse(message)
   if (message.event === 'failed' || message.event === 'retrying') {
     message.data = Error(message.data)
@@ -358,36 +359,21 @@ Queue.prototype._assertDb = function () {
       return undefined
     }
 
-    this.assertDbPromise = this.r.dbList().contains(this.dbConfig.dbName)
-    .do((databaseExists) => {
-      return this.r.branch(
-        databaseExists,
-        { dbs_created: 0 },
-        this.r.dbCreate(this.dbConfig.dbName)
-      )
-    }).run().then((dbCreateResult) => {
-      dbCreateResult.dbs_created > 0
-      ? logger('Database created: ' + this.dbConfig.dbName)
-      : logger('Database exists: ' + this.dbConfig.dbName)
-      return false
-    }).then(() => {
-      return this.r.db(this.dbConfig.dbName).tableList()
-        .contains(this.options.queueName)
-        .do((tableExists) => {
-          return this.r.branch(
-            tableExists,
-            { dbs_created: 0 },
-            this.r.db(this.dbConfig.dbName)
-              .tableCreate(this.options.queueName)
-          )
-        }).run()
-    }).then((tableCreateResult) => {
-      console.log('HERE IS THE RESULT')
-      console.dir(tableCreateResult)
-      tableCreateResult.dbs_created > 0
-        ? logger('Table created: ' + this.options.queueName)
-        : logger('Table exists: ' + this.options.queueName)
-      return true
+    this.assertDbPromise = dbSetup.assertDatabase(this.r,
+      this.dbConfig.dbName)
+    .then(() => {
+      return dbSetup.assertTable(this.r,
+      this.dbConfig.dbName,
+      this.options.queueName).then(() => {
+        return dbSetup.queueChangeFeed(this.r,
+        this.dbConfig.dbName,
+        this.options.queueName,
+        (err, change) => {
+          console.log('------------- QUEUE CHANGE -------------')
+          console.dir(change)
+          console.log('----------------------------------------')
+        })
+      })
     })
     return this.assertDbPromise
   })

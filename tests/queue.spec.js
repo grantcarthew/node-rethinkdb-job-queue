@@ -6,11 +6,12 @@ test('queue test', (t) => {
   t.plan(1)
 
   let testQueue = jobQueue('JobQueueUnitTests')
+  testQueue.on('', () => {})
 
-  console.dir(JSON.parse(JSON.stringify(testQueue)))
+  //console.dir(JSON.parse(JSON.stringify(testQueue)))
 
   testQueue.createJob({foo: 'bar'}).then((result) => {
-    console.log('RESULT!!!!!!!!!!!!!!!!');
+    console.log('RESULT!!!!!!!!!!!!!!!!')
     console.dir(JSON.parse(JSON.stringify(result)))
   })
 
