@@ -1,47 +1,25 @@
 var events = require('events')
 var util = require('util')
-
-var helpers = require('./helpers')
 const dbJob = require('./db-job')
 
-function Job (queue, jobId, data, options) {
+function Job (queue, data, options, template) {
   if (!new.target) {
-    return new Job(queue, jobId, data, options)
+    return new Job(queue, data, options)
   }
 
   this.queue = queue
-  this.id = jobId
   this.progress = 0
   this.data = data || {}
   this.options = options || {}
   this.status = 'created'
-  return dbJob.save(this).then((saveResult) => {
-    this.id = saveResult.generated_keys[0]
-    // self.queue.jobs[jobId] = self
-    return this
-  })
+  if (!template) {
+    return dbJob.save(this).then((saveResult) => {
+      this.id = saveResult.generated_keys[0]
+      // self.queue.jobs[jobId] = self TODO: Remove
+      return this
+    })
+  }
 }
-
-Job.prototype.change = function (err, change) {
-
-}
-
-
-// Job.prototype.save = function (cb) {
-//   cb = cb || helpers.defaultCb
-//   var self = this
-//   this.queue.client.evalsha(lua.shas.addJob, 3,
-//     this.queue.toKey('id'), this.queue.toKey('jobs'), this.queue.toKey('waiting'),
-//     this.toData(),
-//     function (err, jobId) {
-//       if (err) return cb(err)
-//       self.id = jobId
-//       self.queue.jobs[jobId] = self
-//       return cb(null, self)
-//     }
-//   )
-//   return this
-// }
 
 util.inherits(Job, events.EventEmitter)
 

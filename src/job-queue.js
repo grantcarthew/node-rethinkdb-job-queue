@@ -7,8 +7,6 @@ const logger = require('./logger')
 const optionParser = require('./option-parser')
 const optionDefaults = require('./option-defaults')
 const Job = require('./job')
-const helpers = require('./helpers')
-const barrier = helpers.barrier
 const dbSetup = require('./db-setup')
 
 function Queue (options, dbConfig = optionDefaults.db) {
@@ -27,22 +25,6 @@ function Queue (options, dbConfig = optionDefaults.db) {
     this.options[prop] = typeof options[prop] === 'boolean' ? options[prop] : optionDefaults.queue[prop]
   }.bind(this))
 
-  // TODO: Remove this
-  // // Wait for Lua loading and client connection; bclient and eclient/subscribe if needed
-  // var reportReady = barrier(
-  //   2 + this.options.isWorker + this.options.getEvents * 2,
-  //   this.emit.bind(this, 'ready')
-  // )
-
-  // TODO: Remove this
-  // var makeClient = function (clientName) {
-  //   this[clientName] = redis.createClient.apply(redis, this.options.redis.params)
-  //   this[clientName].on('error', this.emit.bind(this, 'error'))
-  //   this[clientName].select(this.options.redis.db, reportReady)
-  // }.bind(this)
-
-  // makeClient('client')
-
   if (this.options.isWorker) {
     // TODO: Is iwWorker needed with RethinkDB?
     // makeClient('bclient')
@@ -55,10 +37,6 @@ function Queue (options, dbConfig = optionDefaults.db) {
     // this.eclient.on('message', this.onMessage.bind(this))
     // this.eclient.on('subscribe', reportReady)
   }
-
-// TODO: Remove.
-// this.options.serverKey = this.options.redis.socket || this.options.redis.host + ':' + this.options.redis.port
-// lua.buildCache(this.options.serverKey, this.client, reportReady)
 }
 
 util.inherits(Queue, EventEmitter)
@@ -146,7 +124,7 @@ Queue.prototype.checkHealth = function (cb) {
 
 Queue.prototype.createJob = function (data) {
   return this._assertDb().then(() => {
-    return new Job(this, null, data)
+    return new Job(this, data)
   })
 }
 
