@@ -14,7 +14,17 @@ test('queue test', (t) => {
   testQueue.createJob({foo: 'bar'}).then((result) => {
     console.log('RESULT!!!!!!!!!!!!!!!!')
     console.dir(JSON.parse(JSON.stringify(result)))
-    setTimeout(() => { dbJob.remove(result) }, 3000)
+    setTimeout(() => { result.remove() }, 3000)
+  }).then(() => {
+    return testQueue.getNextJob().then((job) => {
+      console.log('NEXT JOB!!!!!!!!!!!!!!!!');
+      console.dir(job)
+      return job
+    })
+  }).then((newJob) => {
+    return newJob.setStatus('active').then((updateResult) => {
+
+    })
   })
 
   t.pass('All Done')

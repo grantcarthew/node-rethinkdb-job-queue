@@ -9,6 +9,7 @@ const optionDefaults = require('./option-defaults')
 const Job = require('./job')
 const dbDatabase = require('./db-database')
 const dbQueue = require('./db-queue')
+const dbJob = require('./db-job')
 
 function Queue (options, dbConfig = optionDefaults.db) {
   if (!new.target) {
@@ -106,25 +107,12 @@ Queue.prototype.createJob = function (data) {
   })
 }
 
-Queue.prototype.getJob = function (jobId, cb) {
-  var self = this
-  if (jobId in this.jobs) {
-    return process.nextTick(cb.bind(null, null, this.jobs[jobId]))
-  } else {
-    Job.fromId(this, jobId, function (err, job) {
-      if (err) return cb(err)
-      self.jobs[jobId] = job
-      return cb(err, job)
-    })
-  }
+Queue.prototype.getJob = function (jobId) {
+  return dbJob.getById(this, jobId)
 }
 
 Queue.prototype.getNextJob = function (cb) {
-  var self = this
-  this.bclient.brpoplpush(this.toKey('waiting'), this.toKey('active'), 0, function (err, jobId) {
-    if (err) return cb(err)
-    return Job.fromId(self, Number(jobId), cb)
-  })
+  return dbJob.getNextJob(this)
 }
 
 Queue.prototype.runJob = function (job, cb) {
@@ -304,11 +292,8 @@ Queue.prototype.checkStalledJobs = function (interval, cb) {
   )
 }
 
-Queue.prototype.toKey = function (str) {
-  return this.options.keyPrefix + str
-}
-
-// Ensures the database and table specified exists
+// Ensures the database and table specified exists.
+// Also registers change feed on the queue table.
 Queue.prototype._assertDb = function () {
   return this.assertDbPromise.then((dbAsserted) => {
     if (dbAsserted) {

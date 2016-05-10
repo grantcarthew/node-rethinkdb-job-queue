@@ -1,5 +1,6 @@
-var events = require('events')
-var util = require('util')
+const events = require('events')
+const util = require('util')
+const moment = require('moment')
 const dbJob = require('./db-job')
 
 function Job (queue, data, options, template) {
@@ -9,9 +10,11 @@ function Job (queue, data, options, template) {
 
   this.queue = queue
   this.progress = 0
+  this.retryCount = 0
   this.data = data || {}
   this.options = options || {}
   this.status = 'created'
+  this.dateCreated = moment().toString()
   if (!template) {
     return dbJob.save(this).then((saveResult) => {
       this.id = saveResult.generated_keys[0]
@@ -23,28 +26,11 @@ function Job (queue, data, options, template) {
 
 util.inherits(Job, events.EventEmitter)
 
-Job.fromId = function (queue, jobId, cb) {
-  queue.client.hget(queue.toKey('jobs'), jobId, function (err, data) {
-    /* istanbul ignore if */
-    if (err) return cb(err)
-    return cb(null, Job.fromData(queue, jobId, data))
-  })
-}
-
-Job.fromData = function (queue, jobId, data) {
-  // no need for try-catch here since we made the JSON ourselves in job#toData
-  data = JSON.parse(data)
-  var job = new Job(queue, jobId, data.data, data.options)
-  job.status = data.status
-  return job
-}
-
 Job.prototype.toData = function () {
-  return JSON.stringify({
-    data: this.data,
-    options: this.options,
-    status: this.status
-  })
+  const jobCopy = Object.assign({}, this)
+  delete jobCopy.queue
+  delete jobCopy.id
+  return jobCopy
 }
 
 Job.prototype.retries = function (n) {
@@ -79,14 +65,15 @@ Job.prototype.reportProgress = function (progress, cb) {
   }), cb)
 }
 
-Job.prototype.remove = function (cb) {
-  cb = cb || helpers.defaultCb
-  this.queue.client.evalsha(lua.shas.removeJob, 6,
-    this.queue.toKey('succeeded'), this.queue.toKey('failed'), this.queue.toKey('waiting'),
-    this.queue.toKey('active'), this.queue.toKey('stalling'), this.queue.toKey('jobs'),
-    this.id,
-    cb
-  )
+Job.prototype.setStatus = function (status) {
+  dbJob.setStatus(this.status, status).then((statusResult) => {
+    console.log('STATUS RESULT++++++++++++++++++++++++++++++++++++++')
+    console.dir(statusResult)
+  })
+}
+
+Job.prototype.remove = function () {
+  return dbJob.remove(this)
 }
 
 Job.prototype.retry = function (cb) {
@@ -95,14 +82,6 @@ Job.prototype.retry = function (cb) {
     .srem(this.queue.toKey('failed'), this.id)
     .lpush(this.queue.toKey('waiting'), this.id)
     .exec(cb)
-}
-
-Job.prototype.isInSet = function (set, cb) {
-  this.queue.client.sismember(this.queue.toKey(set), this.id, function (err, result) {
-    /* istanbul ignore if */
-    if (err) return cb(err)
-    return cb(null, result === 1)
-  })
 }
 
 module.exports = Job

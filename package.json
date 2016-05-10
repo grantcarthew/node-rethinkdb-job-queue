@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "bluebird": "^3.3.5",
+    "moment": "^2.13.0",
     "rethinkdbdash": "^2.3.6"
   },
   "devDependencies": {
