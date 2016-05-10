@@ -7,7 +7,8 @@ const logger = require('./logger')
 const optionParser = require('./option-parser')
 const optionDefaults = require('./option-defaults')
 const Job = require('./job')
-const dbSetup = require('./db-setup')
+const dbDatabase = require('./db-database')
+const dbQueue = require('./db-queue')
 
 function Queue (options, dbConfig = optionDefaults.db) {
   if (!new.target) {
@@ -70,31 +71,8 @@ Queue.prototype.onMessage = function (err, change) {
 }
 
 Queue.prototype.close = function (cb) {
-  cb = cb || helpers.defaultCb
   this.paused = true
-
-  var closeTimeout = setTimeout(function () {
-    return cb(Error('Timed out closing redis connections'))
-  }, 5000)
-
-  var clients = [this.client]
-  if (this.options.isWorker) {
-    clients.push(this.bclient)
-  }
-
-  if (this.options.getEvents) {
-    clients.push(this.eclient)
-  }
-
-  var handleEnd = barrier(clients.length, function () {
-    clearTimeout(closeTimeout)
-    return cb(null)
-  })
-
-  clients.forEach(function (client) {
-    client.end()
-    client.stream.on('close', handleEnd)
-  })
+  return this.r.getPoolMaster().drain()
 }
 
 Queue.prototype.destroy = function (cb) {
@@ -337,13 +315,13 @@ Queue.prototype._assertDb = function () {
       return undefined
     }
 
-    this.assertDbPromise = dbSetup.assertDatabase(this.r,
+    this.assertDbPromise = dbDatabase.assertDatabase(this.r,
       this.dbConfig.db)
     .then(() => {
-      return dbSetup.assertTable(this.r,
+      return dbQueue.assertTable(this.r,
       this.dbConfig.db,
       this.options.queueName).then(() => {
-        return dbSetup.queueChangeFeed(this.r,
+        return dbQueue.changeFeed(this.r,
         this.dbConfig.db,
         this.options.queueName,
         this.onMessage)
