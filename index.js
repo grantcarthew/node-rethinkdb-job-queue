@@ -1,1 +1,1 @@
-module.exports = require('./src/job-queue')
+module.exports = require('./src/queue')

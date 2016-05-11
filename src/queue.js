@@ -21,6 +21,7 @@ function Queue (options, dbConfig = optionDefaults.db) {
   this.jobs = {} // TODO: Remove
   this.r = rethinkdbdash(this.dbConfig)
   this.assertDbPromise = Promise.resolve(false)
+  this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
 
   let boolProps = ['isWorker', 'getEvents', 'sendEvents', 'removeOnSuccess', 'catchExceptions']
   boolProps.forEach(function (prop) {
@@ -42,6 +43,29 @@ function Queue (options, dbConfig = optionDefaults.db) {
 }
 
 util.inherits(Queue, EventEmitter)
+
+Queue.prototype.createJob = function (data) {
+  return this._assertDb().then(() => {
+    return new Job(this, data)
+  })
+}
+
+
+Queue.prototype.addJob = function (job) {
+  return dbJob.save(this).then((saveResult) => {
+    this.id = saveResult.generated_keys[0]
+    // self.queue.jobs[jobId] = self TODO: Remove
+    return this
+  })
+}
+
+Queue.prototype.getJob = function (jobId) {
+  return dbJob.getById(this, jobId)
+}
+
+Queue.prototype.getNextJob = function (cb) {
+  return dbJob.getNextJob(this)
+}
 
 Queue.prototype.onMessage = function (err, change) {
   console.log('------------- QUEUE CHANGE -------------')
@@ -99,20 +123,6 @@ Queue.prototype.checkHealth = function (cb) {
         failed: results[3]
       })
     })
-}
-
-Queue.prototype.createJob = function (data) {
-  return this._assertDb().then(() => {
-    return new Job(this, data)
-  })
-}
-
-Queue.prototype.getJob = function (jobId) {
-  return dbJob.getById(this, jobId)
-}
-
-Queue.prototype.getNextJob = function (cb) {
-  return dbJob.getNextJob(this)
 }
 
 Queue.prototype.runJob = function (job, cb) {
