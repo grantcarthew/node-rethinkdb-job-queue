@@ -46,6 +46,7 @@
   "dependencies": {
     "bluebird": "^3.3.5",
     "moment": "^2.13.0",
+    "node-uuid": "^1.4.7",
     "rethinkdbdash": "^2.3.6"
   },
   "devDependencies": {

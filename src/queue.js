@@ -1,39 +1,58 @@
-const EventEmitter = require('events')
+const EventEmitter = require('events').EventEmitter
 const util = require('util')
 const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
 const logger = require('./logger')
-
-const optionParser = require('./option-parser')
-const optionDefaults = require('./option-defaults')
 const Job = require('./job')
-const dbDatabase = require('./db-database')
+const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
 
-function Queue (options, dbConfig = optionDefaults.db) {
+Queue.prototype.priorities = {
+  lowest: 10, low: 20, normal: 30, medium: 40, high: 50, highest: 60
+}
+
+Queue.prototype.statuses = {
+  created: 'created',
+  delayed: 'delayed',
+  active: 'active',
+  waiting: 'waiting',
+  complete: 'complete',
+  failed: 'failed',
+  retry: 'retry'
+}
+
+function Queue (options) {
   if (!new.target) {
-    return new Queue(options, dbConfig)
+    return new Queue(options)
   }
-  this.options = optionParser.parseQueueOptions(options)
-  this.dbConfig = optionParser.parseDbConfig(dbConfig)
-  this.paused = false
-  this.jobs = {} // TODO: Remove
-  this.r = rethinkdbdash(this.dbConfig)
-  this.assertDbPromise = Promise.resolve(false)
+
   this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
+  options = options || {}
+  this.host = options.host || 'localhost'
+  this.port = options.port || 28015
+  this.db = options.db || 'rjqJobQueue'
+  this.r = rethinkdbdash({
+    host: this.host,
+    port: this.port,
+    db: this.db
+  })
+  this.stallInterval = typeof options.stallInterval === 'number'
+      ? options.stallInterval : 30
+  this.name = options.name || 'rjqJobList'
+  this.isWorker = options.isWorker || true
+  this.removeOnSuccess = options.removeOnSuccess || true
+  this.catchExceptions = options.catchExceptions || true
+  this.paused = false
 
-  let boolProps = ['isWorker', 'getEvents', 'sendEvents', 'removeOnSuccess', 'catchExceptions']
-  boolProps.forEach(function (prop) {
-    this.options[prop] = typeof options[prop] === 'boolean' ? options[prop] : optionDefaults.queue[prop]
-  }.bind(this))
+  this.assertDbPromise = Promise.resolve(false)
 
-  if (this.options.isWorker) {
+  if (this.isWorker) {
     // TODO: Is iwWorker needed with RethinkDB?
     // makeClient('bclient')
   }
 
-  if (this.options.getEvents) {
+  if (this.getEvents) {
     // TODO: PubSub events.
     // makeClient('eclient')
     // this.eclient.subscribe(this.toKey('events'))
@@ -41,21 +60,22 @@ function Queue (options, dbConfig = optionDefaults.db) {
     // this.eclient.on('subscribe', reportReady)
   }
 }
-
 util.inherits(Queue, EventEmitter)
 
 Queue.prototype.createJob = function (data) {
-  return this._assertDb().then(() => {
-    return new Job(this, data)
-  })
+  return new Job(data)
 }
 
-
 Queue.prototype.addJob = function (job) {
-  return dbJob.save(this).then((saveResult) => {
-    this.id = saveResult.generated_keys[0]
-    // self.queue.jobs[jobId] = self TODO: Remove
-    return this
+  job = Array.isArray(job) ? job : [job]
+  return this._assertDb().then(() => {
+    return this.r.db(this.db).table(this.name)
+    .insert(job).run().then((saveResult) => {
+      if (saveResult.errors > 0) {
+        return Promise.reject(saveResult)
+      }
+      return saveResult
+    })
   })
 }
 
@@ -71,6 +91,11 @@ Queue.prototype.onMessage = function (err, change) {
   console.log('------------- QUEUE CHANGE -------------')
   console.dir(change)
   console.log('----------------------------------------')
+
+  if (change.new_val && !change.old_val) {
+    console.dir(JSON.parse(JSON.stringify(this)))
+    this.emit('enqueue')
+  }
   return
 
   message = JSON.parse(message)
@@ -95,6 +120,34 @@ Queue.prototype.onMessage = function (err, change) {
   }
 }
 
+Queue.prototype.progress = function (complete, total, data) {
+  // if (0 == arguments.length) return this.progress
+  // var n = Math.min(100, complete * 100 / total | 0);
+  // this.set('progress', n);
+
+  // // If this stringify fails because of a circular structure, even the one in events.emit would.
+  // // So it does not make sense to try/catch this.
+  // if( data ) this.set('progress_data', JSON.stringify(data));
+
+  // this.set('updated_at', Date.now());
+  // this.refreshTtl();
+  // events.emit(this.id, 'progress', n, data);
+  // return this;
+  // // right now we just send the pubsub event
+  // // might consider also updating the job hash for persistence
+  // cb = cb || helpers.defaultCb
+  // progress = Number(progress)
+  // if (progress < 0 || progress > 100) {
+  //   return process.nextTick(cb.bind(null, Error('Progress must be between 0 and 100')))
+  // }
+  // this.progress = progress
+  // this.queue.client.publish(this.queue.toKey('events'), JSON.stringify({
+  //   id: this.id,
+  //   event: 'progress',
+  //   data: progress
+  // }), cb)
+}
+
 Queue.prototype.close = function (cb) {
   this.paused = true
   return this.r.getPoolMaster().drain()
@@ -105,6 +158,12 @@ Queue.prototype.destroy = function (cb) {
   var keys = ['id', 'jobs', 'stallTime', 'stalling', 'waiting', 'active', 'succeeded', 'failed']
     .map(this.toKey.bind(this))
   this.client.del.apply(this.client, keys.concat(cb))
+}
+Queue.prototype.setStatus = function (status) {
+  dbJob.setStatus(this.status, status).then((statusResult) => {
+    console.log('STATUS RESULT++++++++++++++++++++++++++++++++++++++')
+    console.dir(statusResult)
+  })
 }
 
 Queue.prototype.checkHealth = function (cb) {
@@ -216,7 +275,7 @@ Queue.prototype.finishJob = function (err, data, job, cb) {
 }
 
 Queue.prototype.process = function (concurrency, handler) {
-  if (!this.options.isWorker) {
+  if (!this.isWorker) {
     throw Error('Cannot call Queue.prototype.process on a non-worker')
   }
 
@@ -229,13 +288,13 @@ Queue.prototype.process = function (concurrency, handler) {
     concurrency = 1
   }
 
-  var self = this
+  let self = this
   this.handler = handler
   this.running = 0
   this.queued = 1
   this.concurrency = concurrency
 
-  var jobTick = function () {
+  let jobTick = function () {
     if (self.paused) {
       self.queued -= 1
       return
@@ -273,33 +332,33 @@ Queue.prototype.process = function (concurrency, handler) {
     })
   }
 
-  var restartProcessing = function () {
+  let restartProcessing = function () {
     // maybe need to increment queued here?
-    self.bclient.once('ready', jobTick)
+    //self.bclient.once('ready', jobTick)
   }
-  this.bclient.on('error', restartProcessing)
-  this.bclient.on('end', restartProcessing)
+  //this.bclient.on('error', restartProcessing)
+  //this.bclient.on('end', restartProcessing)
 
   this.checkStalledJobs(setImmediate.bind(null, jobTick))
 }
 
 Queue.prototype.checkStalledJobs = function (interval, cb) {
   var self = this
-  cb = typeof interval === 'function' ? interval : cb || helpers.defaultCb
+  cb = typeof interval === 'function' ? interval : cb// || helpers.defaultCb
 
-  this.client.evalsha(lua.shas.checkStalledJobs, 4,
-    this.toKey('stallTime'), this.toKey('stalling'), this.toKey('waiting'), this.toKey('active'),
-    Date.now(), this.options.stallInterval * 1000, function (err) {
-      /* istanbul ignore if */
-      if (err) return cb(err)
-
-      if (typeof interval === 'number') {
-        setTimeout(self.checkStalledJobs.bind(self, interval, cb), interval)
-      }
-
-      return cb()
-    }
-  )
+  // this.client.evalsha(lua.shas.checkStalledJobs, 4,
+  //   this.toKey('stallTime'), this.toKey('stalling'), this.toKey('waiting'), this.toKey('active'),
+  //   Date.now(), this.options.stallInterval * 1000, function (err) {
+  //     /* istanbul ignore if */
+  //     if (err) return cb(err)
+  //
+  //     if (typeof interval === 'number') {
+  //       setTimeout(self.checkStalledJobs.bind(self, interval, cb), interval)
+  //     }
+  //
+  //     return cb()
+  //   }
+  // )
 }
 
 // Ensures the database and table specified exists.
@@ -310,16 +369,10 @@ Queue.prototype._assertDb = function () {
       return undefined
     }
 
-    this.assertDbPromise = dbDatabase.assertDatabase(this.r,
-      this.dbConfig.db)
+    this.assertDbPromise = dbAssert.database(this)
     .then(() => {
-      return dbQueue.assertTable(this.r,
-      this.dbConfig.db,
-      this.options.queueName).then(() => {
-        return dbQueue.changeFeed(this.r,
-        this.dbConfig.db,
-        this.options.queueName,
-        this.onMessage)
+      return dbAssert.table(this).then(() => {
+        return this.isWorker ? dbQueue.changeFeed(this) : true
       })
     })
     return this.assertDbPromise

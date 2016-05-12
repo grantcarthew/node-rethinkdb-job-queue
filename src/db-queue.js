@@ -1,30 +1,16 @@
 const logger = require('./logger')
 
-module.exports.assertTable = function (r, db, queueName) {
-  return r.db(db).tableList()
-  .contains(queueName)
-  .do((tableExists) => {
-    return r.branch(
-      tableExists,
-      { tables_created: 0 },
-      r.db(db)
-        .tableCreate(queueName)
-    )
-  }).run().then((tableCreateResult) => {
-    tableCreateResult.tables_created > 0
-      ? logger('Table created: ' + queueName)
-      : logger('Table exists: ' + queueName)
-    return true
-  })
-}
-
-module.exports.changeFeed = function (r, db, queueName, cb) {
-  return r.db(db).table(queueName)
+module.exports.changeFeed = function (q) {
+  return q.r.db(q.db).table(q.name)
     .changes().run().then((feed) => {
-      feed.each(cb)
+      feed.each(q.onMessage).bind(q)
     })
 }
 
 module.exports.deleteTable = function (r, db) {
   return r.dbDrop(db).run()
+}
+
+module.exports.commitJobs = function (job) {
+  return job.q.r.db(job.q.db).table(job.q.name).insert(job.generalize()).run()
 }

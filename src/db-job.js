@@ -1,9 +1,3 @@
-module.exports.save = function (job) {
-  const db = job.queue.dbConfig.db
-  const tableName = job.queue.options.queueName
-  return job.queue.r.db(db).table(tableName).insert(job.toData()).run()
-}
-
 module.exports.remove = function (job) {
   const db = job.queue.dbConfig.db
   const tableName = job.queue.options.queueName
