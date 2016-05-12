@@ -1,6 +1,7 @@
 const logger = require('./logger')
+const dbQueue = require('./db-queue')
 
-module.exports.database = function (q) {
+function assertDatabase (q) {
   return q.r.dbList()
   .contains(q.db)
   .do((databaseExists) => {
@@ -17,7 +18,7 @@ module.exports.database = function (q) {
   })
 }
 
-module.exports.table = function (q) {
+function assertTable (q) {
   return q.r.tableList()
   .contains(q.name)
   .do((tableExists) => {
@@ -38,7 +39,7 @@ module.exports.table = function (q) {
     })
 }
 
-module.exports.index = function (q) {
+function assertIndex (q) {
   let indexName = q.enums.indexes.priorityAndDateCreated
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
@@ -57,4 +58,23 @@ module.exports.index = function (q) {
     logger('Indexes ready.')
     return true
   })
+}
+
+// Ensures the database and table specified exists.
+// Also registers change feed on the queue table.
+module.exports = function (q) {
+  // return this.assertDbPromise.then((dbAsserted) => {
+  //   if (dbAsserted) {
+  //     return undefined
+  //   }
+
+    return assertDatabase(q).then(() => {
+      return assertTable(q)
+    }).then(() => {
+      return assertIndex(q)
+    }).then(() => {
+      return q.isWorker ? dbQueue.registerQueueChangeFeed() : true
+    })
+  //   return this.assertDbPromise
+  // })
 }

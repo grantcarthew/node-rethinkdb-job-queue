@@ -32,6 +32,11 @@ function Queue (options) {
 
   this.assertDbPromise = Promise.resolve(false)
 
+  let dbWarmUp = Promise.coroutine(function * () {
+    yield assertDb()
+  })
+  dbWarmUp()
+
   if (this.isWorker) {
     // TODO: Is iwWorker needed with RethinkDB?
     // makeClient('bclient')
@@ -72,7 +77,7 @@ Queue.prototype.createJob = function (data, options) {
 Queue.prototype.addJob = function (job) {
   console.dir(this.priorities)
   let p = this.enums.priorities
-  return this._assertDb().then(() => {
+  // return this._assertDb().then(() => {
     let jobs = Array.isArray(job) ? job : [job]
     jobs.map((j) => {
       j.priority = p[j.priority]
@@ -84,19 +89,19 @@ Queue.prototype.addJob = function (job) {
       }
       return saveResult
     })
-  })
+  // })
 }
 
 Queue.prototype.getJob = function (jobId) {
-  return this._assertDb().then(() => {
+  // return this._assertDb().then(() => {
     return dbJob.getById(this, jobId)
-  })
+  // })
 }
 
 Queue.prototype.getNextJob = function (cb) {
-  return this._assertDb().then(() => {
+  // return this._assertDb().then(() => {
     return dbQueue.getNextJob(this)
-  })
+  // })
 }
 
 Queue.prototype.onMessage = function (err, change) {
@@ -374,35 +379,5 @@ Queue.prototype.finishJob = function (err, data, job, cb) {
   })
 }
 
-// Ensures the database and table specified exists.
-// Also registers change feed on the queue table.
-Queue.prototype._assertDb = function () {
-  this.assertDbPromise = Promise.resolve().then(() => {
-    setTimeout(() => {
-      return false
-    }, 3000)
-  })
-  return this.assertDbPromise.then((dbAsserted) => {
-    if (dbAsserted) {
-      return undefined
-    }
-
-    this.assertDbPromise = dbAssert.database(this).then(() => {
-      return dbAssert.table(this)
-    }).then(() => {
-      return dbAssert.index(this)
-    }).then(() => {
-      return this.isWorker ? this._registerQueueChangeFeed() : true
-    })
-    return this.assertDbPromise
-  })
-}
-
-Queue.prototype._registerQueueChangeFeed = function () {
-  return this.r.db(this.db).table(this.name)
-  .changes().run().then((feed) => {
-    feed.each(this.onMessage.bind(this))
-  })
-}
 
 module.exports = Queue
