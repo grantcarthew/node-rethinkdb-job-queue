@@ -1,29 +1,20 @@
 module.exports.remove = function (job) {
-  const db = job.queue.dbConfig.db
-  const tableName = job.queue.options.queueName
-  return job.queue.r.db(db).table(tableName).get(job.id).delete().run()
+  const db = job.q.db
+  const tableName = job.q.name
+  return job.q.r.db(db).table(tableName).get(job.id).delete().run()
 }
 
-module.exports.getById = function (queue, jobId) {
-  return queue.r
-    .db(queue.dbConfig.db)
-    .table(queue.options.queueName)
+module.exports.getById = function (q, jobId) {
+  return q.r
+    .db(q.db)
+    .table(q.name)
     .get(jobId).run()
 }
 
-module.exports.getNextJob = function (queue) {
-  return queue.r
-    .db(queue.dbConfig.db)
-    .table(queue.options.queueName)
-    .orderBy('createdDate')
-    .nth(0)
-    .default({})
-}
-
 module.exports.setStatus = function (job, oldStatus, newStatus) {
-  const db = job.queue.dbConfig.db
-  const tableName = job.queue.options.queueName
-  const r = job.queue.r
+  const db = job.q.db
+  const tableName = job.q.name
+  const r = job.q.r
   r.db(db).table(tableName).get(job.id).update((storedJob) => {
     return r.branch(
       storedJob('status').eq(oldStatus),
