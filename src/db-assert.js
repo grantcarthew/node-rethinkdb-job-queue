@@ -1,7 +1,6 @@
 const logger = require('./logger')
-const dbQueue = require('./db-queue')
 
-function assertDatabase (q) {
+module.exports.database = function assertDatabase (q) {
   return q.r.dbList()
   .contains(q.db)
   .do((databaseExists) => {
@@ -18,7 +17,7 @@ function assertDatabase (q) {
   })
 }
 
-function assertTable (q) {
+module.exports.table = function assertTable (q) {
   return q.r.tableList()
   .contains(q.name)
   .do((tableExists) => {
@@ -39,7 +38,7 @@ function assertTable (q) {
     })
 }
 
-function assertIndex (q) {
+module.exports.index = function assertIndex (q) {
   let indexName = q.enums.indexes.priorityAndDateCreated
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
@@ -62,19 +61,8 @@ function assertIndex (q) {
 
 // Ensures the database and table specified exists.
 // Also registers change feed on the queue table.
-module.exports = function (q) {
-  // return this.assertDbPromise.then((dbAsserted) => {
-  //   if (dbAsserted) {
-  //     return undefined
-  //   }
-
-    return assertDatabase(q).then(() => {
-      return assertTable(q)
-    }).then(() => {
-      return assertIndex(q)
-    }).then(() => {
-      return q.isWorker ? dbQueue.registerQueueChangeFeed() : true
-    })
-  //   return this.assertDbPromise
-  // })
-}
+// module.exports = function * () {
+//   yield assertDatabase(this)
+//   yield assertTable(this)
+//   yield assertIndex(this)
+// }

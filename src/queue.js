@@ -1,95 +1,93 @@
 const EventEmitter = require('events').EventEmitter
 const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
+const async = Promise.coroutine
 const logger = require('./logger')
+const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
+const messages = require('./messages')
 
-function Queue (options) {
-  if (!new.target) {
-    return new Queue(options)
-  }
+class Queue extends EventEmitter {
 
-  this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
-  options = options || {}
-  this.host = options.host || 'localhost'
-  this.port = options.port || 28015
-  this.db = options.db || 'rjqJobQueue'
-  this.r = rethinkdbdash({
-    host: this.host,
-    port: this.port,
-    db: this.db
-  })
-  this.stallInterval = typeof options.stallInterval === 'number'
-      ? options.stallInterval : 30
-  this.name = options.name || 'rjqJobList'
-  this.isWorker = options.isWorker || true
-  this.removeOnSuccess = options.removeOnSuccess || true
-  this.catchExceptions = options.catchExceptions || true
-  this.paused = false
+  constructor (options, debug) {
+    super()
+    if (debug && debug === 'enabled') { process.env.rjqDEBUG = 'enabled' }
+    logger('Queue Constructor')
 
-  this.assertDbPromise = Promise.resolve(false)
-
-  let dbWarmUp = Promise.coroutine(function * () {
-    yield assertDb()
-  })
-  dbWarmUp()
-
-  if (this.isWorker) {
-    // TODO: Is iwWorker needed with RethinkDB?
-    // makeClient('bclient')
-  }
-
-  if (this.getEvents) {
-    // TODO: PubSub events.
-    // makeClient('eclient')
-    // this.eclient.subscribe(this.toKey('events'))
-    // this.eclient.on('message', this.onMessage.bind(this))
-    // this.eclient.on('subscribe', reportReady)
-  }
-}
-
-Queue.prototype = Object.create(EventEmitter.prototype)
-Queue.prototype.enums = {
-  priorities: {
-    lowest: 60, low: 50, normal: 40, medium: 30, high: 20, highest: 10
-  },
-  statuses: {
-    created: 'created',
-    delayed: 'delayed',
-    active: 'active',
-    waiting: 'waiting',
-    complete: 'complete',
-    failed: 'failed',
-    retry: 'retry'
-  },
-  indexes: {
-    priorityAndDateCreated: 'PriorityAndDateCreated'
-  }
-}
-
-Queue.prototype.createJob = function (data, options) {
-  return new Job(data, options)
-}
-
-Queue.prototype.addJob = function (job) {
-  console.dir(this.priorities)
-  let p = this.enums.priorities
-  // return this._assertDb().then(() => {
-    let jobs = Array.isArray(job) ? job : [job]
-    jobs.map((j) => {
-      j.priority = p[j.priority]
+    this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
+    this.enums = enums
+    options = options || {}
+    this.host = options.host || 'localhost'
+    this.port = options.port || 28015
+    this.db = options.db || 'rjqJobQueue'
+    this.r = rethinkdbdash({
+      host: this.host,
+      port: this.port,
+      db: this.db
     })
-    return this.r.db(this.db).table(this.name)
-    .insert(jobs).run().then((saveResult) => {
-      if (saveResult.errors > 0) {
-        return Promise.reject(saveResult)
+    this.onChange = messages.onQueueChange
+    this.stallInterval = typeof options.stallInterval === 'number'
+        ? options.stallInterval : 30
+    this.name = options.name || 'rjqJobList'
+    this.isWorker = options.isWorker || true
+    this.removeOnSuccess = options.removeOnSuccess || true
+    this.catchExceptions = options.catchExceptions || true
+    this.paused = false
+
+    console.log('[BEFORE WARMUP]')
+    // async(dbAssert).bind(this)().then((r) => {
+    //   return this.isWorker ? dbQueue.registerQueueChangeFeed().bind(this) : true
+    //   this.emit('ready')
+    // })
+
+    this.ready = async(function * () {
+      yield dbAssert.database(this)
+      yield dbAssert.table(this)
+      yield dbAssert.index(this)
+      if (this.isWorker) {
+        yield dbQueue.registerQueueChangeFeed(this)
       }
-      return saveResult
+      this.emit('ready')
+    }).bind(this)()
+    console.log('[AFTER WARMUP]')
+
+    if (this.isWorker) {
+      // TODO: Is iwWorker needed with RethinkDB?
+      // makeClient('bclient')
+    }
+
+    if (this.getEvents) {
+      // TODO: PubSub events.
+      // makeClient('eclient')
+      // this.eclient.subscribe(this.toKey('events'))
+      // this.eclient.on('message', this.onMessage.bind(this))
+      // this.eclient.on('subscribe', reportReady)
+    }
+  }
+
+  createJob (data, options) {
+    return new Job(data, options)
+  }
+
+  addJob (job) {
+    let p = this.enums.priorities
+    return this.ready.then(() => {
+      let jobs = Array.isArray(job) ? job : [job]
+      jobs.map((j) => {
+        j.priority = p[j.priority]
+      })
+      return this.r.db(this.db).table(this.name)
+      .insert(jobs).run().then((saveResult) => {
+        if (saveResult.errors > 0) {
+          return Promise.reject(saveResult)
+        }
+        return saveResult
+      })
     })
-  // })
+  }
 }
 
 Queue.prototype.getJob = function (jobId) {
@@ -104,40 +102,7 @@ Queue.prototype.getNextJob = function (cb) {
   // })
 }
 
-Queue.prototype.onMessage = function (err, change) {
-  console.log('------------- QUEUE CHANGE -------------')
-  console.dir(change)
-  console.log('----------------------------------------')
 
-  // New job added
-  if (change.new_val && !change.old_val) {
-    let newJob = new Job(null, change.new_val)
-    this.emit('enqueue', newJob)
-    this.handler(newJob)
-  }
-  return
-
-  message = JSON.parse(message)
-  if (message.event === 'failed' || message.event === 'retrying') {
-    message.data = Error(message.data)
-  }
-
-  this.emit('job ' + message.event, message.id, message.data)
-
-  if (this.jobs[message.id]) {
-    if (message.event === 'progress') {
-      this.jobs[message.id].progress = message.data
-    } else if (message.event === 'retrying') {
-      this.jobs[message.id].options.retries -= 1
-    }
-
-    this.jobs[message.id].emit(message.event, message.data)
-
-    if (message.event === 'succeeded' || message.event === 'failed') {
-      delete this.jobs[message.id]
-    }
-  }
-}
 
 Queue.prototype.process = function (concurrency, handler) {
   if (!this.isWorker) {

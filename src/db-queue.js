@@ -31,6 +31,9 @@ module.exports.getNextJob = function (q, concurrency) {
 module.exports.registerQueueChangeFeed = function (q) {
   return q.r.table(q.name)
   .changes().run().then((feed) => {
-    feed.each(q.onMessage.bind(q))
+    feed.each((err, change) => {
+      console.log('CHANGE@@@@@@@@@@@@@@@')
+      q.onChange(err, change)
+    })
   })
 }
