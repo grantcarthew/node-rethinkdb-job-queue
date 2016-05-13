@@ -36,13 +36,6 @@ class Queue extends EventEmitter {
     this.removeOnSuccess = options.removeOnSuccess || true
     this.catchExceptions = options.catchExceptions || true
     this.paused = false
-
-    console.log('[BEFORE WARMUP]')
-    // async(dbAssert).bind(this)().then((r) => {
-    //   return this.isWorker ? dbQueue.registerQueueChangeFeed().bind(this) : true
-    //   this.emit('ready')
-    // })
-
     this.ready = async(function * () {
       yield dbAssert.database(this)
       yield dbAssert.table(this)
@@ -52,20 +45,6 @@ class Queue extends EventEmitter {
       }
       this.emit('ready')
     }).bind(this)()
-    console.log('[AFTER WARMUP]')
-
-    if (this.isWorker) {
-      // TODO: Is iwWorker needed with RethinkDB?
-      // makeClient('bclient')
-    }
-
-    if (this.getEvents) {
-      // TODO: PubSub events.
-      // makeClient('eclient')
-      // this.eclient.subscribe(this.toKey('events'))
-      // this.eclient.on('message', this.onMessage.bind(this))
-      // this.eclient.on('subscribe', reportReady)
-    }
   }
 
   createJob (data, options) {
@@ -73,36 +52,24 @@ class Queue extends EventEmitter {
   }
 
   addJob (job) {
-    let p = this.enums.priorities
     return this.ready.then(() => {
-      let jobs = Array.isArray(job) ? job : [job]
-      jobs.map((j) => {
-        j.priority = p[j.priority]
-      })
-      return this.r.db(this.db).table(this.name)
-      .insert(jobs).run().then((saveResult) => {
-        if (saveResult.errors > 0) {
-          return Promise.reject(saveResult)
-        }
-        return saveResult
-      })
+      return dbQueue.addJob(this, job)
     })
   }
+
+  getJob (jobId) {
+    return this.ready.then(() => {
+      return dbJob.getById(this, jobId)
+    })
+  }
+
+  getNextJob (cb) {
+    return this.ready.then(() => {
+      return dbQueue.getNextJob(this)
+    })
+  }
+
 }
-
-Queue.prototype.getJob = function (jobId) {
-  // return this._assertDb().then(() => {
-    return dbJob.getById(this, jobId)
-  // })
-}
-
-Queue.prototype.getNextJob = function (cb) {
-  // return this._assertDb().then(() => {
-    return dbQueue.getNextJob(this)
-  // })
-}
-
-
 
 Queue.prototype.process = function (concurrency, handler) {
   if (!this.isWorker) {

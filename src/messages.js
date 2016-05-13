@@ -1,15 +1,14 @@
 const Job = require('./job')
 
 module.exports.onQueueChange = function (err, change) {
-    // console.log('-------------------------------------------this and q');
-    // console.dir(this)
-    // console.dir(q)
     console.log('------------- QUEUE CHANGE -------------')
     console.dir(change)
     console.log('----------------------------------------')
 
+    if (err) { throw new Error(err) }
+
     // New job added
-    if (change.new_val && !change.old_val) {
+    if (change && change.new_val && !change.old_val) {
       let newJob = new Job(null, change.new_val)
       this.emit('enqueue', newJob)
       this.handler(newJob)
