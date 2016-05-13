@@ -10,7 +10,7 @@ module.exports.registerQueueChangeFeed = function (q) {
 }
 
 module.exports.addJob = function (q, job) {
-  let p = q.priorities
+  let p = q.enums.priorities
   let jobs = Array.isArray(job) ? job : [job]
   jobs.map((j) => {
     j.priority = p[j.priority]
@@ -24,6 +24,13 @@ module.exports.addJob = function (q, job) {
   })
 }
 
+module.exports.getById = function (q, jobId) {
+  return q.r
+    .db(q.db)
+    .table(q.name)
+    .get(jobId).run()
+}
+
 module.exports.getNextJob = function (q, concurrency) {
   concurrency = concurrency || 0
   return q.r
@@ -35,21 +42,14 @@ module.exports.getNextJob = function (q, concurrency) {
     .run()
 }
 
-module.exports.deleteTable = function (r, db) {
-  return r.dbDrop(db).run()
+module.exports.deleteQueue = function (q) {
+  return q.r.dbDrop(q.db).run()
 }
 
 module.exports.remove = function (job) {
   const db = job.q.db
   const tableName = job.q.name
   return job.q.r.db(db).table(tableName).get(job.id).delete().run()
-}
-
-module.exports.getById = function (q, jobId) {
-  return q.r
-    .db(q.db)
-    .table(q.name)
-    .get(jobId).run()
 }
 
 module.exports.setStatus = function (job, oldStatus, newStatus) {

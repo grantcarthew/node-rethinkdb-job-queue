@@ -2,7 +2,7 @@ const util = require('util')
 const EventEmitter = require('events').EventEmitter
 const uuid = require('node-uuid')
 const moment = require('moment')
-const dbJob = require('./db-job')
+const dbQueue = require('./db-queue')
 
 function Job (data, options) {
   if (!new.target) {
@@ -40,7 +40,7 @@ Job.prototype.setStatus = function (status) {
 }
 
 Job.prototype.remove = function () {
-  return dbJob.remove(this)
+  return dbQueue.removeJob(this)
 }
 
 Job.prototype.retry = function (cb) {

@@ -11,8 +11,8 @@ module.exports.database = function assertDatabase (q) {
     )
   }).run().then((dbCreateResult) => {
     dbCreateResult.dbs_created > 0
-      ? logger('Database created: ' + q.db)
-      : logger('Database exists: ' + q.db)
+    ? logger('Database created: ' + q.db)
+    : logger('Database exists: ' + q.db)
     return true
   })
 }
@@ -30,12 +30,12 @@ module.exports.table = function assertTable (q) {
     tableCreateResult.tables_created > 0
       ? logger('Table created: ' + q.name)
       : logger('Table exists: ' + q.name)
-    }).then(() => {
-      return q.r.table(q.name).wait().run()
-    }).then(() => {
-      logger('Table ready.')
-      return true
-    })
+  }).then(() => {
+    return q.r.table(q.name).wait().run()
+  }).then(() => {
+    logger('Table ready.')
+    return true
+  })
 }
 
 module.exports.index = function assertIndex (q) {
@@ -58,11 +58,3 @@ module.exports.index = function assertIndex (q) {
     return true
   })
 }
-
-// Ensures the database and table specified exists.
-// Also registers change feed on the queue table.
-// module.exports = function * () {
-//   yield assertDatabase(this)
-//   yield assertTable(this)
-//   yield assertIndex(this)
-// }

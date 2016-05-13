@@ -7,7 +7,6 @@ const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
-const dbJob = require('./db-job')
 const messages = require('./messages')
 
 class Queue extends EventEmitter {
@@ -59,13 +58,21 @@ class Queue extends EventEmitter {
 
   getJob (jobId) {
     return this.ready.then(() => {
-      return dbJob.getById(this, jobId)
+      return dbQueue.getById(this, jobId)
     })
   }
 
-  getNextJob (cb) {
+  getNextJob () {
     return this.ready.then(() => {
       return dbQueue.getNextJob(this)
+    })
+  }
+
+  delete () {
+    return this.ready.then(() => {
+      return dbQueue.deleteQueue()
+    }).then(() => {
+      this.ready = Promise.reject('Queue has been deleted')
     })
   }
 
@@ -197,7 +204,7 @@ Queue.prototype.destroy = function (cb) {
   this.client.del.apply(this.client, keys.concat(cb))
 }
 Queue.prototype.setStatus = function (status) {
-  dbJob.setStatus(this.status, status).then((statusResult) => {
+  dbQueue.setStatus(this.status, status).then((statusResult) => {
     console.log('STATUS RESULT++++++++++++++++++++++++++++++++++++++')
     console.dir(statusResult)
   })
