@@ -46,8 +46,9 @@ test('queue test', (t) => {
     // return newJob.setStatus('active').then((updateResult) => {
 
     // })
+    unitTestQueue.r.getPoolMaster().drain()
   })
-  //unitTestQueue.delete()
+  // unitTestQueue.delete()
 
   t.pass('All Done')
 })

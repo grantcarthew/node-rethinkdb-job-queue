@@ -17,7 +17,6 @@ class Queue extends EventEmitter {
     logger('Queue Constructor')
 
     this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
-    this.enums = enums
     options = options || {}
     this.host = options.host || 'localhost'
     this.port = options.port || 28015
@@ -28,8 +27,8 @@ class Queue extends EventEmitter {
       db: this.db
     })
     this.onChange = messages.onQueueChange
-    this.stallInterval = typeof options.stallInterval === 'number'
-        ? options.stallInterval : 30
+    this.heartBeatInterval = typeof options.heartBeatInterval === 'number'
+        ? options.heartBeatInterval : 30
     this.name = options.name || 'rjqJobList'
     this.isWorker = options.isWorker || true
     this.removeOnSuccess = options.removeOnSuccess || true
@@ -70,7 +69,7 @@ class Queue extends EventEmitter {
 
   delete () {
     return this.ready.then(() => {
-      return dbQueue.deleteQueue()
+      return dbQueue.deleteQueue(this)
     }).then(() => {
       this.ready = Promise.reject('Queue has been deleted')
     })
@@ -98,7 +97,7 @@ Queue.prototype.process = function (concurrency, handler) {
   this.queued = 1
   this.concurrency = concurrency
 
-  let jobTick = function () {
+  let jobTick = () => {
     if (self.paused) {
       self.queued -= 1
       return
@@ -106,32 +105,27 @@ Queue.prototype.process = function (concurrency, handler) {
 
     // invariant: in this code path, self.running < self.concurrency, always
     // after spoolup, self.running + self.queued === self.concurrency
-    self.getNextJob(function (getErr, job) {
-      if (getErr) {
-        self.emit('error', getErr)
+    this.getNextJob().then((nextJob) => {
+      this.running += 1
+      this.queued -= 1
+      if (this.running + this.queued < this.concurrency) {
+        this.queued += 1
+        setImmediate(jobTick)
+      }
+
+      this.runJob((jobRunResult) => {
+        this.emit(
+          jobRunResult.status,
+          jobRunResult.job,
+          jobRunResult.result
+        )
         return setImmediate(jobTick)
-      }
-
-      self.running += 1
-      self.queued -= 1
-      if (self.running + self.queued < self.concurrency) {
-        self.queued += 1
-        setImmediate(jobTick)
-      }
-
-      self.runJob(job, function (err, status, result) {
-        self.running -= 1
-        self.queued += 1
-
-        /* istanbul ignore if */
-        if (err) {
-          self.emit('error', err)
-        } else {
-          self.emit(status, job, result)
-        }
-
-        setImmediate(jobTick)
+      }).catch((err) => {
+        this.emit('error', err)
       })
+    }).catch((err) => {
+      this.emit('error', err)
+      return setImmediate(jobTick)
     })
   }
 
@@ -142,27 +136,29 @@ Queue.prototype.process = function (concurrency, handler) {
   //this.bclient.on('error', restartProcessing)
   //this.bclient.on('end', restartProcessing)
 
-  this.checkStalledJobs(setImmediate.bind(null, jobTick))
+  //this.checkStalledJobs(setImmediate.bind(null, jobTick))
 }
 
 Queue.prototype.checkStalledJobs = function (interval, cb) {
   var self = this
   cb = typeof interval === 'function' ? interval : cb// || helpers.defaultCb
 
-  // this.client.evalsha(lua.shas.checkStalledJobs, 4,
-  //   this.toKey('stallTime'), this.toKey('stalling'), this.toKey('waiting'), this.toKey('active'),
-  //   Date.now(), this.options.stallInterval * 1000, function (err) {
-  //     /* istanbul ignore if */
-  //     if (err) return cb(err)
-  //
-  //     if (typeof interval === 'number') {
-  //       setTimeout(self.checkStalledJobs.bind(self, interval, cb), interval)
-  //     }
-  //
-  //     return cb()
-  //   }
-  // )
+  this.client.evalsha(dbQueue.checkStalledJobs, 4,
+    this.toKey('stallTime'), this.toKey('stalling'), this.toKey('waiting'), this.toKey('active'),
+    Date.now(), this.options.stallInterval * 1000, function (err) {
+      /* istanbul ignore if */
+      if (err) return cb(err)
+
+      if (typeof interval === 'number') {
+        setTimeout(self.checkStalledJobs.bind(self, interval, cb), interval)
+      }
+
+      return cb()
+    }
+  )
 }
+
+
 
 Queue.prototype.progress = function (complete, total, data) {
   // if (0 == arguments.length) return this.progress

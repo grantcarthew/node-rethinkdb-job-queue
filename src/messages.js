@@ -2,7 +2,7 @@ const Job = require('./job')
 
 module.exports.onQueueChange = function (err, change) {
     console.log('------------- QUEUE CHANGE -------------')
-    console.dir(change)
+    //console.dir(change)
     console.log('----------------------------------------')
 
     if (err) { throw new Error(err) }

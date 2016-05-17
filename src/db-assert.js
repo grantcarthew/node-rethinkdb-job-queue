@@ -1,4 +1,5 @@
 const logger = require('./logger')
+const enums = require('./enums')
 
 module.exports.database = function assertDatabase (q) {
   return q.r.dbList()
@@ -38,8 +39,8 @@ module.exports.table = function assertTable (q) {
   })
 }
 
-module.exports.index = function assertIndex (q) {
-  let indexName = q.enums.indexes.priorityAndDateCreated
+function createIndexPriorityAndDateCreated (q) {
+  let indexName = enums.indexes.priorityAndDateCreated
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -47,10 +48,24 @@ module.exports.index = function assertIndex (q) {
       q.r.row('priority'),
       q.r.row('dateCreated')
     ]).run()
-  }).then((indexCreateResult) => {
-    indexCreateResult.created > 0
-      ? logger('Index created: ' + indexName)
-      : logger('Index exists: ' + indexName)
+  })
+}
+
+function createIndexStatus (q) {
+  let indexName = enums.indexes.status
+  return q.r.table(q.name).indexList()
+  .contains(indexName).run().then((exists) => {
+    if (exists) { return exists }
+    return q.r.table(q.name).indexCreate(indexName).run()
+  })
+}
+
+module.exports.index = function assertIndex (q) {
+  return Promise.all([
+    createIndexPriorityAndDateCreated(q),
+    createIndexStatus(q)
+  ]).then((indexCreateResult) => {
+    return logger('Waiting for indexes...')
   }).then(() => {
     return q.r.table(q.name).indexWait().run()
   }).then(() => {

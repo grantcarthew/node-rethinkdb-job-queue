@@ -28,6 +28,8 @@ class Job extends EventEmitter {
       this.dateModified = moment().toString()
       this.dateFailed = ''
       this.dateStarted = ''
+      this.dateHeartbeat = ''
+      this.dateStalled = ''
       this.duration = ''
       this.priority = options.priority || 'normal'
       this.workerId = ''

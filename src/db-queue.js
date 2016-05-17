@@ -1,4 +1,5 @@
 const logger = require('./logger')
+const enums = require('./enums')
 
 module.exports.registerQueueChangeFeed = function (q) {
   return q.r.table(q.name)
@@ -10,10 +11,14 @@ module.exports.registerQueueChangeFeed = function (q) {
 }
 
 module.exports.addJob = function (q, job) {
-  let p = q.enums.priorities
+  let p = enums.priorities
   let jobs = Array.isArray(job) ? job : [job]
-  jobs.map((j) => {
-    j.priority = p[j.priority]
+  jobs = jobs.map((j) => {
+    let jobCopy = Object.assign({}, j)
+    jobCopy.priority = p[jobCopy.priority]
+    delete jobCopy._events
+    delete jobCopy._eventsCount
+    return jobCopy
   })
   return q.r.table(q.name)
   .insert(jobs).run().then((saveResult) => {
@@ -32,17 +37,21 @@ module.exports.getById = function (q, jobId) {
 }
 
 module.exports.getNextJob = function (q, concurrency) {
-  concurrency = concurrency || 0
+  concurrency = concurrency || 3
   return q.r
     .db(q.db)
     .table(q.name)
-    .orderBy(q.enums.indexes.priorityAndDateCreated)
-    .nth(concurrency)
+    .getAll('created', 'waiting', { index: enums.indexes.status })
+    .orderBy(enums.indexes.priorityAndDateCreated)
+    .limit(concurrency)
+    .update({status: enums.statuses.active}, {returnChanges: true})
     .default({})
     .run()
 }
 
 module.exports.deleteQueue = function (q) {
+  logger('deleteQueue')
+  q.ready = Promise.reject('The queue has been deleted')
   return q.r.dbDrop(q.db).run()
 }
 
