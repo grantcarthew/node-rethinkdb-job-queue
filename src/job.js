@@ -22,7 +22,7 @@ class Job extends EventEmitter {
       this.retryDelay = options.retryDelay || 0
       this.retryMax = options.retryMax > 0 ? options.retryMax : 0
       this.timeout = options.timeout > 0 ? options.timeout : 0
-      this.status = 'created'
+      this.status = 'waiting'
       this.log = []
       this.dateCreated = moment().toString()
       this.dateModified = moment().toString()

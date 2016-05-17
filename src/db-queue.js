@@ -1,5 +1,7 @@
+const Promise = require('bluebird')
 const logger = require('./logger')
 const enums = require('./enums')
+const Job = require('./job')
 
 module.exports.registerQueueChangeFeed = function (q) {
   return q.r.table(q.name)
@@ -37,16 +39,22 @@ module.exports.getById = function (q, jobId) {
 }
 
 module.exports.getNextJob = function (q, concurrency) {
-  concurrency = concurrency || 3
+  concurrency = concurrency || 1
+  if (concurrency < 0) {
+    return Promise.reject('Concurrency must be greater than 0')
+  }
   return q.r
-    .db(q.db)
     .table(q.name)
-    .getAll('created', 'waiting', { index: enums.indexes.status })
+    .getAll('waiting', { index: enums.indexes.status })
     .orderBy(enums.indexes.priorityAndDateCreated)
     .limit(concurrency)
     .update({status: enums.statuses.active}, {returnChanges: true})
     .default({})
-    .run()
+    .run().then((updateResult) => {
+      return updateResult.changes.map((change) => {
+        return q.createJob(null, change.new_val)
+      })
+    })
 }
 
 module.exports.deleteQueue = function (q) {
