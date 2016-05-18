@@ -45,6 +45,10 @@ class Queue extends EventEmitter {
     }).bind(this)()
   }
 
+  get connection () {
+    return this.r
+  }
+
   createJob (data, options) {
     return new Job(data, options)
   }

@@ -14,11 +14,6 @@ test('queue test', (t) => {
     t.pass('Ready event called')
   })
 
-  unitTestQueue.getNextJob().then((j) => {
-    console.log('NEXT JOB')
-    console.dir(j)
-  })
-
   unitTestQueue.process((job) => {
     console.log('~~~~~~~~~~~~~~~~ process ~~~~~~~~~~~~~~~~~')
     console.log(job.id)
@@ -37,18 +32,17 @@ test('queue test', (t) => {
     console.log('RESULT!!!!!!!!!!!!!!!!')
     console.dir(JSON.parse(JSON.stringify(result)))
   }).then(() => {
-    // return unitTestQueue.getNextJob().then((job) => {
-    //   console.log('NEXT JOB!!!!!!!!!!!!!!!!')
-    //   console.dir(job)
-    //   return job
-    // })
-  }).then((newJob) => {
-    // return newJob.setStatus('active').then((updateResult) => {
-
-    // })
+    return unitTestQueue.getNextJob()
+  }).then((a) => {
+      console.log('NEXT JOB')
+      console.dir(a)
+      return unitTestQueue.getJob('142ad740-8bfc-4491-9d3d-b126d1064af6')
+  }).then((b) => {
+      console.log('SPECIFIC JOB')
+      console.dir(b)
+  }).then(() => {
     unitTestQueue.r.getPoolMaster().drain()
   })
-  // unitTestQueue.delete()
 
   t.pass('All Done')
 })

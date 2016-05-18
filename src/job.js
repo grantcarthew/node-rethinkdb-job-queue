@@ -1,7 +1,7 @@
 const EventEmitter = require('events').EventEmitter
 const uuid = require('node-uuid')
 const moment = require('moment')
-const dbQueue = require('./db-queue')
+const jobMessages = require('./job-messages')
 
 class Job extends EventEmitter {
 
@@ -35,18 +35,17 @@ class Job extends EventEmitter {
       this.workerId = ''
     }
   }
-}
 
-Job.prototype.setStatus = function (status) {
-  this.status = status
-}
-
-Job.prototype.remove = function () {
-  return dbQueue.removeJob(this)
-}
-
-Job.prototype.retry = function (cb) {
-
+  enableEvents (q) {
+    return q.ready.then(() => {
+      return q.r.table(q.name).get(this.id)
+      .changes().run().then((feed) => {
+        feed.each((err, change) => {
+          jobMessages(err, change).bind(this)
+        })
+      })
+    })
+  }
 }
 
 module.exports = Job
