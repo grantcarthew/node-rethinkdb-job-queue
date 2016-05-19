@@ -15,6 +15,7 @@ class Job extends EventEmitter {
     if (options.id) {
       Object.assign(this, options)
     } else {
+      let now = moment().toDate()
       this.id = uuid.v4()
       this.data = data || {}
       this.progress = 0
@@ -24,15 +25,15 @@ class Job extends EventEmitter {
       this.timeout = options.timeout > 0 ? options.timeout : 0
       this.status = 'waiting'
       this.log = []
-      this.dateCreated = moment().toString()
-      this.dateModified = moment().toString()
-      this.dateFailed = ''
-      this.dateStarted = ''
-      this.dateHeartbeat = ''
-      this.dateStalled = ''
-      this.duration = ''
+      this.dateCreated = now
+      this.dateModified = now
+      this.dateFailed
+      this.dateStarted
+      this.dateHeartbeat = now
+      this.dateStalled
+      this.duration
       this.priority = options.priority || 'normal'
-      this.workerId = ''
+      this.workerId
     }
   }
 

@@ -54,6 +54,15 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 ```sh
 npm install rethinkdb-job-queue --save
 ```
+## Queue Events
+
+  'ready' = Queue ready for action sir!
+  'enqueue' = New job added
+  'error' = Oops, something went wrong
+  'succeeded' = Job processed successfully
+  'retrying' = A failed or stalled job is being retried
+  'failed' = A job failed
+  'stalled' = A job stalled
 
 ## API
 

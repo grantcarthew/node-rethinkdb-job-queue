@@ -1,6 +1,7 @@
 const test = require('tape')
 const jobQueue = require('../src/queue')
 const Promise = require('bluebird')
+const qm = require('../src/queue-maintenance')
 
 test('queue test', (t) => {
   t.plan(2)
@@ -25,7 +26,7 @@ test('queue test', (t) => {
   ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
   // jobs.push(ej)
   for (let i = 0; i < 2; i++) {
-    jobs.push(unitTestQueue.createJob({foo: i}, {priority: 'low'}))
+    jobs.push(unitTestQueue.createJob({foo: i}, {priority: 'highest'}))
   }
 
   unitTestQueue.addJob(jobs).then((result) => {
@@ -40,6 +41,10 @@ test('queue test', (t) => {
   }).then((b) => {
       console.log('SPECIFIC JOB')
       console.dir(b)
+      return qm(unitTestQueue)
+  }).then((c) => {
+      console.log('STALL TEST')
+      console.dir(c)
   }).then(() => {
     unitTestQueue.r.getPoolMaster().drain()
   })

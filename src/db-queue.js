@@ -1,4 +1,5 @@
 const Promise = require('bluebird')
+const moment = require('moment')
 const logger = require('./logger')
 const enums = require('./enums')
 const Job = require('./job')
@@ -43,14 +44,20 @@ module.exports.getNextJob = function (q, concurrency) {
   if (concurrency < 0) {
     return Promise.reject('Concurrency must be greater than 0')
   }
+  let now = moment().toDate()
   return q.r
     .table(q.name)
-    .getAll('waiting', { index: enums.indexes.status })
-    .orderBy(enums.indexes.priorityAndDateCreated)
+    .orderBy({index: enums.indexes.inactive})
     .limit(concurrency)
-    .update({status: enums.statuses.active}, {returnChanges: true})
+    .update({
+      status: enums.statuses.active,
+      dateStarted: now,
+      dateModified: now,
+      dateHeartbeat: now
+    }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {
+      console.dir(updateResult)
       return updateResult.changes.map((change) => {
         return q.createJob(null, change.new_val)
       })

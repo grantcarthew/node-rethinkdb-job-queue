@@ -39,8 +39,22 @@ module.exports.table = function assertTable (q) {
   })
 }
 
+function createIndexInactive (q) {
+  let indexName = enums.indexes.inactive
+  return q.r.table(q.name).indexList()
+  .contains(indexName).run().then((exists) => {
+    if (exists) { return exists }
+    return q.r.table(q.name).indexCreate(indexName, function (row) {
+      return q.r.branch(row('status').eq('active'), null, [
+        row('priority'),
+        row('dateCreated')
+      ]).run()
+    })
+  })
+}
+
 function createIndexPriorityAndDateCreated (q) {
-  let indexName = enums.indexes.priorityAndDateCreated
+  let indexName = enums.indexes.priority_dateCreated
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -63,7 +77,8 @@ function createIndexStatus (q) {
 module.exports.index = function assertIndex (q) {
   return Promise.all([
     createIndexPriorityAndDateCreated(q),
-    createIndexStatus(q)
+    createIndexStatus(q),
+    createIndexInactive(q)
   ]).then((indexCreateResult) => {
     return logger('Waiting for indexes...')
   }).then(() => {

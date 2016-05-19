@@ -18,7 +18,8 @@ module.exports = {
     retry: 'retry'
   },
   indexes: {
-    priorityAndDateCreated: 'PriorityAndDateCreated',
+    priority_dateCreated: 'priority_dateCreated',
+    inactive: 'inactive_priority_dateCreated',
     status: 'status'
   }
 }

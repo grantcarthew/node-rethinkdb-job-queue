@@ -7,7 +7,8 @@ const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
-const messages = require('./messages')
+const queueMessages = require('./queue-messages')
+const jobProcess = require('./job-process')
 
 class Queue extends EventEmitter {
 
@@ -26,7 +27,7 @@ class Queue extends EventEmitter {
       port: this.port,
       db: this.db
     })
-    this.onChange = messages.onQueueChange
+    this.onChange = queueMessages
     this.heartBeatInterval = typeof options.heartBeatInterval === 'number'
         ? options.heartBeatInterval : 30
     this.name = options.name || 'rjqJobList'
@@ -68,6 +69,12 @@ class Queue extends EventEmitter {
   getNextJob () {
     return this.ready.then(() => {
       return dbQueue.getNextJob(this)
+    })
+  }
+
+  process (handler, concurrency) {
+    return this.ready.then(() => {
+      return jobProcess(this, handler, concurrency)
     })
   }
 
