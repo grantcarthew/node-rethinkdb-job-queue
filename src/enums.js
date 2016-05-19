@@ -20,6 +20,8 @@ module.exports = {
   indexes: {
     priority_dateCreated: 'priority_dateCreated',
     inactive: 'inactive_priority_dateCreated',
-    status: 'status'
+    stalled: 'stalled',
+    status: 'status',
+    active: 'active'
   }
 }

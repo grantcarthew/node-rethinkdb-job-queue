@@ -45,7 +45,9 @@ test('queue test', (t) => {
   }).then((c) => {
       console.log('STALL TEST')
       console.dir(c)
-  }).then(() => {
+    }).then(() => {
+      //return unitTestQueue.delete()
+    }).then(() => {
     unitTestQueue.r.getPoolMaster().drain()
   })
 

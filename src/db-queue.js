@@ -58,9 +58,12 @@ module.exports.getNextJob = function (q, concurrency) {
     .default({})
     .run().then((updateResult) => {
       console.dir(updateResult)
-      return updateResult.changes.map((change) => {
-        return q.createJob(null, change.new_val)
-      })
+      if (updateResult.changes) {
+        return updateResult.changes.map((change) => {
+          return q.createJob(null, change.new_val)
+        })
+      }
+      return []
     })
 }
 
