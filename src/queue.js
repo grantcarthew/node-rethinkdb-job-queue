@@ -32,6 +32,7 @@ class Queue extends EventEmitter {
         ? options.heartBeatInterval : 30
     this.name = options.name || 'rjqJobList'
     this.isWorker = options.isWorker || true
+    this.stallInterval = options.stallInterval || 30
     this.removeOnSuccess = options.removeOnSuccess || true
     this.catchExceptions = options.catchExceptions || true
     this.paused = false

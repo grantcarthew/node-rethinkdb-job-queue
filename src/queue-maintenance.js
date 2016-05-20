@@ -1,12 +1,26 @@
 const moment = require('moment')
 const enums = require('./enums')
+const jobLog = require('./job-log')
 
-module.exports = function (q) {
-  let timeoutDate = moment().add(-1, 'minutes').toDate()
+function reviewStalledJobs (q) {
+  const timeoutDate = moment().add(-q.stallInterval, 'minutes').toDate()
+  console.dir(jobLog)
+  const log = jobLog(
+    moment().toDate(),
+    'status',
+    'active',
+    'stalled',
+    'Maintenance updated status to stalled'
+  )
 
   return q.r.table(q.name)
-  .between(q.r.now(), q.r.maxval, { index: enums.indexes.active }).run()
-  return q.r.table(q.name).getAll('active', {index: 'status'}).filter((job) => {
-    return job('dateCreated').gt(stallTestDate)
+  .between(q.r.minval, timeoutDate, { index: enums.indexes.active })
+  .update({
+    status: 'stalled',
+    log: q.r.row('log').add([log])
   }).run()
+}
+
+module.exports = function (q) {
+  return reviewStalledJobs(q)
 }
