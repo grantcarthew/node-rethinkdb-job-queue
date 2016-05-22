@@ -41,14 +41,14 @@ test('queue test', (t) => {
   }).then((b) => {
       console.log('SPECIFIC JOB')
       console.dir(b)
-      return qm(unitTestQueue)
+      //return qm(unitTestQueue)
   }).then((c) => {
-      console.log('STALL TEST')
-      console.dir(c)
+      // console.log('STALL TEST')
+      // console.dir(c)
     }).then(() => {
       //return unitTestQueue.delete()
     }).then(() => {
-    unitTestQueue.r.getPoolMaster().drain()
+    //unitTestQueue.r.getPoolMaster().drain()
   })
 
   t.pass('All Done')

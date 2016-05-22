@@ -32,7 +32,7 @@ test('db-assert test', (t) => {
     return mockQueue.r.table(mockQueue.name)
     .indexList().run()
   }).then((indexes) => {
-    t.ok(indexes.includes(enums.indexes.priorityAndDateCreated),
+    t.ok(indexes.includes(enums.indexes.priority_dateCreated),
       'PriorityAndDateCreated index exists')
     t.ok(indexes.includes(enums.indexes.status),
       'Status index exists')

@@ -8,6 +8,7 @@ const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
 const queueMessages = require('./queue-messages')
+const queueMaintenance = require('./queue-maintenance')
 const jobProcess = require('./job-process')
 
 class Queue extends EventEmitter {
@@ -33,6 +34,8 @@ class Queue extends EventEmitter {
     this.name = options.name || 'rjqJobList'
     this.isWorker = options.isWorker || true
     this.stallInterval = options.stallInterval || 30
+    this.isMaintainer = options.isMaintainer || true
+    this.maintenanceInterval = options.maintenanceInterval || 9
     this.removeOnSuccess = options.removeOnSuccess || true
     this.catchExceptions = options.catchExceptions || true
     this.paused = false
@@ -42,6 +45,9 @@ class Queue extends EventEmitter {
       yield dbAssert.index(this)
       if (this.isWorker) {
         yield dbQueue.registerQueueChangeFeed(this)
+      }
+      if (this.isMaintainer) {
+        queueMaintenance.start(this)
       }
       this.emit('ready')
     }).bind(this)()

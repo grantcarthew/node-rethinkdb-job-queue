@@ -23,5 +23,14 @@ module.exports = {
     stalled: 'stalled',
     status: 'status',
     active: 'active'
+  },
+  log: {
+    type: {
+      information: 'information',
+      started: 'started',
+      completed: 'completed',
+      warning: 'warning',
+      error: 'error'
+    }
   }
 }

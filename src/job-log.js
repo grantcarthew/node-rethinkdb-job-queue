@@ -1,7 +1,8 @@
-module.exports = function (date, change, oldValue, newValue, message) {
+module.exports = function (date, qid, type, oldValue, newValue, message) {
   return {
     date,
-    change,
+    qid,
+    type,
     oldValue,
     newValue,
     message
