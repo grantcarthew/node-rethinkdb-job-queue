@@ -1,3 +1,3 @@
 # Worklog
 
-Working on the queue-maintenance repeating/polling task.
+Looking at where to put heartbeat? On Job? Also, convert job to data on job?

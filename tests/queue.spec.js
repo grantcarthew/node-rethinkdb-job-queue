@@ -1,15 +1,13 @@
 const test = require('tape')
 const jobQueue = require('../src/queue')
 const Promise = require('bluebird')
-const qm = require('../src/queue-maintenance')
 
 test('queue test', (t) => {
-  t.plan(2)
+  t.plan(4)
 
   let unitTestQueue = new jobQueue({ queueName: 'JobQueueUnitTests' }, 'enabled')
   unitTestQueue.on('enqueue', (job) => {
-    console.log('~~~~~~~~~~~~~~~~ enqueue ~~~~~~~~~~~~~~~~~')
-    console.log(job.id)
+    t.pass('Enqueue event called')
   })
   unitTestQueue.on('ready', () => {
     t.pass('Ready event called')
@@ -18,6 +16,12 @@ test('queue test', (t) => {
   unitTestQueue.process((job) => {
     console.log('~~~~~~~~~~~~~~~~ process ~~~~~~~~~~~~~~~~~')
     console.log(job.id)
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        console.log('~~~~~~~~~~~~~~~~ process timeout ~~~~~~~~~~~~~~~~~')
+        resolve()
+      }, 3000)
+    })
   })
 
   let jobs = []
@@ -41,11 +45,15 @@ test('queue test', (t) => {
   }).then((b) => {
       console.log('SPECIFIC JOB')
       console.dir(b)
-      //return qm(unitTestQueue)
-  }).then((c) => {
-      // console.log('STALL TEST')
-      // console.dir(c)
-    }).then(() => {
+    }).then((c) => {
+        // console.log('STALL TEST')
+        // console.dir(c)
+      }).then(() => {
+        return unitTestQueue.statusSummary
+      }).then((d) => {
+          console.log('STATUS SUMMARY')
+          console.dir(d)
+        }).then(() => {
       //return unitTestQueue.delete()
     }).then(() => {
     //unitTestQueue.r.getPoolMaster().drain()

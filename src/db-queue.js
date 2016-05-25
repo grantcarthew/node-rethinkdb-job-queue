@@ -67,6 +67,20 @@ module.exports.getNextJob = function (q, concurrency) {
     })
 }
 
+module.exports.statusSummary = function (q) {
+  const r = q.r
+  return r.table(q.name)
+  .group((job) => {
+    return job.pluck('status')
+  }).count().then((reduction) => {
+    const summary = {}
+    for (let stat of reduction) {
+      summary[stat.group.status] = stat.reduction
+    }
+    return summary
+  })
+}
+
 module.exports.deleteQueue = function (q) {
   logger('deleteQueue')
   q.ready = Promise.reject('The queue has been deleted')

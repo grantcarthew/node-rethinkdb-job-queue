@@ -47,6 +47,18 @@ class Job extends EventEmitter {
       })
     })
   }
+
+  startHeartbeat (q) {
+    return setInterval(() => {
+      return q.r.table(q.name).get(this.id)
+        .update({ dateHeartbeat: moment().toDate() }).run()
+    }, q.jobTimeout / 2)
+  }
+
+  stopHeartbeat (q) {
+
+  }
+
 }
 
 module.exports = Job

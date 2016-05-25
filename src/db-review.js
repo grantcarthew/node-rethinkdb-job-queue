@@ -2,19 +2,19 @@ const moment = require('moment')
 const logger = require('./logger')
 const enums = require('./enums')
 const jobLog = require('./job-log')
-let maintenanceId
+let dbStalledIntervalId
 
 function reviewStalledJobs (q) {
-  logger('reviewStalledJobs: ' + moment().format('YYYY-DD-MM-HH-mm-ss'))
+  logger('reviewStalledJobs: ' + moment().format('YYYY-DD-MM HH:mm:ss'))
   const r = q.r
-  const timeoutDate = moment().add(-q.stallInterval, 'minutes').toDate()
+  const timeoutDate = moment().add(-q.jobTimeout, 'minutes').toDate()
   const log = jobLog(
     moment().toDate(),
     q.id,
     enums.log.type.warning,
     enums.statuses.active,
     enums.statuses.stalled,
-    'Maintenance updated status to stalled'
+    'Database review updated status to stalled'
   )
 
   return r.table(q.name)
@@ -26,20 +26,20 @@ function reviewStalledJobs (q) {
 }
 
 module.exports.start = function (q) {
-  logger('queue-maintenance start')
-  if (maintenanceId) {
-    return true
+  logger('db-review start')
+  if (dbStalledIntervalId) {
+    return
   }
-  const interval = q.maintenanceInterval * 60 * 1000
-  maintenanceId = setInterval(() => {
+  const interval = q.jobTimeout * 1000
+  dbStalledIntervalId = setInterval(() => {
     return reviewStalledJobs(q)
   }, interval)
-  return true
 }
 
 module.exports.stop = function (q) {
-  if (maintenanceId) {
-    clearInterval(maintenanceId)
+  logger('db-review stop')
+  if (dbStalledIntervalId) {
+    clearInterval(dbStalledIntervalId)
   }
 }
 
