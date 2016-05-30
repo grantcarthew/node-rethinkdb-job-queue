@@ -28,13 +28,12 @@ class Job extends EventEmitter {
       this.status = 'waiting'
       this.log = []
       this.dateCreated = now
-      this.dateModified = now
-      this.dateFailed
       this.dateStarted
+      this.dateCompleted
       this.dateHeartbeat = now
       this.heartbeatIntervalId
       this.dateStalled
-      this.duration
+      this.dateFailed
       this.workerId
     }
   }

@@ -32,7 +32,7 @@ class Queue extends EventEmitter {
     this.onChange = queueMessages
     this.name = options.name || 'rjqJobList'
     this.isWorker = options.isWorker || true
-    this.concurrency = options.concurrency || 1
+    this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this._jobDefaultOptions = jobOptions()
     this.jobTimeout = options.jobTimeout || 120
     this.removeOnSuccess = options.removeOnSuccess || true
@@ -79,15 +79,17 @@ class Queue extends EventEmitter {
     })
   }
 
-  getNextJob () {
-    return this.ready.then(() => {
-      return dbQueue.getNextJob(this)
-    })
+  get jobConcurrency () {
+    return this.concurrency
   }
 
-  process (handler, concurrency) {
+  set jobConcurrency (newConcurrencyValue) {
+    this.concurrency = newConcurrencyValue > 1 ? newConcurrencyValue : 1
+  }
+
+  process (handler) {
     return this.ready.then(() => {
-      return jobProcess(this, handler, concurrency)
+      return jobProcess(this, handler)
     })
   }
 

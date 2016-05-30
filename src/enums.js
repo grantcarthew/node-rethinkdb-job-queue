@@ -13,7 +13,7 @@ module.exports = {
     delayed: 'delayed',
     active: 'active',
     waiting: 'waiting',
-    complete: 'complete',
+    completed: 'completed',
     failed: 'failed',
     retry: 'retry'
   },

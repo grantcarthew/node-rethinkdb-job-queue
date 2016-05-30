@@ -24,7 +24,7 @@ Create `Job` objects used to hold the data or job information. These jobs will b
 
 ### Job Processing
 
-Allow the owning `Node` worker process to supply a job `function` providing `rjq` with the logic to process the job to completion. Job processing shall support running jobs concurrently.
+Allow the owning `Node` worker process to supply a job `function` providing `rjq` with the logic to process the job to completion. Job processing shall support priority jobs and running jobs concurrently.
 
 ### Job Reporting
 

@@ -1,11 +1,19 @@
 const Promise = require('bluebird')
 const moment = require('moment')
 const jobHeartbeat = require('./job-heartbeat')
+const dbQueue = require('./db-queue')
+const dbJob = require('./db-job')
+
+const jobResult = function (err, message) {
+  
+}
 
 const jobRun = function (q, job) {
-
   return new Promise((resolve, reject) => {
-    //job.startHeartbeat()
+    job.startHeartbeat()
+    return dbJob.setStartedDate(q, job)
+  }).then((startedUpdated) => {
+    q.handle(job, jobResult)
   })
 }
 
@@ -14,22 +22,18 @@ const jobTick = function (q) {
     return
   }
 
-  return q.getNextJob().then((jobsToDo) => {
-    console.log('0000000000000 you what?')
-    console.dir(jobsToDo)
-    q.running += 1
+  return dbQueue.getNextJob(q).then((jobsToDo) => {
+    if (jobsToDo.length < 1) {
+      q.emit('idle')
+      return
+    }
+
+    q.running++
     if (q.running < q.concurrency) {
       setImmediate(jobTick, q)
     }
 
     return jobRun(q, jobsToDo)
-  }).then((jobRunResult) => {
-    q.emit(
-      jobRunResult.status,
-      jobRunResult.job,
-      jobRunResult.result
-    )
-    return setImmediate(jobTick, q)
   }).catch((err) => {
     q.emit('error', err)
     return setImmediate(jobTick, q)

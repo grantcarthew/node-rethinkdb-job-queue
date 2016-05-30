@@ -31,16 +31,12 @@ module.exports.getJobById = function (q, jobId) {
     .get(jobId).run()
 }
 
-module.exports.getNextJob = function (q, concurrency) {
-  concurrency = concurrency || 1
-  if (concurrency < 0) {
-    return Promise.reject('Concurrency must be greater than 0')
-  }
+module.exports.getNextJob = function (q) {
   let now = moment().toDate()
   return q.r
     .table(q.name)
     .orderBy({index: enums.indexes.inactive})
-    .limit(concurrency)
+    .limit(q.concurrency)
     .update({
       status: enums.statuses.active,
       dateStarted: now,
