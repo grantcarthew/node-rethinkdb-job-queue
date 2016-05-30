@@ -3,11 +3,13 @@ const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
 const async = Promise.coroutine
 const logger = require('./logger')
+const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
 const queueMessages = require('./queue-messages')
 const dbReview = require('./db-review')
+const jobOptions = require('./job-options')
 const jobProcess = require('./job-process')
 
 class Queue extends EventEmitter {
@@ -31,6 +33,7 @@ class Queue extends EventEmitter {
     this.name = options.name || 'rjqJobList'
     this.isWorker = options.isWorker || true
     this.concurrency = options.concurrency || 1
+    this._jobDefaultOptions = jobOptions()
     this.jobTimeout = options.jobTimeout || 120
     this.removeOnSuccess = options.removeOnSuccess || true
     this.catchExceptions = options.catchExceptions || true
@@ -51,8 +54,17 @@ class Queue extends EventEmitter {
     return this.r
   }
 
-  createJob (data, options) {
-    return new Job(data, options)
+  get jobDefaultOptions () {
+    return this._jobDefaultOptions
+  }
+
+  set jobDefaultOptions (options) {
+    this._jobDefaultOptions = jobOptions(options)
+  }
+
+  createJob (data, options = {}) {
+    options = jobOptions(options)
+    return new Job(this, data, options)
   }
 
   addJob (job) {
@@ -63,14 +75,7 @@ class Queue extends EventEmitter {
 
   getJob (jobId) {
     return this.ready.then(() => {
-      return dbQueue.getById(this, jobId)
-    })
-  }
-
-  setJobStatus (status) {
-    dbQueue.setStatus(this.status, status).then((statusResult) => {
-      console.log('STATUS RESULT++++++++++++++++++++++++++++++++++++++')
-      console.dir(statusResult)
+      return dbQueue.getJobById(this, jobId)
     })
   }
 
@@ -105,7 +110,6 @@ class Queue extends EventEmitter {
       this.ready = Promise.reject('Queue has been deleted')
     })
   }
-
 }
 
 module.exports = Queue

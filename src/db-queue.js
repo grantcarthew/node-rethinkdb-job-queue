@@ -2,7 +2,6 @@ const Promise = require('bluebird')
 const moment = require('moment')
 const logger = require('./logger')
 const enums = require('./enums')
-const Job = require('./job')
 
 module.exports.registerQueueChangeFeed = function (q) {
   return q.r.table(q.name)
@@ -14,15 +13,8 @@ module.exports.registerQueueChangeFeed = function (q) {
 }
 
 module.exports.addJob = function (q, job) {
-  let p = enums.priorities
   let jobs = Array.isArray(job) ? job : [job]
-  jobs = jobs.map((j) => {
-    let jobCopy = Object.assign({}, j)
-    jobCopy.priority = p[jobCopy.priority]
-    delete jobCopy._events
-    delete jobCopy._eventsCount
-    return jobCopy
-  })
+  jobs = jobs.map((job) => job.cleanCopy)
   return q.r.table(q.name)
   .insert(jobs).run().then((saveResult) => {
     if (saveResult.errors > 0) {
@@ -32,7 +24,7 @@ module.exports.addJob = function (q, job) {
   })
 }
 
-module.exports.getById = function (q, jobId) {
+module.exports.getJobById = function (q, jobId) {
   return q.r
     .db(q.db)
     .table(q.name)
@@ -87,7 +79,7 @@ module.exports.deleteQueue = function (q) {
   return q.r.dbDrop(q.db).run()
 }
 
-module.exports.remove = function (job) {
+module.exports.removeJob = function (job) {
   const db = job.q.db
   const tableName = job.q.name
   return job.q.r.db(db).table(tableName).get(job.id).delete().run()

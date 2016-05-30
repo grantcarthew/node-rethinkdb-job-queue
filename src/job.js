@@ -2,13 +2,16 @@ const EventEmitter = require('events').EventEmitter
 const uuid = require('node-uuid')
 const moment = require('moment')
 const jobMessages = require('./job-messages')
+const priorities = require('./enums').priorities
+const dbJob = require('./db-job')
 
 class Job extends EventEmitter {
 
-  constructor (data, options) {
+  constructor (q, data, options) {
     super()
-
-    options = options || {}
+    this.q = q
+    console.log('&&&&&&&&&&& Here');
+    console.dir(options)
 
     // If creating a job from the database, pass the job data as the options.
     // Eg. new Job(null, jobData)
@@ -18,11 +21,12 @@ class Job extends EventEmitter {
       let now = moment().toDate()
       this.id = uuid.v4()
       this.data = data || {}
+      this.priority = options.priority
+      this.timeout = options.timeout
+      this.retryDelay = options.retryDelay
+      this.retryMax = options.retryMax
       this.progress = 0
       this.retryCount = 0
-      this.retryDelay = options.retryDelay || 0
-      this.retryMax = options.retryMax > 0 ? options.retryMax : 0
-      this.timeout = options.timeout > 0 ? options.timeout : 0
       this.status = 'active'
       this.log = []
       this.dateCreated = now
@@ -30,16 +34,16 @@ class Job extends EventEmitter {
       this.dateFailed
       this.dateStarted
       this.dateHeartbeat = now
+      this.heartbeatIntervalId
       this.dateStalled
       this.duration
-      this.priority = options.priority || 'normal'
       this.workerId
     }
   }
 
-  enableEvents (q) {
-    return q.ready.then(() => {
-      return q.r.table(q.name).get(this.id)
+  enableEvents () {
+    return this.q.ready.then(() => {
+      return this.q.r.table(this.name).get(this.id)
       .changes().run().then((feed) => {
         feed.each((err, change) => {
           jobMessages(err, change).bind(this)
@@ -48,17 +52,33 @@ class Job extends EventEmitter {
     })
   }
 
-  startHeartbeat (q) {
+  startHeartbeat () {
     return setInterval(() => {
-      return q.r.table(q.name).get(this.id)
+      return this.q.r.table(this.q.name).get(this.id)
         .update({ dateHeartbeat: moment().toDate() }).run()
-    }, q.jobTimeout / 2)
+    }, this.timeout / 2)
   }
 
-  stopHeartbeat (q) {
-
+  stopHeartbeat () {
+    if (this.heartbeatIntervalId) {
+      clearInterval(this.heartbeatIntervalId)
+    }
   }
 
+  get cleanCopy () {
+    const jobCopy = Object.assign({}, this)
+    jobCopy.priority = priorities[jobCopy.priority]
+    delete jobCopy._events
+    delete jobCopy._eventsCount
+    delete jobCopy.domain
+    delete jobCopy.q
+    delete jobCopy.heardbeatIntervalId
+    return jobCopy
+  }
+
+  // setStatus (status) { :TODO: ??
+  //   dbJob.setStatus(this.q, status)
+  // }
 }
 
 module.exports = Job

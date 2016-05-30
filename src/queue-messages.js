@@ -9,7 +9,7 @@ module.exports = function (err, change) {
 
   // New job added
   if (change && change.new_val && !change.old_val) {
-    let newJob = new Job(null, change.new_val)
+    let newJob = new Job(this, null, change.new_val)
     this.emit('enqueue', newJob)
     //this.handler(newJob)
   }
