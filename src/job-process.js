@@ -3,12 +3,9 @@ const moment = require('moment')
 const jobHeartbeat = require('./job-heartbeat')
 
 const jobRun = function (q, job) {
-  let heartbeatIntervalId = jobHeartbeat.start(q, job)
 
   return new Promise((resolve, reject) => {
-    let psTimeout
-    let handled = false
-    preventStalling()
+    //job.startHeartbeat()
   })
 }
 
@@ -16,15 +13,16 @@ const jobTick = function (q) {
   if (q.paused) {
     return
   }
-  let heartbeatIntervalId
 
-  return q.getNextJob().then((nextJob) => {
+  return q.getNextJob().then((jobsToDo) => {
+    console.log('0000000000000 you what?')
+    console.dir(jobsToDo)
     q.running += 1
     if (q.running < q.concurrency) {
       setImmediate(jobTick, q)
     }
 
-    return q.runJob()
+    return jobRun(q, jobsToDo)
   }).then((jobRunResult) => {
     q.emit(
       jobRunResult.status,

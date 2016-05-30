@@ -6,6 +6,7 @@ test('queue test', (t) => {
   t.plan(4)
 
   let unitTestQueue = new jobQueue({ queueName: 'JobQueueUnitTests' }, 'enabled')
+  unitTestQueue.jobDefaultOptions = {priority: 'highest', timeout: 20}
   unitTestQueue.on('enqueue', (job) => {
     t.pass('Enqueue event called')
   })
@@ -30,7 +31,7 @@ test('queue test', (t) => {
   ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
   // jobs.push(ej)
   for (let i = 0; i < 2; i++) {
-    jobs.push(unitTestQueue.createJob({foo: i}, {priority: 'highest'}))
+    jobs.push(unitTestQueue.createJob({foo: i}))
   }
 
   unitTestQueue.addJob(jobs).then((result) => {

@@ -10,11 +10,9 @@ class Job extends EventEmitter {
   constructor (q, data, options) {
     super()
     this.q = q
-    console.log('&&&&&&&&&&& Here');
-    console.dir(options)
 
     // If creating a job from the database, pass the job data as the options.
-    // Eg. new Job(null, jobData)
+    // Eg. new Job(queue, null, jobData)
     if (options.id) {
       Object.assign(this, options)
     } else {
@@ -27,7 +25,7 @@ class Job extends EventEmitter {
       this.retryMax = options.retryMax
       this.progress = 0
       this.retryCount = 0
-      this.status = 'active'
+      this.status = 'waiting'
       this.log = []
       this.dateCreated = now
       this.dateModified = now
@@ -54,6 +52,7 @@ class Job extends EventEmitter {
 
   startHeartbeat () {
     return setInterval(() => {
+      console.log('Heartbeat: ' + this.id)
       return this.q.r.table(this.q.name).get(this.id)
         .update({ dateHeartbeat: moment().toDate() }).run()
     }, this.timeout / 2)
