@@ -33,8 +33,8 @@ class Queue extends EventEmitter {
     this.name = options.name || 'rjqJobList'
     this.isWorker = options.isWorker || true
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
+    this.running = 0
     this._jobDefaultOptions = jobOptions()
-    this.jobTimeout = options.jobTimeout || 120
     this.removeOnSuccess = options.removeOnSuccess || true
     this.catchExceptions = options.catchExceptions || true
     this.paused = false

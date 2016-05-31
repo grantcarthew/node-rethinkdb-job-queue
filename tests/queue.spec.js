@@ -37,15 +37,13 @@ test('queue test', (t) => {
   })
 
 
-  testQ.process((job) => {
+  testQ.process((job, next) => {
     console.log('~~~~~~~~~~~~~~~~ process ~~~~~~~~~~~~~~~~~')
     console.log(job.id)
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log('~~~~~~~~~~~~~~~~ process timeout ~~~~~~~~~~~~~~~~~')
-        resolve()
-      }, 3000)
-    })
+    setTimeout(() => {
+      console.log('~~~~~~~~~~~~~~~~ process finished ~~~~~~~~~~~~~~~~~')
+      next(null, 'Job Completed')
+    }, 3000)
   })
 
   let jobs = []
@@ -61,10 +59,6 @@ test('queue test', (t) => {
     console.log('RESULT!!!!!!!!!!!!!!!!')
     console.dir(JSON.parse(JSON.stringify(result)))
   }).then(() => {
-    return testQ.getNextJob()
-  }).then((a) => {
-      console.log('NEXT JOB')
-      console.dir(a)
       return testQ.getJob('142ad740-8bfc-4491-9d3d-b126d1064af6')
   }).then((b) => {
       console.log('SPECIFIC JOB')

@@ -20,7 +20,7 @@ class Job extends EventEmitter {
       this.id = uuid.v4()
       this.data = data || {}
       this.priority = options.priority
-      this.timeout = options.timeout
+      this.timeout = options.timeout // TODO: populate.
       this.retryDelay = options.retryDelay
       this.retryMax = options.retryMax
       this.progress = 0
@@ -49,18 +49,9 @@ class Job extends EventEmitter {
     })
   }
 
-  startHeartbeat () {
-    return setInterval(() => {
-      console.log('Heartbeat: ' + this.id)
-      return this.q.r.table(this.q.name).get(this.id)
-        .update({ dateHeartbeat: moment().toDate() }).run()
-    }, this.timeout / 2)
-  }
 
-  stopHeartbeat () {
-    if (this.heartbeatIntervalId) {
-      clearInterval(this.heartbeatIntervalId)
-    }
+  setStatus (status) {
+
   }
 
   get cleanCopy () {

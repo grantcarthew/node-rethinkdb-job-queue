@@ -1,6 +1,6 @@
 const defaultOptions = {
   priority: 'normal',
-  timeout: 300,
+  timeout: 3, // TODO: change back to 300 for default
   retryMax: 3,
   retryDelay: 600
 }

@@ -7,7 +7,7 @@ let dbStalledIntervalId
 function reviewStalledJobs (q) {
   logger('reviewStalledJobs: ' + moment().format('YYYY-DD-MM HH:mm:ss'))
   const r = q.r
-  const timeoutDate = moment().add(-q.jobTimeout, 'minutes').toDate()
+  const timeoutDate = moment().add(-1, 'minutes').toDate()
   const log = jobLog(
     moment().toDate(),
     q.id,
@@ -30,7 +30,7 @@ module.exports.start = function (q) {
   if (dbStalledIntervalId) {
     return
   }
-  const interval = q.jobTimeout * 1000
+  const interval = 60 * 1000
   dbStalledIntervalId = setInterval(() => {
     return reviewStalledJobs(q)
   }, interval)

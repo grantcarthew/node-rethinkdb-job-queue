@@ -24,3 +24,12 @@ module.exports.setDateCompleted = function (q, job) {
     dateStarted: now
   })
 }
+
+module.exports.startHeartbeat = function (q, job) {
+  return setInterval((job) => {
+    logger('Heartbeat: ' + job.id)
+    console.dir(job)
+    return job.q.r.table(q.name).get(job.id)
+      .update({ dateHeartbeat: moment().toDate() }).run()
+  }, job.timeout * 1000 / 2, job)
+}
