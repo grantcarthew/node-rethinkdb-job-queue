@@ -36,10 +36,10 @@ module.exports.getNextJob = function (q) {
   const quantity = q.concurrency - q.running
   return q.r
     .table(q.name)
-    .orderBy({index: enums.indexes.inactive})
+    .orderBy({index: enums.index.inactive})
     .limit(quantity)
     .update({
-      status: enums.statuses.active,
+      status: enums.status.active,
       dateStarted: now,
       dateModified: now,
       dateHeartbeat: now
@@ -80,20 +80,4 @@ module.exports.removeJob = function (job) {
   const db = job.q.db
   const tableName = job.q.name
   return job.q.r.db(db).table(tableName).get(job.id).delete().run()
-}
-
-module.exports.setStatus = function (job, oldStatus, newStatus) {
-  const db = job.q.db
-  const tableName = job.q.name
-  const r = job.q.r
-  r.db(db).table(tableName).get(job.id).update((storedJob) => {
-    return r.branch(
-      storedJob('status').eq(oldStatus),
-      {status: newStatus},
-      false
-    )
-  }).run().then((updateResult) => {
-    console.log('UPDATE RESULT~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    console.dir(updateResult)
-  })
 }

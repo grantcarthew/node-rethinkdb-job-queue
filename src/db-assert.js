@@ -1,5 +1,5 @@
 const logger = require('./logger')
-const dbIndexes = require('./db-indexes')
+const dbIndexes = require('./db-index')
 
 module.exports.database = function assertDatabase (q) {
   return q.r.dbList()
@@ -46,7 +46,7 @@ module.exports.index = function assertIndex (q) {
     dbIndexes.createIndexActive(q),
     dbIndexes.createIndexInactive(q)
   ]).then((indexCreateResult) => {
-    return logger('Waiting for indexes...')
+    return logger('Waiting for index...')
   }).then(() => {
     return q.r.table(q.name).indexWait().run()
   }).then(() => {

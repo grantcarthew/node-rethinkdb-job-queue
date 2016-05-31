@@ -1,13 +1,26 @@
 const Promise = require('bluebird')
 const moment = require('moment')
 const logger = require('./logger')
+const enums = require('./enums')
 const jobHeartbeat = require('./job-heartbeat')
 const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
 
-const finishJob = function (q, job, err, message) {
-  logger('finishJob')
-  return Promise.resolve('Not Implemented')
+const jobFinished = function (err, job, data) {
+  logger('jobFinished')
+  let finishedPromise
+  let eventName
+
+  if (err) {
+    eventName = 'error'
+    finishedPromise = dbJob.failed(err, job, data)
+  } else {
+    eventName = 'completed'
+    finishedPromise = dbJob.completed(job, data)
+  }
+  return finishedPromise.then((updateResult) => {
+    job.raiseEvent(eventName, data)
+  })
 }
 
 const jobRun = function (q, job) {
@@ -22,8 +35,8 @@ const jobRun = function (q, job) {
     if (handled) { return }
     handled = true
     clearInterval(heartbeatIntervalId)
-    finishJob(q, job, err, message).then((result) => {
-      console.log('finishJob result')
+    jobFinished(err, job, message).then((result) => {
+      console.log('jobFinished result')
       console.log(result)
     })
   }

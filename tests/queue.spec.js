@@ -51,7 +51,7 @@ test('queue test', (t) => {
   let ej = testQ.createJob()
   ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
   // jobs.push(ej)
-  for (let i = 0; i < 2; i++) {
+  for (let i = 0; i < 4; i++) {
     jobs.push(testQ.createJob({foo: i}))
   }
 

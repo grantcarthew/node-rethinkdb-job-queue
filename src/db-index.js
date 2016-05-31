@@ -1,7 +1,7 @@
 const enums = require('./enums')
 
 module.exports.createIndexActive = function (q) {
-  let indexName = enums.indexes.active
+  let indexName = enums.index.active
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -16,7 +16,7 @@ module.exports.createIndexActive = function (q) {
 }
 
 module.exports.createIndexInactive = function (q) {
-  let indexName = enums.indexes.inactive
+  let indexName = enums.index.inactive
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -33,7 +33,7 @@ module.exports.createIndexInactive = function (q) {
 }
 
 module.exports.createIndexPriorityAndDateCreated = function (q) {
-  let indexName = enums.indexes.priority_dateCreated
+  let indexName = enums.index.priority_dateCreated
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -45,7 +45,7 @@ module.exports.createIndexPriorityAndDateCreated = function (q) {
 }
 
 module.exports.createIndexStatus = function (q) {
-  let indexName = enums.indexes.status
+  let indexName = enums.index.status
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }

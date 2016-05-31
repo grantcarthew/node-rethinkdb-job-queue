@@ -12,13 +12,12 @@ function reviewStalledJobs (q) {
     moment().toDate(),
     q.id,
     enums.log.type.warning,
-    enums.statuses.active,
-    enums.statuses.stalled,
-    'Database review updated status to stalled'
+    enums.status.stalled,
+    enums.messages.stalled
   )
 
   return r.table(q.name)
-  .between(r.minval, timeoutDate, { index: enums.indexes.active })
+  .between(r.minval, timeoutDate, { index: enums.index.active })
   .update({
     status: 'stalled',
     log: r.row('log').add([log])

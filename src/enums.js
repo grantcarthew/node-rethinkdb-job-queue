@@ -1,5 +1,5 @@
 module.exports = {
-  priorities: {
+  priority: {
     lowest: 60,
     low: 50,
     normal: 40,
@@ -8,7 +8,7 @@ module.exports = {
     highest: 10,
     retry: 1 // Used for retries after a job has stalled or failed.
   },
-  statuses: {
+  status: {
     created: 'created',
     delayed: 'delayed',
     active: 'active',
@@ -17,7 +17,7 @@ module.exports = {
     failed: 'failed',
     retry: 'retry'
   },
-  indexes: {
+  index: {
     priority_dateCreated: 'priority_dateCreated',
     inactive: 'inactive_priority_dateCreated',
     stalled: 'stalled',
@@ -27,10 +27,13 @@ module.exports = {
   log: {
     type: {
       information: 'information',
-      started: 'started',
-      completed: 'completed',
       warning: 'warning',
       error: 'error'
     }
+  },
+  messages: {
+    completed: 'Job completed successfully',
+    failed: 'Job processing failed',
+    stalled: 'Job processing has stalled'
   }
 }

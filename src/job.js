@@ -1,14 +1,11 @@
-const EventEmitter = require('events').EventEmitter
 const uuid = require('node-uuid')
 const moment = require('moment')
-const jobMessages = require('./job-messages')
-const priorities = require('./enums').priorities
-const dbJob = require('./db-job')
+const priority = require('./enums').priority
+// const dbJob = require('./db-job')
 
-class Job extends EventEmitter {
+class Job {
 
   constructor (q, data, options) {
-    super()
     this.q = q
 
     // If creating a job from the database, pass the job data as the options.
@@ -38,25 +35,13 @@ class Job extends EventEmitter {
     }
   }
 
-  enableEvents () {
-    return this.q.ready.then(() => {
-      return this.q.r.table(this.name).get(this.id)
-      .changes().run().then((feed) => {
-        feed.each((err, change) => {
-          jobMessages(err, change).bind(this)
-        })
-      })
-    })
-  }
-
-
   setStatus (status) {
 
   }
 
   get cleanCopy () {
     const jobCopy = Object.assign({}, this)
-    jobCopy.priority = priorities[jobCopy.priority]
+    jobCopy.priority = priority[jobCopy.priority]
     delete jobCopy._events
     delete jobCopy._eventsCount
     delete jobCopy.domain

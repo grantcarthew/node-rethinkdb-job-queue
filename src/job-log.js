@@ -1,10 +1,19 @@
-module.exports = function (date, qid, type, oldValue, newValue, message) {
+module.exports = function (logDate,
+                           queueId,
+                           logType,
+                           status,
+                           queueMessage,
+                           jobMessage,
+                           err) {
+  if (err) {
+    queueMessage = `${queueMessage}: ${err.message}`
+  }
   return {
-    date,
-    qid,
-    type,
-    oldValue,
-    newValue,
-    message
+    logDate,
+    queueId,
+    logType,
+    status,
+    queueMessage,
+    jobMessage
   }
 }
