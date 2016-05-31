@@ -8,7 +8,7 @@ module.exports = {
     highest: 10,
     retry: 1 // Used for retries after a job has stalled or failed.
   },
-  status: {
+  jobStatus: {
     created: 'created',
     delayed: 'delayed',
     active: 'active',
@@ -16,6 +16,22 @@ module.exports = {
     completed: 'completed',
     failed: 'failed',
     retry: 'retry'
+  },
+  jobEvents: {
+    created: 'created',
+    delayed: 'delayed',
+    active: 'active',
+    waiting: 'waiting',
+    completed: 'completed',
+    failed: 'failed',
+    retry: 'retry'
+  },
+  queueStatus: {
+    ready: 'ready',
+    enqueue: 'enqueue',
+    idle: 'idle',
+    processing: 'processing',
+    error: 'error'
   },
   index: {
     priority_dateCreated: 'priority_dateCreated',

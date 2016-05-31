@@ -1,11 +1,12 @@
+const logger = require('./logger').init(module)
 const uuid = require('node-uuid')
 const moment = require('moment')
 const priority = require('./enums').priority
-// const dbJob = require('./db-job')
 
 class Job {
 
   constructor (q, data, options) {
+    logger('constructor')
     this.q = q
 
     // If creating a job from the database, pass the job data as the options.
@@ -35,11 +36,8 @@ class Job {
     }
   }
 
-  setStatus (status) {
-
-  }
-
   get cleanCopy () {
+    logger('cleanCopy')
     const jobCopy = Object.assign({}, this)
     jobCopy.priority = priority[jobCopy.priority]
     delete jobCopy._events
@@ -49,10 +47,6 @@ class Job {
     delete jobCopy.heardbeatIntervalId
     return jobCopy
   }
-
-  // setStatus (status) { :TODO: ??
-  //   dbJob.setStatus(this.q, status)
-  // }
 }
 
 module.exports = Job

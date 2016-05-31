@@ -1,6 +1,6 @@
+const logger = require('./logger').init(module)
 const Promise = require('bluebird')
 const moment = require('moment')
-const logger = require('./logger')
 const enums = require('./enums')
 const jobLog = require('./job-log')
 
@@ -12,7 +12,7 @@ module.exports.setDateStarted = function (job) {
 }
 
 module.exports.completed = function (job, data) {
-  job.status = enums.status.completed
+  job.status = enums.jobStatus.completed
   job.dateCompleted = moment().toDate()
   job.progress = 100
 
@@ -33,9 +33,9 @@ module.exports.completed = function (job, data) {
 }
 
 module.exports.failed = function (err, job, data) {
-  job.status = enums.status.failed
+  job.status = enums.jobStatus.failed
   if (job.retryCount < job.retryMax) {
-    job.status = enums.status.retry
+    job.status = enums.jobStatus.retry
     job.retryCount++
     job.priority = 1
   }
@@ -60,11 +60,10 @@ module.exports.failed = function (err, job, data) {
   }).run()
 }
 
-module.exports.startHeartbeat = function (q, job) {
+module.exports.startHeartbeat = function (job) {
   return setInterval((job) => {
     logger('Heartbeat: ' + job.id)
-    console.dir(job)
-    return job.q.r.table(q.name).get(job.id)
+    return job.q.r.table(job.q.name).get(job.id)
       .update({ dateHeartbeat: moment().toDate() }).run()
   }, job.timeout * 1000 / 2, job)
 }

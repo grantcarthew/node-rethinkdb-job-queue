@@ -1,4 +1,4 @@
-const logger = require('./logger')
+const logger = require('./logger').init(module)
 const dbIndexes = require('./db-index')
 
 module.exports.database = function assertDatabase (q) {

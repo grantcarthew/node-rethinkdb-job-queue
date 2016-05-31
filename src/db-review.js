@@ -1,5 +1,5 @@
+const logger = require('./logger').init(module)
 const moment = require('moment')
-const logger = require('./logger')
 const enums = require('./enums')
 const jobLog = require('./job-log')
 let dbStalledIntervalId
@@ -12,7 +12,7 @@ function reviewStalledJobs (q) {
     moment().toDate(),
     q.id,
     enums.log.type.warning,
-    enums.status.stalled,
+    enums.jobStatus.stalled,
     enums.messages.stalled
   )
 

@@ -1,8 +1,8 @@
 const EventEmitter = require('events').EventEmitter
 const rethinkdbdash = require('rethinkdbdash')
+const logger = require('./logger').init(module)
 const Promise = require('bluebird')
 const async = Promise.coroutine
-const logger = require('./logger')
 const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
@@ -46,7 +46,7 @@ class Queue extends EventEmitter {
         yield dbQueue.registerQueueChangeFeed(this)
         dbReview.start(this)
       }
-      this.emit('ready')
+      this.emit(enums.queueStatus.ready)
     }).bind(this)()
   }
 

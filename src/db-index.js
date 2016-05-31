@@ -1,6 +1,8 @@
+const logger = require('./logger').init(module)
 const enums = require('./enums')
 
 module.exports.createIndexActive = function (q) {
+  logger('createIndexActive')
   let indexName = enums.index.active
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
@@ -16,6 +18,7 @@ module.exports.createIndexActive = function (q) {
 }
 
 module.exports.createIndexInactive = function (q) {
+  logger('createIndexInactive')
   let indexName = enums.index.inactive
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
@@ -33,6 +36,7 @@ module.exports.createIndexInactive = function (q) {
 }
 
 module.exports.createIndexPriorityAndDateCreated = function (q) {
+  logger('createIndexPriorityAndDateCreated')
   let indexName = enums.index.priority_dateCreated
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
@@ -45,6 +49,7 @@ module.exports.createIndexPriorityAndDateCreated = function (q) {
 }
 
 module.exports.createIndexStatus = function (q) {
+  logger('createIndexStatus')
   let indexName = enums.index.status
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {

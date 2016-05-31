@@ -1,58 +1,31 @@
+const logger = require('./logger').init(module)
 const Promise = require('bluebird')
-const moment = require('moment')
-const logger = require('./logger')
 const enums = require('./enums')
-const jobHeartbeat = require('./job-heartbeat')
 const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
 
-const jobFinished = function (err, job, data) {
-  logger('jobFinished')
-  let finishedPromise
-  let eventName
-
-  if (err) {
-    eventName = 'error'
-    finishedPromise = dbJob.failed(err, job, data)
-  } else {
-    eventName = 'completed'
-    finishedPromise = dbJob.completed(job, data)
-  }
-  return finishedPromise.then((updateResult) => {
-    job.raiseEvent(eventName, data)
-  })
-}
-
-const jobRun = function (q, job) {
+const jobRun = function (job) {
   logger('jobRun')
   let handled = false
-  const heartbeatIntervalId = dbJob.startHeartbeat(q, job)
-  console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2')
+  const heartbeatIntervalId = dbJob.startHeartbeat(job)
 
-  const nextHandler = (err, message) => {
+  const nextHandler = (err, data) => {
     logger('nextHandler')
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
     clearInterval(heartbeatIntervalId)
-    jobFinished(err, job, message).then((result) => {
-      console.log('jobFinished result')
-      console.log(result)
-    })
+    job.q.running--
+    if (err) {
+      return dbJob.failed(err, job, data)
+    } else {
+      return dbJob.completed(job, data)
+    }
   }
 
   const timedOutMessage = 'Job ' + job.id + ' timed out (' + job.timeout * 1000 + ' sec)'
   setTimeout(nextHandler.bind(null, Error(timedOutMessage)), job.timeout * 1000)
-
-  if (q.catchExceptions) {
-    try {
-      q.handler(job, nextHandler)
-    } catch (err) {
-      nextHandler(err)
-    }
-  } else {
-    q.handler(job, nextHandler)
-  }
+  job.q.handler(job, nextHandler)
 }
 
 const jobTick = function (q) {
@@ -61,24 +34,26 @@ const jobTick = function (q) {
     return
   }
 
-  // TODO: Issue with getting jobs base on concurrency value.
   return dbQueue.getNextJob(q).then((jobsToDo) => {
     if (jobsToDo.length < 1) {
-      q.emit('idle')
-      return Promise.reject('idle')
+      return Promise.reject(enums.queueStatus.idle)
     }
     return jobsToDo
   }).then((jobsToDo) => {
     for (let jobToDo of jobsToDo) {
       q.running++
-      jobRun(q, jobToDo)
+      jobRun(jobToDo)
     }
     if (q.running < q.concurrency) {
       setImmediate(jobTick, q)
     }
     return
   }).catch((err) => {
-    q.emit('error', err)
+    if (err.message === enums.queueStatus.idle) {
+      q.emit(enums.queueStatus.idle)
+      return
+    }
+    q.emit(enums.queueStatus.error, err.message)
     return setImmediate(jobTick, q)
   })
 }

@@ -1,9 +1,10 @@
+const logger = require('./logger').init(module)
 const Promise = require('bluebird')
 const moment = require('moment')
-const logger = require('./logger')
 const enums = require('./enums')
 
 module.exports.registerQueueChangeFeed = function (q) {
+  logger('registerQueueChangeFeed')
   return q.r.table(q.name)
   .changes().run().then((feed) => {
     feed.each((err, change) => {
@@ -13,6 +14,7 @@ module.exports.registerQueueChangeFeed = function (q) {
 }
 
 module.exports.addJob = function (q, job) {
+  logger('addJob')
   let jobs = Array.isArray(job) ? job : [job]
   jobs = jobs.map((job) => job.cleanCopy)
   return q.r.table(q.name)
@@ -39,7 +41,7 @@ module.exports.getNextJob = function (q) {
     .orderBy({index: enums.index.inactive})
     .limit(quantity)
     .update({
-      status: enums.status.active,
+      status: enums.jobStatus.active,
       dateStarted: now,
       dateModified: now,
       dateHeartbeat: now
