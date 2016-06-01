@@ -14,7 +14,7 @@ test('queue test', (t) => {
   const testQ = new Queue({
     queueName: 'JobQueueUnitTests',
     concurrency: 3
-  }, 'enabled')
+  })
   testQ.jobDefaultOptions = customJobDefaultOptions
   t.deepEqual(testQ.jobDefaultOptions, customJobDefaultOptions, 'Set default job options')
   testQ.on('ready', () => {
@@ -45,22 +45,22 @@ test('queue test', (t) => {
 
 
   testQ.process((job, next) => {
-    console.log('~~~~~~~~~~~~~~~~ process ~~~~~~~~~~~~~~~~~')
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ process ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     console.log(job.id)
     setTimeout(() => {
-      console.log('~~~~~~~~~~~~~~~~ process finished ~~~~~~~~~~~~~~~~~')
+      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ process finished ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
       next(null, 'Job Completed')
     }, 3000)
   })
 
   let jobs = []
   // console.dir(JSON.parse(JSON.stringify(testQ)))
-  let ej = testQ.createJob()
-  ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
-  // jobs.push(ej)
-  for (let i = 0; i < 4; i++) {
-    jobs.push(testQ.createJob({foo: i}))
-  }
+  // let ej = testQ.createJob()
+  // ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
+  // // jobs.push(ej)
+  // for (let i = 0; i < 4; i++) {
+  //   jobs.push(testQ.createJob({foo: i}))
+  // }
 
   testQ.addJob(jobs).then((result) => {
     console.log('RESULT!!!!!!!!!!!!!!!!')

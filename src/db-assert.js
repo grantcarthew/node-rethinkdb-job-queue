@@ -1,4 +1,4 @@
-const logger = require('./logger').init(module)
+const debug = require('debug')('db-assert')
 const dbIndexes = require('./db-index')
 
 module.exports.database = function assertDatabase (q) {
@@ -12,8 +12,8 @@ module.exports.database = function assertDatabase (q) {
     )
   }).run().then((dbCreateResult) => {
     dbCreateResult.dbs_created > 0
-    ? logger('Database created: ' + q.db)
-    : logger('Database exists: ' + q.db)
+    ? debug('Database created: ' + q.db)
+    : debug('Database exists: ' + q.db)
     return true
   })
 }
@@ -29,12 +29,12 @@ module.exports.table = function assertTable (q) {
     )
   }).run().then((tableCreateResult) => {
     tableCreateResult.tables_created > 0
-      ? logger('Table created: ' + q.name)
-      : logger('Table exists: ' + q.name)
+      ? debug('Table created: ' + q.name)
+      : debug('Table exists: ' + q.name)
   }).then(() => {
     return q.r.table(q.name).wait().run()
   }).then(() => {
-    logger('Table ready.')
+    debug('Table ready.')
     return true
   })
 }
@@ -46,11 +46,11 @@ module.exports.index = function assertIndex (q) {
     dbIndexes.createIndexActive(q),
     dbIndexes.createIndexInactive(q)
   ]).then((indexCreateResult) => {
-    return logger('Waiting for index...')
+    return debug('Waiting for index...')
   }).then(() => {
     return q.r.table(q.name).indexWait().run()
   }).then(() => {
-    logger('Indexes ready.')
+    debug('Indexes ready.')
     return true
   })
 }

@@ -1,4 +1,4 @@
-const logger = require('./logger').init(module)
+const debug = require('debug')('job-process')
 const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
@@ -6,33 +6,39 @@ const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
 
 const jobRun = function (job) {
-  logger('jobRun')
+  debug('jobRun')
   let handled = false
-  const heartbeatIntervalId = dbJob.startHeartbeat(job)
+  let heartbeatIntervalId = dbJob.startHeartbeat(job)
+  let jobTimeoutId
 
   const nextHandler = (err, data) => {
-    logger('nextHandler')
+    debug('nextHandler')
     console.dir(err)
     console.dir(data)
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
     clearInterval(heartbeatIntervalId)
+    clearTimeout(jobTimeoutId)
     job.q.running--
+    let finalPromise
     if (err) {
-      return dbJob.failed(err, job, data)
+      finalPromise = dbJob.failed(err, job, data)
     } else {
-      return dbJob.completed(job, data)
+      finalPromise = dbJob.completed(job, data)
     }
+    return finalPromise.then((finalResult) => {
+      return setImmediate(jobTick, job.q)
+    })
   }
 
   const timedOutMessage = 'Job ' + job.id + ' timed out (' + job.timeout + ' sec)'
-  setTimeout(nextHandler.bind(null, Error(timedOutMessage)), job.timeout * 1000)
+  jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)), job.timeout * 1000)
   job.q.handler(job, nextHandler)
 }
 
 const jobTick = function (q) {
-  logger('jobTick')
+  debug('jobTick')
   if (q.paused) {
     return
   }
@@ -43,9 +49,10 @@ const jobTick = function (q) {
     }
     return jobsToDo
   }).then((jobsToDo) => {
-    console.log('==================== jobsToDo ====================')
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ jobsToDo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    jobsToDo.forEach((j) => { console.log(j.id) })
+    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
     for (let jobToDo of jobsToDo) {
-      console.log(jobToDo.id)
       q.running++
       jobRun(jobToDo)
     }
@@ -54,8 +61,8 @@ const jobTick = function (q) {
     }
     return
   }).catch((err) => {
-    if (err.message === enums.queueStatus.idle) {
-      logger('queue idle')
+    if (err === enums.queueStatus.idle) {
+      debug('queue idle')
       q.emit(enums.queueStatus.idle)
       return
     }
@@ -64,14 +71,8 @@ const jobTick = function (q) {
   })
 }
 
-const restartProcessing = function () {
-  logger('restartProcessing')
-  // maybe need to increment queued here?
-  // self.bclient.once('ready', jobTick)
-}
-
 module.exports = function (q, handler) {
-  logger()
+  debug('called')
   if (!q.isWorker) {
     throw Error('Cannot call process on a non-worker')
   }
@@ -85,9 +86,6 @@ module.exports = function (q, handler) {
   return dbReview.reviewStalledJobs(q).then((stallReviewResult) => {
     dbReview.start(q)
     setImmediate(jobTick, q)
-    // TODO: Check the following. Do we want to kick off jobTick with error?
-    // Maybe other events?
-    // q.on(enums.queueStatus.error, setImmediate(jobTick, q))
     return true
   })
 }

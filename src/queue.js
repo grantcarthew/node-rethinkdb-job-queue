@@ -1,6 +1,6 @@
+const debug = require('debug')('queue')
 const EventEmitter = require('events').EventEmitter
 const rethinkdbdash = require('rethinkdbdash')
-const logger = require('./logger').init(module)
 const Promise = require('bluebird')
 const async = Promise.coroutine
 const enums = require('./enums')
@@ -14,10 +14,9 @@ const jobProcess = require('./job-process')
 
 class Queue extends EventEmitter {
 
-  constructor (options, debug) {
+  constructor (options) {
     super()
-    if (debug && debug === 'enabled') { process.env.rjqDEBUG = 'enabled' }
-    logger('Queue Constructor')
+    debug('Queue Constructor')
 
     this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
     options = options || {}
@@ -90,7 +89,7 @@ class Queue extends EventEmitter {
     })
   }
 
-  get statusSummary () {
+  getStatusSummary () {
     return this.ready.then(() => {
       return dbQueue.statusSummary(this)
     })

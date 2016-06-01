@@ -1,9 +1,9 @@
-const logger = require('./logger').init(module)
+const debug = require('debug')('queue-messages')
 const enums = require('./enums')
 const Job = require('./job')
 
 module.exports = function (err, change) {
-  logger()
+  debug('called')
   console.log('------------- QUEUE CHANGE -------------')
   console.dir(change)
   console.log('----------------------------------------')

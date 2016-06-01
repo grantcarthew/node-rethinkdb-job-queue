@@ -1,10 +1,11 @@
-const logger = require('./logger').init(module)
+const debug = require('debug')('db-job')
 const Promise = require('bluebird')
 const moment = require('moment')
 const enums = require('./enums')
 const jobLog = require('./job-log')
 
 module.exports.setDateStarted = function (job) {
+  debug('setDateStarted')
   let now = moment().toDate()
   return job.q.r.table(job.q.name).get(job.id).update({
     dateStarted: now
@@ -12,6 +13,7 @@ module.exports.setDateStarted = function (job) {
 }
 
 module.exports.completed = function (job, data) {
+  debug('completed')
   job.status = enums.jobStatus.completed
   job.dateCompleted = moment().toDate()
   job.progress = 100
@@ -33,6 +35,7 @@ module.exports.completed = function (job, data) {
 }
 
 module.exports.failed = function (err, job, data) {
+  debug('failed')
   job.status = enums.jobStatus.failed
   console.log('ABOUT TO EMIT');
   job.q.emit('job failed', job.id)
@@ -63,20 +66,29 @@ module.exports.failed = function (err, job, data) {
 }
 
 module.exports.startHeartbeat = function (job) {
+  debug('startHeartbeat')
+  // TODO: delete these lines
+  // console.log(job.timeout)
+  // console.log(job.timeout * 1000 / 2)
   return setInterval((job) => {
-    logger('Heartbeat: ' + job.id)
+    debug('Heartbeat: ' + job.id)
     return job.q.r.table(job.q.name).get(job.id)
       .update({ dateHeartbeat: moment().toDate() }).run()
-  }, job.timeout * 1000 / 2, job)
+  }, 1000, job)
+  // TODO: reinstate this line.
+  // }, job.timeout * 1000 / 2, job)
 }
 
+// TODO: Which one of these?
 module.exports.setStatus = function (q, status) {
+  debug('setStatus')
   q.setStatus(this.status, status).then((statusResult) => {
     console.log('STATUS RESULT++++++++++++++++++++++++++++++++++++++')
     console.dir(statusResult)
   })
 }
 module.exports.setStatus = function (job, oldStatus, newStatus) {
+  debug('setStatus')
   const db = job.q.db
   const tableName = job.q.name
   const r = job.q.r
