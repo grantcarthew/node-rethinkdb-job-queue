@@ -1,4 +1,4 @@
-const debug = require('debug')('job-options')
+const logger = require('./logger')(module)
 const defaultOptions = {
   priority: 'normal',
   timeout: 10, // TODO: change back to 300 for default
@@ -7,7 +7,7 @@ const defaultOptions = {
 }
 
 module.exports = function (options = {}) {
-  debug('called')
+  logger('called')
   return {
     priority: options.priority || defaultOptions.priority,
     timeout: options.timeout || defaultOptions.timeout,

@@ -1,4 +1,4 @@
-const debug = require('debug')('job')
+const logger = require('./logger')(module)
 const uuid = require('node-uuid')
 const moment = require('moment')
 const priority = require('./enums').priority
@@ -6,7 +6,7 @@ const priority = require('./enums').priority
 class Job {
 
   constructor (q, data, options) {
-    debug('constructor')
+    logger('constructor')
     this.q = q
 
     // If creating a job from the database, pass the job data as the options.
@@ -37,7 +37,7 @@ class Job {
   }
 
   get cleanCopy () {
-    debug('cleanCopy')
+    logger('cleanCopy')
     const jobCopy = Object.assign({}, this)
     jobCopy.priority = priority[jobCopy.priority]
     delete jobCopy._events

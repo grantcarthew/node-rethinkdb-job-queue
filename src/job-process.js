@@ -1,4 +1,4 @@
-const debug = require('debug')('job-process')
+const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
@@ -6,13 +6,13 @@ const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
 
 const jobRun = function (job) {
-  debug('jobRun')
+  logger('jobRun')
   let handled = false
   let heartbeatIntervalId = dbJob.startHeartbeat(job)
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
-    debug('nextHandler')
+    logger('nextHandler')
     console.dir(err)
     console.dir(data)
     // Ignore mulpiple calls to next()
@@ -38,7 +38,7 @@ const jobRun = function (job) {
 }
 
 const jobTick = function (q) {
-  debug('jobTick')
+  logger('jobTick')
   if (q.paused) {
     return
   }
@@ -62,7 +62,7 @@ const jobTick = function (q) {
     return
   }).catch((err) => {
     if (err === enums.queueStatus.idle) {
-      debug('queue idle')
+      logger('queue idle')
       q.emit(enums.queueStatus.idle)
       return
     }
@@ -72,7 +72,7 @@ const jobTick = function (q) {
 }
 
 module.exports = function (q, handler) {
-  debug('called')
+  logger('called')
   if (!q.isWorker) {
     throw Error('Cannot call process on a non-worker')
   }

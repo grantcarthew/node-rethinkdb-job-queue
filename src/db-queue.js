@@ -1,10 +1,10 @@
-const debug = require('debug')('db-queue')
+const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const moment = require('moment')
 const enums = require('./enums')
 
 module.exports.registerQueueChangeFeed = function (q) {
-  debug('registerQueueChangeFeed')
+  logger('registerQueueChangeFeed')
   return q.r.table(q.name)
   .changes().run().then((feed) => {
     feed.each((err, change) => {
@@ -14,7 +14,7 @@ module.exports.registerQueueChangeFeed = function (q) {
 }
 
 module.exports.addJob = function (q, job) {
-  debug('addJob')
+  logger('addJob')
   let jobs = Array.isArray(job) ? job : [job]
   jobs = jobs.map((job) => job.cleanCopy)
   return q.r.table(q.name)
@@ -59,7 +59,7 @@ module.exports.getNextJob = function (q) {
 }
 
 module.exports.statusSummary = function (q) {
-  debug('statusSummary')
+  logger('statusSummary')
   const r = q.r
   return r.table(q.name)
   .group((job) => {
@@ -74,7 +74,7 @@ module.exports.statusSummary = function (q) {
 }
 
 module.exports.deleteQueue = function (q) {
-  debug('deleteQueue')
+  logger('deleteQueue')
   q.ready = Promise.reject('The queue has been deleted')
   return q.r.dbDrop(q.db).run()
 }

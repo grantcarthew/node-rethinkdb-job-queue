@@ -1,11 +1,11 @@
-const debug = require('debug')('db-review')
+const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
 const jobLog = require('./job-log')
 let dbStalledIntervalId
 
 function reviewStalledJobs (q) {
-  debug('reviewStalledJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+  logger('reviewStalledJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
   const r = q.r
   const timeoutDate = moment().add(-1, 'minutes').toDate()
   const log = jobLog(
@@ -25,7 +25,7 @@ function reviewStalledJobs (q) {
 }
 
 module.exports.start = function (q) {
-  debug('db-review start')
+  logger('db-review start')
   if (dbStalledIntervalId) {
     return
   }
@@ -36,7 +36,7 @@ module.exports.start = function (q) {
 }
 
 module.exports.stop = function (q) {
-  debug('db-review stop')
+  logger('db-review stop')
   if (dbStalledIntervalId) {
     clearInterval(dbStalledIntervalId)
   }

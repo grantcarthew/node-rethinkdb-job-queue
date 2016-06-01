@@ -1,4 +1,4 @@
-const debug = require('debug')('queue')
+const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
 const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
@@ -16,7 +16,7 @@ class Queue extends EventEmitter {
 
   constructor (options) {
     super()
-    debug('Queue Constructor')
+    logger('Queue Constructor')
 
     this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
     options = options || {}
