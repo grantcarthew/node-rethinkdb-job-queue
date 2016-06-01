@@ -1,6 +1,7 @@
 const logger = require('./logger').init(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
+const dbReview = require('./db-review')
 const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
 
@@ -11,6 +12,8 @@ const jobRun = function (job) {
 
   const nextHandler = (err, data) => {
     logger('nextHandler')
+    console.dir(err)
+    console.dir(data)
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
@@ -23,7 +26,7 @@ const jobRun = function (job) {
     }
   }
 
-  const timedOutMessage = 'Job ' + job.id + ' timed out (' + job.timeout * 1000 + ' sec)'
+  const timedOutMessage = 'Job ' + job.id + ' timed out (' + job.timeout + ' sec)'
   setTimeout(nextHandler.bind(null, Error(timedOutMessage)), job.timeout * 1000)
   job.q.handler(job, nextHandler)
 }
@@ -40,7 +43,9 @@ const jobTick = function (q) {
     }
     return jobsToDo
   }).then((jobsToDo) => {
+    console.log('==================== jobsToDo ====================')
     for (let jobToDo of jobsToDo) {
+      console.log(jobToDo.id)
       q.running++
       jobRun(jobToDo)
     }
@@ -50,6 +55,7 @@ const jobTick = function (q) {
     return
   }).catch((err) => {
     if (err.message === enums.queueStatus.idle) {
+      logger('queue idle')
       q.emit(enums.queueStatus.idle)
       return
     }
@@ -65,7 +71,7 @@ const restartProcessing = function () {
 }
 
 module.exports = function (q, handler) {
-  logger('jobProcess')
+  logger()
   if (!q.isWorker) {
     throw Error('Cannot call process on a non-worker')
   }
@@ -76,5 +82,12 @@ module.exports = function (q, handler) {
 
   q.handler = handler
   q.running = 0
-  setImmediate(jobTick, q)
+  return dbReview.reviewStalledJobs(q).then((stallReviewResult) => {
+    dbReview.start(q)
+    setImmediate(jobTick, q)
+    // TODO: Check the following. Do we want to kick off jobTick with error?
+    // Maybe other events?
+    // q.on(enums.queueStatus.error, setImmediate(jobTick, q))
+    return true
+  })
 }

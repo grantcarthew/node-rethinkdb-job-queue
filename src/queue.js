@@ -42,10 +42,7 @@ class Queue extends EventEmitter {
       yield dbAssert.database(this)
       yield dbAssert.table(this)
       yield dbAssert.index(this)
-      if (this.isWorker) {
-        yield dbQueue.registerQueueChangeFeed(this)
-        dbReview.start(this)
-      }
+      yield dbQueue.registerQueueChangeFeed(this)
       this.emit(enums.queueStatus.ready)
     }).bind(this)()
   }

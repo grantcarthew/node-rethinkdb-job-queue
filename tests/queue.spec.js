@@ -11,7 +11,10 @@ const customJobDefaultOptions = {
 test('queue test', (t) => {
   t.plan(6)
 
-  const testQ = new Queue({ queueName: 'JobQueueUnitTests' }, 'enabled')
+  const testQ = new Queue({
+    queueName: 'JobQueueUnitTests',
+    concurrency: 3
+  }, 'enabled')
   testQ.jobDefaultOptions = customJobDefaultOptions
   t.deepEqual(testQ.jobDefaultOptions, customJobDefaultOptions, 'Set default job options')
   testQ.on('ready', () => {
@@ -33,6 +36,10 @@ test('queue test', (t) => {
     t.pass('Queue retry event called')
   })
   testQ.on('idle', (jobId) => {
+    t.pass('Queue idle event called')
+  })
+  testQ.on('job failed', (jobId) => {
+    console.log('job failed: ' + jobId)
     t.pass('Queue idle event called')
   })
 

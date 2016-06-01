@@ -34,6 +34,8 @@ module.exports.completed = function (job, data) {
 
 module.exports.failed = function (err, job, data) {
   job.status = enums.jobStatus.failed
+  console.log('ABOUT TO EMIT');
+  job.q.emit('job failed', job.id)
   if (job.retryCount < job.retryMax) {
     job.status = enums.jobStatus.retry
     job.retryCount++

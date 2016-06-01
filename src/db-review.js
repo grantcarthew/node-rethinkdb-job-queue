@@ -5,7 +5,7 @@ const jobLog = require('./job-log')
 let dbStalledIntervalId
 
 function reviewStalledJobs (q) {
-  logger('reviewStalledJobs: ' + moment().format('YYYY-DD-MM HH:mm:ss'))
+  logger('reviewStalledJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
   const r = q.r
   const timeoutDate = moment().add(-1, 'minutes').toDate()
   const log = jobLog(
@@ -42,4 +42,4 @@ module.exports.stop = function (q) {
   }
 }
 
-module.exports.runOnce = reviewStalledJobs
+module.exports.reviewStalledJobs = reviewStalledJobs

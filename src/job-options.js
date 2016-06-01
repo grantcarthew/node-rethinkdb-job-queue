@@ -1,7 +1,7 @@
 const logger = require('./logger').init(module)
 const defaultOptions = {
   priority: 'normal',
-  timeout: 3, // TODO: change back to 300 for default
+  timeout: 10, // TODO: change back to 300 for default
   retryMax: 3,
   retryDelay: 600
 }
