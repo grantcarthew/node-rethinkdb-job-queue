@@ -4,9 +4,9 @@ const Job = require('./job')
 
 module.exports = function (err, change) {
   logger('called')
-  console.log('------------- QUEUE CHANGE -------------')
-  console.dir(change)
-  console.log('----------------------------------------')
+  // console.log('------------- QUEUE CHANGE -------------')
+  // console.dir(change)
+  // console.log('----------------------------------------')
 
   if (err) { throw new Error(err) }
 

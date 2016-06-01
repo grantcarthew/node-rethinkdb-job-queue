@@ -9,8 +9,8 @@ const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
 const queueMessages = require('./queue-messages')
 const dbReview = require('./db-review')
-const jobOptions = require('./job-options')
 const jobProcess = require('./job-process')
+const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
 
@@ -58,8 +58,7 @@ class Queue extends EventEmitter {
     this._jobDefaultOptions = jobOptions(options)
   }
 
-  createJob (data, options = {}) {
-    options = jobOptions(options)
+  createJob (data, options = this._jobDefaultOptions) {
     return new Job(this, data, options)
   }
 

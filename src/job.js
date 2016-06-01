@@ -1,7 +1,8 @@
 const logger = require('./logger')(module)
 const uuid = require('node-uuid')
 const moment = require('moment')
-const priority = require('./enums').priority
+const enums = require('./enums')
+const jobOptions = require('./job-options')
 
 class Job {
 
@@ -14,6 +15,7 @@ class Job {
     if (options.id) {
       Object.assign(this, options)
     } else {
+      options = jobOptions(options)
       let now = moment().toDate()
       this.id = uuid.v4()
       this.data = data || {}
@@ -39,14 +41,49 @@ class Job {
   get cleanCopy () {
     logger('cleanCopy')
     const jobCopy = Object.assign({}, this)
-    jobCopy.priority = priority[jobCopy.priority]
-    delete jobCopy._events
-    delete jobCopy._eventsCount
-    delete jobCopy.domain
+    jobCopy.priority = enums.priority[jobCopy.priority]
     delete jobCopy.q
-    delete jobCopy.heardbeatIntervalId
+    //delete jobCopy.heardbeatIntervalId
     return jobCopy
   }
+
+  // get status () {
+  //   return this._status
+  // }
+  //
+  // set status (newStatus) {
+  //   const startHeartbeat = () => {
+  //     logger('startHeartbeat')
+  //     this.heartbeatIntervalId = setInterval((job) => {
+  //       logger('Heartbeat: ' + job.id)
+  //       return job.q.r.table(job.q.name).get(job.id)
+  //         .update({ dateHeartbeat: moment().toDate() }).run()
+  //     }, 1000, this)
+  //     // TODO: reinstate this line.
+  //     // , job.timeout * 1000 / 2, job)
+  //   }
+  //
+  //   if (newStatus === enums.jobStatus.active) {
+  //     startHeartbeat()
+  //   } else {
+  //     clearInterval(this.heartbeatIntervalId)
+  //   }
+  // }
+
+  // startHeartbeat () {
+  //   logger('startHeartbeat')
+  //   this.heartbeatIntervalId = setInterval((job) => {
+  //     logger('Heartbeat: ' + job.id)
+  //     return job.q.r.table(job.q.name).get(job.id)
+  //       .update({ dateHeartbeat: moment().toDate() }).run()
+  //   }, 1000, this)
+  //   // TODO: reinstate this line.
+  //   // , job.timeout * 1000 / 2, job)
+  // }
+  //
+  // stopHeartbeat () {
+  //   clearInterval(this.heartbeatIntervalId)
+  // }
 }
 
 module.exports = Job

@@ -27,6 +27,7 @@ module.exports.addJob = function (q, job) {
 }
 
 module.exports.getJobById = function (q, jobId) {
+  logger('getJobById')
   return q.r
     .db(q.db)
     .table(q.name)
@@ -34,6 +35,9 @@ module.exports.getJobById = function (q, jobId) {
 }
 
 module.exports.getNextJob = function (q) {
+  logger('getNextJob')
+  console.log(q.concurrency)
+  console.log(q.running)
   const now = moment().toDate()
   const quantity = q.concurrency - q.running
   return q.r
@@ -80,6 +84,7 @@ module.exports.deleteQueue = function (q) {
 }
 
 module.exports.removeJob = function (job) {
+  logger('removeJob')
   const db = job.q.db
   const tableName = job.q.name
   return job.q.r.db(db).table(tableName).get(job.id).delete().run()

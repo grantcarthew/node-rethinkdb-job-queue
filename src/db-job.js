@@ -67,9 +67,7 @@ module.exports.failed = function (err, job, data) {
 
 module.exports.startHeartbeat = function (job) {
   logger('startHeartbeat')
-  // TODO: delete these lines
-  // console.log(job.timeout)
-  // console.log(job.timeout * 1000 / 2)
+  console.log(job.id)
   return setInterval((job) => {
     logger('Heartbeat: ' + job.id)
     return job.q.r.table(job.q.name).get(job.id)

@@ -59,22 +59,22 @@ test('queue test', (t) => {
   // ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
   // // jobs.push(ej)
   // for (let i = 0; i < 4; i++) {
-  //   jobs.push(testQ.createJob({foo: i}))
+    jobs.push(testQ.createJob({foo: 1}))
   // }
 
   testQ.addJob(jobs).then((result) => {
-    console.log('RESULT!!!!!!!!!!!!!!!!')
+    console.log('!!!!!!!!!!!!!!!! ADD JOB RESULT !!!!!!!!!!!!!!!!')
     console.dir(JSON.parse(JSON.stringify(result)))
-  }).then(() => {
-      return testQ.getJob('142ad740-8bfc-4491-9d3d-b126d1064af6')
-  }).then((b) => {
-      console.log('SPECIFIC JOB')
-      console.dir(b)
-    }).then((c) => {
+  // }).then(() => {
+  //     return testQ.getJob('142ad740-8bfc-4491-9d3d-b126d1064af6')
+  // }).then((b) => {
+  //     console.log('SPECIFIC JOB')
+  //     console.dir(b)
+  //   }).then((c) => {
         // console.log('STALL TEST')
         // console.dir(c)
       }).then(() => {
-        return testQ.statusSummary
+        return testQ.getStatusSummary()
       }).then((d) => {
           console.log('STATUS SUMMARY')
           console.dir(d)

@@ -8,7 +8,11 @@ const dbJob = require('./db-job')
 const jobRun = function (job) {
   logger('jobRun')
   let handled = false
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
   let heartbeatIntervalId = dbJob.startHeartbeat(job)
+  //console.dir(heartbeatIntervalId)
+  console.dir(job)
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
