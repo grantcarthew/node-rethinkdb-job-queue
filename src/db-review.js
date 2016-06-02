@@ -19,9 +19,9 @@ function dbReviewJobTimeout (q) {
     log: q.r.row('log').add([{
       logDate: q.r.now(),
       queueId: q.id,
-      logType: enums.log.type.warning,
+      logType: enums.log.warning,
       status: enums.jobStatus.timeout,
-      queueMessage: enums.messages.timeout,
+      queueMessage: enums.message.timeout,
       duration: q.r.now().toEpochTime()
         .sub(q.r.row('dateStarted').toEpochTime())
         .mul(1000).round(),
@@ -35,7 +35,7 @@ module.exports.start = function (q) {
   if (dbReviewIntervalId) {
     return
   }
-  const interval = q.masterPollPeriod * 1000
+  const interval = q.masterReviewPeriod * 1000
   dbReviewIntervalId = setInterval(() => {
     return dbReviewJobTimeout(q)
   }, interval)

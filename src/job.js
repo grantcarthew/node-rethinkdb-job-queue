@@ -15,6 +15,9 @@ class Job {
     // Eg. new Job(queue, null, jobData)
     if (options.id) {
       Object.assign(this, options)
+      this.priority = Object.keys(enums.priority)
+        .find(key => enums.priority[key] === this.priority)
+      this.commited = true
     } else {
       options = jobOptions(options)
       let now = moment().toDate()
@@ -34,6 +37,7 @@ class Job {
       this.dateTimeout
       this.dateFailed
       this.workerId
+      this.commited = false
     }
   }
 
@@ -42,7 +46,17 @@ class Job {
     const jobCopy = Object.assign({}, this)
     jobCopy.priority = enums.priority[jobCopy.priority]
     delete jobCopy.q
+    delete jobCopy.commited
     return jobCopy
+  }
+
+  addLogEntry (log) {
+    if (!this.commited) {
+      return Promise.reject(enums.error.notCommited)
+    }
+    return this.q.table(this.q.name)
+    .get(this.id)
+    .update({log: this.q.r.row('log').add([log])})
   }
 }
 

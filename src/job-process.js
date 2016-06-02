@@ -75,11 +75,11 @@ const jobTick = function (q) {
 module.exports = function (q, handler) {
   logger('called')
   if (!q.isWorker) {
-    throw Error('Cannot call process on a non-worker')
+    throw Error(enums.error.nonWorker)
   }
 
   if (q.handler) {
-    throw Error('Cannot call process twice')
+    throw Error(enums.error.processTwice)
   }
 
   q.handler = handler

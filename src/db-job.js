@@ -14,9 +14,9 @@ module.exports.completed = function (job, data) {
   const log = jobLog(
     job.dateCompleted,
     job.q.id,
-    enums.log.type.information,
+    enums.log.information,
     job.status,
-    enums.messages.completed,
+    enums.message.completed,
     duration,
     data
   )
@@ -44,9 +44,9 @@ module.exports.failed = function (err, job, data) {
   const log = jobLog(
     job.dateFailed,
     job.q.id,
-    enums.log.type.error,
+    enums.log.error,
     job.status,
-    enums.messages.failed,
+    enums.message.failed,
     duration,
     data,
     err

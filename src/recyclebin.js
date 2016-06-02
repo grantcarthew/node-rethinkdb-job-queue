@@ -63,9 +63,9 @@ function dbReviewJobTimeout (q) {
   const log = jobLog(
     moment().toDate(),
     q.id,
-    enums.log.type.warning,
+    enums.log.warning,
     enums.jobStatus.timeout,
-    enums.messages.timeout
+    enums.message.timeout
   )
 
   return q.r.table(q.name)

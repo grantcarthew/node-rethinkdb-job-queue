@@ -18,7 +18,7 @@ module.exports = {
     failed: 'failed',
     retry: 'retry'
   },
-  jobEvents: {
+  jobEvent: {
     created: 'created',
     delayed: 'delayed',
     active: 'active',
@@ -42,15 +42,18 @@ module.exports = {
     active_dateStarted: 'active_dateStarted'
   },
   log: {
-    type: {
-      information: 'information',
-      warning: 'warning',
-      error: 'error'
-    }
+    information: 'information',
+    warning: 'warning',
+    error: 'error'
   },
-  messages: {
+  message: {
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
     timeout: 'Job processing has timed out'
+  },
+  error: {
+    notCommited: 'Job not added to the queue',
+    nonWorker: 'Cannot call queue process on a non-worker',
+    processTwice: 'Cannot call queue process twice'
   }
 }

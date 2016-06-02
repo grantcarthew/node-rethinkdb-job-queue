@@ -3,7 +3,7 @@ const Queue = require('../src/queue')
 const Promise = require('bluebird')
 const customJobDefaultOptions = {
   priority: 'highest',
-  timeout: 2,
+  timeout: 4,
   retryMax: 2,
   retryDelay: 20
 }
@@ -13,7 +13,8 @@ test('queue test', (t) => {
 
   const testQ = new Queue({
     queueName: 'JobQueueUnitTests',
-    concurrency: 3
+    concurrency: 3,
+    masterReviewPeriod: 6
   })
   testQ.jobDefaultOptions = customJobDefaultOptions
   t.deepEqual(testQ.jobDefaultOptions, customJobDefaultOptions, 'Set default job options')
@@ -70,9 +71,10 @@ test('queue test', (t) => {
   // }).then((b) => {
   //     console.log('SPECIFIC JOB')
   //     console.dir(b)
-  //   }).then((c) => {
-        // console.log('STALL TEST')
-        // console.dir(c)
+
+    }).then((c) => {
+        console.log('STALL TEST')
+        console.dir(c)
       }).then(() => {
         return testQ.getStatusSummary()
       }).then((d) => {

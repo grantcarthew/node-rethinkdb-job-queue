@@ -30,7 +30,5 @@ If now > dateStarted + timeout + buffervalue??? then job failed;
 
 # TODO
 
-Fix dbReview
 Check joblog format on all files.
 Check enums...
-Add job.log()
