@@ -11,8 +11,8 @@ function dbReviewJobTimeout (q) {
   .orderBy({index: 'active_dateStarted'})
   .filter(
     q.r.row('dateStarted')
-    // .add(q.r.row('timeout'))
-    // .add(60)
+    .add(q.r.row('timeout'))
+    .add(60)
     .lt(q.r.now())
   ).update({
     status: enums.jobStatus.timeout,
