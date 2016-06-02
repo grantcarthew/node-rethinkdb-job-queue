@@ -3,7 +3,7 @@ const Queue = require('../src/queue')
 const Promise = require('bluebird')
 const customJobDefaultOptions = {
   priority: 'highest',
-  timeout: 20,
+  timeout: 2,
   retryMax: 2,
   retryDelay: 20
 }

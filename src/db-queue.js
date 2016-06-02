@@ -46,9 +46,9 @@ module.exports.getNextJob = function (q) {
     .limit(quantity)
     .update({
       status: enums.jobStatus.active,
-      dateStarted: now,
-      dateModified: now,
-      dateHeartbeat: now
+      dateStarted: q.r.now(),
+      dateModified: q.r.now(),
+      timeoutReviewDate: q.r.now().add(q.r.row('timeout')).add(60)
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {

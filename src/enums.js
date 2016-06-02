@@ -6,7 +6,7 @@ module.exports = {
     medium: 30,
     high: 20,
     highest: 10,
-    retry: 1 // Used for retries after a job has stalled or failed.
+    retry: 1 // Used for retries after a job has timed out or failed.
   },
   jobStatus: {
     created: 'created',
@@ -14,6 +14,7 @@ module.exports = {
     active: 'active',
     waiting: 'waiting',
     completed: 'completed',
+    timeout: 'timeout',
     failed: 'failed',
     retry: 'retry'
   },
@@ -36,9 +37,9 @@ module.exports = {
   index: {
     priority_dateCreated: 'priority_dateCreated',
     inactive: 'inactive_priority_dateCreated',
-    stalled: 'stalled',
+    timeout: 'timeout',
     status: 'status',
-    active: 'active'
+    active_dateStarted: 'active_dateStarted'
   },
   log: {
     type: {
@@ -50,6 +51,6 @@ module.exports = {
   messages: {
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
-    stalled: 'Job processing has stalled'
+    timeout: 'Job processing has timed out'
   }
 }

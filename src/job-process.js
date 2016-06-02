@@ -9,8 +9,6 @@ const jobRun = function (job) {
   logger('jobRun')
   let handled = false
   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-  let heartbeatIntervalId = dbJob.startHeartbeat(job)
-  //console.dir(heartbeatIntervalId)
   console.dir(job)
   console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
   let jobTimeoutId
@@ -22,7 +20,6 @@ const jobRun = function (job) {
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
-    clearInterval(heartbeatIntervalId)
     clearTimeout(jobTimeoutId)
     job.q.running--
     let finalPromise
@@ -87,7 +84,7 @@ module.exports = function (q, handler) {
 
   q.handler = handler
   q.running = 0
-  return dbReview.reviewStalledJobs(q).then((stallReviewResult) => {
+  return dbReview.dbReviewJobTimeout(q).then((dbReviewResult) => {
     dbReview.start(q)
     setImmediate(jobTick, q)
     return true

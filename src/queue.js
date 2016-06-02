@@ -30,18 +30,22 @@ class Queue extends EventEmitter {
     })
     this.onChange = queueMessages
     this.name = options.name || 'rjqJobList'
+    this.isMaster = options.isMaster || true
+    this.masterReviewPeriod = options.masterReviewPeriod || 300
     this.isWorker = options.isWorker || true
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this.removeOnSuccess = options.removeOnSuccess || true
-    this.catchExceptions = options.catchExceptions || true
     this.paused = false
     this.ready = async(function * () {
       yield dbAssert.database(this)
       yield dbAssert.table(this)
       yield dbAssert.index(this)
       yield dbQueue.registerQueueChangeFeed(this)
+      if (this.isMaster) {
+        dbReview.start(this)
+      }
       this.emit(enums.queueStatus.ready)
     }).bind(this)()
   }

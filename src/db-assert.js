@@ -43,7 +43,7 @@ module.exports.index = function assertIndex (q) {
   return Promise.all([
     dbIndexes.createIndexPriorityAndDateCreated(q),
     dbIndexes.createIndexStatus(q),
-    dbIndexes.createIndexActive(q),
+    dbIndexes.createIndexActiveDateStarted(q),
     dbIndexes.createIndexInactive(q)
   ]).then((indexCreateResult) => {
     return logger('Waiting for index...')

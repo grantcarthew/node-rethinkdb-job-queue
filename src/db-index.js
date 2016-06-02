@@ -1,16 +1,16 @@
 const logger = require('./logger')(module)
 const enums = require('./enums')
 
-module.exports.createIndexActive = function (q) {
-  logger('createIndexActive')
-  let indexName = enums.index.active
+module.exports.createIndexActiveDateStarted = function (q) {
+  logger('createIndexActiveDateStarted')
+  let indexName = enums.index.active_dateStarted
   return q.r.table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
     return q.r.table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq('active'),
-        row('dateHeartbeat'),
+        row('dateStarted'),
         null
       )
     }).run()
