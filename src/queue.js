@@ -16,7 +16,7 @@ class Queue extends EventEmitter {
 
   constructor (options) {
     super()
-    logger('Queue Constructor')
+    logger('Queue Constructor', options)
 
     options = options || {}
     this.name = options.name || 'rjqJobList'

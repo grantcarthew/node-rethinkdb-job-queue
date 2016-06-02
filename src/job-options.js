@@ -7,7 +7,7 @@ const defaultOptions = {
 }
 
 module.exports = function (options = {}) {
-  logger('called')
+  logger('options', options)
   return {
     priority: options.priority || defaultOptions.priority,
     timeout: options.timeout || defaultOptions.timeout,

@@ -5,7 +5,7 @@ const enums = require('./enums')
 const jobLog = require('./job-log')
 
 module.exports.completed = function (job, data) {
-  logger('completed')
+  logger('completed: ' + job.id)
   job.status = enums.jobStatus.completed
   job.dateCompleted = moment().toDate()
   job.progress = 100
@@ -29,7 +29,8 @@ module.exports.completed = function (job, data) {
 }
 
 module.exports.failed = function (err, job, data) {
-  logger('failed')
+  logger('failed: ' + job.id)
+  logger('Error', err)
   job.status = enums.jobStatus.failed
   job.q.emit('job failed', job.id)
   if (job.retryCount < job.retryMax) {

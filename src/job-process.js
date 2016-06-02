@@ -8,9 +8,9 @@ const dbJob = require('./db-job')
 const jobRun = function (job) {
   logger('jobRun')
   let handled = false
-  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-  console.dir(job)
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+  // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+  // console.dir(job)
+  // console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
