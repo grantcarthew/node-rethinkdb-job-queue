@@ -4,7 +4,8 @@ queueId,
 logType,
 status,
 queueMessage,
-jobMessage,
+duration,
+jobData,
 err) {
   if (err) {
     queueMessage = `${queueMessage}: ${err.message}`
@@ -15,6 +16,7 @@ err) {
     logType,
     status,
     queueMessage,
-    jobMessage
+    duration,
+    jobData
   }
 }

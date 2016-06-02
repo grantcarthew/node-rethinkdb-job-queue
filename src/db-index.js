@@ -25,7 +25,7 @@ module.exports.createIndexInactive = function (q) {
     if (exists) { return exists }
     return q.r.table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
-        row('status').eq('active'),
+        row('status').eq('active').or(row('status').eq('completed')),
         null, [
           row('priority'),
           row('dateCreated')

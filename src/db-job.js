@@ -17,6 +17,7 @@ module.exports.completed = function (job, data) {
   job.status = enums.jobStatus.completed
   job.dateCompleted = moment().toDate()
   job.progress = 100
+  const duration = moment(job.dateCompleted).diff(moment(job.dateStarted))
 
   const log = jobLog(
     job.dateCompleted,
@@ -24,6 +25,7 @@ module.exports.completed = function (job, data) {
     enums.log.type.information,
     job.status,
     enums.messages.completed,
+    duration,
     data
   )
   return job.q.r.table(job.q.name).get(job.id).update({
