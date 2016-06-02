@@ -46,10 +46,10 @@ test('queue test', (t) => {
 
 
   testQ.process((job, next) => {
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ process ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    console.log('~~~~~~~~~~ process ~~~~~~~~~~')
     console.log(job.id)
     setTimeout(() => {
-      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ process finished ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+      console.log('~~~~~~~~~~ process finished ~~~~~~~~~~')
       next(null, 'Job Completed')
     }, 3000)
   })
@@ -64,26 +64,18 @@ test('queue test', (t) => {
   // }
 
   testQ.addJob(jobs).then((result) => {
-    console.log('!!!!!!!!!!!!!!!! ADD JOB RESULT !!!!!!!!!!!!!!!!')
+    console.log('~~~~~~~~~~ addJob result ~~~~~~~~~~')
     console.dir(JSON.parse(JSON.stringify(result)))
-  // }).then(() => {
-  //     return testQ.getJob('142ad740-8bfc-4491-9d3d-b126d1064af6')
-  // }).then((b) => {
-  //     console.log('SPECIFIC JOB')
-  //     console.dir(b)
-
-    }).then((c) => {
-        console.log('STALL TEST')
-        console.dir(c)
-      }).then(() => {
-        return testQ.getStatusSummary()
-      }).then((d) => {
-          console.log('STATUS SUMMARY')
-          console.dir(d)
-        }).then(() => {
-      //return testQ.delete()
-    }).then(() => {
-    //testQ.r.getPoolMaster().drain()
+  }).then(() => {
+    return testQ.getStatusSummary()
+  }).then((d) => {
+    console.log('~~~~~~~~~~ getStatusSummary ~~~~~~~~~~')
+    console.dir(d)
+  }).then(() => {
+    return testQ.delete(4000)
+  }).then((deleteResult) => {
+    console.log('~~~~~~~~~~ deleteResult ~~~~~~~~~~')
+    console.dir(deleteResult)
   })
 
 })

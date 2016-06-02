@@ -50,9 +50,8 @@ const jobTick = function (q) {
     }
     return jobsToDo
   }).then((jobsToDo) => {
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ jobsToDo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-    jobsToDo.forEach((j) => { console.log(j.id) })
-    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    logger('jobsToDo', jobsToDo.map(j => j.id))
+
     for (let jobToDo of jobsToDo) {
       q.running++
       jobRun(jobToDo)

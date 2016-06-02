@@ -48,8 +48,9 @@ class Queue extends EventEmitter {
       yield dbAssert.database(this)
       yield dbAssert.table(this)
       yield dbAssert.index(this)
-      yield dbQueue.registerQueueChangeFeed(this)
+      yield dbQueue.startQueueChangeFeed(this)
       if (this.isMaster) {
+        logger('Queue is a master')
         dbReview.start(this)
       }
       this.emit(enums.queueStatus.ready)
@@ -114,20 +115,16 @@ class Queue extends EventEmitter {
     })
   }
 
-  close () {
-    logger('close')
-    this.paused = true
-    dbReview.stop(this)
-    return this.r.getPoolMaster().drain()
+  stop (stopTimeout, drainPool) {
+    if (!stopTimeout) { throw new Error(enums.error.missingTimeout) }
+    logger('stop')
+    return dbQueue.stopQueue(this, stopTimeout)
   }
 
-  delete () {
+  delete (deleteTimeout) {
     logger('delete')
-    return this.ready.then(() => {
-      return dbQueue.deleteQueue(this)
-    }).then(() => {
-      this.ready = Promise.reject('Queue has been deleted')
-    })
+    if (!deleteTimeout) { throw new Error(enums.error.missingTimeout) }
+    return dbQueue.deleteQueue(this, deleteTimeout)
   }
 }
 

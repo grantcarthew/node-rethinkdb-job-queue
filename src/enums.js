@@ -48,11 +48,15 @@ module.exports = {
   message: {
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
-    timeout: 'Job processing has timed out'
+    timeout: 'Job processing has timed out',
+    allJobsStopped: 'All running jobs have stopped',
+    failedToStop: 'Failed to gracefully stop jobs, force quit'
   },
   error: {
     notCommited: 'Job not added to the queue',
     nonWorker: 'Cannot call queue process on a non-worker',
-    processTwice: 'Cannot call queue process twice'
+    processTwice: 'Cannot call queue process twice',
+    missingTimeout: 'Timeout parameter required to stop or delete queue',
+    queueDeleted: 'The queue has been deleted'
   }
 }

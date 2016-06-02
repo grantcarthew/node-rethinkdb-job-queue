@@ -1,12 +1,13 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const moment = require('moment')
 const enums = require('./enums')
+const dbReview = require('./db-review')
 
-module.exports.registerQueueChangeFeed = function (q) {
-  logger('registerQueueChangeFeed')
+module.exports.startQueueChangeFeed = function (q) {
+  logger('startQueueChangeFeed')
   return q.r.table(q.name)
   .changes().run().then((feed) => {
+    q.feed = feed
     feed.each((err, change) => {
       q.onChange(err, change)
     })
@@ -43,8 +44,7 @@ module.exports.getJobById = function (q, jobId) {
 
 module.exports.getNextJob = function (q) {
   logger('getNextJob')
-  console.log(q.concurrency)
-  console.log(q.running)
+  logger(`Concurrency: ${q.concurrency} Running: ${q.running}`)
   const quantity = q.concurrency - q.running
   return q.r
     .table(q.name)
@@ -82,8 +82,48 @@ module.exports.statusSummary = function (q) {
   })
 }
 
-module.exports.deleteQueue = function (q) {
+const stopQueue = function (q, stopTimeout, drainPool = true) {
   logger('deleteQueue')
-  q.ready = Promise.reject('The queue has been deleted')
-  return q.r.dbDrop(q.db).run()
+  q.paused = true
+  let stopIntervalId
+  let stopTimeoutId
+  const cleanUp = () => {
+    if (drainPool) { q.r.getPoolMaster().drain() }
+    if (stopIntervalId) { clearInterval(stopIntervalId) }
+    if (stopIntervalId) { clearInterval(stopIntervalId) }
+  }
+
+  return q.ready.then(() => {
+    logger('Waiting half stop time')
+    return Promise.delay(stopTimeout / 2)
+  }).then(() => {
+    return new Promise((resolve) => {
+      if (q.feed) { q.feed.close() }
+      dbReview.stop(q)
+
+      stopTimeoutId = setTimeout(() => {
+        cleanUp()
+        q.running < 1 ? resolve(enums.message.allJobsStopped)
+          : resolve(enums.message.failedToStop)
+      }, stopTimeout / 2)
+
+      stopIntervalId = setInterval(() => {
+        if (q.running < 1) {
+          cleanUp()
+          resolve(enums.message.allJobsStopped)
+        }
+      }, stopTimeout / 12)
+    })
+  })
+}
+module.exports.stopQueue = stopQueue
+
+module.exports.deleteQueue = function (q, deleteTimeout) {
+  logger('deleteQueue')
+  return stopQueue(q, deleteTimeout, false).then(() => {
+    q.ready = false
+    return q.r.dbDrop(q.db).run()
+  }).then(() => {
+    return q.r.getPoolMaster().drain()
+  })
 }
