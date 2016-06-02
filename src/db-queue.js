@@ -38,7 +38,6 @@ module.exports.getNextJob = function (q) {
   logger('getNextJob')
   console.log(q.concurrency)
   console.log(q.running)
-  const now = moment().toDate()
   const quantity = q.concurrency - q.running
   return q.r
     .table(q.name)
@@ -46,9 +45,7 @@ module.exports.getNextJob = function (q) {
     .limit(quantity)
     .update({
       status: enums.jobStatus.active,
-      dateStarted: q.r.now(),
-      dateModified: q.r.now(),
-      timeoutReviewDate: q.r.now().add(q.r.row('timeout')).add(60)
+      dateStarted: q.r.now()
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {

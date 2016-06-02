@@ -15,7 +15,6 @@ class Job {
     // Eg. new Job(queue, null, jobData)
     if (options.id) {
       Object.assign(this, options)
-      delete this.timeoutReviewDate
     } else {
       options = jobOptions(options)
       let now = moment().toDate()

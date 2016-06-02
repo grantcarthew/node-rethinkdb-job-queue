@@ -18,8 +18,8 @@ class Queue extends EventEmitter {
     super()
     logger('Queue Constructor')
 
-    this.id = [ 'rethinkdb-job-queue', require('os').hostname(), process.pid ].join(':')
     options = options || {}
+    this.name = options.name || 'rjqJobList'
     this.host = options.host || 'localhost'
     this.port = options.port || 28015
     this.db = options.db || 'rjqJobQueue'
@@ -29,7 +29,6 @@ class Queue extends EventEmitter {
       db: this.db
     })
     this.onChange = queueMessages
-    this.name = options.name || 'rjqJobList'
     this.isMaster = options.isMaster || true
     this.masterReviewPeriod = options.masterReviewPeriod || 300
     this.isWorker = options.isWorker || true
@@ -38,6 +37,13 @@ class Queue extends EventEmitter {
     this._jobDefaultOptions = jobOptions()
     this.removeOnSuccess = options.removeOnSuccess || true
     this.paused = false
+    this.id = [
+      require('os').hostname(),
+      this.db,
+      this.name,
+      process.pid
+    ].join(':')
+
     this.ready = async(function * () {
       yield dbAssert.database(this)
       yield dbAssert.table(this)

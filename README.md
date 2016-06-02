@@ -51,11 +51,21 @@ However, if a queue worker node fails for any reason whilst working on a job, th
 
 To ensure the job is not forgotten, `rethinkdb-job-queue` has an option called `isMaster` you can pass when creating a queue. The `isMaster` option defaults to `true` if not supplied. There should be at least one master node per queue.
 
-When a queue is a master, it will review the queue backing table based on the `masterReviewPeriod` option which defaults to `300` seconds or 5 minutes.
+When a queue node is a master, it will review the queue backing table based on the `masterReviewPeriod` option which defaults to `300` seconds or 5 minutes.
 
-When the master node reviews the queue backing table, it looks for jobs that are `active` and past their `timeoutReviewDate`. The `timeoutReviewDate` value is calculated based on the `dateStarted` plus job `timeout` plus `60` seconds. The extra `60` seconds is to allow an functioning queue worker node to detect when a job has timed out and update it prior to the master review.
+When the master node reviews the queue backing table, it looks for jobs that are `active` and past their review timeout value which is different to the job `timeout` value.
 
-If a job is `active` and past the `timeoutReviewDate`, it is updated to a `retry` status and the priority is set to `retry` (a stored value of 1) which is the highest priority. Note the `retryCount` value of the job does not get incremented because the worker node failed.
+The review timeout value is calculated from the following formula;
+
+```js
+ job.dateStarted + job.timeout + 60
+ ```
+
+The extra `60` seconds is to allow a functioning queue worker node to detect when a job has timed out and update it prior to the master review.
+
+If a job is `active` and the current time is past the review timeout, the job is updated to a `retry` status and the priority is set to `retry` (a stored value of 1) which is the highest priority.
+
+Note that the `retryCount` value of the job does not get incremented because the worker node failed.
 
 
 

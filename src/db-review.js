@@ -6,21 +6,27 @@ let dbReviewIntervalId
 
 function dbReviewJobTimeout (q) {
   logger('dbReviewJobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
-  const r = q.r
-  const timeoutDate = moment().add(-1, 'minutes').toDate()
-  const log = jobLog(
-    moment().toDate(),
-    q.id,
-    enums.log.type.warning,
-    enums.jobStatus.timeout,
-    enums.messages.timeout
-  )
 
   return q.r.table(q.name)
-  .between(q.r.minval, timeoutDate, { index: enums.index.active_dateStarted })
-  .update({
+  .orderBy({index: 'active_dateStarted'})
+  .filter(
+    q.r.row('dateStarted')
+    // .add(q.r.row('timeout'))
+    // .add(60)
+    .lt(q.r.now())
+  ).update({
     status: enums.jobStatus.timeout,
-    log: q.r.row('log').add([log])
+    log: q.r.row('log').add([{
+      logDate: q.r.now(),
+      queueId: q.id,
+      logType: enums.log.type.warning,
+      status: enums.jobStatus.timeout,
+      queueMessage: enums.messages.timeout,
+      duration: q.r.now().toEpochTime()
+        .sub(q.r.row('dateStarted').toEpochTime())
+        .mul(1000).round(),
+      jobData: ''
+    }])
   }).run()
 }
 
