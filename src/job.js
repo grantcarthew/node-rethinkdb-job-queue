@@ -51,6 +51,7 @@ class Job {
   }
 
   addLogEntry (log) {
+    logger('addLogEntry')
     if (!this.commited) {
       return Promise.reject(enums.error.notCommited)
     }

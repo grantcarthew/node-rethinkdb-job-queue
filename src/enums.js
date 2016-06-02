@@ -35,11 +35,10 @@ module.exports = {
     error: 'error'
   },
   index: {
-    priority_dateCreated: 'priority_dateCreated',
-    inactive: 'inactive_priority_dateCreated',
-    timeout: 'timeout',
     status: 'status',
-    active_dateStarted: 'active_dateStarted'
+    priority_dateCreated: 'priority_dateCreated',
+    active_dateStarted: 'active_dateStarted',
+    inactive_priority_dateCreated: 'inactive_priority_dateCreated'
   },
   log: {
     information: 'information',

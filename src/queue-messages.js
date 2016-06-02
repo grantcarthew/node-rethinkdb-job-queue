@@ -3,7 +3,7 @@ const enums = require('./enums')
 const Job = require('./job')
 
 module.exports = function (err, change) {
-  logger('called')
+  logger('message')
   // console.log('------------- QUEUE CHANGE -------------')
   // console.dir(change)
   // console.log('----------------------------------------')

@@ -26,6 +26,13 @@ module.exports.addJob = function (q, job) {
   })
 }
 
+module.exports.removeJob = function (job) {
+  logger('removeJob')
+  const db = job.q.db
+  const tableName = job.q.name
+  return job.q.r.db(db).table(tableName).get(job.id).delete().run()
+}
+
 module.exports.getJobById = function (q, jobId) {
   logger('getJobById')
   return q.r
@@ -41,7 +48,7 @@ module.exports.getNextJob = function (q) {
   const quantity = q.concurrency - q.running
   return q.r
     .table(q.name)
-    .orderBy({index: enums.index.inactive})
+    .orderBy({index: enums.index.inactive_priority_dateCreated})
     .limit(quantity)
     .update({
       status: enums.jobStatus.active,
@@ -78,11 +85,4 @@ module.exports.deleteQueue = function (q) {
   logger('deleteQueue')
   q.ready = Promise.reject('The queue has been deleted')
   return q.r.dbDrop(q.db).run()
-}
-
-module.exports.removeJob = function (job) {
-  logger('removeJob')
-  const db = job.q.db
-  const tableName = job.q.name
-  return job.q.r.db(db).table(tableName).get(job.id).delete().run()
 }

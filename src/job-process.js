@@ -73,7 +73,7 @@ const jobTick = function (q) {
 }
 
 module.exports = function (q, handler) {
-  logger('called')
+  logger('process')
   if (!q.isWorker) {
     throw Error(enums.error.nonWorker)
   }

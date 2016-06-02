@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const dbIndexes = require('./db-index')
 
 module.exports.database = function assertDatabase (q) {
+  logger('assertDatabase')
   return q.r.dbList()
   .contains(q.db)
   .do((databaseExists) => {
@@ -19,6 +20,7 @@ module.exports.database = function assertDatabase (q) {
 }
 
 module.exports.table = function assertTable (q) {
+  logger('assertTable')
   return q.r.tableList()
   .contains(q.name)
   .do((tableExists) => {
@@ -40,11 +42,12 @@ module.exports.table = function assertTable (q) {
 }
 
 module.exports.index = function assertIndex (q) {
+  logger('assertIndex')
   return Promise.all([
-    dbIndexes.createIndexPriorityAndDateCreated(q),
     dbIndexes.createIndexStatus(q),
+    dbIndexes.createIndexPriorityDateCreated(q),
     dbIndexes.createIndexActiveDateStarted(q),
-    dbIndexes.createIndexInactive(q)
+    dbIndexes.createIndexInactivePriorityDateCreated(q)
   ]).then((indexCreateResult) => {
     return logger('Waiting for index...')
   }).then(() => {
