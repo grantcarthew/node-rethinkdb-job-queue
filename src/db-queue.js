@@ -19,11 +19,14 @@ module.exports.addJob = function (q, job) {
   let jobs = Array.isArray(job) ? job : [job]
   jobs = jobs.map((job) => job.cleanCopy)
   return q.r.table(q.name)
-  .insert(jobs).run().then((saveResult) => {
+  .insert(jobs, {returnChanges: true}).run()
+  .then((saveResult) => {
     if (saveResult.errors > 0) {
       return Promise.reject(saveResult)
     }
-    return saveResult
+    return saveResult.changes
+  }).map((change) => {
+    return q.createJob(null, change.new_val)
   })
 }
 

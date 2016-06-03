@@ -2,20 +2,16 @@ const test = require('tape')
 const rethinkdbdash = require('rethinkdbdash')
 const enums = require('../src/enums')
 const dbAssert = require('../src/db-assert')
-const testName = 'rjqJobQueueDbAssertUnitTests'
+const testOptions = require('./test-options')
 const mockQueue = {
-  r: rethinkdbdash({
-    host: 'localhost',
-    port: '28015',
-    db: testName
-  }),
-  db: testName,
-  name: testName
+  r: rethinkdbdash(testOptions.connectionOptions),
+  db: testOptions.dbName,
+  name: testOptions.queueName
 }
 
 test('db-assert test', (t) => {
-  t.plan(9)
-  dbAssert.database(mockQueue).then((dbResult) => {
+  t.plan(11)
+  return dbAssert.database(mockQueue).then((dbResult) => {
     t.ok(dbResult, 'Database asserted')
     return dbAssert.table(mockQueue)
   }).then((tableResult) => {
@@ -32,11 +28,15 @@ test('db-assert test', (t) => {
     return mockQueue.r.table(mockQueue.name)
     .indexList().run()
   }).then((indexes) => {
-    t.ok(indexes.includes(enums.indexes.priority_dateCreated),
-      'PriorityAndDateCreated index exists')
-    t.ok(indexes.includes(enums.indexes.status),
-      'Status index exists')
-    return mockQueue.r.dbDrop(testName).run()
+    t.ok(indexes.includes(enums.index.status),
+      'status index exists')
+    t.ok(indexes.includes(enums.index.priority_dateCreated),
+      'priority_dateCreated index exists')
+    t.ok(indexes.includes(enums.index.active_dateStarted),
+      'active_dateStarted index exists')
+    t.ok(indexes.includes(enums.index.inactive_priority_dateCreated),
+      'inactive_priority_dateCreated index exists')
+    return mockQueue.r.dbDrop(mockQueue.db).run()
   }).then((dropResult) => {
     t.equals(dropResult.dbs_dropped, 1, 'Unit test db dropped')
     t.equals(dropResult.tables_dropped, 1, 'Unit test table dropped')

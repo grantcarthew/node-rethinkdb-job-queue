@@ -30,5 +30,6 @@ If now > dateStarted + timeout + buffervalue??? then job failed;
 
 # TODO
 
+Queue: return full jobs when added.
 Check joblog format on all files.
 Check enums...

@@ -1,21 +1,15 @@
 const test = require('tape')
 const Queue = require('../src/queue')
 const Promise = require('bluebird')
-const customJobDefaultOptions = {
-  priority: 'highest',
-  timeout: 4,
-  retryMax: 2,
-  retryDelay: 20
-}
+const testOptions = require('./test-options')
+const queueDefaultOptions = testOptions.queueDefaultOptions
+const customJobDefaultOptions = testOptions.jobOptionsHigh
+
 
 test('queue test', (t) => {
   t.plan(6)
 
-  const testQ = new Queue({
-    queueName: 'JobQueueUnitTests',
-    concurrency: 3,
-    masterReviewPeriod: 6
-  })
+  const testQ = new Queue(queueDefaultOptions)
   testQ.jobDefaultOptions = customJobDefaultOptions
   t.deepEqual(testQ.jobDefaultOptions, customJobDefaultOptions, 'Set default job options')
   testQ.on('ready', () => {
