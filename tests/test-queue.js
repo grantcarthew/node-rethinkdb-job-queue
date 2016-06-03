@@ -1,5 +1,5 @@
 const Queue = require('../src/queue')
 const testOptions = require('./test-options')
-const testQ = new Queue(testOptions.queueDefaultOptions)
+const testQ = new Queue(testOptions.queueDefault())
 
 module.exports = testQ

@@ -15,8 +15,8 @@ module.exports.startQueueChangeFeed = function (q) {
 }
 
 module.exports.addJob = function (q, job) {
-  logger('addJob :' + job.id)
   let jobs = Array.isArray(job) ? job : [job]
+  logger('addJob', jobs.map(j => j.id))
   jobs = jobs.map((job) => job.cleanCopy)
   return q.r.table(q.name)
   .insert(jobs, {returnChanges: true}).run()
@@ -38,11 +38,13 @@ module.exports.removeJob = function (job) {
 }
 
 module.exports.getJobById = function (q, jobId) {
-  logger('getJobById: ' + job.id)
+  let jobIds = Array.isArray(jobId) ? jobId : [jobId]
+  logger('getJobById: ', jobIds)
+
   return q.r
     .db(q.db)
     .table(q.name)
-    .get(jobId).run()
+    .getAll(jobIds).run()
 }
 
 module.exports.getNextJob = function (q) {
