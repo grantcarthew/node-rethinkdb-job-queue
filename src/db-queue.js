@@ -44,7 +44,11 @@ module.exports.getJobById = function (q, jobId) {
   return q.r
     .db(q.db)
     .table(q.name)
-    .getAll(jobIds).run()
+    .getAll(...jobIds)
+    .run()
+    .then((jobsData) => {
+      return jobsData.map(job => q.createJob(null, job))
+    })
 }
 
 module.exports.getNextJob = function (q) {
