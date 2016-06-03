@@ -1,6 +1,9 @@
 # Worklog
 
-Working on heartbeat...
+Working on db-job.spec testing...
+Need to test job complete data and fail/retry
+
+
 
 Two states: timeout = 0, timeout > 0
 
