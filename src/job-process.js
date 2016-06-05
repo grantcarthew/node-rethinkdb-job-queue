@@ -4,6 +4,7 @@ const enums = require('./enums')
 const dbReview = require('./db-review')
 const dbQueue = require('./db-queue')
 const dbJob = require('./db-job')
+const jobDbCompleted = require('./job-db-completed')
 
 const jobRun = function (job) {
   logger('jobRun')
@@ -26,7 +27,7 @@ const jobRun = function (job) {
     if (err) {
       finalPromise = dbJob.failed(err, job, data)
     } else {
-      finalPromise = dbJob.completed(job, data)
+      finalPromise = jobDbCompleted(job, data)
     }
     return finalPromise.then((finalResult) => {
       return setImmediate(jobTick, job.q)

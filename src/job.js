@@ -3,6 +3,7 @@ const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
+const jobDbComplete = require('./job-db-completed')
 
 class Job {
 
@@ -43,6 +44,8 @@ class Job {
       this.workerId
       this.commited = false
     }
+
+    //jobDbComplete.call(this)
   }
 
   get cleanCopy () {
@@ -64,5 +67,7 @@ class Job {
     .update({log: this.q.r.row('log').add([logEntry])})
   }
 }
+
+//Job.prototype._complete = jobDbComplete(this)
 
 module.exports = Job

@@ -1,7 +1,7 @@
 # Worklog
 
-Working on db-job.spec testing...
-Need to test job complete data and fail/retry
+Working on job-db-failed and .spec
+Need to test job data and fail/retry
 
 
 
