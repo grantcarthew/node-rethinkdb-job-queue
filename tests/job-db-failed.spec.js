@@ -15,9 +15,10 @@ test('job-db-failed test', (t) => {
     t.equal(savedJob[0].id, job.id, 'Jobs saved successfully')
     return jobDbFailed(null, savedJob[0], testData)
   }).then((changeResult) => {
+    console.dir(changeResult)
     t.equal(changeResult.replaced, 1, 'Jobs updated successfully')
     return testQueue.getJob(job.id)
   }).then((updated1Job) => {
-    console.dir(updated1Job)
+
   })
 })

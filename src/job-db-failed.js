@@ -27,11 +27,22 @@ module.exports = function completed (err, job, data) {
     data,
     err
   )
-  return job.q.r.table(job.q.name).get(job.id).update({
+  return job.q.r.table(job.q.name)
+  .get(job.id)
+  .update({
     status: job.status,
     retryCount: job.retryCount,
     progress: job.probress,
     dateFailed: job.dateFailed,
     log: job.q.r.row('log').add([log])
-  }).run()
+  }, {returnChanges: true})
+  .run()
+  .then((updateResult) => {
+    if (updateResult.errors > 0) {
+      return Promise.reject(updateResult)
+    }
+    return updateResult.changes
+  }).map((change) => {
+    return job.q.createJob(null, change.new_val)
+  })
 }
