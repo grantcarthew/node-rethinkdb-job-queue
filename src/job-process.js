@@ -3,8 +3,8 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
 const dbQueue = require('./db-queue')
-const dbJob = require('./db-job')
 const jobDbCompleted = require('./job-db-completed')
+const jobDbFailed = require('./job-db-failed')
 
 const jobRun = function (job) {
   logger('jobRun')
@@ -25,7 +25,7 @@ const jobRun = function (job) {
     job.q.running--
     let finalPromise
     if (err) {
-      finalPromise = dbJob.failed(err, job, data)
+      finalPromise = jobDbFailed(err, job, data)
     } else {
       finalPromise = jobDbCompleted(job, data)
     }

@@ -5,7 +5,7 @@ const enums = require('../src/enums')
 const jobDbCompleted = require('../src/job-db-completed')
 const testData = 'This is a test'
 
-test('db-job test', (t) => {
+test('job-db-completed test', (t) => {
   t.plan(14)
 
   let job = testQueue.createJob(testData)

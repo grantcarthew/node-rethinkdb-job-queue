@@ -1,2 +1,3 @@
 // require('./db-assert.spec')
-require('./db-job.spec')
+// require('./job-db-completed.spec')
+ require('./job-db-failed.spec')
