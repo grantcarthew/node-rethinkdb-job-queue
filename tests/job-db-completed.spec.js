@@ -3,7 +3,7 @@ const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
 const jobDbCompleted = require('../src/job-db-completed')
-const testData = 'This is a test'
+const testData = require('./test-options').testData
 
 test('job-db-completed test', (t) => {
   t.plan(13)

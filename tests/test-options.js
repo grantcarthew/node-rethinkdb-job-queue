@@ -3,6 +3,8 @@ const dbPort = module.exports.dbPort = '28015'
 const dbName = module.exports.dbName = 'rjqJobQueueUnitTests'
 const queueName = module.exports.queueName = 'rjqJobQueueUnitTestsJobList'
 
+module.exports.testData = 'The quick brown fox jumped over the lazy dog'
+
 const connection = module.exports.connection = function () {
   return {
     host: dbHost,
