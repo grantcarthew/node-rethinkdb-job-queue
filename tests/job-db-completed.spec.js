@@ -6,7 +6,7 @@ const jobDbCompleted = require('../src/job-db-completed')
 const testData = 'This is a test'
 
 test('job-db-completed test', (t) => {
-  t.plan(14)
+  t.plan(13)
 
   let job = testQueue.createJob(testData)
 

@@ -2,8 +2,9 @@ const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
 const jobLog = require('./job-log')
+const dbChanges = require('./db-changes')
 
-module.exports = function completed (err, job, data) {
+module.exports = function failed (err, job, data) {
   logger('failed: ' + job.id)
   logger('Error', err)
   job.status = enums.jobStatus.failed
@@ -15,7 +16,8 @@ module.exports = function completed (err, job, data) {
   }
   job.dateFailed = moment().toDate()
   job.progress = 0
-  const duration = moment(job.dateFailed).diff(moment(job.dateStarted))
+  let duration = moment(job.dateFailed).diff(moment(job.dateStarted))
+  duration = duration >= 0 ? duration : 0
 
   const log = jobLog(
     job.dateFailed,
@@ -32,17 +34,12 @@ module.exports = function completed (err, job, data) {
   .update({
     status: job.status,
     retryCount: job.retryCount,
-    progress: job.probress,
+    progress: job.progress,
     dateFailed: job.dateFailed,
     log: job.q.r.row('log').add([log])
   }, {returnChanges: true})
   .run()
   .then((updateResult) => {
-    if (updateResult.errors > 0) {
-      return Promise.reject(updateResult)
-    }
-    return updateResult.changes
-  }).map((change) => {
-    return job.q.createJob(null, change.new_val)
+    return dbChanges.toJob(job.q, updateResult)
   })
 }

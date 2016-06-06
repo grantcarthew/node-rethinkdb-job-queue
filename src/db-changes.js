@@ -1,14 +1,12 @@
 const logger = require('./logger')(module)
-const moment = require('moment')
-const enums = require('./enums')
-const jobLog = require('./job-log')
+const Promise = require('bluebird')
 
-module.exports = function (q) {
-  if (updateResult.errors > 0) {
-    return Promise.reject(updateResult)
+module.exports.toJob = function (q, dbResult) {
+  logger('toJob')
+  if (dbResult.errors > 0) {
+    return Promise.reject(dbResult)
   }
-  return updateResult.changes
-  }).map((change) => {
-  return job.q.createJob(null, change.new_val)
+  return Promise.map(dbResult.changes, (change) => {
+    return q.createJob(null, change.new_val)
   })
 }

@@ -48,7 +48,7 @@
     "debug": "^2.2.0",
     "moment": "^2.13.0",
     "node-uuid": "^1.4.7",
-    "rethinkdbdash": "^2.3.6"
+    "rethinkdbdash": "^2.3.7"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",

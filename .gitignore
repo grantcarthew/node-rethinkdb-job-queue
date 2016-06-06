@@ -6,3 +6,4 @@ dist
 .idea
 .DS_STORE
 .swp
+npm-debug.log
