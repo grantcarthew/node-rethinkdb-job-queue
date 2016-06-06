@@ -2,10 +2,10 @@ const test = require('tape')
 const moment = require('moment')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
-const jobDbFailed = require('../src/job-db-failed')
+const dbJobFailed = require('../src/db-job-failed')
 const testData = require('./test-options').testData
 
-test('job-db-failed test', (t) => {
+test('db-job-failed test', (t) => {
   t.plan(53)
 
   let job = testQueue.createJob(testData)
@@ -13,7 +13,7 @@ test('job-db-failed test', (t) => {
   testQueue.addJob(job).then((savedJob) => {
     t.equal(savedJob[0].id, job.id, 'Job saved successfully')
     t.pass('Job failure - original')
-    return jobDbFailed(null, savedJob[0], testData)
+    return dbJobFailed(null, savedJob[0], testData)
   }).then((retry1) => {
     t.equal(retry1[0].status, enums.jobStatus.retry, 'Job status is retry')
     t.equal(retry1[0].retryCount, 1, 'Job retryCount is 1')
@@ -28,7 +28,7 @@ test('job-db-failed test', (t) => {
     t.ok(retry1[0].log[0].duration >= 0, 'Log duration is >= 0')
     t.equal(retry1[0].log[0].jobData, job.data, 'Log jobData is valid')
     t.pass('Job failure - first retry')
-    return jobDbFailed(null, retry1[0], testData)
+    return dbJobFailed(null, retry1[0], testData)
   }).then((retry2) => {
     t.equal(retry2[0].status, enums.jobStatus.retry, 'Job status is retry')
     t.equal(retry2[0].retryCount, 2, 'Job retryCount is 2')
@@ -43,7 +43,7 @@ test('job-db-failed test', (t) => {
     t.ok(retry2[0].log[1].duration >= 0, 'Log duration is >= 0')
     t.equal(retry2[0].log[1].jobData, job.data, 'Log jobData is valid')
     t.pass('Job failure - second retry')
-    return jobDbFailed(null, retry2[0], testData)
+    return dbJobFailed(null, retry2[0], testData)
   }).then((retry3) => {
     t.equal(retry3[0].status, enums.jobStatus.retry, 'Job status is retry')
     t.equal(retry3[0].retryCount, 3, 'Job retryCount is 3')
@@ -58,7 +58,7 @@ test('job-db-failed test', (t) => {
     t.ok(retry3[0].log[2].duration >= 0, 'Log duration is >= 0')
     t.equal(retry3[0].log[2].jobData, job.data, 'Log jobData is valid')
     t.pass('Job failure - third retry')
-    return jobDbFailed(null, retry3[0], testData)
+    return dbJobFailed(null, retry3[0], testData)
   }).then((failed) => {
     t.equal(failed[0].status, enums.jobStatus.failed, 'Job status is failed')
     t.equal(failed[0].retryCount, 3, 'Job retryCount is 3')

@@ -3,7 +3,7 @@ const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
-const jobDbComplete = require('./job-db-completed')
+const jobDbComplete = require('./db-job-completed')
 
 class Job {
 

@@ -2,17 +2,17 @@ const test = require('tape')
 const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
-const jobDbCompleted = require('../src/job-db-completed')
+const dbJobCompleted = require('../src/db-job-completed')
 const testData = require('./test-options').testData
 
-test('job-db-completed test', (t) => {
+test('db-job-completed test', (t) => {
   t.plan(13)
 
   let job = testQueue.createJob(testData)
 
   testQueue.addJob(job).then((savedJob) => {
     t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-    return jobDbCompleted(savedJob[0], testData)
+    return dbJobCompleted(savedJob[0], testData)
   }).then((changeResult) => {
     t.equal(changeResult.replaced, 1, 'Job updated successfully')
     return testQueue.getJob(job.id)
