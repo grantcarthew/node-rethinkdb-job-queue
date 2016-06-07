@@ -80,13 +80,35 @@ npm install rethinkdb-job-queue --save
 ```
 ## Queue Events
 
-  'ready' = Queue ready for action sir!
-  'enqueue' = New job added
-  'error' = Oops, something went wrong
-  'succeeded' = Job processed successfully
-  'retrying' = A failed or stalled job is being retried
-  'failed' = A job failed
-  'stalled' = A job stalled
+Events raised by the Queue object.
+
+### `ready`
+
+__Returns__: null
+
+Raised when the backing database, table, and indexes are ready for use.
+
+### `enqueue`
+
+__Returns__:
+
+### `completed`
+
+__Returns__:
+
+### `retry`
+
+__Returns__:
+
+### `failed`
+
+__Returns__:
+
+### `review`
+
+__Returns__: `Number` The number of jobs updated from `active` status to `timeout` or `failed`.
+
+Raised when the database review process completes.
 
 ## API
 
@@ -196,7 +218,6 @@ localQFactory.create(emailJobQueue).then((newQueue) => {
   emailJobQueue = newQueue
 }).catch(console.error)
 ```
-
 
 ### TODO
 

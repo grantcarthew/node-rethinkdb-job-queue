@@ -6,13 +6,14 @@ const dbReview = require('../src/db-review')
 const testData = require('./test-options').testData
 
 test('db-review test', (t) => {
-  t.plan(29)
+  t.plan(32)
 
   let reviewCount = 0
   testQueue.masterReviewPeriod = 1
-  testQueue.on(enums.queueStatus.review, () => {
+  testQueue.on(enums.queueStatus.review, (reviewed) => {
     reviewCount++
-    t.pass('Database review called: ' + reviewCount)
+    t.pass('Database review event: ' + reviewCount)
+    t.ok(Number.isInteger(reviewed), 'Review event return value is an Integer')
     if (reviewCount > 2) {
       dbReview.stop(testQueue)
       testQueue.masterReviewPeriod = 300

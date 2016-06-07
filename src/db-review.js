@@ -51,7 +51,7 @@ function jobTimeout (q) {
   })
   .run()
   .then((updateResult) => {
-    q.emit(enums.queueStatus.review)
+    q.emit(enums.queueStatus.review, updateResult.replaced)
     return updateResult
   })
 }
