@@ -3,6 +3,8 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
 
+module.exports.addJob = require('./db-queue-addjob')
+
 module.exports.startQueueChangeFeed = function (q) {
   logger('startQueueChangeFeed')
   return q.r.table(q.name)
@@ -14,21 +16,6 @@ module.exports.startQueueChangeFeed = function (q) {
   })
 }
 
-module.exports.addJob = function (q, job) {
-  let jobs = Array.isArray(job) ? job : [job]
-  logger('addJob', jobs.map(j => j.id))
-  jobs = jobs.map((job) => job.cleanCopy)
-  return q.r.table(q.name)
-  .insert(jobs, {returnChanges: true}).run()
-  .then((saveResult) => {
-    if (saveResult.errors > 0) {
-      return Promise.reject(saveResult)
-    }
-    return saveResult.changes
-  }).map((change) => {
-    return q.createJob(null, change.new_val)
-  })
-}
 
 module.exports.removeJob = function (job) {
   logger('removeJob: ' + job.id)

@@ -4,8 +4,8 @@ const enums = require('./enums')
 const jobLog = require('./job-log')
 let dbReviewIntervalId
 
-function dbReviewJobTimeout (q) {
-  logger('dbReviewJobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+function jobTimeout (q) {
+  logger('jobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
   return q.r.table(q.name)
   .orderBy({index: 'active_dateStarted'})
@@ -15,7 +15,22 @@ function dbReviewJobTimeout (q) {
     .add(60)
     .lt(q.r.now())
   ).update({
-    status: enums.jobStatus.timeout,
+    status: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      enums.jobStatus.timeout,
+      enums.jobStatus.failed
+    ),
+    dateTimeout: q.r.now(),
+    dateFailed: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      null,
+      q.r.now()
+    ),
+    retryCount: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      q.r.row('retryCount').add(1),
+      q.r.row('retryCount')
+    ),
     log: q.r.row('log').add([{
       logDate: q.r.now(),
       queueId: q.id,
@@ -25,7 +40,6 @@ function dbReviewJobTimeout (q) {
       duration: q.r.now().toEpochTime()
         .sub(q.r.row('dateStarted').toEpochTime())
         .mul(1000).round(),
-      jobData: ''
     }])
   }).run()
 }
@@ -37,7 +51,7 @@ module.exports.start = function (q) {
   }
   const interval = q.masterReviewPeriod * 1000
   dbReviewIntervalId = setInterval(() => {
-    return dbReviewJobTimeout(q)
+    return jobTimeout(q)
   }, interval)
 }
 
@@ -48,4 +62,4 @@ module.exports.stop = function (q) {
   }
 }
 
-module.exports.dbReviewJobTimeout = dbReviewJobTimeout
+module.exports.jobTimeout = jobTimeout

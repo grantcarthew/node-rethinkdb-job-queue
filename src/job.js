@@ -3,7 +3,6 @@ const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
-const jobDbComplete = require('./db-job-completed')
 
 class Job {
 
@@ -21,11 +20,10 @@ class Job {
       Object.assign(this, options)
       this.priority = Object.keys(enums.priority)
         .find(key => enums.priority[key] === this.priority)
-      this.commited = true
+      this._committed = true
     } else {
       logger('Creating new job from defaults and options')
       options = jobOptions(options)
-      let now = moment().toDate()
       this.id = uuid.v4()
       this.data = data || {}
       this.priority = options.priority
@@ -36,16 +34,14 @@ class Job {
       this.retryCount = 0
       this.status = 'waiting'
       this.log = []
-      this.dateCreated = now
+      this.dateCreated = moment().toDate()
       this.dateStarted
       this.dateCompleted
       this.dateTimeout
       this.dateFailed
       this.workerId
-      this.commited = false
+      this._committed = false
     }
-
-    //jobDbComplete.call(this)
   }
 
   get cleanCopy () {
@@ -53,21 +49,19 @@ class Job {
     const jobCopy = Object.assign({}, this)
     jobCopy.priority = enums.priority[jobCopy.priority]
     delete jobCopy.q
-    delete jobCopy.commited
+    delete jobCopy._committed
     return jobCopy
   }
 
   addLogEntry (logEntry) {
     logger('addLogEntry', logEntry)
-    if (!this.commited) {
-      return Promise.reject(enums.error.notCommited)
+    if (!this._committed) {
+      return Promise.reject(enums.error.jobNotCommitted)
     }
     return this.q.table(this.q.name)
     .get(this.id)
     .update({log: this.q.r.row('log').add([logEntry])})
   }
 }
-
-//Job.prototype._complete = jobDbComplete(this)
 
 module.exports = Job

@@ -53,7 +53,9 @@ module.exports = {
     failedToStop: 'Failed to gracefully stop jobs, force quit'
   },
   error: {
-    notCommited: 'Job not added to the queue',
+    jobNotCommitted: 'Job not added to the queue',
+    jobAlreadyCommitted: 'Job is already committed to the queue table',
+    jobInvalid: 'Job object is invalid',
     nonWorker: 'Cannot call queue process on a non-worker',
     processTwice: 'Cannot call queue process twice',
     missingTimeout: 'Timeout parameter required to stop or delete queue',

@@ -56,8 +56,8 @@ module.exports.createIndexActiveDateStarted = function (q) {
   })
 }
 
-function dbReviewJobTimeout (q) {
-  logger('dbReviewJobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+function jobTimeout (q) {
+  logger('jobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
   const r = q.r
   const timeoutDate = moment().add(-1, 'minutes').toDate()
   const log = jobLog(
