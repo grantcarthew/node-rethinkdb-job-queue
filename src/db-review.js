@@ -1,7 +1,6 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
-const jobLog = require('./job-log')
 let dbReviewIntervalId
 
 function jobTimeout (q) {
@@ -34,12 +33,20 @@ function jobTimeout (q) {
     log: q.r.row('log').add([{
       logDate: q.r.now(),
       queueId: q.id,
-      logType: enums.log.warning,
-      status: enums.jobStatus.timeout,
+      logType: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        enums.log.warning,
+        enums.log.error
+      ),
+      status: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        enums.jobStatus.timeout,
+        enums.jobStatus.failed
+      ),
       queueMessage: enums.message.timeout,
       duration: q.r.now().toEpochTime()
         .sub(q.r.row('dateStarted').toEpochTime())
-        .mul(1000).round(),
+        .mul(1000).round()
     }])
   }).run()
 }
