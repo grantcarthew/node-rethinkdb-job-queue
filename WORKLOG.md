@@ -1,5 +1,6 @@
 # Worklog
 
+Need to move async dbassert to module to fix tests.
 Working on db-job-failed and .spec
 Need to test job data and fail/retry
 
@@ -33,6 +34,7 @@ If now > dateStarted + timeout + buffervalue??? then job failed;
 
 # TODO
 
+Name all functions exported
 Queue: return full jobs when added.
 Check joblog format on all files.
 Check enums...

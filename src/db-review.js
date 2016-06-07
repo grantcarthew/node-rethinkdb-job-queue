@@ -48,7 +48,12 @@ function jobTimeout (q) {
         .sub(q.r.row('dateStarted').toEpochTime())
         .mul(1000).round()
     }])
-  }).run()
+  })
+  .run()
+  .then((updateResult) => {
+    q.emit(enums.queueStatus.review)
+    return updateResult
+  })
 }
 
 module.exports.start = function (q) {

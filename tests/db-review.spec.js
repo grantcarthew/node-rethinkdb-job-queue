@@ -6,7 +6,19 @@ const dbReview = require('../src/db-review')
 const testData = require('./test-options').testData
 
 test('db-review test', (t) => {
-  t.plan(25)
+  t.plan(29)
+
+  let reviewCount = 0
+  testQueue.masterReviewPeriod = 1
+  testQueue.on(enums.queueStatus.review, () => {
+    reviewCount++
+    t.pass('Database review called: ' + reviewCount)
+    if (reviewCount > 2) {
+      dbReview.stop(testQueue)
+      testQueue.masterReviewPeriod = 300
+      t.pass('Review timer completed twice')
+    }
+  })
 
   let job1 = testQueue.createJob(testData)
   job1.status = enums.jobStatus.active
@@ -58,5 +70,6 @@ test('db-review test', (t) => {
     t.ok(reviewedJob2[0].log[0].queueMessage, 'Log queueMessage is present')
     t.ok(reviewedJob2[0].log[0].duration >= 0, 'Log duration is >= 0')
     t.ok(!reviewedJob2[0].log[0].jobData, 'Log jobData is null')
+    dbReview.start(testQueue)
   })
 })

@@ -18,21 +18,13 @@ module.exports = {
     failed: 'failed',
     retry: 'retry'
   },
-  jobEvent: {
-    created: 'created',
-    delayed: 'delayed',
-    active: 'active',
-    waiting: 'waiting',
-    completed: 'completed',
-    failed: 'failed',
-    retry: 'retry'
-  },
   queueStatus: {
     ready: 'ready',
     enqueue: 'enqueue',
     idle: 'idle',
     processing: 'processing',
-    error: 'error'
+    error: 'error',
+    review: 'review'
   },
   index: {
     status: 'status',

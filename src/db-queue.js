@@ -4,6 +4,7 @@ const enums = require('./enums')
 const dbReview = require('./db-review')
 
 module.exports.addJob = require('./db-queue-addjob')
+module.exports.statusSummary = require('./db-queue-statussummary')
 
 module.exports.startQueueChangeFeed = function (q) {
   logger('startQueueChangeFeed')
@@ -62,21 +63,6 @@ module.exports.getNextJob = function (q) {
     })
 }
 
-module.exports.statusSummary = function (q) {
-  logger('statusSummary')
-  const r = q.r
-  return r.table(q.name)
-  .group((job) => {
-    return job.pluck('status')
-  }).count().then((reduction) => {
-    const summary = {}
-    for (let stat of reduction) {
-      summary[stat.group.status] = stat.reduction
-    }
-    logger('summary', summary)
-    return summary
-  })
-}
 
 const stopQueue = function (q, stopTimeout, drainPool = true) {
   logger('deleteQueue')
