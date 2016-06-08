@@ -12,9 +12,9 @@ const mockQueue = {
 test('db-index test', (t) => {
   t.plan(9)
 
-  return mockQueue.r.table(mockQueue.name).indexList().run()
+  return mockQueue.r.db(mockQueue.db).table(mockQueue.name).indexList().run()
   .each((existingIndex) => {
-    return mockQueue.r.table(mockQueue.name).indexDrop(existingIndex)
+    return mockQueue.r.db(mockQueue.db).table(mockQueue.name).indexDrop(existingIndex)
   }).then((removed) => {
     t.equal(removed.length, 4, 'Existing indexes dropped')
     return dbIndex.createIndexStatus(mockQueue)
@@ -29,7 +29,7 @@ test('db-index test', (t) => {
     return dbIndex.createIndexInactivePriorityDateCreated(mockQueue)
   }).then((index3) => {
     t.ok(index3, 'inactive_priority_dateCreated index asserted')
-    return mockQueue.r.table(mockQueue.name)
+    return mockQueue.r.db(mockQueue.db).table(mockQueue.name)
     .indexList().run()
   }).then((indexes) => {
     t.ok(indexes.includes(enums.index.status),
@@ -40,5 +40,5 @@ test('db-index test', (t) => {
       'active_dateStarted index exists')
     t.ok(indexes.includes(enums.index.inactive_priority_dateCreated),
       'inactive_priority_dateCreated index exists')
-  })
+  }).catch(err => t.fail(err))
 })

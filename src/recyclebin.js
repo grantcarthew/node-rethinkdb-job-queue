@@ -3,7 +3,7 @@ module.exports.startHeartbeat = function (job) {
   console.log(job.id)
   return setInterval((job) => {
     logger('Heartbeat: ' + job.id)
-    return job.q.r.table(job.q.name).get(job.id)
+    return job.q.r.db(q.db).table(job.q.name).get(job.id)
       .update({ dateHeartbeat: moment().toDate() }).run()
   }, job.timeout * 900 / 2, job)
 }
@@ -35,7 +35,7 @@ module.exports.setStatus = function (job, oldStatus, newStatus) {
 module.exports.setDateStarted = function (job) {
   logger('setDateStarted')
   let now = moment().toDate()
-  return job.q.r.table(job.q.name).get(job.id).update({
+  return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
     dateStarted: now
   })
 }
@@ -43,10 +43,10 @@ module.exports.setDateStarted = function (job) {
 module.exports.createIndexActiveDateStarted = function (q) {
   logger('createIndexActiveDateStarted')
   let indexName = enums.index.active
-  return q.r.table(q.name).indexList()
+  return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
-    return q.r.table(q.name).indexCreate(indexName, function (row) {
+    return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq('active'),
         row('dateHeartbeat'),
@@ -68,7 +68,7 @@ function jobTimeout (q) {
     enums.message.timeout
   )
 
-  return q.r.table(q.name)
+  return q.r.db(q.db).table(q.name)
   .between(q.r.minval, timeoutDate, { index: enums.index.active_dateStarted })
   .update({
     status: enums.jobStatus.timeout,

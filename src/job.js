@@ -20,7 +20,6 @@ class Job {
       Object.assign(this, options)
       this.priority = Object.keys(enums.priority)
         .find(key => enums.priority[key] === this.priority)
-      this._committed = true
     } else {
       logger('Creating new job from defaults and options')
       options = jobOptions(options)
@@ -32,7 +31,7 @@ class Job {
       this.retryMax = options.retryMax
       this.progress = 0
       this.retryCount = 0
-      this.status = 'waiting'
+      this.status = enums.jobStatus.created
       this.log = []
       this.dateCreated = moment().toDate()
       this.dateStarted
@@ -40,7 +39,6 @@ class Job {
       this.dateTimeout
       this.dateFailed
       this.workerId
-      this._committed = false
     }
   }
 
@@ -49,14 +47,13 @@ class Job {
     const jobCopy = Object.assign({}, this)
     jobCopy.priority = enums.priority[jobCopy.priority]
     delete jobCopy.q
-    delete jobCopy._committed
     return jobCopy
   }
 
   addLogEntry (logEntry) {
     logger('addLogEntry', logEntry)
-    if (!this._committed) {
-      return Promise.reject(enums.error.jobNotCommitted)
+    if (this.status === enums.jobStatus.created) {
+      return Promise.reject(enums.error.jobNotAdded)
     }
     return this.q.table(this.q.name)
     .get(this.id)

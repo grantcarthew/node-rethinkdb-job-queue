@@ -1,36 +1,36 @@
 const logger = require('./logger')(module)
 const enums = require('./enums')
 
-module.exports.createIndexStatus = function (q) {
+function createIndexStatus (q) {
   logger('createIndexStatus')
   let indexName = enums.index.status
-  return q.r.table(q.name).indexList()
+  return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
-    return q.r.table(q.name).indexCreate(indexName).run()
+    return q.r.db(q.db).table(q.name).indexCreate(indexName).run()
   })
 }
 
-module.exports.createIndexPriorityDateCreated = function (q) {
+function createIndexPriorityDateCreated (q) {
   logger('createIndexPriorityDateCreated')
   let indexName = enums.index.priority_dateCreated
-  return q.r.table(q.name).indexList()
+  return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
-    return q.r.table(q.name).indexCreate(indexName, [
+    return q.r.db(q.db).table(q.name).indexCreate(indexName, [
       q.r.row('priority'),
       q.r.row('dateCreated')
     ]).run()
   })
 }
 
-module.exports.createIndexActiveDateStarted = function (q) {
+function createIndexActiveDateStarted (q) {
   logger('createIndexActiveDateStarted')
   let indexName = enums.index.active_dateStarted
-  return q.r.table(q.name).indexList()
+  return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
-    return q.r.table(q.name).indexCreate(indexName, function (row) {
+    return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq('active'),
         row('dateStarted'),
@@ -40,13 +40,13 @@ module.exports.createIndexActiveDateStarted = function (q) {
   })
 }
 
-module.exports.createIndexInactivePriorityDateCreated = function (q) {
+function createIndexInactivePriorityDateCreated (q) {
   logger('createIndexInactivePriorityDateCreated')
   let indexName = enums.index.inactive_priority_dateCreated
-  return q.r.table(q.name).indexList()
+  return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
-    return q.r.table(q.name).indexCreate(indexName, function (row) {
+    return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq('active').or(row('status').eq('completed')),
         null, [
@@ -55,5 +55,21 @@ module.exports.createIndexInactivePriorityDateCreated = function (q) {
         ]
       )
     }).run()
+  })
+}
+
+module.exports = function assertIndex (q) {
+  logger('assertIndex')
+  return Promise.all([
+    createIndexStatus(q),
+    createIndexPriorityDateCreated(q),
+    createIndexActiveDateStarted(q),
+    createIndexInactivePriorityDateCreated(q)
+  ]).then((indexCreateResult) => {
+    logger('Waiting for index...')
+    return q.r.db(q.db).table(q.name).indexWait().run()
+  }).then(() => {
+    logger('Indexes ready.')
+    return true
   })
 }

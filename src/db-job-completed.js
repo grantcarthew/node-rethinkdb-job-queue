@@ -20,7 +20,7 @@ module.exports = function completed (job, data) {
     duration,
     data
   )
-  return job.q.r.table(job.q.name).get(job.id).update({
+  return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
     status: job.status,
     dateCompleted: job.dateCompleted,
     progress: job.progress,

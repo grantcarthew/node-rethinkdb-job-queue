@@ -24,5 +24,5 @@ test('db-changes test', (t) => {
     t.fail('Change with error not failing')
   }).catch((err) => {
     t.deepEqual(mockChange, err, 'Change with error failing')
-  })
+  }).catch(err => t.fail(err))
 })

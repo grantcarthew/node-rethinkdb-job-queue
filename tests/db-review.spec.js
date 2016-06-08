@@ -3,6 +3,7 @@ const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
 const dbReview = require('../src/db-review')
+const dbChanges = require('../src/db-changes')
 const testData = require('./test-options').testData
 
 test('db-review test', (t) => {
@@ -19,6 +20,7 @@ test('db-review test', (t) => {
       testQueue.masterReviewPeriod = 300
       t.pass('Review timer completed twice')
     }
+    return true
   })
 
   let job1 = testQueue.createJob(testData)
@@ -37,8 +39,15 @@ test('db-review test', (t) => {
     job1,
     job2
   ]
-
-  testQueue.addJob(jobs).then((savedJob) => {
+  // Saving directly to db to bypass status checks.
+  return testQueue.ready.then(() => {
+    return jobs.map(j => j.cleanCopy)
+  }).then((cleanJobs) => {
+    return testQueue.r.db(testQueue.db).table(testQueue.name)
+    .insert(cleanJobs, {returnChanges: true}).run()
+  }).then((saveResult) => {
+    return dbChanges.toJob(testQueue, saveResult)
+  }).then((savedJob) => {
     t.equal(savedJob[0].id, job1.id, 'Job 1 saved successfully')
     t.equal(savedJob[1].id, job2.id, 'Job 2 saved successfully')
   }).then(() => {
@@ -72,5 +81,5 @@ test('db-review test', (t) => {
     t.ok(reviewedJob2[0].log[0].duration >= 0, 'Log duration is >= 0')
     t.ok(!reviewedJob2[0].log[0].jobData, 'Log jobData is null')
     dbReview.start(testQueue)
-  })
+  }).catch(err => t.fail(err))
 })

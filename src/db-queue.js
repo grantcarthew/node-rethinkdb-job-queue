@@ -8,7 +8,7 @@ module.exports.statusSummary = require('./db-queue-statussummary')
 
 module.exports.startQueueChangeFeed = function (q) {
   logger('startQueueChangeFeed')
-  return q.r.table(q.name)
+  return q.r.db(q.db).table(q.name)
   .changes().run().then((feed) => {
     q.feed = feed
     feed.each((err, change) => {

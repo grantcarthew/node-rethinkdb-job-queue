@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 
 module.exports = function statusSummary (q) {
   logger('statusSummary')
-  return q.r.table(q.name)
+  return q.r.db(q.db).table(q.name)
   .group((job) => {
     return job.pluck('status')
   }).count().then((reduction) => {

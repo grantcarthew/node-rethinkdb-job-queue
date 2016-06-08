@@ -5,7 +5,7 @@ const dbQueueAddJob = require('../src/db-queue-addjob')
 const testData = require('./test-options').testData
 
 test('db-queue-addjob test', (t) => {
-  t.plan(5)
+  t.plan(6)
 
   let job = testQueue.createJob(testData)
   let jobs = [
@@ -29,5 +29,10 @@ test('db-queue-addjob test', (t) => {
     }).catch((err) => {
       t.equal(err, enums.error.jobInvalid, 'Job invalid returns a rejected promise')
     })
-  })
+  }).then(() => {
+    job.status = 'waiting'
+    return dbQueueAddJob(testQueue, job).catch((err) => {
+      t.equal(err, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
+    })
+  }).catch(err => t.fail(err))
 })

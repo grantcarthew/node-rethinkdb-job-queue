@@ -2,7 +2,6 @@ const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
 const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
-const async = Promise.coroutine
 const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
@@ -47,17 +46,13 @@ class Queue extends EventEmitter {
       process.pid
     ].join(':')
 
-    this.ready = async(function * () {
-      yield dbAssert.database(this)
-      yield dbAssert.table(this)
-      yield dbAssert.index(this)
-      yield dbQueue.startQueueChangeFeed(this)
+    this.ready = dbAssert(this).then((result) => {
       if (this.isMaster) {
         logger('Queue is a master')
         dbReview.start(this)
       }
       this.emit(enums.queueStatus.ready)
-    }).bind(this)()
+    })
   }
 
   get connection () {

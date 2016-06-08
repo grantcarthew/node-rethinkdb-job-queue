@@ -3,6 +3,7 @@
 Need to move async dbassert to module to fix tests.
 Working on db-job-failed and .spec
 Need to test job data and fail/retry
+Fix errors when running tests with no test DB.
 
 
 
@@ -38,3 +39,4 @@ Name all functions exported
 Queue: return full jobs when added.
 Check joblog format on all files.
 Check enums...
+Check .emit(

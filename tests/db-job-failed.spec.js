@@ -72,5 +72,5 @@ test('db-job-failed test', (t) => {
     t.equal(failed[0].log[3].queueMessage, enums.message.failed, 'Log queueMessage is correct')
     t.ok(failed[0].log[3].duration >= 0, 'Log duration is >= 0')
     t.equal(failed[0].log[3].jobData, job.data, 'Log jobData is valid')
-  })
+  }).catch(err => t.fail(err))
 })

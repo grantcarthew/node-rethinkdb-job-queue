@@ -29,7 +29,7 @@ module.exports = function failed (err, job, data) {
     data,
     err
   )
-  return job.q.r.table(job.q.name)
+  return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)
   .update({
     status: job.status,

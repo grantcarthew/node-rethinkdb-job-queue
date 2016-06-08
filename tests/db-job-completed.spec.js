@@ -28,5 +28,5 @@ test('db-job-completed test', (t) => {
     t.ok(updatedJob[0].log[0].queueMessage, 'Log queueMessage is present')
     t.ok(updatedJob[0].log[0].duration >= 0, 'Log duration is >= 0')
     t.equal(updatedJob[0].log[0].jobData, testData, 'Log jobData is valid')
-  })
+  }).catch(err => t.fail(err))
 })

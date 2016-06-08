@@ -6,8 +6,8 @@ let dbReviewIntervalId
 function jobTimeout (q) {
   logger('jobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
-  return q.r.table(q.name)
-  .orderBy({index: 'active_dateStarted'})
+  return q.r.db(q.db).table(q.name)
+  .orderBy({index: enums.index.active_dateStarted})
   .filter(
     q.r.row('dateStarted')
     .add(q.r.row('timeout'))
