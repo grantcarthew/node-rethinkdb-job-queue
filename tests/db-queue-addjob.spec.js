@@ -1,38 +1,46 @@
 const test = require('tape')
+const Promise = require('bluebird')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
 const dbQueueAddJob = require('../src/db-queue-addjob')
 const testData = require('./test-options').testData
 
-test('db-queue-addjob test', (t) => {
-  t.plan(6)
+module.exports = function () {
+  return new Promise((resolve, reject) => {
+    test('db-queue-addjob test', (t) => {
+      t.plan(6)
 
-  let job = testQueue.createJob(testData)
-  let jobs = [
-    testQueue.createJob(testData),
-    testQueue.createJob(testData)
-  ]
+      const q = testQueue()
+      const job = q.createJob(testData)
+      const jobs = [
+        q.createJob(testData),
+        q.createJob(testData)
+      ]
 
-  dbQueueAddJob(testQueue, job).then((savedJob) => {
-    t.equal(savedJob[0].id, job.id, 'Job 1 saved successfully')
-    return dbQueueAddJob(testQueue, jobs)
-  }).then((savedJobs) => {
-    t.equal(savedJobs[0].id, jobs[0].id, 'Job 2 saved successfully')
-    t.equal(savedJobs[1].id, jobs[1].id, 'Job 3 saved successfully')
-  }).then(() => {
-    return dbQueueAddJob(testQueue)
-  }).then((nullJobResult) => {
-    t.equal(nullJobResult.length, 0,
-      'Job null or undefined returns an empty array')
-    return dbQueueAddJob(testQueue, {}).then(() => {
-      t.fail('Job invalid is not returning a rejected promise')
-    }).catch((err) => {
-      t.equal(err, enums.error.jobInvalid, 'Job invalid returns a rejected promise')
+      dbQueueAddJob(q, job).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job 1 saved successfully')
+        return dbQueueAddJob(q, jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs[0].id, jobs[0].id, 'Job 2 saved successfully')
+        t.equal(savedJobs[1].id, jobs[1].id, 'Job 3 saved successfully')
+      }).then(() => {
+        return dbQueueAddJob(q)
+      }).then((nullJobResult) => {
+        t.equal(nullJobResult.length, 0,
+          'Job null or undefined returns an empty array')
+        return dbQueueAddJob(q, {}).then(() => {
+          t.fail('Job invalid is not returning a rejected promise')
+        }).catch((err) => {
+          t.equal(err, enums.error.jobInvalid, 'Job invalid returns a rejected promise')
+        })
+      }).then(() => {
+        job.status = 'waiting'
+        return dbQueueAddJob(q, job).catch((err) => {
+          t.equal(err, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
+        })
+      }).then(() => {
+        resolve()
+      }).catch(err => t.fail(err))
     })
-  }).then(() => {
-    job.status = 'waiting'
-    return dbQueueAddJob(testQueue, job).catch((err) => {
-      t.equal(err, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
-    })
-  }).catch(err => t.fail(err))
-})
+  })
+}
