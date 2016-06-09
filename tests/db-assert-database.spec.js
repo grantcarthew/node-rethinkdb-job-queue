@@ -1,20 +1,16 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const rethinkdbdash = require('rethinkdbdash')
-const enums = require('../src/enums')
-const dbAssert = require('../src/db-assert')
-const testOptions = require('./test-options')
 const testMockQueue = require('./test-mock-queue')
+const dbAssertDatabase = require('../src/db-assert-database')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-assert test', (t) => {
+    test('db-assert-database test', (t) => {
       t.plan(1)
 
       const q = testMockQueue()
-
-      return dbAssert(q).then((dbResult) => {
-        t.ok(dbResult, 'Database asserted')
+      return dbAssertDatabase(q).then((assertDbResult) => {
+        t.ok(assertDbResult, 'Database asserted')
         resolve()
       }).catch(err => t.fail(err))
     })

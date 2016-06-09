@@ -20,7 +20,7 @@ module.exports = function () {
         ],
         errors: 0
       }
-      dbChanges.toJob(q, mockChange).then((changeJob) => {
+      return dbChanges.toJob(q, mockChange).then((changeJob) => {
         t.deepEqual(jobAsData, job.cleanCopy, 'Job created from change successfully')
         mockChange.errors = 1
         return dbChanges.toJob(q, mockChange)

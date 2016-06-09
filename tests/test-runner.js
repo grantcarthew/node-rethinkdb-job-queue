@@ -1,3 +1,8 @@
+const Promise = require('bluebird')
+const testQueue = require('./test-queue')
+const dbAssertDatabase = require('./db-assert-database.spec')
+const dbAssertTable = require('./db-assert-table.spec')
+const dbAssertIndex = require('./db-assert-index.spec')
 const dbAssert = require('./db-assert.spec')
 // require('./db-index.spec')
 const dbChanges = require('./db-changes.spec')
@@ -7,23 +12,32 @@ const dbJobFailed = require('./db-job-failed.spec')
 const dbReview = require('./db-review.spec')
 const dbQueueStatusSummary = require('./db-queue-statussummary.spec')
 
-return dbAssert().then(() => {
+return dbAssertDatabase().then(() => {
 }).then(() => {
-  return dbChanges()
+  return dbAssertTable()
 }).then(() => {
-  return dbQueueAddJob()
+  return dbAssertIndex()
 }).then(() => {
-  return dbJobCompleted()
+  return dbAssert()
 }).then(() => {
-  return dbJobFailed()
+  return Promise.all([
+    dbChanges(),
+    dbQueueAddJob(),
+    dbJobCompleted(),
+    dbJobFailed()
+  ])
+}).then(() => {
+}).then(() => {
+}).then(() => {
+}).then(() => {
+}).then(() => {
+}).then(() => {
 }).then(() => {
   return dbReview()
 }).then(() => {
   return dbQueueStatusSummary()
 }).then(() => {
-
+  return testQueue().delete(1)
 }).then(() => {
-
-}).then(() => {
-  console.log('Tests Completed')
+  process.exit()
 })
