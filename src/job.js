@@ -15,7 +15,7 @@ class Job {
 
     // If creating a job from the database, pass the job data as the options.
     // Eg. new Job(queue, null, jobData)
-    if (options.id) {
+    if (options && options.id) {
       logger('Creating job from database object')
       Object.assign(this, options)
       this.priority = enums.priorityFromValue(this.priority)
