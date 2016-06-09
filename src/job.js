@@ -3,6 +3,7 @@ const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
+const dbJobAddLog = require('./db-job-addlog')
 
 class Job {
 
@@ -49,24 +50,19 @@ class Job {
     return jobCopy
   }
 
-  createLog (logType, status, message) {
+  createLog (message, logType = enums.log.information, status = this.status) {
     return {
       logDate: moment().toDate(),
       queueId: this.q.id,
       logType: logType,
       status: status,
-      queueMessage: message
+      message: message
     }
   }
 
-  addLog (logEntry) {
-    logger('addLogEntry', logEntry)
-    if (this.status === enums.jobStatus.created) {
-      return Promise.reject(enums.error.jobNotAdded)
-    }
-    return this.q.table(this.q.name)
-    .get(this.id)
-    .update({log: this.q.r.row('log').add([logEntry])})
+  addLog (log) {
+    logger('addLog')
+    dbJobAddLog(this, log)
   }
 }
 

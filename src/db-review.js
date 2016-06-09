@@ -43,7 +43,7 @@ function jobTimeout (q) {
         enums.jobStatus.timeout,
         enums.jobStatus.failed
       ),
-      queueMessage: enums.message.timeout,
+      message: enums.message.timeout,
       duration: q.r.now().toEpochTime()
         .sub(q.r.row('dateStarted').toEpochTime())
         .mul(1000).round()

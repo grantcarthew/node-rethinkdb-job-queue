@@ -19,16 +19,12 @@ module.exports = function failed (err, job, data) {
   duration = duration >= 0 ? duration : 0
 
   let errMessage = err && err.message ? err.message : err
+  errMessage = `${enums.message.failed}: ${errMessage}`
 
-  const log = {
-    logDate: job.dateFailed,
-    queueId: job.q.id,
-    logType: enums.log.error,
-    status: job.status,
-    queueMessage: `${enums.message.failed}: ${errMessage}`,
-    duration: duration,
-    jobData: data
-  }
+  const log = job.createLog(errMessage, enums.log.error)
+  log.duration = duration
+  log.jobData = data
+
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)
   .update({

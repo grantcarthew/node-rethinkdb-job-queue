@@ -10,15 +10,10 @@ module.exports = function completed (job, data) {
   let duration = moment(job.dateCompleted).diff(moment(job.dateStarted))
   duration = duration >= 0 ? duration : 0
 
-  const log = {
-    logDate: job.dateCompleted,
-    queueId: job.q.id,
-    logType: enums.log.information,
-    status: job.status,
-    queueMessage: enums.message.completed,
-    duration: duration,
-    jobData: data
-  }
+  const log = job.createLog(enums.message.completed)
+  log.duration = duration
+  log.jobData = data
+
   return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
     status: job.status,
     dateCompleted: job.dateCompleted,

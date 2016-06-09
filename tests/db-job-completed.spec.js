@@ -29,7 +29,7 @@ module.exports = function () {
         t.equal(updatedJob[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(updatedJob[0].log[0].logType, enums.log.information, 'Log type is information')
         t.equal(updatedJob[0].log[0].status, enums.jobStatus.completed, 'Log status is completed')
-        t.ok(updatedJob[0].log[0].queueMessage, 'Log queueMessage is present')
+        t.ok(updatedJob[0].log[0].message, 'Log message is present')
         t.ok(updatedJob[0].log[0].duration >= 0, 'Log duration is >= 0')
         t.equal(updatedJob[0].log[0].jobData, testData, 'Log jobData is valid')
       }).then(() => {

@@ -6,7 +6,7 @@ const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
-const queueMessages = require('./queue-messages')
+const messages = require('./queue-messages')
 const dbReview = require('./db-review')
 const jobProcess = require('./job-process')
 const jobOptions = require('./job-options')
@@ -27,7 +27,7 @@ class Queue extends EventEmitter {
       port: this.port,
       db: this.db
     })
-    this.onChange = queueMessages
+    this.onChange = messages
     this.isMaster = options.isMaster == null ? false
       : options.isMaster
     this.masterReviewPeriod = options.masterReviewPeriod || 300
