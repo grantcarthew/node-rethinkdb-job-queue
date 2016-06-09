@@ -1,4 +1,7 @@
-module.exports = {
+const enums = module.exports = {
+  priorityFromValue: function (value) {
+    return Object.keys(enums.priority).find(key => enums.priority[key] === value)
+  },
   priority: {
     lowest: 60,
     low: 50,

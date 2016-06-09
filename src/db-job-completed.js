@@ -1,7 +1,6 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
-const jobLog = require('./job-log')
 
 module.exports = function completed (job, data) {
   logger('completed: ' + job.id)
@@ -11,15 +10,15 @@ module.exports = function completed (job, data) {
   let duration = moment(job.dateCompleted).diff(moment(job.dateStarted))
   duration = duration >= 0 ? duration : 0
 
-  const log = jobLog(
-    job.dateCompleted,
-    job.q.id,
-    enums.log.information,
-    job.status,
-    enums.message.completed,
-    duration,
-    data
-  )
+  const log = {
+    logDate: job.dateCompleted,
+    queueId: job.q.id,
+    logType: enums.log.information,
+    status: job.status,
+    queueMessage: enums.message.completed,
+    duration: duration,
+    jobData: data
+  }
   return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
     status: job.status,
     dateCompleted: job.dateCompleted,

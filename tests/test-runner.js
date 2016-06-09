@@ -5,6 +5,7 @@ const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
 const dbAssert = require('./db-assert.spec')
 // require('./db-index.spec')
+const jobOptions = require('./job-options.spec')
 const dbChanges = require('./db-changes.spec')
 const dbQueueAddJob = require('./db-queue-addjob.spec')
 const dbJobCompleted = require('./db-job-completed.spec')
@@ -21,6 +22,7 @@ return dbAssertDatabase().then(() => {
   return dbAssert()
 }).then(() => {
   return Promise.all([
+    jobOptions(),
     dbChanges(),
     dbQueueAddJob(),
     dbJobCompleted(),

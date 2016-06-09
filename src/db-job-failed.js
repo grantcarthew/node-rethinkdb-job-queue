@@ -1,7 +1,6 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
-const jobLog = require('./job-log')
 const dbChanges = require('./db-changes')
 
 module.exports = function failed (err, job, data) {
@@ -19,16 +18,17 @@ module.exports = function failed (err, job, data) {
   let duration = moment(job.dateFailed).diff(moment(job.dateStarted))
   duration = duration >= 0 ? duration : 0
 
-  const log = jobLog(
-    job.dateFailed,
-    job.q.id,
-    enums.log.error,
-    job.status,
-    enums.message.failed,
-    duration,
-    data,
-    err
-  )
+  let errMessage = err && err.message ? err.message : err
+
+  const log = {
+    logDate: job.dateFailed,
+    queueId: job.q.id,
+    logType: enums.log.error,
+    status: job.status,
+    queueMessage: `${enums.message.failed}: ${errMessage}`,
+    duration: duration,
+    jobData: data
+  }
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)
   .update({

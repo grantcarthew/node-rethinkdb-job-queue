@@ -9,7 +9,7 @@ module.exports = function () {
       t.plan(1)
 
       const q = testMockQueue()
-      
+
       return dbAssertTable(q).then((assertDbTable) => {
         t.ok(assertDbTable, 'Table asserted')
         resolve()

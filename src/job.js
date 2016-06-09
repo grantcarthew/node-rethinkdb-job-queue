@@ -18,8 +18,7 @@ class Job {
     if (options.id) {
       logger('Creating job from database object')
       Object.assign(this, options)
-      this.priority = Object.keys(enums.priority)
-        .find(key => enums.priority[key] === this.priority)
+      this.priority = enums.priorityFromValue(this.priority)
     } else {
       logger('Creating new job from defaults and options')
       options = jobOptions(options)

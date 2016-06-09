@@ -14,7 +14,7 @@ module.exports = function () {
       const q = testMockQueue()
 
       return dbAssert(q).then((dbResult) => {
-        t.ok(dbResult, 'Database asserted')
+        t.ok(dbResult, 'All database resources asserted')
         resolve()
       }).catch(err => t.fail(err))
     })
