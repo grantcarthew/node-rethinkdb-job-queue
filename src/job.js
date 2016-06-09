@@ -49,7 +49,17 @@ class Job {
     return jobCopy
   }
 
-  addLogEntry (logEntry) {
+  createLog (logType, status, message) {
+    return {
+      logDate: moment().toDate(),
+      queueId: this.q.id,
+      logType: logType,
+      status: status,
+      queueMessage: message
+    }
+  }
+
+  addLog (logEntry) {
     logger('addLogEntry', logEntry)
     if (this.status === enums.jobStatus.created) {
       return Promise.reject(enums.error.jobNotAdded)

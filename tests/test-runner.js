@@ -4,7 +4,6 @@ const dbAssertDatabase = require('./db-assert-database.spec')
 const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
 const dbAssert = require('./db-assert.spec')
-// require('./db-index.spec')
 const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
@@ -43,7 +42,8 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return dbQueueStatusSummary()
 }).then(() => {
-  return testQueue().delete(1)
+  // Note: must stop or delete queue for tests to succeed.
+  return testQueue().stop(1)
 }).then(() => {
   process.exit()
 })

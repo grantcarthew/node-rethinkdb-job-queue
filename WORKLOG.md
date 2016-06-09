@@ -1,11 +1,6 @@
 # Worklog
 
-Need to move async dbassert to module to fix tests.
-Working on db-job-failed and .spec
-Need to test job data and fail/retry
-Fix errors when running tests with no test DB.
-
-
+working on job.createLog and job.spec. Also move addLog code to a new file.
 
 Two states: timeout = 0, timeout > 0
 
@@ -30,10 +25,7 @@ Review timed out jobs;
 If now > dateStarted + timeout + buffervalue??? then job failed;
   check retrymax and count and update status.
 
-
-
-
-# TODO
+## TODO
 
 Name all functions exported
 Queue: return full jobs when added.
