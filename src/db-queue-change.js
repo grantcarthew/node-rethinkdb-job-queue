@@ -1,9 +1,10 @@
 const logger = require('./logger')(module)
 const enums = require('./enums')
 const Job = require('./job')
+const dbResult = require('./db-result')
 
-module.exports = function queueMessage (err, change) {
-  logger('message')
+module.exports = function queueChange (q, err, change) {
+  logger('queueChange')
   // console.log('------------- QUEUE CHANGE -------------')
   // console.dir(change)
   // console.log('----------------------------------------')
@@ -12,9 +13,9 @@ module.exports = function queueMessage (err, change) {
 
   // New job added
   if (change && change.new_val && !change.old_val) {
-    let newJob = new Job(this, null, change.new_val)
-    this.emit(enums.queueStatus.enqueue, newJob)
-    //this.handler(newJob)
+    let newJob = dbResult.toJob(q, change)
+    q.emit(enums.queueStatus.enqueue, newJob)
+    //this.handler(newJob) TODO
   }
   return
 

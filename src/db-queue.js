@@ -5,7 +5,6 @@ const dbReview = require('./db-review')
 
 module.exports.addJob = require('./db-queue-addjob')
 module.exports.statusSummary = require('./db-queue-statussummary')
-module.exports.changeFeed = require('./db-queue-changefeed')
 module.exports.change = require('./db-queue-change')
 
 module.exports.removeJob = function (job) {

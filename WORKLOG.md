@@ -1,6 +1,38 @@
 # Worklog
 
+Working on moving functions out of Queue for ease of testing.
 
+
+## Tests Needed
+
+db-queue-changefeed
+db-queue-change
+db-queue
+
+queue
+queue-process
+
+## List of Changes and Events
+
+*   Queue ready
+*   Queue error
+*   Queue paused
+*   Queue resumed
+*   Queue review
+*   Job added to queue
+*   Log added to job
+*   Job status change
+*   Job enqueue (event)
+*   Job waiting
+*   Job active (event and db change)
+*   Job progress (event and db change)
+*   Job removed
+*   Job completed
+*   Job timeout
+*   Job failed
+*   Job retry
+*   Job delayed ???
+*   Queue empty or reset
 
 ## Retry Workflow
 
@@ -26,6 +58,8 @@ If now > dateStarted + timeout + buffervalue??? then job failed;
 
 ## TODO
 
+db-result tests need to include array????  need to check types of data passed
+Consider a function to remove jobs after a time period (week? month? 6 months?)
 Name all functions exported
 Check enums...
 Check .emit(

@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
 const enums = require('./enums')
-const dbChanges = require('./db-changes')
+const dbResult = require('./db-result')
 
 module.exports = function dbQueueAddJob (q, job) {
   if (!job) { return [] }
@@ -21,6 +21,6 @@ module.exports = function dbQueueAddJob (q, job) {
   return q.r.db(q.db).table(q.name)
   .insert(jobs, {returnChanges: true}).run()
   .then((saveResult) => {
-    return dbChanges.toJob(q, saveResult)
+    return dbResult.toJob(q, saveResult)
   })
 }

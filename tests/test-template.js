@@ -1,7 +1,7 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const testQueue = require('./test-queue')
-const dbChanges = require('../src/db-changes')
+const dbResult = require('../src/db-result')
 const testData = require('./test-options').testData
 
 module.exports = function () {

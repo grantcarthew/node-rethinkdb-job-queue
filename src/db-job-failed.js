@@ -1,7 +1,7 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
-const dbChanges = require('./db-changes')
+const dbResult = require('./db-result')
 
 module.exports = function failed (err, job, data) {
   logger('failed: ' + job.id)
@@ -36,6 +36,6 @@ module.exports = function failed (err, job, data) {
   }, {returnChanges: true})
   .run()
   .then((updateResult) => {
-    return dbChanges.toJob(job.q, updateResult)
+    return dbResult.toJob(job.q, updateResult)
   })
 }

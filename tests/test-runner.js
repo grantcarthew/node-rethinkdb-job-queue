@@ -9,7 +9,7 @@ const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
 const dbJobAddLog = require('./db-job-addlog.spec')
-const dbChanges = require('./db-changes.spec')
+const dbResult = require('./db-result.spec')
 const dbQueueAddJob = require('./db-queue-addjob.spec')
 const dbJobCompleted = require('./db-job-completed.spec')
 const dbJobFailed = require('./db-job-failed.spec')
@@ -31,17 +31,11 @@ return dbAssertDatabase().then(() => {
     jobOptions(),
     job(),
     dbJobAddLog(),
-    dbChanges(),
+    dbResult(),
     dbQueueAddJob(),
     dbJobCompleted(),
     dbJobFailed()
   ])
-}).then(() => {
-}).then(() => {
-}).then(() => {
-}).then(() => {
-}).then(() => {
-}).then(() => {
 }).then(() => {
   return dbReview()
 }).then(() => {

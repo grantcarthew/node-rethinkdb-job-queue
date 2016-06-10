@@ -35,7 +35,6 @@ class Queue extends EventEmitter {
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this._changeFeed = false
-    this._onChange = dbQueue.change
     this.removeOnSuccess = options.removeOnSuccess == null ? false
       : options.removeOnSuccess
     this.paused = false
@@ -46,7 +45,13 @@ class Queue extends EventEmitter {
       process.pid
     ].join(':')
 
-    this.ready = dbAssert(this).then((result) => {
+    this.ready = dbAssert(this).then(() => {
+      return this.r.db(this.db).table(this.name).changes().run()
+    }).then((changeFeed) => {
+      this._changeFeed = changeFeed
+      this._changeFeed.each((err, change) => {
+        dbQueue.change(this, err, change)
+      })
       if (this.isMaster) {
         logger('Queue is a master')
         dbReview.start(this)
@@ -111,6 +116,11 @@ class Queue extends EventEmitter {
     return this.ready.then(() => {
       return dbQueue.statusSummary(this)
     })
+  }
+
+  reset () {
+    // or empty?
+    // will remove all jobs.
   }
 
   stop (stopTimeout, drainPool) {

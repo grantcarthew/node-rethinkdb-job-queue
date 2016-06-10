@@ -5,7 +5,7 @@ const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
 const dbReview = require('../src/db-review')
-const dbChanges = require('../src/db-changes')
+const dbResult = require('../src/db-result')
 const testData = require('./test-options').testData
 
 module.exports = function () {
@@ -52,7 +52,7 @@ module.exports = function () {
         return q.r.db(q.db).table(q.name)
         .insert(cleanJobs, {returnChanges: true}).run()
       }).then((saveResult) => {
-        return dbChanges.toJob(q, saveResult)
+        return dbResult.toJob(q, saveResult)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job1.id, 'Job 1 saved successfully')
         t.equal(savedJob[1].id, job2.id, 'Job 2 saved successfully')

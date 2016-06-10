@@ -2,12 +2,12 @@ const test = require('tape')
 const Promise = require('bluebird')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
-const dbChanges = require('../src/db-changes')
+const dbResult = require('../src/db-result')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-changes test', (t) => {
+    test('db-result test', (t) => {
       t.plan(2)
 
       const q = testQueue()
@@ -21,10 +21,10 @@ module.exports = function () {
         ],
         errors: 0
       }
-      return dbChanges.toJob(q, mockChange).then((changeJob) => {
+      return dbResult.toJob(q, mockChange).then((changeJob) => {
         t.deepEqual(jobAsData, job.cleanCopy, 'Job created from change successfully')
         mockChange.errors = 1
-        return dbChanges.toJob(q, mockChange)
+        return dbResult.toJob(q, mockChange)
       }).then(() => {
         t.fail('Change with error not failing')
       }).catch((err) => {
