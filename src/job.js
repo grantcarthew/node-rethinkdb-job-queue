@@ -62,7 +62,7 @@ class Job {
 
   addLog (log) {
     logger('addLog')
-    dbJobAddLog(this, log)
+    return dbJobAddLog(this, log)
   }
 }
 

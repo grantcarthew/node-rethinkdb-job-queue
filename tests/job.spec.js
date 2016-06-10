@@ -10,11 +10,13 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job test', (t) => {
-      t.plan(25)
+      t.plan(52)
 
       const uuid = /^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$/i
       const q = testQueue()
       const newJob = new Job(q, testData)
+      let newJobFromData
+      let savedJob
 
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
@@ -29,6 +31,7 @@ module.exports = function () {
       t.ok(newJob.retryCount === 0, 'New job retryCount is 0')
       t.equal(newJob.log.length, 0, 'New job log is an empty array')
       t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
+
       const cleanJob = newJob.cleanCopy
       t.ok(!cleanJob.q, 'Clean job does not have a reference to the queue')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
@@ -43,14 +46,50 @@ module.exports = function () {
       t.equal(cleanJob.log, newJob.log, 'Clean job log is valid')
       t.equal(cleanJob.dateCreated, newJob.dateCreated, 'Clean job dateCreated is valid')
 
+      let log = newJob.createLog(testData)
+      log.data = testData
+      t.equal(typeof log, 'object', 'Job createLog returns a log object')
+      t.ok(moment.isDate(log.date), 'Log date is a date')
+      t.equal(log.queueId, q.id, 'Log queueId is valid')
+      t.equal(log.type, enums.log.information, 'Log type is information')
+      t.equal(log.status, enums.jobStatus.created, 'Log status is created')
+      t.equal(log.message, testData, 'Log message is valid')
+      t.equal(log.data, testData, 'Log data is valid')
 
+      return q.addJob(newJob).then((addedJobs) => {
+        savedJob = addedJobs[0]
+        t.equal(savedJob.id, newJob.id, 'Job saved successfully')
+        let jobCopy = Object.assign({}, savedJob)
+        jobCopy.priority = 40
+        return new Job(q, null, jobCopy)
+      }).then((newJobFromData) => {
+        t.equal(newJobFromData.id, savedJob.id, 'New job from data created successfully')
+        t.deepEqual(newJobFromData.q, savedJob.q, 'New job from data queue valid')
+        t.equal(newJobFromData.data, savedJob.data, 'New job from data job data is valid')
+        t.equal(newJobFromData.priority, savedJob.priority, 'New job from data priority is valid')
+        t.equal(newJobFromData.status, savedJob.status, 'New job from data status is valid')
+        t.equal(newJobFromData.timeout, savedJob.timeout, 'New job from data timeout is valid')
+        t.equal(newJobFromData.retryMax, savedJob.retryMax, 'New job from data retryMax is valid')
+        t.equal(newJobFromData.retryDelay, savedJob.retryDelay, 'New job from data retryDelay is valid')
+        t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
+        t.equal(newJobFromData.retryCount, savedJob.retryCount, 'New job from data retryCount is valid')
 
-      // return YYYYYY().then((ZZZZZZZ) => {
-      //   t.deepEqual(, , 'Blah successfully')
-      // }).catch((err) => {
-      //   t.deepEqual(, , 'Blah failing')
+        return savedJob.addLog(log)
+      }).then((logAddedResult) => {
+        t.equal(logAddedResult, 1, 'Job log added successfully')
+        return q.getJob(savedJob.id)
+      }).then((jobsFromDb) => {
+        t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
+        t.equal(jobsFromDb[0].log.length, 1, 'Job log exists')
+        t.ok(moment.isDate(jobsFromDb[0].log[0].date), 'Log date is a date')
+        t.equal(jobsFromDb[0].log[0].queueId, q.id, 'Log queueId is valid')
+        t.equal(jobsFromDb[0].log[0].type, enums.log.information, 'Log type is information')
+        t.equal(jobsFromDb[0].log[0].status, enums.jobStatus.created, 'Log status is created')
+        t.equal(jobsFromDb[0].log[0].message, testData, 'Log message is valid')
+        t.equal(jobsFromDb[0].log[0].data, testData, 'Log data is valid')
+      }).then(() => {
         resolve()
-      // }).catch(err => testError(err, module, t))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

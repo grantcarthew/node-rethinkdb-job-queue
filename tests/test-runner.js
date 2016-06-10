@@ -24,6 +24,8 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return dbAssert()
 }).then(() => {
+  // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
+  testMockQueue().r.getPoolMaster().drain()
   return Promise.all([
     enums(),
     jobOptions(),
@@ -45,8 +47,7 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return dbQueueStatusSummary()
 }).then(() => {
-  // Note: must stop or delete queues for node to exit gracefully.
+  // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testQueue().stop(1)
-  testMockQueue().r.getPoolMaster().drain()
   return true
 })

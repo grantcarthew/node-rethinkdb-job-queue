@@ -1,6 +1,5 @@
 # Worklog
 
-working on db-job-addlog.spec and below.
 working on job.createLog and job.spec. Also move addLog code to a new file.
 
 Two states: timeout = 0, timeout > 0
