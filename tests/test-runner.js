@@ -1,5 +1,6 @@
 const Promise = require('bluebird')
 const testQueue = require('./test-queue')
+const testMockQueue = require('./test-mock-queue')
 const dbAssertDatabase = require('./db-assert-database.spec')
 const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
@@ -7,6 +8,7 @@ const dbAssert = require('./db-assert.spec')
 const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
+const dbJobAddLog = require('./db-job-addlog.spec')
 const dbChanges = require('./db-changes.spec')
 const dbQueueAddJob = require('./db-queue-addjob.spec')
 const dbJobCompleted = require('./db-job-completed.spec')
@@ -26,6 +28,7 @@ return dbAssertDatabase().then(() => {
     enums(),
     jobOptions(),
     job(),
+    dbJobAddLog(),
     dbChanges(),
     dbQueueAddJob(),
     dbJobCompleted(),
@@ -42,8 +45,8 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return dbQueueStatusSummary()
 }).then(() => {
-  // Note: must stop or delete queue for tests to succeed.
-  return testQueue().stop(1)
-}).then(() => {
-  process.exit()
+  // Note: must stop or delete queues for node to exit gracefully.
+  testQueue().stop(1)
+  testMockQueue().r.getPoolMaster().drain()
+  return true
 })

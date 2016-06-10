@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const moment = require('moment')
 const enums = require('../src/enums')
 const testQueue = require('./test-queue')
@@ -42,14 +43,14 @@ module.exports = function () {
       t.equal(cleanJob.log, newJob.log, 'Clean job log is valid')
       t.equal(cleanJob.dateCreated, newJob.dateCreated, 'Clean job dateCreated is valid')
 
-      
+
 
       // return YYYYYY().then((ZZZZZZZ) => {
       //   t.deepEqual(, , 'Blah successfully')
       // }).catch((err) => {
       //   t.deepEqual(, , 'Blah failing')
         resolve()
-      // }).catch(err => t.fail(err))
+      // }).catch(err => testError(err, module, t))
     })
   })
 }

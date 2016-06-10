@@ -9,4 +9,7 @@ module.exports = function addLog (job, log) {
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)
   .update({log: job.q.r.row('log').add([log])})
+  .then((updateResult) => {
+    return updateResult.replaced
+  })
 }

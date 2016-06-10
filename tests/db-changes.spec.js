@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const dbChanges = require('../src/db-changes')
 const testData = require('./test-options').testData
@@ -29,7 +30,7 @@ module.exports = function () {
       }).catch((err) => {
         t.deepEqual(mockChange, err, 'Change with error failing')
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

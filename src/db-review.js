@@ -31,9 +31,9 @@ function jobTimeout (q) {
       q.r.row('retryCount')
     ),
     log: q.r.row('log').add([{
-      logDate: q.r.now(),
+      date: q.r.now(),
       queueId: q.id,
-      logType: q.r.branch(
+      type: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
         enums.log.warning,
         enums.log.error

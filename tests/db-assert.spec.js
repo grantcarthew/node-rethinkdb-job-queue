@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const rethinkdbdash = require('rethinkdbdash')
 const enums = require('../src/enums')
 const dbAssert = require('../src/db-assert')
@@ -16,7 +17,7 @@ module.exports = function () {
       return dbAssert(q).then((dbResult) => {
         t.ok(dbResult, 'All database resources asserted')
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

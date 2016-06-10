@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
 const dbQueueAddJob = require('../src/db-queue-addjob')
@@ -40,7 +41,7 @@ module.exports = function () {
         })
       }).then(() => {
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

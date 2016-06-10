@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const testMockQueue = require('./test-mock-queue')
 const dbAssertIndex = require('../src/db-assert-index')
 
@@ -14,7 +15,7 @@ module.exports = function () {
       .then((assertIndexResult) => {
         t.ok(assertIndexResult, 'Indexes asserted')
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

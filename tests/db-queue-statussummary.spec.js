@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const dbStatusSummary = require('../src/db-queue-statussummary')
 
@@ -17,7 +18,7 @@ module.exports = function () {
         t.ok(summary.timeout > 0, 'Queue status summary includes timeout')
       }).then(() => {
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

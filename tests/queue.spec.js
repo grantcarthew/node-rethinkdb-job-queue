@@ -1,6 +1,7 @@
 const test = require('tape')
 const Queue = require('../src/queue')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const testOptions = require('./test-options')
 const queueDefaultOptions = testOptions.queueDefaultOptions
 const customJobDefaultOptions = testOptions.jobOptionsHigh
@@ -70,6 +71,6 @@ test('queue test', (t) => {
   }).then((deleteResult) => {
     console.log('~~~~~~~~~~ deleteResult ~~~~~~~~~~')
     console.dir(deleteResult)
-  })
+  }).catch(err => testError(err, module, t))
 
 })

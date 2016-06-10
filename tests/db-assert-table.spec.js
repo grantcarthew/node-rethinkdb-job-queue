@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const testError = require('./test-error')
 const testMockQueue = require('./test-mock-queue')
 const dbAssertTable = require('../src/db-assert-table')
 
@@ -13,7 +14,7 @@ module.exports = function () {
       return dbAssertTable(q).then((assertDbTable) => {
         t.ok(assertDbTable, 'Table asserted')
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

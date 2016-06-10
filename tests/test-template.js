@@ -16,7 +16,7 @@ module.exports = function () {
       }).catch((err) => {
         t.deepEqual(, , 'Blah failing')
         resolve()
-      }).catch(err => t.fail(err))
+      }).catch(err => testError(err, module, t))
     })
   })
 }

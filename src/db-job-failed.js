@@ -23,7 +23,7 @@ module.exports = function failed (err, job, data) {
 
   const log = job.createLog(errMessage, enums.log.error)
   log.duration = duration
-  log.jobData = data
+  log.data = data
 
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)

@@ -15,7 +15,7 @@ class Job {
     this.q = q
 
     // If creating a job from the database, pass the job data as the options.
-    // Eg. new Job(queue, null, jobData)
+    // Eg. new Job(queue, null, data)
     if (options && options.id) {
       logger('Creating job from database object')
       Object.assign(this, options)
@@ -50,11 +50,11 @@ class Job {
     return jobCopy
   }
 
-  createLog (message, logType = enums.log.information, status = this.status) {
+  createLog (message, type = enums.log.information, status = this.status) {
     return {
-      logDate: moment().toDate(),
+      date: moment().toDate(),
       queueId: this.q.id,
-      logType: logType,
+      type: type,
       status: status,
       message: message
     }
