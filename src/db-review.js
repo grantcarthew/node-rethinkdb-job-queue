@@ -56,7 +56,7 @@ function jobTimeout (q) {
   })
 }
 
-module.exports.start = function (q) {
+module.exports.start = function reviewStart (q) {
   logger('db-review start')
   if (dbReviewIntervalId) {
     return
@@ -67,7 +67,7 @@ module.exports.start = function (q) {
   }, interval)
 }
 
-module.exports.stop = function (q) {
+module.exports.stop = function reviewStop (q) {
   logger('db-review stop')
   if (dbReviewIntervalId) {
     clearInterval(dbReviewIntervalId)

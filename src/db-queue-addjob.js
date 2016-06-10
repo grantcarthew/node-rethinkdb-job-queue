@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const enums = require('./enums')
 const dbChanges = require('./db-changes')
 
-module.exports = function (q, job) {
+module.exports = function dbQueueAddJob (q, job) {
   if (!job) { return [] }
   let jobs = Array.isArray(job) ? job : [job]
   logger('addJob', jobs.length)

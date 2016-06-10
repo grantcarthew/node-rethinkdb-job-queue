@@ -1,7 +1,7 @@
 const path = require('path')
 const moment = require('moment')
 const debug = require('debug')
-module.exports = function (rjqModule) {
+module.exports = function logger (rjqModule) {
   if (process.env.DEBUG) {
     const time = moment().format('HH:mm:ss.SSS')
     const moduleName = path.basename(rjqModule.id, '.js')

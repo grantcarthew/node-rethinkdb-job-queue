@@ -6,7 +6,7 @@ const defaultOptions = {
   retryDelay: 600
 }
 
-module.exports = function (options = {}) {
+module.exports = function jobOptions (options = {}) {
   logger('options', options)
   return {
     priority: options.priority || defaultOptions.priority,

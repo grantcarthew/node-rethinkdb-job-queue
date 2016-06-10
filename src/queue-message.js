@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const enums = require('./enums')
 const Job = require('./job')
 
-module.exports = function (err, change) {
+module.exports = function queueMessage (err, change) {
   logger('message')
   // console.log('------------- QUEUE CHANGE -------------')
   // console.dir(change)

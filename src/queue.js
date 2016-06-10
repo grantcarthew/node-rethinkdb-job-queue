@@ -6,9 +6,9 @@ const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
-const messages = require('./queue-messages')
+const messages = require('./queue-message')
 const dbReview = require('./db-review')
-const jobProcess = require('./job-process')
+const queueProcess = require('./queue-process')
 const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
@@ -102,7 +102,7 @@ class Queue extends EventEmitter {
   process (handler) {
     logger('process')
     return this.ready.then(() => {
-      return jobProcess(this, handler)
+      return queueProcess(this, handler)
     })
   }
 

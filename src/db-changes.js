@@ -1,7 +1,7 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 
-module.exports.toJob = function (q, dbResult) {
+module.exports.toJob = function dbChanges (q, dbResult) {
   logger('toJob')
   if (dbResult.errors > 0) {
     return Promise.reject(dbResult)
