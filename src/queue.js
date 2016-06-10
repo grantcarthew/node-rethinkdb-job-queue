@@ -6,7 +6,6 @@ const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
-const messages = require('./queue-message')
 const dbReview = require('./db-review')
 const queueProcess = require('./queue-process')
 const jobOptions = require('./job-options')
@@ -27,7 +26,6 @@ class Queue extends EventEmitter {
       port: this.port,
       db: this.db
     })
-    this.onChange = messages
     this.isMaster = options.isMaster == null ? false
       : options.isMaster
     this.masterReviewPeriod = options.masterReviewPeriod || 300
@@ -36,6 +34,8 @@ class Queue extends EventEmitter {
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.running = 0
     this._jobDefaultOptions = jobOptions()
+    this._changeFeed = false
+    this._onChange = dbQueue.change
     this.removeOnSuccess = options.removeOnSuccess == null ? false
       : options.removeOnSuccess
     this.paused = false

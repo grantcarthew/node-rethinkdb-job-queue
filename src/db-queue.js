@@ -5,18 +5,8 @@ const dbReview = require('./db-review')
 
 module.exports.addJob = require('./db-queue-addjob')
 module.exports.statusSummary = require('./db-queue-statussummary')
-
-module.exports.startQueueChangeFeed = function (q) {
-  logger('startQueueChangeFeed')
-  return q.r.db(q.db).table(q.name)
-  .changes().run().then((feed) => {
-    q.feed = feed
-    feed.each((err, change) => {
-      q.onChange(err, change)
-    })
-  })
-}
-
+module.exports.changeFeed = require('./db-queue-changefeed')
+module.exports.change = require('./db-queue-change')
 
 module.exports.removeJob = function (job) {
   logger('removeJob: ' + job.id)
@@ -80,7 +70,7 @@ const stopQueue = function (q, stopTimeout, drainPool = true) {
     return Promise.delay(stopTimeout / 2)
   }).then(() => {
     return new Promise((resolve) => {
-      if (q.feed) { q.feed.close() }
+      if (q._changeFeed) { q._changeFeed.close() }
       dbReview.stop(q)
 
       stopTimeoutId = setTimeout(() => {
