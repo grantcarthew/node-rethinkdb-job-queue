@@ -3,12 +3,12 @@ const Promise = require('bluebird')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
-const queueAddJob = require('../src/queue-addjob')
+const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-addjob test', (t) => {
+    test('queue-add-job test', (t) => {
       t.plan(6)
 
       const q = testQueue()

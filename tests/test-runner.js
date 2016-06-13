@@ -8,13 +8,13 @@ const dbAssert = require('./db-assert.spec')
 const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
-const jobAddLog = require('./job-addlog.spec')
+const jobAddLog = require('./job-add-log.spec')
 const dbResult = require('./db-result.spec')
-const queueAddJob = require('./queue-addjob.spec')
+const queueAddJob = require('./queue-add-job.spec')
 const jobCompleted = require('./job-completed.spec')
 const jobFailed = require('./job-failed.spec')
 const dbReview = require('./db-review.spec')
-const queueStatusSummary = require('./queue-statussummary.spec')
+const queueStatusSummary = require('./queue-status-summary.spec')
 
 return dbAssertDatabase().then(() => {
 }).then(() => {

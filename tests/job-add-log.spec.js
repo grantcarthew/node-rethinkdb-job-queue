@@ -4,12 +4,12 @@ const moment = require('moment')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
-const jobAddLog = require('../src/job-addlog')
+const jobAddLog = require('../src/job-add-log')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-addlog test', (t) => {
+    test('job-add-log test', (t) => {
       t.plan(18)
 
       const q = testQueue()

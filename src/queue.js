@@ -9,8 +9,9 @@ const dbQueue = require('./db-queue')
 const dbReview = require('./db-review')
 const queueProcess = require('./queue-process')
 const queueChange = require('./queue-change')
-const queueAddJob = require('./queue-addjob')
-const queueStatusSummary = require('./queue-statussummary')
+const queueAddJob = require('./queue-add-job')
+const queueRemoveJob = require('./queue-remove-job')
+const queueStatusSummary = require('./queue-status-summary')
 const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {

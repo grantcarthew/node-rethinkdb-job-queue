@@ -3,13 +3,6 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
 
-module.exports.removeJob = function (job) {
-  logger('removeJob: ' + job.id)
-  const db = job.q.db
-  const tableName = job.q.name
-  return job.q.r.db(db).table(tableName).get(job.id).delete().run()
-}
-
 module.exports.getJobById = function (q, jobId) {
   let jobIds = Array.isArray(jobId) ? jobId : [jobId]
   logger('getJobById: ', jobIds)

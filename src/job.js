@@ -3,7 +3,7 @@ const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
-const jobAddLog = require('./job-addlog')
+const jobAddLog = require('./job-add-log')
 
 class Job {
 
