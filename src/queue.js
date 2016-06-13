@@ -5,13 +5,15 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
-const dbQueue = require('./db-queue')
 const dbReview = require('./db-review')
 const queueProcess = require('./queue-process')
 const queueChange = require('./queue-change')
 const queueAddJob = require('./queue-add-job')
+const queueGetJob = require('./queue-get-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueStatusSummary = require('./queue-status-summary')
+const queueStop = require('./queue-stop')
+const queueDelete = require('./queue-delete')
 const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
@@ -94,7 +96,7 @@ class Queue extends EventEmitter {
   getJob (jobId) {
     logger('getJob')
     return this.ready.then(() => {
-      return dbQueue.getJobById(this, jobId)
+      return queueGetJob.byId(this, jobId)
     })
   }
 
@@ -130,13 +132,13 @@ class Queue extends EventEmitter {
   stop (stopTimeout, drainPool) {
     if (!stopTimeout) { throw new Error(enums.error.missingTimeout) }
     logger('stop')
-    return dbQueue.stopQueue(this, stopTimeout)
+    return queueStop(this, stopTimeout)
   }
 
   delete (deleteTimeout) {
     logger('delete')
     if (!deleteTimeout) { throw new Error(enums.error.missingTimeout) }
-    return dbQueue.deleteQueue(this, deleteTimeout)
+    return queueDelete(this, deleteTimeout)
   }
 }
 

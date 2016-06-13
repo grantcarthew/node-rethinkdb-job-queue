@@ -42,6 +42,6 @@ return dbAssertDatabase().then(() => {
   return queueStatusSummary()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
-  testQueue().stop(1)
+  testQueue().stop(100)
   return true
 })

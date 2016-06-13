@@ -1,6 +1,12 @@
 # Worklog
 
-Working on moving functions out of Queue for ease of testing.
+Need tests for the following;
+queue-get-job
+queue-remove-job
+queue
+queue-process
+queue-stop
+queue-delete
 
 
 ## Tests Needed

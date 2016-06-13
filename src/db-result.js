@@ -6,11 +6,18 @@ module.exports.toJob = function dbResult (q, dbResult) {
   if (dbResult.errors > 0) {
     return Promise.reject(dbResult)
   }
+  if (Array.isArray(dbResult)) {
+    return Promise.map(dbResult, jobData => q.createJob(null, jobData))
+  }
   if (Array.isArray(dbResult.changes)) {
     return Promise.map(dbResult.changes, (change) => {
       return q.createJob(null, change.new_val)
     })
-  } else {
+  }
+  if (dbResult.new_val) {
     return Promise.resolve(q.createJob(null, dbResult.new_val))
+  }
+  if (dbResult.id) {
+    return Promise.resolve(q.createJob(null, dbResult))
   }
 }
