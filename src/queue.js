@@ -10,6 +10,7 @@ const queueProcess = require('./queue-process')
 const queueChange = require('./queue-change')
 const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
+const queueGetNextJob = require('./queue-get-next-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueStatusSummary = require('./queue-status-summary')
 const queueStop = require('./queue-stop')
@@ -96,7 +97,7 @@ class Queue extends EventEmitter {
   getJob (jobId) {
     logger('getJob')
     return this.ready.then(() => {
-      return queueGetJob.byId(this, jobId)
+      return queueGetJob(this, jobId)
     })
   }
 

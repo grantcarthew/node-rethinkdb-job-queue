@@ -3,21 +3,7 @@ const moment = require('moment')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function (q, jobId) {
-  let jobIds = Array.isArray(jobId) ? jobId : [jobId]
-  logger('getJobById: ', jobIds)
-
-  return q.r
-    .db(q.db)
-    .table(q.name)
-    .getAll(...jobIds)
-    .run()
-    .then((jobsData) => {
-      return dbResult.toJob(q, jobsData)
-    })
-}
-
-module.exports.next = function (q) {
+module.exports = function (q) {
   logger('getNextJob')
   logger(`Concurrency: ${q.concurrency} Running: ${q.running}`)
   const quantity = q.concurrency - q.running

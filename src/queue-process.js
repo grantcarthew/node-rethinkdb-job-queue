@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
-const queueGetJob = require('./queue-get-job')
+const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
 const jobFailed = require('./job-failed')
 
@@ -45,7 +45,7 @@ const jobTick = function (q) {
     return
   }
 
-  return queueGetJob.next(q).then((jobsToDo) => {
+  return queueGetNextJob(q).then((jobsToDo) => {
     if (jobsToDo.length < 1) {
       return Promise.reject(enums.queueStatus.idle)
     }
