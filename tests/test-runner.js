@@ -8,11 +8,11 @@ const dbAssert = require('./db-assert.spec')
 const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
-const dbJobAddLog = require('./db-job-addlog.spec')
+const jobAddLog = require('./job-addlog.spec')
 const dbResult = require('./db-result.spec')
 const dbQueueAddJob = require('./db-queue-addjob.spec')
-const dbJobCompleted = require('./db-job-completed.spec')
-const dbJobFailed = require('./db-job-failed.spec')
+const jobCompleted = require('./job-completed.spec')
+const jobFailed = require('./job-failed.spec')
 const dbReview = require('./db-review.spec')
 const dbQueueStatusSummary = require('./db-queue-statussummary.spec')
 
@@ -30,11 +30,11 @@ return dbAssertDatabase().then(() => {
     enums(),
     jobOptions(),
     job(),
-    dbJobAddLog(),
+    jobAddLog(),
     dbResult(),
     dbQueueAddJob(),
-    dbJobCompleted(),
-    dbJobFailed()
+    jobCompleted(),
+    jobFailed()
   ])
 }).then(() => {
   return dbReview()

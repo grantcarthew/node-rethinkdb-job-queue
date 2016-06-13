@@ -4,12 +4,12 @@ const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
-const dbJobCompleted = require('../src/db-job-completed')
+const jobCompleted = require('../src/job-completed')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-job-completed test', (t) => {
+    test('job-completed test', (t) => {
       t.plan(13)
 
       const q = testQueue()
@@ -17,7 +17,7 @@ module.exports = function () {
 
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        return dbJobCompleted(savedJob[0], testData)
+        return jobCompleted(savedJob[0], testData)
       }).then((changeResult) => {
         t.equal(changeResult.replaced, 1, 'Job updated successfully')
         return q.getJob(job.id)

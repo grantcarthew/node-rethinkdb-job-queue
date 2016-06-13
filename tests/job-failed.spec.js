@@ -4,12 +4,12 @@ const testError = require('./test-error')
 const moment = require('moment')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
-const dbJobFailed = require('../src/db-job-failed')
+const jobFailed = require('../src/job-failed')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-job-failed test', (t) => {
+    test('job-failed test', (t) => {
       t.plan(53)
 
       const q = testQueue()
@@ -18,7 +18,7 @@ module.exports = function () {
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         t.pass('Job failure - original')
-        return dbJobFailed(null, savedJob[0], testData)
+        return jobFailed(null, savedJob[0], testData)
       }).then((retry1) => {
         t.equal(retry1[0].status, enums.jobStatus.retry, 'Job status is retry')
         t.equal(retry1[0].retryCount, 1, 'Job retryCount is 1')
@@ -33,7 +33,7 @@ module.exports = function () {
         t.ok(retry1[0].log[0].duration >= 0, 'Log duration is >= 0')
         t.equal(retry1[0].log[0].data, job.data, 'Log data is valid')
         t.pass('Job failure - first retry')
-        return dbJobFailed(null, retry1[0], testData)
+        return jobFailed(null, retry1[0], testData)
       }).then((retry2) => {
         t.equal(retry2[0].status, enums.jobStatus.retry, 'Job status is retry')
         t.equal(retry2[0].retryCount, 2, 'Job retryCount is 2')
@@ -48,7 +48,7 @@ module.exports = function () {
         t.ok(retry2[0].log[1].duration >= 0, 'Log duration is >= 0')
         t.equal(retry2[0].log[1].data, job.data, 'Log data is valid')
         t.pass('Job failure - second retry')
-        return dbJobFailed(null, retry2[0], testData)
+        return jobFailed(null, retry2[0], testData)
       }).then((retry3) => {
         t.equal(retry3[0].status, enums.jobStatus.retry, 'Job status is retry')
         t.equal(retry3[0].retryCount, 3, 'Job retryCount is 3')
@@ -63,7 +63,7 @@ module.exports = function () {
         t.ok(retry3[0].log[2].duration >= 0, 'Log duration is >= 0')
         t.equal(retry3[0].log[2].data, job.data, 'Log data is valid')
         t.pass('Job failure - third retry')
-        return dbJobFailed(null, retry3[0], testData)
+        return jobFailed(null, retry3[0], testData)
       }).then((failed) => {
         t.equal(failed[0].status, enums.jobStatus.failed, 'Job status is failed')
         t.equal(failed[0].retryCount, 3, 'Job retryCount is 3')

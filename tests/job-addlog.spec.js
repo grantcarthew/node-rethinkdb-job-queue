@@ -4,12 +4,12 @@ const moment = require('moment')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
-const dbJobAddLog = require('../src/db-job-addlog')
+const jobAddLog = require('../src/job-addlog')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-job-addlog test', (t) => {
+    test('job-addlog test', (t) => {
       t.plan(18)
 
       const q = testQueue()
@@ -21,7 +21,7 @@ module.exports = function () {
         t.equal(job.status, enums.jobStatus.waiting, 'New job added successfully')
         testLog = job.createLog(testData)
         testLog.data = testData
-        return dbJobAddLog(job, testLog)
+        return jobAddLog(job, testLog)
       }).then((updateResult1) => {
         t.equal(updateResult1, 1, 'Log 1 added to job successfully')
         return q.getJob(job.id)
@@ -34,7 +34,7 @@ module.exports = function () {
         t.equal(jobWithLog1[0].log[0].message, testData, 'Log 1 message is valid')
         t.equal(jobWithLog1[0].log[0].data, testData, 'Log 1 data is valid')
         testLog.extra = extra
-        return dbJobAddLog(job, testLog)
+        return jobAddLog(job, testLog)
       }).then((updateResult2) => {
         t.equal(updateResult2, 1, 'Log 2 added to job successfully')
         return q.getJob(job.id)
