@@ -8,6 +8,9 @@ const dbAssert = require('./db-assert')
 const dbQueue = require('./db-queue')
 const dbReview = require('./db-review')
 const queueProcess = require('./queue-process')
+const queueChange = require('./queue-change')
+const queueAddJob = require('./queue-addjob')
+const queueStatusSummary = require('./queue-statussummary')
 const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
@@ -50,7 +53,7 @@ class Queue extends EventEmitter {
     }).then((changeFeed) => {
       this._changeFeed = changeFeed
       this._changeFeed.each((err, change) => {
-        dbQueue.change(this, err, change)
+        queueChange(this, err, change)
       })
       if (this.isMaster) {
         logger('Queue is a master')
@@ -83,7 +86,7 @@ class Queue extends EventEmitter {
   addJob (job) {
     logger('addJob')
     return this.ready.then(() => {
-      return dbQueue.addJob(this, job)
+      return queueAddJob(this, job)
     })
   }
 
@@ -114,7 +117,7 @@ class Queue extends EventEmitter {
   getStatusSummary () {
     logger('getStatusSummary')
     return this.ready.then(() => {
-      return dbQueue.statusSummary(this)
+      return queueStatusSummary(this)
     })
   }
 

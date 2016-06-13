@@ -5,8 +5,8 @@ Working on moving functions out of Queue for ease of testing.
 
 ## Tests Needed
 
-db-queue-changefeed
-db-queue-change
+queue-changefeed
+queue-change
 db-queue
 
 queue

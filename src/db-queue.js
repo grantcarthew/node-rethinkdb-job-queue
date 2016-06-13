@@ -3,10 +3,6 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
 
-module.exports.addJob = require('./db-queue-addjob')
-module.exports.statusSummary = require('./db-queue-statussummary')
-module.exports.change = require('./db-queue-change')
-
 module.exports.removeJob = function (job) {
   logger('removeJob: ' + job.id)
   const db = job.q.db

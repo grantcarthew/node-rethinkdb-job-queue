@@ -10,11 +10,11 @@ const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
 const jobAddLog = require('./job-addlog.spec')
 const dbResult = require('./db-result.spec')
-const dbQueueAddJob = require('./db-queue-addjob.spec')
+const queueAddJob = require('./queue-addjob.spec')
 const jobCompleted = require('./job-completed.spec')
 const jobFailed = require('./job-failed.spec')
 const dbReview = require('./db-review.spec')
-const dbQueueStatusSummary = require('./db-queue-statussummary.spec')
+const queueStatusSummary = require('./queue-statussummary.spec')
 
 return dbAssertDatabase().then(() => {
 }).then(() => {
@@ -32,14 +32,14 @@ return dbAssertDatabase().then(() => {
     job(),
     jobAddLog(),
     dbResult(),
-    dbQueueAddJob(),
+    queueAddJob(),
     jobCompleted(),
     jobFailed()
   ])
 }).then(() => {
   return dbReview()
 }).then(() => {
-  return dbQueueStatusSummary()
+  return queueStatusSummary()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testQueue().stop(1)
