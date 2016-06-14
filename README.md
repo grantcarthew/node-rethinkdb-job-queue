@@ -110,6 +110,10 @@ __Returns__: `Number` The number of jobs updated from `active` status to `timeou
 
 Raised when the database review process completes.
 
+### `reset`
+
+__Returns__: `Number` The total number of jobs deleted from the queue backing table.
+
 ### `detached`
 
 __Returns__: `undefined`

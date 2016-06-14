@@ -19,7 +19,8 @@ const enums = module.exports = {
     completed: 'completed',
     timeout: 'timeout',
     failed: 'failed',
-    retry: 'retry'
+    retry: 'retry',
+    deleted: 'deleted'
   },
   queueStatus: {
     ready: 'ready',
@@ -28,7 +29,8 @@ const enums = module.exports = {
     processing: 'processing',
     error: 'error',
     review: 'review',
-    detached: 'detached'
+    detached: 'detached',
+    reset: 'reset'
   },
   index: {
     status: 'status',

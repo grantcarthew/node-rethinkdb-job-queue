@@ -1,7 +1,7 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 
-module.exports.toJob = function dbResult (q, dbResult) {
+module.exports.toJob = function toJob (q, dbResult) {
   logger('toJob:', dbResult)
   if (dbResult.errors > 0) {
     return Promise.reject(dbResult)
@@ -20,4 +20,12 @@ module.exports.toJob = function dbResult (q, dbResult) {
   if (dbResult.id) {
     return Promise.resolve(q.createJob(null, dbResult))
   }
+}
+
+module.exports.status = function status (q, dbResult, prop) {
+  logger('status:', dbResult)
+  if (dbResult.errors > 0) {
+    return Promise.reject(dbResult)
+  }
+  return Promise.resolve(dbResult[prop])
 }

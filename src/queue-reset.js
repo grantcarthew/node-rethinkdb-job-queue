@@ -1,4 +1,5 @@
 const logger = require('./logger')(module)
+const enums = require('./enums')
 const dbResult = require('./db-result')
 
 module.exports = function (q) {
@@ -8,6 +9,9 @@ module.exports = function (q) {
   .delete()
   .run()
   .then((resetResult) => {
-    console.dir(resetResult)
+    return dbResult.status(q, resetResult, enums.jobStatus.deleted)
+  }).then((totalDeleted) => {
+    q.emit(enums.queueStatus.reset, totalDeleted)
+    return totalDeleted
   })
 }
