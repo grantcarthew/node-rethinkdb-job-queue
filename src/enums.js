@@ -27,7 +27,8 @@ const enums = module.exports = {
     idle: 'idle',
     processing: 'processing',
     error: 'error',
-    review: 'review'
+    review: 'review',
+    detached: 'detached'
   },
   index: {
     status: 'status',

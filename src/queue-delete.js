@@ -9,6 +9,6 @@ module.exports = function (q, deleteTimeout) {
     q.ready = false
     return q.r.dbDrop(q.db).run()
   }).then(() => {
-    return q.r.getPoolMaster().drain()
+    return q.detachFromDb(true)
   })
 }

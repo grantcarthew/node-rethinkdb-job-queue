@@ -3,6 +3,7 @@
 Need tests for the following;
 queue-get-job
 queue-remove-job
+queue-reset
 queue
 queue-process
 queue-stop

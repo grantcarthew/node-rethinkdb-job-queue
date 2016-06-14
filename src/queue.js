@@ -28,11 +28,6 @@ class Queue extends EventEmitter {
     this.host = options.host || 'localhost'
     this.port = options.port || 28015
     this.db = options.db || 'rjqJobQueue'
-    this.r = rethinkdbdash({
-      host: this.host,
-      port: this.port,
-      db: this.db
-    })
     this.isMaster = options.isMaster == null ? false
       : options.isMaster
     this.masterReviewPeriod = options.masterReviewPeriod || 300
@@ -51,7 +46,16 @@ class Queue extends EventEmitter {
       this.name,
       process.pid
     ].join(':')
+    this.attachToDb()
+  }
 
+  attachToDb () {
+    this.r = rethinkdbdash({
+      host: this.host,
+      port: this.port,
+      db: this.db
+      // silent: true TODO: Reinstate
+    })
     this.ready = dbAssert(this).then(() => {
       return this.r.db(this.db).table(this.name).changes().run()
     }).then((changeFeed) => {
@@ -64,6 +68,25 @@ class Queue extends EventEmitter {
         dbReview.start(this)
       }
       this.emit(enums.queueStatus.ready)
+    })
+  }
+
+  detachFromDb (drainPool) {
+    return Promise.resolve()
+    .then(() => {
+      if (this._changeFeed) {
+        this._changeFeed.close()
+        this._changeFeed = false
+      }
+      dbReview.stop(this)
+      if (drainPool) {
+        this.ready = false
+        return this.r.getPoolMaster().drain()
+      }
+      return null
+    }).then(() => {
+      this.emit(enums.queueStatus.detached)
+      return null
     })
   }
 

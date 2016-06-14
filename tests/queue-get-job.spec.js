@@ -2,7 +2,6 @@ const test = require('tape')
 const Promise = require('bluebird')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
-const dbResult = require('../src/db-result')
 const queueGetJob = require('../src/queue-get-job')
 const testData = require('./test-options').testData
 

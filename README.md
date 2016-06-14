@@ -110,6 +110,10 @@ __Returns__: `Number` The number of jobs updated from `active` status to `timeou
 
 Raised when the database review process completes.
 
+### `detached`
+
+__Returns__: `undefined`
+
 ## API
 
 <a name="queue" />

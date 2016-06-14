@@ -8,10 +8,11 @@ module.exports = function (q, stopTimeout, drainPool = true) {
   q.paused = true
   let stopIntervalId
   let stopTimeoutId
-  const cleanUp = () => {
-    if (drainPool) { q.r.getPoolMaster().drain() }
-    if (stopIntervalId) { clearInterval(stopIntervalId) }
-    if (stopIntervalId) { clearInterval(stopIntervalId) }
+  const cleanUp = (drainPoolNow) => {
+    return q.detachFromDb(drainPoolNow).then(() => {
+      if (stopIntervalId) { clearInterval(stopIntervalId) }
+      if (stopIntervalId) { clearInterval(stopIntervalId) }
+    })
   }
 
   return q.ready.then(() => {
@@ -19,21 +20,22 @@ module.exports = function (q, stopTimeout, drainPool = true) {
     return Promise.delay(stopTimeout / 2)
   }).then(() => {
     return new Promise((resolve) => {
-      if (q._changeFeed) { q._changeFeed.close() }
-      dbReview.stop(q)
-
       stopTimeoutId = setTimeout(() => {
-        cleanUp()
-        q.running < 1 ? resolve(enums.message.allJobsStopped)
-          : resolve(enums.message.failedToStop)
+        return cleanUp(drainPool).then(() => {
+          q.running < 1 ? resolve(enums.message.allJobsStopped)
+            : resolve(enums.message.failedToStop)
+        })
       }, stopTimeout / 2)
 
       stopIntervalId = setInterval(() => {
         if (q.running < 1) {
-          cleanUp()
-          resolve(enums.message.allJobsStopped)
+          return cleanUp(false).then(() => {
+            resolve(enums.message.allJobsStopped)
+          })
         }
       }, stopTimeout / 12)
+
+      return q.detachFromDb(false)
     })
   })
 }
