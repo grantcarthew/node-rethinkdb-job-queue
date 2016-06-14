@@ -12,6 +12,7 @@ const jobAddLog = require('./job-add-log.spec')
 const dbResult = require('./db-result.spec')
 const queueAddJob = require('./queue-add-job.spec')
 const queueGetJob = require('./queue-get-job.spec')
+const queueGetNextJob = require('./queue-get-next-job.spec')
 const queueReset = require('./queue-reset.spec')
 const jobCompleted = require('./job-completed.spec')
 const jobFailed = require('./job-failed.spec')
@@ -45,6 +46,8 @@ return dbAssertDatabase().then(() => {
   return queueStatusSummary()
 }).then(() => {
   return queueReset()
+}).then(() => {
+  return queueGetNextJob()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testQueue().stop(100)

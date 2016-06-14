@@ -17,12 +17,6 @@ module.exports = function (q) {
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {
-      console.dir(updateResult)
-      if (updateResult.changes) {
-        return updateResult.changes.map((change) => {
-          return q.createJob(null, change.new_val)
-        })
-      }
-      return []
+      return dbResult.toJob(q, updateResult)
     })
 }
