@@ -57,6 +57,7 @@ const enums = module.exports = {
     nonWorker: 'Cannot call queue process on a non-worker',
     processTwice: 'Cannot call queue process twice',
     missingTimeout: 'Timeout parameter required to stop or delete queue',
-    queueDeleted: 'The queue has been deleted'
+    queueDeleted: 'The queue has been deleted',
+    idInvalid: 'The job id is invalid'
   }
 }

@@ -23,7 +23,7 @@ module.exports = function () {
         if (resetTestCompleted) { return }
         resetTestCompleted = true
         t.pass('Queue raised reset event')
-        t.equal(total, 31, 'Queue reset removed valid number of jobs')
+        t.equal(total, 33, 'Queue reset removed valid number of jobs')
         return q.getStatusSummary().then((afterSummary) => {
           t.equal(Object.keys(afterSummary).length, 0, 'Status summary contains no values')
           resolve()
