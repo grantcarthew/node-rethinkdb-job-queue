@@ -12,6 +12,7 @@ const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
 const queueGetNextJob = require('./queue-get-next-job')
 const queueRemoveJob = require('./queue-remove-job')
+const queueReset = require('./queue-reset')
 const queueStatusSummary = require('./queue-status-summary')
 const queueStop = require('./queue-stop')
 const queueDelete = require('./queue-delete')
@@ -149,8 +150,10 @@ class Queue extends EventEmitter {
   }
 
   reset () {
-    // or empty?
-    // will remove all jobs.
+    logger('reset')
+    return this.ready.then(() => {
+      return queueReset(this)
+    })
   }
 
   stop (stopTimeout, drainPool) {

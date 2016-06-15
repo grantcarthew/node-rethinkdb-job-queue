@@ -1,5 +1,4 @@
 const logger = require('./logger')(module)
-const moment = require('moment')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
