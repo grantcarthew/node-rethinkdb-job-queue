@@ -20,6 +20,7 @@ module.exports.toJob = function toJob (q, dbResult) {
   if (dbResult.id) {
     return Promise.resolve(q.createJob(null, dbResult))
   }
+  return []
 }
 
 module.exports.status = function status (q, dbResult, prop) {

@@ -20,7 +20,7 @@ module.exports = function () {
 
       q.on(enums.queueStatus.reset, (total) => {
         t.pass('Queue raised reset event')
-        t.equal(total, 13, 'Queue reset removed valid number of jobs')
+        t.equal(total, 33, 'Queue reset removed valid number of jobs')
         return q.getStatusSummary().then((afterSummary) => {
           t.equal(Object.keys(afterSummary).length, 0, 'Status summary contains no values')
           resolve()
@@ -31,7 +31,7 @@ module.exports = function () {
         t.equal(savedJobs.length, 3, 'Jobs saved successfully')
         return q.getStatusSummary()
       }).then((beforeSummary) => {
-        t.equal(Object.keys(beforeSummary).length, 4, 'Status summary contains four values')
+        t.equal(Object.keys(beforeSummary).length, 5, 'Status summary contains correct value')
         return queueReset(q)
       }).catch(err => testError(err, module, t))
     })

@@ -40,7 +40,6 @@ function createIndexActiveDateStarted (q) {
   })
 }
 
-// row('status').eq('active').or(row('status').eq('completed')),
 function createIndexInactivePriorityDateCreated (q) {
   logger('createIndexInactivePriorityDateCreated')
   let indexName = enums.index.inactive_priority_dateCreated
@@ -49,7 +48,11 @@ function createIndexInactivePriorityDateCreated (q) {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
-        row('status').contains(['active', 'completed', 'failed']),
+        row('status').eq('active'),
+        null,
+        row('status').eq('completed'),
+        null,
+        row('status').eq('failed'),
         null, [
           row('priority'),
           row('dateCreated')

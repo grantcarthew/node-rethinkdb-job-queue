@@ -1,6 +1,7 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
+const dbResult = require('./db-result')
 
 module.exports = function completed (job, data) {
   logger('completed: ' + job.id)
@@ -19,5 +20,7 @@ module.exports = function completed (job, data) {
     dateCompleted: job.dateCompleted,
     progress: job.progress,
     log: job.q.r.row('log').add([log])
-  }).run()
+  }).run().then((updateResult) => {
+    return dbResult.status(job.q, updateResult, 'replaced')
+  })
 }

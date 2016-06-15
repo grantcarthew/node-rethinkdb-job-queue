@@ -2,7 +2,8 @@ const logger = require('./logger')(module)
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function queueAddJob (q, job) {
+// skipStatusCheck is for ease of adding jobs during tests
+module.exports = function queueAddJob (q, job, skipStatusCheck) {
   if (!job) { return [] }
   let jobs = Array.isArray(job) ? job : [job]
   logger('addJob', jobs.length)
@@ -10,14 +11,15 @@ module.exports = function queueAddJob (q, job) {
     if (!valid.id) {
       return Promise.reject(enums.error.jobInvalid)
     }
-    if (valid.status !== enums.jobStatus.created) {
+    if (!skipStatusCheck && valid.status !== enums.jobStatus.created) {
       return Promise.reject(enums.error.jobAlreadyAdded)
     }
   }
   jobs = jobs.map((jobPrep) => {
-    jobPrep.status = enums.jobStatus.waiting
+    if (!skipStatusCheck) { jobPrep.status = enums.jobStatus.waiting }
     return jobPrep.cleanCopy
   })
+
   return q.r.db(q.db).table(q.name)
   .insert(jobs, {returnChanges: true}).run()
   .then((saveResult) => {

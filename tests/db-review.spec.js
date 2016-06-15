@@ -5,13 +5,13 @@ const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
 const dbReview = require('../src/db-review')
-const dbResult = require('../src/db-result')
+const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review test', (t) => {
-      t.plan(32)
+      t.plan(34)
 
       let q = testQueue()
       let reviewCount = 0
@@ -45,17 +45,10 @@ module.exports = function () {
         job1,
         job2
       ]
-      // Saving directly to db to bypass status checks.
-      return q.ready.then(() => {
-        return jobs.map(j => j.cleanCopy)
-      }).then((cleanJobs) => {
-        return q.r.db(q.db).table(q.name)
-        .insert(cleanJobs, {returnChanges: true}).run()
-      }).then((saveResult) => {
-        return dbResult.toJob(q, saveResult)
-      }).then((savedJob) => {
-        t.equal(savedJob[0].id, job1.id, 'Job 1 saved successfully')
-        t.equal(savedJob[1].id, job2.id, 'Job 2 saved successfully')
+
+      return queueAddJob(q, jobs, true).then((savedJobs) => {
+        t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
+        t.equal(savedJobs[1].id, job2.id, 'Job 2 saved successfully')
       }).then(() => {
         return dbReview.jobTimeout(q)
       }).then((reviewResult) => {
@@ -63,6 +56,7 @@ module.exports = function () {
         return q.getJob(job1.id)
       }).then((reviewedJob1) => {
         t.equal(reviewedJob1[0].status, enums.jobStatus.timeout, 'Reviewed job 1 is timeout status')
+        t.equal(reviewedJob1[0].priority, 'retry', 'Reviewed job 1 is retry priority')
         t.ok(moment.isDate(reviewedJob1[0].dateTimeout), 'Reviewed job 1 dateTimeout is a date')
         t.ok(!reviewedJob1[0].dateFailed, 'Reviewed job 1 dateFailed is null')
         t.equal(reviewedJob1[0].retryCount, 1, 'Reviewed job 1 retryCount is 1')
@@ -76,6 +70,7 @@ module.exports = function () {
         return q.getJob(job2.id)
       }).then((reviewedJob2) => {
         t.equal(reviewedJob2[0].status, enums.jobStatus.failed, 'Reviewed job 2 is failed status')
+        t.equal(reviewedJob2[0].priority, 'normal', 'Reviewed job 2 is normal priority')
         t.ok(moment.isDate(reviewedJob2[0].dateTimeout), 'Reviewed job 2 dateTimeout is a date')
         t.ok(moment.isDate(reviewedJob2[0].dateFailed), 'Reviewed job 2 dateFailed is a date')
         t.equal(reviewedJob2[0].retryCount, 1, 'Reviewed job 2 retryCount is 1')

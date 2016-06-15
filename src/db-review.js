@@ -19,6 +19,11 @@ function jobTimeout (q) {
       enums.jobStatus.timeout,
       enums.jobStatus.failed
     ),
+    priority: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      enums.priority.retry,
+      q.r.row('priority')
+    ),
     dateTimeout: q.r.now(),
     dateFailed: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),

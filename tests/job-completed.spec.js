@@ -19,7 +19,7 @@ module.exports = function () {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return jobCompleted(savedJob[0], testData)
       }).then((changeResult) => {
-        t.equal(changeResult.replaced, 1, 'Job updated successfully')
+        t.equal(changeResult, 1, 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].status, enums.jobStatus.completed, 'Job status is completed')
