@@ -1,25 +1,13 @@
 # Worklog
 
 Need tests for the following;
-queue-get-job
 queue-remove-job
-queue-reset
 queue
 queue-process
 queue-stop
 queue-delete
-update dbResult test
 change queue.delete to remove timeout
-
-
-## Tests Needed
-
-queue-changefeed
 queue-change
-db-queue
-
-queue
-queue-process
 
 ## List of Changes and Events
 
