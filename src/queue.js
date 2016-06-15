@@ -106,8 +106,15 @@ class Queue extends EventEmitter {
     this._jobDefaultOptions = jobOptions(options)
   }
 
-  createJob (data, options = this._jobDefaultOptions) {
+  createJob (data, options = this._jobDefaultOptions, quantity = 1) {
     logger('createJob')
+    if (quantity > 1) {
+      const jobs = []
+      for (let i = 0; i < quantity; i++) {
+        jobs.push(new Job(this, data, options))
+      }
+      return jobs
+    }
     return new Job(this, data, options)
   }
 

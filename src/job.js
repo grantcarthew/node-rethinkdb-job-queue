@@ -22,7 +22,11 @@ class Job {
       this.priority = enums.priorityFromValue(this.priority)
     } else {
       logger('Creating new job from defaults and options')
-      options = jobOptions(options)
+      if (!options) {
+        options = jobOptions()
+      } else {
+        options = jobOptions(options)
+      }
       this.id = uuid.v4()
       this.data = data || {}
       this.priority = options.priority

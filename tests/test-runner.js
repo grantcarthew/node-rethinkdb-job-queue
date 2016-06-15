@@ -11,6 +11,7 @@ const job = require('./job.spec')
 const jobAddLog = require('./job-add-log.spec')
 const dbResult = require('./db-result.spec')
 const queueAddJob = require('./queue-add-job.spec')
+const queueRemoveJob = require('./queue-remove-job.spec')
 const queueGetJob = require('./queue-get-job.spec')
 const queueGetNextJob = require('./queue-get-next-job.spec')
 const queueReset = require('./queue-reset.spec')
@@ -37,6 +38,7 @@ return dbAssertDatabase().then(() => {
     queueGetJob(),
     dbResult(),
     queueAddJob(),
+    queueRemoveJob(),
     jobCompleted(),
     jobFailed()
   ])

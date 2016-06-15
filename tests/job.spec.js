@@ -11,9 +11,16 @@ const isUuid = require('isuuid')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job test', (t) => {
-      t.plan(52)
+      t.plan(53)
 
       const q = testQueue()
+      try {
+        const nullJobArg = new Job(q, null, null)
+        t.pass('Creating a job with null options dose not cause an exception')
+      } catch (e) {
+        t.fail('Creating a job with null options creates an exception')
+      }
+
       const newJob = new Job(q, testData)
       let newJobFromData
       let savedJob

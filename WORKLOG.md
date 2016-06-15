@@ -1,13 +1,13 @@
 # Worklog
 
 Need tests for the following;
-queue-remove-job
 queue
 queue-process
 queue-stop
 queue-delete
 change queue.delete to remove timeout
 queue-change
+job test null options.
 
 ## List of Changes and Events
 
