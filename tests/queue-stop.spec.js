@@ -3,6 +3,7 @@ const Promise = require('bluebird')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const queueStop = require('../src/queue-stop')
+const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
 const enums = require('../src/enums')
 const testData = require('./test-options').testData
@@ -31,7 +32,7 @@ module.exports = function () {
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(q.r.getPoolMaster()._healthy, 'Connection pool is down')
         t.notOk(this.ready, 'Queue is not ready')
-        return q.attachToDb()
+        return queueDb.attach(q)
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
@@ -47,7 +48,7 @@ module.exports = function () {
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(q.r.getPoolMaster()._healthy, 'Connection pool is down')
         t.notOk(q.ready, 'Queue is not ready')
-        return q.attachToDb()
+        return queueDb.attach(q)
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
@@ -66,10 +67,10 @@ module.exports = function () {
       }).then((ready) => {
         t.ok(ready, 'Queue is still ready')
         // detaching with drain or node will not exit gracefully TODO: need to test r before making a new connection
-        return q.detachFromDb(true)
+        return queueDb.detach(q, true)
       }).then(() => {
         t.notOk(q.r.getPoolMaster()._healthy, 'Connection pool is down')
-        return q.attachToDb()
+        return queueDb.attach(q)
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
@@ -87,10 +88,10 @@ module.exports = function () {
       }).then((ready) => {
         t.ok(ready, 'Queue is still ready')
         // detaching with drain or node will not exit gracefully TODO: need to test r before making a new connection
-        return q.detachFromDb(true)
+        return queueDb.detach(q, true)
       }).then((ready) => {
         t.notOk(q.r.getPoolMaster()._healthy, 'Connection pool is down')
-        return q.attachToDb()
+        return queueDb.attach(q)
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')

@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
+const queueDb = require('./queue-db')
 
 module.exports = function queueStop (q, stopTimeout, drainPool = true) {
   logger('queueStop')
@@ -10,7 +11,7 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
   let stopIntervalId
   let stopTimeoutId
   const cleanUp = (drainPoolNow) => {
-    return q.detachFromDb(drainPoolNow).then(() => {
+    return queueDb.detach(q, drainPoolNow).then(() => {
       if (stopIntervalId) { clearInterval(stopIntervalId) }
       if (stopTimeoutId) { clearTimeout(stopTimeoutId) }
     })
@@ -41,7 +42,7 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
         }
       }, stopTimeout / 12)
 
-      return q.detachFromDb(false) // TODO:
+      return queueDb.detach(q, false) // TODO:
     })
   })
 }

@@ -1,17 +1,14 @@
 const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
-const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
 const is = require('is')
 const enums = require('./enums')
 const Job = require('./job')
-const dbAssert = require('./db-assert')
 const dbReview = require('./db-review')
+const queueDb = require('./queue-db')
 const queueProcess = require('./queue-process')
-const queueChange = require('./queue-change')
 const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
-const queueGetNextJob = require('./queue-get-next-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueReset = require('./queue-reset')
 const queueStatusSummary = require('./queue-status-summary')
@@ -48,53 +45,7 @@ class Queue extends EventEmitter {
       this.name,
       process.pid
     ].join(':')
-    this.attachToDb()
-  }
-
-  attachToDb () {
-    this.r = rethinkdbdash({
-      host: this.host,
-      port: this.port,
-      db: this.db
-      // silent: true TODO: Reinstate
-    })
-    this.ready = dbAssert(this).then(() => {
-      return this.r.db(this.db).table(this.name).changes().run()
-    }).then((changeFeed) => {
-      this._changeFeed = changeFeed
-      this._changeFeed.each((err, change) => {
-        queueChange(this, err, change)
-      })
-      if (this.isMaster) {
-        logger('Queue is a master')
-        dbReview.enable(this)
-      }
-      this.emit(enums.queueStatus.ready)
-      return true
-    })
-    return this.ready
-  }
-
-  detachFromDb (drainPool) {
-    return Promise.resolve().then(() => {
-      // if (!drainPool) { return this.ready }
-    }).then(() => {
-      if (this._changeFeed) {
-        this._changeFeed.close()
-        this._changeFeed = false
-      }
-      if (this.isMaster) {
-        dbReview.disable(this)
-      }
-      if (drainPool) {
-        this.ready = false
-        return this.r.getPoolMaster().drain()
-      }
-      return null
-    }).then(() => {
-      this.emit(enums.queueStatus.detached)
-      return null
-    })
+    queueDb.attach(this)
   }
 
   get connection () {
@@ -128,6 +79,13 @@ class Queue extends EventEmitter {
     logger('addJob')
     return this.ready.then(() => {
       return queueAddJob(this, job)
+    })
+  }
+
+  removeJob (job) {
+    logger('removeJob')
+    return this.ready.then(() => {
+      return queueRemoveJob(this, job)
     })
   }
 

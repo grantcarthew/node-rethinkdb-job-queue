@@ -1,6 +1,7 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const dbReview = require('./db-review')
+const queueDb = require('./queue-db')
 const queueStop = require('./queue-stop')
 
 module.exports = function (q, deleteTimeout) {
@@ -9,6 +10,6 @@ module.exports = function (q, deleteTimeout) {
     q.ready = false
     return q.r.dbDrop(q.db).run()
   }).then(() => {
-    return q.detachFromDb(true)
+    return queueDb.detach(q, true)
   })
 }
