@@ -69,6 +69,7 @@ class Queue extends EventEmitter {
         dbReview.start(this)
       }
       this.emit(enums.queueStatus.ready)
+      return true
     })
   }
 

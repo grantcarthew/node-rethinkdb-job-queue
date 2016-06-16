@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const dbReview = require('./db-review')
 
-module.exports = function (q, stopTimeout, drainPool = true) {
+module.exports = function queueStop (q, stopTimeout, drainPool = true) {
   logger('deleteQueue')
   q.paused = true
   let stopIntervalId

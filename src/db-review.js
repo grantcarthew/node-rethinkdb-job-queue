@@ -1,7 +1,11 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
 const enums = require('./enums')
-let dbReviewIntervalId
+
+let dbReviewIntervalId = false
+module.exports.isEnabled = function reviewIsEnabled () {
+  return !!dbReviewIntervalId
+}
 
 function jobTimeout (q) {
   logger('jobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
@@ -76,7 +80,8 @@ module.exports.stop = function reviewStop (q) {
   logger('db-review stop')
   if (dbReviewIntervalId) {
     clearInterval(dbReviewIntervalId)
+    dbReviewIntervalId = false
   }
 }
 
-module.exports.jobTimeout = jobTimeout
+module.exports.once = jobTimeout

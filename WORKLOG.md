@@ -1,13 +1,18 @@
 # Worklog
 
+change queue.delete to remove timeout
+update dbReview tests to support status
+
 Need tests for the following;
-queue
-queue-process
 queue-stop
 queue-delete
-change queue.delete to remove timeout
 queue-change
-job test null options.
+queue-process
+queue
+
+
+
+
 
 ## List of Changes and Events
 

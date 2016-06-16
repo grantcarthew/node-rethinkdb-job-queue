@@ -11,23 +11,27 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review test', (t) => {
-      t.plan(34)
+      t.plan(36)
 
       let q = testQueue()
       let reviewCount = 0
       q.masterReviewPeriod = 1
-      q.on(enums.queueStatus.review, (reviewed) => {
+      function reviewEventHandler (reviewed) {
         reviewCount++
         t.pass('Database review event: ' + reviewCount)
         t.ok(Number.isInteger(reviewed), 'Review event return value is an Integer')
         if (reviewCount > 2) {
+          t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
           dbReview.stop(q)
+          t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
           q.masterReviewPeriod = 300
           t.pass('Review timer completed twice')
+          q.removeListener(enums.queueStatus.review, reviewEventHandler)
           resolve()
         }
         return true
-      })
+      }
+      q.on(enums.queueStatus.review, reviewEventHandler)
 
       let job1 = q.createJob(testData)
       job1.status = enums.jobStatus.active
@@ -50,7 +54,7 @@ module.exports = function () {
         t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
         t.equal(savedJobs[1].id, job2.id, 'Job 2 saved successfully')
       }).then(() => {
-        return dbReview.jobTimeout(q)
+        return dbReview.once(q)
       }).then((reviewResult) => {
         t.ok(reviewResult.replaced >= 2, 'Job updated by db review')
         return q.getJob(job1.id)
