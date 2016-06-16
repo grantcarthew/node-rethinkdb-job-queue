@@ -38,7 +38,7 @@ class Queue extends EventEmitter {
     this._changeFeed = false
     this.removeOnSuccess = options.removeOnSuccess == null ? false
       : options.removeOnSuccess
-    this.paused = false
+    this.paused = true
     this.id = [
       require('os').hostname(),
       this.db,

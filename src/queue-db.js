@@ -1,13 +1,13 @@
 const logger = require('./logger')(module)
 const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
-const is = require('is')
 const enums = require('./enums')
 const dbAssert = require('./db-assert')
 const dbReview = require('./db-review')
 const queueChange = require('./queue-change')
 
 module.exports.attach = function dbAttach (q) {
+  logger('attach')
   q.r = rethinkdbdash({
     host: q.host,
     port: q.port,
@@ -25,6 +25,7 @@ module.exports.attach = function dbAttach (q) {
       logger('Queue is a master')
       dbReview.enable(q)
     }
+    q.paused = false
     q.emit(enums.queueStatus.ready)
     return true
   })
@@ -32,6 +33,7 @@ module.exports.attach = function dbAttach (q) {
 }
 
 module.exports.detach = function dbDetach (q, drainPool) {
+  logger('detach')
   return Promise.resolve().then(() => {
     if (q._changeFeed) {
       q._changeFeed.close()
@@ -42,7 +44,6 @@ module.exports.detach = function dbDetach (q, drainPool) {
     }
     if (drainPool) {
       q.ready = false
-      console.dir(typeof q.r)
       return q.r.getPoolMaster().drain()
     }
     return null
