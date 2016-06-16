@@ -72,11 +72,12 @@ class Queue extends EventEmitter {
       this.emit(enums.queueStatus.ready)
       return true
     })
+    return this.ready
   }
 
   detachFromDb (drainPool) {
     return Promise.resolve().then(() => {
-      if (!drainPool) { return this.ready }
+      // if (!drainPool) { return this.ready }
     }).then(() => {
       if (this._changeFeed) {
         this._changeFeed.close()
@@ -183,7 +184,7 @@ class Queue extends EventEmitter {
     })
   }
 
-  stop (stopTimeout, drainPool) {
+  stop (stopTimeout) {
     logger('stop')
     if (!stopTimeout) { throw new Error(enums.error.missingTimeout) }
     return queueStop(this, stopTimeout)

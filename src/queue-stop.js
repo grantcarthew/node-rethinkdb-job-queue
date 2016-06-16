@@ -4,7 +4,7 @@ const enums = require('./enums')
 const dbReview = require('./db-review')
 
 module.exports = function queueStop (q, stopTimeout, drainPool = true) {
-  logger('deleteQueue')
+  logger('queueStop')
   q.emit(enums.queueStatus.stopping)
   q.paused = true
   let stopIntervalId
@@ -21,7 +21,8 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
   .then(() => {
     return new Promise((resolve) => {
       stopTimeoutId = setTimeout(() => {
-        logger('Queue stopped forcefully')
+        logger('Queue stopped forcefully: ', drainPool)
+        console.log('Queue stopped forcefully: ', drainPool)
         return cleanUp(drainPool).then(() => {
           q.emit(enums.queueStatus.stopped)
           q.running < 1 ? resolve(enums.message.allJobsStopped)
@@ -31,7 +32,8 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
 
       stopIntervalId = setInterval(() => {
         if (q.running < 1) {
-          logger('Queue stopped gracefully')
+          logger('Queue stopped gracefully: ', drainPool)
+          console.log('Queue stopped gracefully: ', drainPool)
           return cleanUp(drainPool).then(() => {
             q.emit(enums.queueStatus.stopped)
             resolve(enums.message.allJobsStopped)
@@ -39,7 +41,7 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
         }
       }, stopTimeout / 12)
 
-      return q.detachFromDb(false)
+      return q.detachFromDb(false) // TODO:
     })
   })
 }

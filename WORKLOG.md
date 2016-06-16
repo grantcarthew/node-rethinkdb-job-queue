@@ -1,5 +1,7 @@
 # Worklog
 
+drainPool in queue-stop is redundant I think?
+in queue-stop, don't forget pause or stopping stopped events
 change queue.delete to remove timeout
 
 Need tests for the following;
