@@ -75,8 +75,9 @@ class Queue extends EventEmitter {
   }
 
   detachFromDb (drainPool) {
-    return Promise.resolve()
-    .then(() => {
+    return Promise.resolve().then(() => {
+      if (!drainPool) { return this.ready }
+    }).then(() => {
       if (this._changeFeed) {
         this._changeFeed.close()
         this._changeFeed = false
@@ -154,15 +155,18 @@ class Queue extends EventEmitter {
   }
 
   review (enable) {
-    if (is.bool(enable) && enable && this.isMaster) {
-      dbReview.enable(this)
-    } else {
-      dbReview.disable(this)
-    }
-    if (is.bool(enable) && !enable) {
-      return Promise.resolve(0)
-    }
-    return dbReview.runOnce(this)
+    logger('review: ', enable)
+    return this.ready.then(() => {
+      if (is.bool(enable) && enable && this.isMaster) {
+        dbReview.enable(this)
+      } else {
+        dbReview.disable(this)
+      }
+      if (is.bool(enable) && !enable) {
+        return Promise.resolve(0)
+      }
+      return dbReview.runOnce(this)
+    })
   }
 
   getStatusSummary () {
@@ -180,8 +184,8 @@ class Queue extends EventEmitter {
   }
 
   stop (stopTimeout, drainPool) {
-    if (!stopTimeout) { throw new Error(enums.error.missingTimeout) }
     logger('stop')
+    if (!stopTimeout) { throw new Error(enums.error.missingTimeout) }
     return queueStop(this, stopTimeout)
   }
 

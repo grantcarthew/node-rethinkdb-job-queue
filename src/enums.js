@@ -32,7 +32,9 @@ const enums = module.exports = {
     reviewEnabled: 'review enabled',
     reviewDisabled: 'review disabled',
     detached: 'detached',
-    reset: 'reset'
+    reset: 'reset',
+    stopping: 'stopping',
+    stopped: 'stopped'
   },
   index: {
     status: 'status',
