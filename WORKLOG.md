@@ -1,7 +1,6 @@
 # Worklog
 
 change queue.delete to remove timeout
-update dbReview tests to support status
 
 Need tests for the following;
 queue-stop

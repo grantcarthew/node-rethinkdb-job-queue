@@ -29,6 +29,8 @@ const enums = module.exports = {
     processing: 'processing',
     error: 'error',
     review: 'review',
+    reviewEnabled: 'review enabled',
+    reviewDisabled: 'review disabled',
     detached: 'detached',
     reset: 'reset'
   },

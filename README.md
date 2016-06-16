@@ -51,6 +51,8 @@ However, if a queue worker node fails for any reason whilst working on a job, th
 
 To ensure the job is not forgotten, `rethinkdb-job-queue` has an option called `isMaster` you can pass when creating a queue. The `isMaster` option defaults to `true` if not supplied. There should be at least one master node per queue.
 
+It is worth noting that only one master can be enabled per process. If the node process already has a queue that is a master, then creating more queues will not start more masters.
+
 When a queue node is a master, it will review the queue backing table based on the `masterReviewPeriod` option which defaults to `300` seconds or 5 minutes.
 
 When the master node reviews the queue backing table, it looks for jobs that are `active` and past their review timeout value which is different to the job `timeout` value.
@@ -103,6 +105,14 @@ __Returns__:
 ### `failed`
 
 __Returns__:
+
+### `review enabled`
+
+__Returns__: No objects or values returned
+
+### `review disabled`
+
+__Returns__: No objects or values returned
 
 ### `review`
 

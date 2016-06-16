@@ -52,7 +52,7 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return queueGetNextJob()
 }).then(() => {
-  // return queueStop()
+  return queueStop()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   // TODO: Change below to delete and re-run tests before publishing

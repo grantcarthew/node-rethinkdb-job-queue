@@ -84,8 +84,8 @@ module.exports = function (q, handler) {
 
   q.handler = handler
   q.running = 0
-  return dbReview.once(q).then((dbReviewResult) => {
-    dbReview.start(q)
+  return dbReview.runOnce(q).then((dbReviewResult) => {
+    dbReview.enable(q)
     setImmediate(jobTick, q)
     return true
   })

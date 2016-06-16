@@ -3,18 +3,23 @@ const Promise = require('bluebird')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const queueStop = require('../src/queue-stop')
+const dbReview = require('../src/db-review')
 const enums = require('../src/enums')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-reset test', (t) => {
-      t.plan(0)
+    test('queue-stop test', (t) => {
+      t.plan(2)
 
       const q = testQueue()
       q.ready.then(() => {
         q.running = 1
-        console.dir(q._changeFeed)
+        q.isMaster = true
+        return q.review(true)
+      }).then(() => {
+        t.ok(dbReview.isEnabled(), 'Review is enabled')
+        t.ok(q._changeFeed.connection.open, 'Change feed is connected')
       })
       return resolve()
       queueStop(q, 2000, false)

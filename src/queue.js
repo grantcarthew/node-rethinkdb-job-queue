@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
 const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
+const is = require('is')
 const enums = require('./enums')
 const Job = require('./job')
 const dbAssert = require('./db-assert')
@@ -66,7 +67,7 @@ class Queue extends EventEmitter {
       })
       if (this.isMaster) {
         logger('Queue is a master')
-        dbReview.start(this)
+        dbReview.enable(this)
       }
       this.emit(enums.queueStatus.ready)
       return true
@@ -80,7 +81,9 @@ class Queue extends EventEmitter {
         this._changeFeed.close()
         this._changeFeed = false
       }
-      dbReview.stop(this)
+      if (this.isMaster) {
+        dbReview.disable(this)
+      }
       if (drainPool) {
         this.ready = false
         return this.r.getPoolMaster().drain()
@@ -148,6 +151,18 @@ class Queue extends EventEmitter {
     return this.ready.then(() => {
       return queueProcess(this, handler)
     })
+  }
+
+  review (enable) {
+    if (is.bool(enable) && enable && this.isMaster) {
+      dbReview.enable(this)
+    } else {
+      dbReview.disable(this)
+    }
+    if (is.bool(enable) && !enable) {
+      return Promise.resolve(0)
+    }
+    return dbReview.runOnce(this)
   }
 
   getStatusSummary () {

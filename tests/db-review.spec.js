@@ -1,5 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const is = require('is')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const moment = require('moment')
@@ -11,26 +12,37 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review test', (t) => {
-      t.plan(36)
+      t.plan(38)
 
       let q = testQueue()
       let reviewCount = 0
       q.masterReviewPeriod = 1
-      function reviewEventHandler (reviewed) {
+      function reviewEventHandler (total) {
         reviewCount++
         t.pass('Database review event: ' + reviewCount)
-        t.ok(Number.isInteger(reviewed), 'Review event return value is an Integer')
+        t.ok(is.integer(total), 'Review event return value is an Integer')
         if (reviewCount > 2) {
           t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
-          dbReview.stop(q)
+          dbReview.disable(q)
           t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
           q.masterReviewPeriod = 300
           t.pass('Review timer completed twice')
           q.removeListener(enums.queueStatus.review, reviewEventHandler)
+          // Test completes here!
           resolve()
         }
         return true
       }
+      function reviewEnabledEventHandler () {
+        t.pass('Review enabled event raised')
+        q.removeListener(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
+      }
+      function reviewDisabledEventHandler () {
+        t.pass('Review disabled event raised')
+        q.removeListener(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
+      }
+      q.on(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
+      q.on(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
       q.on(enums.queueStatus.review, reviewEventHandler)
 
       let job1 = q.createJob(testData)
@@ -54,9 +66,9 @@ module.exports = function () {
         t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
         t.equal(savedJobs[1].id, job2.id, 'Job 2 saved successfully')
       }).then(() => {
-        return dbReview.once(q)
+        return dbReview.runOnce(q)
       }).then((reviewResult) => {
-        t.ok(reviewResult.replaced >= 2, 'Job updated by db review')
+        t.ok(reviewResult >= 2, 'Job updated by db review')
         return q.getJob(job1.id)
       }).then((reviewedJob1) => {
         t.equal(reviewedJob1[0].status, enums.jobStatus.timeout, 'Reviewed job 1 is timeout status')
@@ -85,7 +97,7 @@ module.exports = function () {
         t.ok(reviewedJob2[0].log[0].message, 'Log message is present')
         t.ok(reviewedJob2[0].log[0].duration >= 0, 'Log duration is >= 0')
         t.ok(!reviewedJob2[0].log[0].data, 'Log data is null')
-        dbReview.start(q)
+        dbReview.enable(q)
       }).catch(err => testError(err, module, t))
     })
   })

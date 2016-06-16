@@ -1,5 +1,6 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
+const dbResult = require('./db-result')
 const enums = require('./enums')
 
 let dbReviewIntervalId = false
@@ -60,28 +61,32 @@ function jobTimeout (q) {
   })
   .run()
   .then((updateResult) => {
-    q.emit(enums.queueStatus.review, updateResult.replaced)
-    return updateResult
+    return dbResult.status(q, updateResult, 'replaced')
+  }).then((replaceCount) => {
+    q.emit(enums.queueStatus.review, replaceCount)
+    return replaceCount
   })
 }
 
-module.exports.start = function reviewStart (q) {
-  logger('db-review start')
+module.exports.enable = function reviewEnable (q) {
+  logger('db-review enable')
   if (dbReviewIntervalId) {
     return
   }
   const interval = q.masterReviewPeriod * 1000
+  q.emit(enums.queueStatus.reviewEnabled)
   dbReviewIntervalId = setInterval(() => {
     return jobTimeout(q)
   }, interval)
 }
 
-module.exports.stop = function reviewStop (q) {
-  logger('db-review stop')
+module.exports.disable = function reviewDisable (q) {
+  logger('db-review disable')
   if (dbReviewIntervalId) {
+    q.emit(enums.queueStatus.reviewDisabled)
     clearInterval(dbReviewIntervalId)
     dbReviewIntervalId = false
   }
 }
 
-module.exports.once = jobTimeout
+module.exports.runOnce = jobTimeout
