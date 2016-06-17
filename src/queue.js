@@ -32,12 +32,14 @@ class Queue extends EventEmitter {
     this.masterReviewPeriod = options.masterReviewPeriod || 300
     this.isWorker = options.isWorker == null ? false
       : options.isWorker
+    this.enableChangeFeed = options.enableChangeFeed == null ? true
+      : options.enableChangeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this._changeFeed = false
-    this.removeOnSuccess = options.removeOnSuccess == null ? false
-      : options.removeOnSuccess
+    // this.removeOnSuccess = options.removeOnSuccess == null ? false
+    //   : options.removeOnSuccess
     this.paused = true
     this.id = [
       require('os').hostname(),

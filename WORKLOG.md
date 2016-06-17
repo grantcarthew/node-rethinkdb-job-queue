@@ -6,7 +6,6 @@ Need tests for the following;
 queue-delete
 queue-change
 queue-process
-queue-db
 queue
 
 

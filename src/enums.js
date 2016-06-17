@@ -34,7 +34,8 @@ const enums = module.exports = {
     detached: 'detached',
     reset: 'reset',
     stopping: 'stopping',
-    stopped: 'stopped'
+    stopped: 'stopped',
+    deleted: 'deleted'
   },
   index: {
     status: 'status',

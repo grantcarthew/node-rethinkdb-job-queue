@@ -15,12 +15,17 @@ module.exports.attach = function dbAttach (q) {
     // silent: true TODO: Reinstate
   })
   q.ready = dbAssert(q).then(() => {
-    return q.r.db(q.db).table(q.name).changes().run()
-  }).then((changeFeed) => {
-    q._changeFeed = changeFeed
-    q._changeFeed.each((err, change) => {
-      queueChange(q, err, change)
-    })
+    if (q.enableChangeFeed) {
+      return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
+        q._changeFeed = changeFeed
+        q._changeFeed.each((err, change) => {
+          queueChange(q, err, change)
+        })
+      })
+    }
+    q._changeFeed = false
+    return null
+  }).then(() => {
     if (q.isMaster) {
       logger('Queue is a master')
       dbReview.enable(q)
@@ -44,11 +49,14 @@ module.exports.detach = function dbDetach (q, drainPool) {
     }
     if (drainPool) {
       q.ready = false
+      q.paused = true
       return q.r.getPoolMaster().drain()
     }
     return null
   }).then(() => {
-    q.emit(enums.queueStatus.detached)
+    if (drainPool) {
+      q.emit(enums.queueStatus.detached)
+    }
     return null
   })
 }

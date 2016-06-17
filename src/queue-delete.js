@@ -1,6 +1,5 @@
 const logger = require('./logger')(module)
-const Promise = require('bluebird')
-const dbReview = require('./db-review')
+const enums = require('./enums')
 const queueDb = require('./queue-db')
 const queueStop = require('./queue-stop')
 
@@ -11,5 +10,8 @@ module.exports = function (q, deleteTimeout) {
     return q.r.dbDrop(q.db).run()
   }).then(() => {
     return queueDb.detach(q, true)
+  }).then(() => {
+    q.emit(enums.queueStatus.deleted)
+    return true
   })
 }
