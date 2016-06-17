@@ -13,13 +13,13 @@ const enums = module.exports = {
   },
   jobStatus: {
     created: 'created',
-    delayed: 'delayed',
-    active: 'active',
     waiting: 'waiting',
+    active: 'active',
     completed: 'completed',
     timeout: 'timeout',
-    failed: 'failed',
+    delayed: 'delayed',
     retry: 'retry',
+    failed: 'failed',
     deleted: 'deleted'
   },
   queueStatus: {

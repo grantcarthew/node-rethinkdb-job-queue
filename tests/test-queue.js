@@ -1,10 +1,10 @@
 const Queue = require('../src/queue')
 const testOptions = require('./test-options')
-let testQ
+let testQueue
 
-module.exports = function () {
-  if (!testQ) {
-    testQ = new Queue(testOptions.queueDefault())
+module.exports = function (newNeeded) {
+  if (!testQueue || newNeeded) {
+    testQueue = new Queue(testOptions.queueDefault())
   }
-  return testQ
+  return testQueue
 }

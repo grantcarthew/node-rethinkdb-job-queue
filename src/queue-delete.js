@@ -7,7 +7,7 @@ module.exports = function (q, deleteTimeout) {
   logger('deleteQueue')
   return queueStop(q, deleteTimeout, false).then(() => {
     q.ready = false
-    return q.r.dbDrop(q.db).run()
+    return q.r.db(q.db).tableDrop(q.name).run()
   }).then(() => {
     return queueDb.detach(q, true)
   }).then(() => {
