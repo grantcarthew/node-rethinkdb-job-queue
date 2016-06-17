@@ -24,7 +24,7 @@ module.exports = function () {
         if (eventCount < 2) { return }
         t.equal(total, 3, 'Queue reset removed valid number of jobs')
         return q.getStatusSummary().then((afterSummary) => {
-          t.equal(Object.keys(afterSummary).length, 0, 'Status summary contains no values')
+          t.equal(afterSummary.waiting, 0, 'Status summary contains no waiting jobs')
           q.removeListener(enums.queueStatus.reset, resetEventHandler)
           resolve()
         }).catch(err => testError(err, module, t))

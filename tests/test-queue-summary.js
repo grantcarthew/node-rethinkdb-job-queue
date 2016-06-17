@@ -1,8 +1,5 @@
-const Queue = require('../src/queue')
-const testQ = new Queue({
-  queueName: 'JobQueueUnitTests'
-})
-testQ.getStatusSummary().then((summary) => {
+const q = require('./test-queue')()
+return q.getStatusSummary().then((summary) => {
   console.dir(summary)
-  testQ.close()
+  return q.stop(100)
 })

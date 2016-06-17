@@ -1,15 +1,9 @@
 # Worklog
 
-change queue.delete to remove timeout
-
 Need tests for the following;
 queue-change
 queue-process
 queue
-
-Fix the summary return object to always return keys with count.
-
-
 
 ## List of Changes and Events
 
