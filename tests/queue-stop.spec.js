@@ -35,7 +35,8 @@ module.exports = function () {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
-        // Forcefully with Drain
+
+        // ---------- Forcefully with Drain ----------
         return queueStop(q, 500, true)
       }).then((forceStopMessage) => {
         t.pass('Queue stopped forcefully after timeout with pool drain')
@@ -51,7 +52,8 @@ module.exports = function () {
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         setTimeout((q) => { q.running = 0 }, 200, q)
-        // Gracefully with Drain
+
+        // ---------- Gracefully with Drain ----------
         return queueStop(q, 500, true)
       }).then((jobsStoppedMessage) => {
         t.pass('Queue stopped gracefully with pool drain')
@@ -67,7 +69,8 @@ module.exports = function () {
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         q.running = 1
-        // Forcefully without Drain
+
+        // ---------- Forcefully without Drain ----------
         return queueStop(q, 500, false)
       }).then((forceStopMessage2) => {
         t.pass('Queue stopped forcefully after timeout without pool drain')
@@ -88,7 +91,8 @@ module.exports = function () {
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         setTimeout((q) => { q.running = 0 }, 200, q)
-        // Gracefully without Drain
+
+        // ---------- Gracefully without Drain ----------
         return queueStop(q, 500, false)
       }).then((forceStopMessage2) => {
         t.pass('Queue stopped gracefully after timeout without pool drain')

@@ -13,6 +13,7 @@ module.exports = function () {
     test('queue-get-next-job test', (t) => {
       t.plan(31)
 
+      // ---------- Creating Priority Test Jobs ----------
       const q = testQueue()
       q.concurrency = 1
       const jobLowest = q.createJob(testData, {priority: 'lowest'})
@@ -68,11 +69,14 @@ module.exports = function () {
       //   console.log(`${j.id} ${j.data}`)
       // })
 
+      // ---------- Adding Jobs for Testing ----------
       return q.reset().then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset successfully')
         return queueAddJob(q, allCreatedJobs, true)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 11, 'Jobs saved successfully')
+
+        // ---------- Getting Jobs in Priority Order ----------
         return queueGetNextJob(q)
       }).then((retry) => {
         t.equals(retry[0].id, jobRetry.id, 'Retry status job returned first')
@@ -109,6 +113,8 @@ module.exports = function () {
         t.equal(moreSavedJobs.length, 7, 'Jobs saved successfully')
         q.concurrency = 3
         q.running = 3
+
+        // ---------- Testing Concurrency and Running ----------
         return queueGetNextJob(q)
       }).then((group0) => {
         t.equals(group0.length, 0, 'Returned zero jobs due to concurrency and running')
