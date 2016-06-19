@@ -19,7 +19,7 @@ module.exports = function completed (job, data) {
     status: job.status,
     dateCompleted: job.dateCompleted,
     progress: job.progress,
-    log: job.q.r.row('log').add([log])
+    log: job.q.r.row('log').append(log)
   }).run().then((updateResult) => {
     return dbResult.status(job.q, updateResult, 'replaced')
   })

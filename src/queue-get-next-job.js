@@ -12,7 +12,8 @@ module.exports = function (q) {
     .limit(quantity)
     .update({
       status: enums.jobStatus.active,
-      dateStarted: q.r.now()
+      dateStarted: q.r.now(),
+      dateRetry: q.r.now().add(q.r.row('retryDelay').mul(q.r.row('retryCount')))
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {

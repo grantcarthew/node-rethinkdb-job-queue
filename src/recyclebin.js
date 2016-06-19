@@ -72,6 +72,6 @@ function jobTimeout (q) {
   .between(q.r.minval, timeoutDate, { index: enums.index.active_dateStarted })
   .update({
     status: enums.jobStatus.timeout,
-    log: q.r.row('log').add([log])
+    log: q.r.row('log').append(log)
   }).run()
 }

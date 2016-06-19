@@ -40,7 +40,7 @@ function jobTimeout (q) {
       q.r.row('retryCount').add(1),
       q.r.row('retryCount')
     ),
-    log: q.r.row('log').add([{
+    log: q.r.row('log').append({
       date: q.r.now(),
       queueId: q.id,
       type: q.r.branch(
@@ -57,7 +57,7 @@ function jobTimeout (q) {
       duration: q.r.now().toEpochTime()
         .sub(q.r.row('dateStarted').toEpochTime())
         .mul(1000).round()
-    }])
+    })
   })
   .run()
   .then((updateResult) => {

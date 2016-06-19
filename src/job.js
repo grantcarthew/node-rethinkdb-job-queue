@@ -40,6 +40,7 @@ class Job {
       this.dateCreated = moment().toDate()
       this.dateStarted
       this.dateCompleted
+      this.dateRetry
       this.dateTimeout
       this.dateFailed
       this.workerId
