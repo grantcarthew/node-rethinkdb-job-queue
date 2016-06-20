@@ -1,4 +1,5 @@
 const logger = require('./logger')(module)
+const moment = require('moment')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
@@ -10,6 +11,7 @@ module.exports = function (q) {
     .table(q.name)
     .orderBy({index: enums.index.inactive_priority_dateCreated})
     .limit(quantity)
+    .filter(q.r.row('dateRetry').le(q.r.now()))
     .update({
       status: enums.jobStatus.active,
       dateStarted: q.r.now(),

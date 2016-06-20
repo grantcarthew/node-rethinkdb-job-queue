@@ -17,7 +17,7 @@ module.exports = function () {
       t.equal(Object.keys(enums.priority).length, 7, 'Enums priority has has correct number of keys')
       t.equal(Object.keys(enums.jobStatus).length, 9, 'Enums jobStatus has has correct number of keys')
       t.equal(Object.keys(enums.queueStatus).length, 13, 'Enums queueStatus has correct number of keys')
-      t.equal(Object.keys(enums.index).length, 4, 'Enums index has has correct number of keys')
+      t.equal(Object.keys(enums.index).length, 5, 'Enums index has has correct number of keys')
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has has correct number of keys')
       t.equal(Object.keys(enums.message).length, 5, 'Enums message has has correct number of keys')
       t.equal(Object.keys(enums.error).length, 8, 'Enums error has has correct number of keys')

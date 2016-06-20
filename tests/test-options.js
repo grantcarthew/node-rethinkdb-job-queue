@@ -1,7 +1,7 @@
 const dbHost = module.exports.dbHost = 'localhost'
 const dbPort = module.exports.dbPort = '28015'
-const dbName = module.exports.dbName = 'rjqJobQueueUnitTests'
-const queueName = module.exports.queueName = 'rjqJobQueueUnitTestsJobList'
+const dbName = module.exports.dbName = 'rjqJobQueueTests'
+const queueName = module.exports.queueName = 'rjqJobQueueTestsJobList'
 
 module.exports.testData = 'The quick brown fox jumped over the lazy dog'
 

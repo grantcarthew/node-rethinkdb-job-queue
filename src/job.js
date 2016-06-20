@@ -27,6 +27,7 @@ class Job {
       } else {
         options = jobOptions(options)
       }
+      const now = moment().toDate()
       this.id = uuid.v4()
       this.data = data || {}
       this.priority = options.priority
@@ -37,10 +38,10 @@ class Job {
       this.retryCount = 0
       this.status = enums.jobStatus.created
       this.log = []
-      this.dateCreated = moment().toDate()
+      this.dateCreated = now
+      this.dateRetry = now
       this.dateStarted
       this.dateCompleted
-      this.dateRetry
       this.dateTimeout
       this.dateFailed
       this.workerId

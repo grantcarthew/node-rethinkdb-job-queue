@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-get-next-job test', (t) => {
-      t.plan(31)
+      t.plan(42)
 
       // ---------- Creating Priority Test Jobs ----------
       const q = testQueue()
@@ -63,6 +63,7 @@ module.exports = function () {
         jobCompleted,
         jobFailed
       ]
+      let retryJobs
 
       // Uncomment below for fault finding
       // allCreatedJobs.map((j) => {
@@ -147,6 +148,48 @@ module.exports = function () {
         t.equals(group4.length, 1, 'Returned final job')
         t.equals(group4[0].status, enums.jobStatus.active, 'Returned job is active status')
         t.ok(moment.isDate(group4[0].dateStarted), 'Returned job dateStarted is a date')
+
+        // ---------- Testing dateRetry ----------
+        retryJobs = q.createJob(testData, null, 2)
+        retryJobs[0].dateRetry = moment().add(100, 'seconds').toDate()
+        retryJobs[1].dateRetry = moment().add(-100, 'seconds').toDate()
+        return q.addJob(retryJobs)
+      }).then((retrySavedJobs) => {
+        t.equal(retrySavedJobs.length, 2, 'Jobs saved successfully')
+        return queueGetNextJob(q)
+      }).then((retryGet) => {
+        t.equal(retryGet.length, 1, 'Only one job available based on dateRetry')
+        t.equal(retryGet[0].id, retryJobs[1].id, 'Retry job valid')
+
+        // ---------- Testing dateRetry with retryCount ----------
+        retryJobs = q.createJob(testData, null, 4)
+        retryJobs[0].retryCount = 0
+        retryJobs[0].dateRetry = moment().add(-100, 'seconds').toDate()
+        retryJobs[1].retryCount = 1
+        retryJobs[1].dateRetry = moment().add(-200, 'seconds').toDate()
+        retryJobs[2].retryCount = 2
+        retryJobs[2].dateRetry = moment().add(-300, 'seconds').toDate()
+        retryJobs[3].retryCount = 3
+        retryJobs[3].dateRetry = moment().add(-400, 'seconds').toDate()
+        return q.addJob(retryJobs)
+      }).then((retrySavedJobs) => {
+        t.equal(retrySavedJobs.length, 4, 'Jobs saved successfully')
+        return queueGetNextJob(q)
+      }).then((retryGet2) => {
+        retryGet2.sort((a, b) => {
+          if (moment(a.dateRetry).isSameOrBefore(b.dateRetry)) return -1
+          return 1
+        })
+        t.equal(retryGet2.length, 3, 'Jobs retrieved successfully')
+        let ids = retryGet2.map(j => j.id)
+        t.ok(!ids.includes(retryJobs[0].id), 'Retrieved in dateRetry order successfully')
+        t.ok(moment().isBefore(retryGet2[0].dateRetry), 'dateRetry for first job is valid')
+        t.ok(moment(retryGet2[0].dateRetry).isBefore(retryGet2[1].dateRetry), 'dateRetry for second job is valid')
+        t.ok(moment(retryGet2[1].dateRetry).isBefore(retryGet2[2].dateRetry), 'dateRetry for third job is valid')
+        return queueGetNextJob(q)
+      }).then((retryGet3) => {
+        t.equal(retryGet3.length, 1, 'Last job retrieved successfully')
+        t.equal(retryGet3[0].id, retryJobs[0].id, 'Last job is valid')
         resolve()
       }).catch(err => testError(err, module, t))
     })

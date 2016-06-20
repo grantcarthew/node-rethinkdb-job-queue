@@ -39,6 +39,7 @@ const enums = module.exports = {
   },
   index: {
     status: 'status',
+    dateRetry: 'dateRetry',
     priority_dateCreated: 'priority_dateCreated',
     active_dateStarted: 'active_dateStarted',
     inactive_priority_dateCreated: 'inactive_priority_dateCreated'
