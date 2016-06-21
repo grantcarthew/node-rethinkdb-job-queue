@@ -34,8 +34,8 @@ class Job {
       this.timeout = options.timeout
       this.retryDelay = options.retryDelay
       this.retryMax = options.retryMax
-      this.progress = 0
       this.retryCount = 0
+      this.progress = 0
       this.status = enums.jobStatus.created
       this.log = []
       this.dateCreated = now

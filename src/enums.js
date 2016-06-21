@@ -17,7 +17,6 @@ const enums = module.exports = {
     active: 'active',
     completed: 'completed',
     timeout: 'timeout',
-    delayed: 'delayed',
     retry: 'retry',
     failed: 'failed',
     deleted: 'deleted'
@@ -41,7 +40,7 @@ const enums = module.exports = {
     status: 'status',
     dateRetry: 'dateRetry',
     priority_dateCreated: 'priority_dateCreated',
-    active_dateStarted: 'active_dateStarted',
+    active_dateRetry: 'active_dateRetry',
     inactive_priority_dateCreated: 'inactive_priority_dateCreated'
   },
   log: {

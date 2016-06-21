@@ -130,6 +130,10 @@ class Queue extends EventEmitter {
     })
   }
 
+  get isIdle () {
+    return this.running < 1
+  }
+
   getStatusSummary () {
     logger('getStatusSummary')
     return this.ready.then(() => {

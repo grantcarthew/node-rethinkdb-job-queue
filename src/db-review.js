@@ -12,12 +12,9 @@ function jobTimeout (q) {
   logger('jobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
   return q.r.db(q.db).table(q.name)
-  .orderBy({index: enums.index.active_dateStarted})
+  .orderBy({index: enums.index.active_dateRetry})
   .filter(
-    q.r.row('dateStarted')
-    .add(q.r.row('timeout'))
-    .add(60)
-    .lt(q.r.now())
+    q.r.row('dateRetry').lt(q.r.now())
   ).update({
     status: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),

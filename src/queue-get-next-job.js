@@ -15,7 +15,9 @@ module.exports = function (q) {
     .update({
       status: enums.jobStatus.active,
       dateStarted: q.r.now(),
-      dateRetry: q.r.now().add(q.r.row('retryDelay').mul(q.r.row('retryCount')))
+      dateRetry: q.r.now()
+      .add(q.r.row('timeout'))
+      .add(q.r.row('retryDelay').mul(q.r.row('retryCount')))
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {

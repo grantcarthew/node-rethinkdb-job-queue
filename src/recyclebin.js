@@ -40,8 +40,8 @@ module.exports.setDateStarted = function (job) {
   })
 }
 
-module.exports.createIndexActiveDateStarted = function (q) {
-  logger('createIndexActiveDateStarted')
+module.exports.createIndexActiveDateRetry = function (q) {
+  logger('createIndexActiveDateRetry')
   let indexName = enums.index.active
   return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
@@ -69,7 +69,7 @@ function jobTimeout (q) {
   )
 
   return q.r.db(q.db).table(q.name)
-  .between(q.r.minval, timeoutDate, { index: enums.index.active_dateStarted })
+  .between(q.r.minval, timeoutDate, { index: enums.index.active_dateRetry })
   .update({
     status: enums.jobStatus.timeout,
     log: q.r.row('log').append(log)

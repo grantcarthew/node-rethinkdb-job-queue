@@ -29,7 +29,7 @@ queue
 
 ## Retry Workflow
 
-### On Worker....
+### On Worker
 
 Timeout = 30sec
 Job starts
@@ -42,7 +42,7 @@ check retry max and count and update;
   retryCount
 retry job.
 
-### On Queue...
+### On Queue
 
 Review timed out jobs;
   checks active, dateStarted, timeout value.

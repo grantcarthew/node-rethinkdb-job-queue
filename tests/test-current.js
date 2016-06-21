@@ -50,10 +50,10 @@ return dbAssertDatabase().then(() => {
 // }).then(() => {
 //   return queueReset()
 // }).then(() => {
-  return queueGetNextJob()
-}).then(() => {
-//   return queueDb()
+//   return queueGetNextJob()
 // }).then(() => {
+  return queueDb()
+}).then(() => {
 //   return queueStop()
 // }).then(() => {
 //   return queueDelete()
