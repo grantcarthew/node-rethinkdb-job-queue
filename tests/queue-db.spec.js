@@ -37,7 +37,7 @@ module.exports = function () {
         // ---------- Detach with Drain ----------
         return queueDb.detach(q, true)
       }).then(() => {
-        t.pass('Queue detached with pool drain')
+        t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
@@ -52,7 +52,7 @@ module.exports = function () {
         // ---------- Detach with Drain ----------
         return queueDb.detach(q, true)
       }).then(() => {
-        t.pass('Queue detached with pool drain')
+        t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
@@ -69,7 +69,7 @@ module.exports = function () {
         // ---------- Detach with Drain ----------
         return queueDb.detach(q, true)
       }).then(() => {
-        t.pass('Queue detached with pool drain')
+        t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
@@ -86,7 +86,7 @@ module.exports = function () {
         // ---------- Detach with Drain ----------
         return queueDb.detach(q, true)
       }).then(() => {
-        t.pass('Queue detached with pool drain')
+        t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
@@ -103,7 +103,7 @@ module.exports = function () {
         // ---------- Detach with Drain ----------
         return queueDb.detach(q, true)
       }).then(() => {
-        t.pass('Queue detached with pool drain')
+        t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
@@ -120,7 +120,7 @@ module.exports = function () {
         // ---------- Detach without Drain ----------
         return queueDb.detach(q, false)
       }).then(() => {
-        t.pass('Queue detached without pool drain')
+        t.pass('Pass: Queue detached without pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(q.paused, 'Queue is not paused')

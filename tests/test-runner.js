@@ -7,6 +7,7 @@ const dbAssertIndex = require('./db-assert-index.spec')
 const dbAssert = require('./db-assert.spec')
 const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
+const jobParse = require('./job-parse.spec')
 const job = require('./job.spec')
 const jobAddLog = require('./job-add-log.spec')
 const dbResult = require('./db-result.spec')
@@ -34,6 +35,7 @@ return dbAssertDatabase().then(() => {
   return Promise.all([
     enums(),
     jobOptions(),
+    jobParse(),
     job(),
     jobAddLog(),
     queueGetJob(),

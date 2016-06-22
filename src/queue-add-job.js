@@ -1,10 +1,12 @@
 const logger = require('./logger')(module)
+const Promise = require('bluebird')
 const enums = require('./enums')
 const dbResult = require('./db-result')
+const jobParse = require('../src/job-parse')
 
 // skipStatusCheck is for ease of adding jobs during tests
 module.exports = function queueAddJob (q, job, skipStatusCheck) {
-  if (!job) { return [] }
+  if (!job) { return Promise.resolve([]) }
   let jobs = Array.isArray(job) ? job : [job]
   logger('addJob', jobs.length)
   for (let valid of jobs) {

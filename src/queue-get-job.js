@@ -6,8 +6,8 @@ const isUuid = require('isuuid')
 
 module.exports = function (q, jobId) {
   logger('getJobById: ', jobId)
-  let jobIds = Array.isArray(jobId) ? jobId : [jobId]
-  for (let id of jobIds) {
+  let jobParse = Array.isArray(jobId) ? jobId : [jobId]
+  for (let id of jobParse) {
     if (!isUuid(id)) {
       return Promise.reject(enums.error.idInvalid)
     }
@@ -16,7 +16,7 @@ module.exports = function (q, jobId) {
   return q.r
     .db(q.db)
     .table(q.name)
-    .getAll(...jobIds)
+    .getAll(...jobParse)
     .run()
     .then((jobsData) => {
       return dbResult.toJob(q, jobsData)

@@ -38,8 +38,6 @@ class Queue extends EventEmitter {
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this._changeFeed = false
-    // this.removeOnSuccess = options.removeOnSuccess == null ? false
-    //   : options.removeOnSuccess
     this.paused = true
     this.id = [
       require('os').hostname(),
@@ -96,6 +94,11 @@ class Queue extends EventEmitter {
     return this.ready.then(() => {
       return queueGetJob(this, jobId)
     })
+  }
+
+  updateJobProgress (job, percent) {
+    
+
   }
 
   get jobConcurrency () {

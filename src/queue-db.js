@@ -41,9 +41,12 @@ module.exports.detach = function dbDetach (q, drainPool) {
   logger('detach')
   return Promise.resolve().then(() => {
     if (q._changeFeed) {
-      q._changeFeed.close()
+      let feed = q._changeFeed
       q._changeFeed = false
+      return feed.close()
     }
+    return null
+  }).then(() => {
     if (q.isMaster) {
       dbReview.disable(q)
     }
