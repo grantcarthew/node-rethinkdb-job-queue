@@ -58,6 +58,7 @@ class Job {
   }
 
   createLog (message, type = enums.log.information, status = this.status) {
+    logger('createLog')
     return {
       date: moment().toDate(),
       queueId: this.q.id,
