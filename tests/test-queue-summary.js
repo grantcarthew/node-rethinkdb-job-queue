@@ -1,5 +1,5 @@
 const q = require('./test-queue')()
-return q.getStatusSummary().then((summary) => {
+return q.summary().then((summary) => {
   console.dir(summary)
   return q.stop(100)
 })

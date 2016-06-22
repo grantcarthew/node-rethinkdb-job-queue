@@ -65,9 +65,9 @@ module.exports = function () {
         console.log('~~~~~~~~~~ addJob result ~~~~~~~~~~')
         console.dir(JSON.parse(JSON.stringify(result)))
       }).then(() => {
-        return q.getStatusSummary()
+        return q.summary()
       }).then((d) => {
-        console.log('~~~~~~~~~~ getStatusSummary ~~~~~~~~~~')
+        console.log('~~~~~~~~~~ summary ~~~~~~~~~~')
         console.dir(d)
       }).then(() => {
         return q.delete(4000)

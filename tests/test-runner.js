@@ -21,7 +21,7 @@ const queueDelete = require('./queue-delete.spec')
 const jobCompleted = require('./job-completed.spec')
 const jobFailed = require('./job-failed.spec')
 const dbReview = require('./db-review.spec')
-const queueStatusSummary = require('./queue-status-summary.spec')
+const queueSummary = require('./queue-summary.spec')
 
 return dbAssertDatabase().then(() => {
 }).then(() => {
@@ -46,7 +46,7 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return dbReview()
 }).then(() => {
-  return queueStatusSummary()
+  return queueSummary()
 }).then(() => {
   return queueReset()
 }).then(() => {

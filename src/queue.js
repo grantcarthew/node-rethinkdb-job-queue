@@ -11,7 +11,7 @@ const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueReset = require('./queue-reset')
-const queueStatusSummary = require('./queue-status-summary')
+const queueSummary = require('./queue-summary')
 const queueStop = require('./queue-stop')
 const queueDelete = require('./queue-delete')
 const jobOptions = require('./job-options')
@@ -134,10 +134,10 @@ class Queue extends EventEmitter {
     return this.running < 1
   }
 
-  getStatusSummary () {
-    logger('getStatusSummary')
+  summary () {
+    logger('summary')
     return this.ready.then(() => {
-      return queueStatusSummary(this)
+      return queueSummary(this)
     })
   }
 
