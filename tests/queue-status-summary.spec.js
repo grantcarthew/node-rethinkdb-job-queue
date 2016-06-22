@@ -9,7 +9,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-status-summary test', (t) => {
-      t.plan(7)
+      t.plan(8)
 
       const q = testQueue()
       const jobs = q.createJob(testData, null, 7)
@@ -33,6 +33,9 @@ module.exports = function () {
         t.equal(summary.delayed, 1, 'Queue status summary includes delayed')
         t.equal(summary.retry, 1, 'Queue status summary includes retry')
         t.equal(summary.failed, 1, 'Queue status summary includes failed')
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })

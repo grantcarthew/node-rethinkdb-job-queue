@@ -31,19 +31,19 @@ return dbAssertDatabase().then(() => {
 // }).then(() => {
 //   return dbAssert()
 // }).then(() => {
-//   return Promise.all([
-//     enums(),
-//     jobOptions(),
-//     job(),
-//     jobAddLog(),
-//     queueGetJob(),
-//     dbResult(),
-//     queueAddJob(),
-//     queueRemoveJob(),
-//     jobCompleted(),
-//     jobFailed()
-//   ])
-// }).then(() => {
+  return Promise.all([
+    // enums(),
+    // jobOptions(),
+    job(),
+    // jobAddLog(),
+    // queueGetJob(),
+    // dbResult(),
+    // queueAddJob(),
+    // queueRemoveJob(),
+    // jobCompleted(),
+    // jobFailed()
+  ])
+}).then(() => {
 //   return dbReview()
 // }).then(() => {
 //   return queueStatusSummary()
@@ -52,8 +52,8 @@ return dbAssertDatabase().then(() => {
 // }).then(() => {
 //   return queueGetNextJob()
 // }).then(() => {
-  return queueDb()
-}).then(() => {
+//   return queueDb()
+// }).then(() => {
 //   return queueStop()
 // }).then(() => {
 //   return queueDelete()

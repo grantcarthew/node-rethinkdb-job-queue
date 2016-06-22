@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-get-next-job test', (t) => {
-      t.plan(42)
+      t.plan(43)
 
       // ---------- Creating Priority Test Jobs ----------
       const q = testQueue()
@@ -190,6 +190,9 @@ module.exports = function () {
       }).then((retryGet3) => {
         t.equal(retryGet3.length, 1, 'Last job retrieved successfully')
         t.equal(retryGet3[0].id, retryJobs[0].id, 'Last job is valid')
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })

@@ -8,11 +8,11 @@ module.exports.isEnabled = function reviewIsEnabled () {
   return !!dbReviewIntervalId
 }
 
-function jobTimeout (q) {
-  logger('jobTimeout: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+function jobReview (q) {
+  logger('jobReview: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
   return q.r.db(q.db).table(q.name)
-  .orderBy({index: enums.index.active_dateRetry})
+  .orderBy({index: enums.index.active_retry_dateRetry})
   .filter(
     q.r.row('dateRetry').lt(q.r.now())
   ).update({
@@ -73,7 +73,7 @@ module.exports.enable = function reviewEnable (q) {
   const interval = q.masterReviewPeriod * 1000
   q.emit(enums.queueStatus.reviewEnabled)
   dbReviewIntervalId = setInterval(() => {
-    return jobTimeout(q)
+    return jobReview(q)
   }, interval)
 }
 
@@ -86,4 +86,4 @@ module.exports.disable = function reviewDisable (q) {
   }
 }
 
-module.exports.runOnce = jobTimeout
+module.exports.runOnce = jobReview

@@ -10,7 +10,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed test', (t) => {
-      t.plan(53)
+      t.plan(54)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -77,7 +77,9 @@ module.exports = function () {
         t.ok(failed[0].log[3].message.startsWith(enums.message.failed), 'Log message is correct')
         t.ok(failed[0].log[3].duration >= 0, 'Log duration is >= 0')
         t.equal(failed[0].log[3].data, job.data, 'Log data is valid')
-      }).then(() => {
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })

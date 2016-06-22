@@ -9,7 +9,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-remove-job test', (t) => {
-      t.plan(14)
+      t.plan(15)
 
       const q = testQueue()
       let jobs = q.createJob(testData, null, 3)
@@ -61,6 +61,9 @@ module.exports = function () {
           t.equal(err, enums.error.idInvalid, 'Invalid job returns a rejected Promise')
         })
       }).then(() => {
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })

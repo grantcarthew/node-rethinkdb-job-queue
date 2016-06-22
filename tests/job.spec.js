@@ -11,14 +11,14 @@ const isUuid = require('isuuid')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job test', (t) => {
-      t.plan(53)
+      t.plan(59)
 
       const q = testQueue()
       try {
         const nullJobArg = new Job(q, null, null)
         t.pass('Creating a job with null options dose not cause an exception')
       } catch (e) {
-        t.fail('Creating a job with null options creates an exception')
+        t.fail('Creating a job with null options causes an exception')
       }
 
       const newJob = new Job(q, testData)
@@ -28,30 +28,32 @@ module.exports = function () {
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(isUuid(newJob.id), 'New job has valid id')
-      t.ok(newJob.data === testData, 'New job data is valid')
-      t.ok(newJob.priority === 'normal', 'New job priority is normal')
-      t.ok(newJob.status === 'created', 'New job status is created')
-      t.ok(newJob.timeout === 300, 'New job timeout is 300')
-      t.ok(newJob.retryMax === 3, 'New job retryMax is 3')
-      t.ok(newJob.retryDelay === 600, 'New job retryDelay is 600')
-      t.ok(newJob.progress === 0, 'New job progress is 0')
-      t.ok(newJob.retryCount === 0, 'New job retryCount is 0')
+      t.equal(newJob.data, testData, 'New job data is valid')
+      t.equal(newJob.priority, 'normal', 'New job priority is normal')
+      t.equal(newJob.status, 'created', 'New job status is created')
+      t.equal(newJob.timeout, 300, 'New job timeout is 300')
+      t.equal(newJob.retryMax, 3, 'New job retryMax is 3')
+      t.equal(newJob.retryDelay, 600, 'New job retryDelay is 600')
+      t.equal(newJob.progress, 0, 'New job progress is 0')
+      t.equal(newJob.retryCount, 0, 'New job retryCount is 0')
       t.equal(newJob.log.length, 0, 'New job log is an empty array')
       t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
+      t.ok(moment.isDate(newJob.dateRetry), 'New job dateRetry is a date')
 
       const cleanJob = newJob.cleanCopy
-      t.ok(!cleanJob.q, 'Clean job does not have a reference to the queue')
+      t.equal(Object.keys(cleanJob).length, 12, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
       t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
       t.equal(cleanJob.priority, enums.priority[newJob.priority], 'Clean job priority is valid')
-      t.equal(cleanJob.status, newJob.status, 'Clean job status is valid')
       t.equal(cleanJob.timeout, newJob.timeout, 'Clean job timeoue is valid')
-      t.equal(cleanJob.retryMax, newJob.retryMax, 'Clean job retryMax is valid')
       t.equal(cleanJob.retryDelay, newJob.retryDelay, 'Clean job retryDelay is valid')
-      t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
+      t.equal(cleanJob.retryMax, newJob.retryMax, 'Clean job retryMax is valid')
       t.equal(cleanJob.retryCount, newJob.retryCount, 'Clean job retryCount is valid')
+      t.equal(cleanJob.status, newJob.status, 'Clean job status is valid')
       t.equal(cleanJob.log, newJob.log, 'Clean job log is valid')
       t.equal(cleanJob.dateCreated, newJob.dateCreated, 'Clean job dateCreated is valid')
+      t.equal(cleanJob.dateRetry, newJob.dateRetry, 'Clean job dateRetry is valid')
+      t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
 
       let log = newJob.createLog(testData)
       log.data = testData
@@ -74,12 +76,15 @@ module.exports = function () {
         t.deepEqual(newJobFromData.q, savedJob.q, 'New job from data queue valid')
         t.equal(newJobFromData.data, savedJob.data, 'New job from data job data is valid')
         t.equal(newJobFromData.priority, savedJob.priority, 'New job from data priority is valid')
-        t.equal(newJobFromData.status, savedJob.status, 'New job from data status is valid')
         t.equal(newJobFromData.timeout, savedJob.timeout, 'New job from data timeout is valid')
-        t.equal(newJobFromData.retryMax, savedJob.retryMax, 'New job from data retryMax is valid')
         t.equal(newJobFromData.retryDelay, savedJob.retryDelay, 'New job from data retryDelay is valid')
-        t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
+        t.equal(newJobFromData.retryMax, savedJob.retryMax, 'New job from data retryMax is valid')
         t.equal(newJobFromData.retryCount, savedJob.retryCount, 'New job from data retryCount is valid')
+        t.equal(newJobFromData.status, savedJob.status, 'New job from data status is valid')
+        t.equal(newJobFromData.log, savedJob.log, 'Clean job log is valid')
+        t.equal(newJobFromData.dateCreated, savedJob.dateCreated, 'Clean job dateCreated is valid')
+        t.equal(newJobFromData.dateRetry, savedJob.dateRetry, 'Clean job dateRetry is valid')
+        t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
 
         return savedJob.addLog(log)
       }).then((logAddedResult) => {
@@ -94,7 +99,9 @@ module.exports = function () {
         t.equal(jobsFromDb[0].log[0].status, enums.jobStatus.created, 'Log status is created')
         t.equal(jobsFromDb[0].log[0].message, testData, 'Log message is valid')
         t.equal(jobsFromDb[0].log[0].data, testData, 'Log data is valid')
-      }).then(() => {
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })

@@ -8,7 +8,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-result test', (t) => {
-      t.plan(14)
+      t.plan(15)
 
       const q = testQueue()
       const job1 = q.createJob(testData)
@@ -67,6 +67,9 @@ module.exports = function () {
       }).then((jobResult) => {
         t.equal(jobResult.length, 1, 'Job data returns jobs array')
         t.deepEqual(jobResult[0].cleanCopy, job1.cleanCopy, 'Job data returned job is valid')
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })

@@ -12,7 +12,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review test', (t) => {
-      t.plan(38)
+      t.plan(39)
 
       let q = testQueue()
       let reviewCount = 0
@@ -29,9 +29,12 @@ module.exports = function () {
           t.pass('Review timer completed twice')
           q.removeListener(enums.queueStatus.review, reviewEventHandler)
           // Test completes here!
-          resolve()
+          return q.reset().then((resetResult) => {
+            t.ok(resetResult >= 0, 'Queue reset')
+            resolve()
+            return true
+          })
         }
-        return true
       }
       function reviewEnabledEventHandler () {
         t.pass('Review enabled event raised')

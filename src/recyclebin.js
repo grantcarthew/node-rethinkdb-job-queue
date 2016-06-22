@@ -69,7 +69,7 @@ function jobTimeout (q) {
   )
 
   return q.r.db(q.db).table(q.name)
-  .between(q.r.minval, timeoutDate, { index: enums.index.active_dateRetry })
+  .between(q.r.minval, timeoutDate, { index: enums.index.active_retry_dateRetry })
   .update({
     status: enums.jobStatus.timeout,
     log: q.r.row('log').append(log)

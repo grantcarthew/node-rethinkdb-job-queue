@@ -9,7 +9,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-add-job test', (t) => {
-      t.plan(6)
+      t.plan(7)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -36,10 +36,15 @@ module.exports = function () {
         })
       }).then(() => {
         job.status = 'waiting'
-        return queueAddJob(q, job).catch((err) => {
+        return queueAddJob(q, job).then(() => {
+          t.fail('Promise is not being rejected when job status is invalid')
+        }).catch((err) => {
           t.equal(err, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
         })
       }).then(() => {
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         resolve()
       }).catch(err => testError(err, module, t))
     })
