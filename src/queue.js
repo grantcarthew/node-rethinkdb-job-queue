@@ -119,24 +119,14 @@ class Queue extends EventEmitter {
 
   review (reviewRun) {
     logger('review: ', reviewRun)
+    if (reviewRun === enums.reviewRun.enable) {
+      this.isMaster = true
+    }
+    if (reviewRun === enums.reviewRun.disable) {
+      this.isMaster = false
+    }
     return this.ready.then(() => {
-      if (!Object.keys(enums.reviewRun)
-      .map(key => enums.reviewRun[key]).includes(reviewRun)) {
-        return Promise.reject(enums.error.reviewOptionInvalid)
-      }
-      if (reviewRun === enums.reviewRun.enable) {
-        this.isMaster = true
-        dbReview.enable(this)
-        return dbReview.runOnce(this)
-      }
-      if (reviewRun === enums.reviewRun.disable) {
-        this.isMaster = false
-        dbReview.disable(this)
-        return Promise.resolve(0)
-      }
-      if (reviewRun === enums.reviewRun.once) {
-        return dbReview.runOnce(this)
-      }
+      return dbReview.run(this, reviewRun)
     })
   }
 

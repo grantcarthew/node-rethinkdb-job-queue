@@ -1,12 +1,10 @@
 const logger = require('./logger')(module)
+const Promise = require('bluebird')
 const moment = require('moment')
 const dbResult = require('./db-result')
 const enums = require('./enums')
 
 let dbReviewIntervalId = false
-module.exports.isEnabled = function reviewIsEnabled () {
-  return !!dbReviewIntervalId
-}
 
 function jobReview (q) {
   logger('jobReview: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
@@ -65,7 +63,7 @@ function jobReview (q) {
   })
 }
 
-module.exports.enable = function reviewEnable (q) {
+function reviewEnable (q) {
   logger('db-review enable')
   if (dbReviewIntervalId) {
     return
@@ -77,7 +75,7 @@ module.exports.enable = function reviewEnable (q) {
   }, interval)
 }
 
-module.exports.disable = function reviewDisable (q) {
+function reviewDisable (q) {
   logger('db-review disable')
   if (dbReviewIntervalId) {
     q.emit(enums.queueStatus.reviewDisabled)
@@ -86,4 +84,24 @@ module.exports.disable = function reviewDisable (q) {
   }
 }
 
-module.exports.runOnce = jobReview
+module.exports.run = function run (q, reviewRun) {
+  if (!Object.keys(enums.reviewRun)
+  .map(key => enums.reviewRun[key]).includes(reviewRun)) {
+    return Promise.reject(enums.error.reviewOptionInvalid)
+  }
+  if (reviewRun === enums.reviewRun.enable) {
+    reviewEnable(q)
+    return jobReview(q)
+  }
+  if (reviewRun === enums.reviewRun.disable) {
+    reviewDisable(q)
+    return Promise.resolve(0)
+  }
+  if (reviewRun === enums.reviewRun.once) {
+    return jobReview(q)
+  }
+}
+
+module.exports.isEnabled = function reviewIsEnabled () {
+  return !!dbReviewIntervalId
+}

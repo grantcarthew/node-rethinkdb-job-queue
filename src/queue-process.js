@@ -81,10 +81,12 @@ module.exports = function (q, handler) {
 
   q.handler = handler
   q.running = 0
-  return dbReview.runOnce(q).then((dbReviewResult) => {
+  return dbReview.run(q, enums.reviewRun.once).then((dbReviewResult) => {
     if (q.isMaster) {
-      dbReview.enable(q)
+      return dbReview.run(q, enums.reviewRun.enable)
     }
+    return null
+  }).then(() => {
     setImmediate(jobTick, q)
     return null
   })

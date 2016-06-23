@@ -53,14 +53,14 @@ return dbAssertDatabase().then(() => {
 // }).then(() => {
 //   return queueGetNextJob()
 // }).then(() => {
-//   return queueDb()
-// }).then(() => {
+  return queueDb()
+}).then(() => {
 //   return queueStop()
 // }).then(() => {
 //   return queueDelete()
 // }).then(() => {
-  return queueProcess()
-}).then(() => {
+//   return queueProcess()
+// }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()
   // TODO: Change below to delete and re-run tests before publishing

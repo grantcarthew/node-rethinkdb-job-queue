@@ -23,7 +23,7 @@ module.exports = function () {
         t.ok(is.integer(total), 'Review event return value is an Integer')
         if (reviewCount > 2) {
           t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
-          dbReview.disable(q)
+          dbReview.run(q, enums.reviewRun.disable)
           t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
           q.masterReviewPeriod = 300
           t.pass('Review timer completed twice')
@@ -69,7 +69,7 @@ module.exports = function () {
         t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
         t.equal(savedJobs[1].id, job2.id, 'Job 2 saved successfully')
       }).then(() => {
-        return dbReview.runOnce(q)
+        return dbReview.run(q, enums.reviewRun.once)
       }).then((reviewResult) => {
         t.ok(reviewResult >= 2, 'Job updated by db review')
         return q.getJob(job1.id)
@@ -100,7 +100,7 @@ module.exports = function () {
         t.ok(reviewedJob2[0].log[0].message, 'Log message is present')
         t.ok(reviewedJob2[0].log[0].duration >= 0, 'Log duration is >= 0')
         t.ok(!reviewedJob2[0].log[0].data, 'Log data is null')
-        dbReview.enable(q)
+        return dbReview.run(q, enums.reviewRun.enable)
       }).catch(err => testError(err, module, t))
     })
   })
