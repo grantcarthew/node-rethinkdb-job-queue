@@ -54,7 +54,6 @@ module.exports = function () {
         t.equal(getResult4.length, 0, 'Single job no longer in database')
         return queueRemoveJob(q)
       }).then((undefinedResult) => {
-        console.dir(undefinedResult)
         t.equal(undefinedResult, 0, 'Remove undefined job returns 0 result')
         return queueRemoveJob(q, ['not a job']).then(() => {
           t.fail('queue-remove-job is not failing on an invalid job')

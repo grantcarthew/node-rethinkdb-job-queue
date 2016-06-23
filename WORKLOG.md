@@ -1,5 +1,6 @@
 # Worklog
 
+queue.updateJobProgress
 Need tests for the following;
 queue-change
 queue-process

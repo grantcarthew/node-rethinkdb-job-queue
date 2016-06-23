@@ -74,9 +74,6 @@ const jobTick = function (q) {
 
 module.exports = function (q, handler) {
   logger('process')
-  if (!q.isWorker) {
-    throw Error(enums.error.nonWorker)
-  }
 
   if (q.handler) {
     throw Error(enums.error.processTwice)
@@ -85,8 +82,10 @@ module.exports = function (q, handler) {
   q.handler = handler
   q.running = 0
   return dbReview.runOnce(q).then((dbReviewResult) => {
-    dbReview.enable(q)
+    if (q.isMaster) {
+      dbReview.enable(q)
+    }
     setImmediate(jobTick, q)
-    return true
+    return null
   })
 }

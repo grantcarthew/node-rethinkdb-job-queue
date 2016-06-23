@@ -30,8 +30,6 @@ class Queue extends EventEmitter {
     this.isMaster = options.isMaster == null ? false
       : options.isMaster
     this.masterReviewPeriod = options.masterReviewPeriod || 300
-    this.isWorker = options.isWorker == null ? false
-      : options.isWorker
     this.enableChangeFeed = options.enableChangeFeed == null ? true
       : options.enableChangeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
@@ -64,6 +62,7 @@ class Queue extends EventEmitter {
   }
 
   createJob (data, options = this._jobDefaultOptions, quantity = 1) {
+    // TODO test for option === number switch
     logger('createJob')
     if (quantity > 1) {
       const jobs = []
@@ -97,7 +96,7 @@ class Queue extends EventEmitter {
   }
 
   updateJobProgress (job, percent) {
-    
+    // TODO
 
   }
 
@@ -118,18 +117,26 @@ class Queue extends EventEmitter {
     })
   }
 
-  review (enable) {
-    logger('review: ', enable)
+  review (reviewRun) {
+    logger('review: ', reviewRun)
     return this.ready.then(() => {
-      if (is.bool(enable) && enable && this.isMaster) {
-        dbReview.enable(this)
-      } else {
-        dbReview.disable(this)
+      if (!Object.keys(enums.reviewRun)
+      .map(key => enums.reviewRun[key]).includes(reviewRun)) {
+        return Promise.reject(enums.error.reviewOptionInvalid)
       }
-      if (is.bool(enable) && !enable) {
+      if (reviewRun === enums.reviewRun.enable) {
+        this.isMaster = true
+        dbReview.enable(this)
+        return dbReview.runOnce(this)
+      }
+      if (reviewRun === enums.reviewRun.disable) {
+        this.isMaster = false
+        dbReview.disable(this)
         return Promise.resolve(0)
       }
-      return dbReview.runOnce(this)
+      if (reviewRun === enums.reviewRun.once) {
+        return dbReview.runOnce(this)
+      }
     })
   }
 

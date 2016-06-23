@@ -36,6 +36,11 @@ const enums = module.exports = {
     stopped: 'stopped',
     deleted: 'deleted'
   },
+  reviewRun: {
+    enable: 'enable',
+    once: 'once',
+    disable: 'disable'
+  },
   index: {
     status: 'status',
     dateRetry: 'dateRetry',
@@ -59,10 +64,10 @@ const enums = module.exports = {
     jobNotAdded: 'Job not added to the queue',
     jobAlreadyAdded: 'Job is already added to the queue',
     jobInvalid: 'Job object is invalid',
-    nonWorker: 'Cannot call queue process on a non-worker',
     processTwice: 'Cannot call queue process twice',
     missingTimeout: 'Timeout parameter required to stop or delete queue',
     queueDeleted: 'The queue has been deleted',
-    idInvalid: 'The job id is invalid'
+    idInvalid: 'The job id is invalid',
+    reviewOptionInvalid: 'The queue.review option is invalid'
   }
 }
