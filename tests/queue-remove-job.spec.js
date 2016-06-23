@@ -54,11 +54,12 @@ module.exports = function () {
         t.equal(getResult4.length, 0, 'Single job no longer in database')
         return queueRemoveJob(q)
       }).then((undefinedResult) => {
-        t.equal(undefinedResult.length, 0, 'Remove undefined job returns an empty array')
+        console.dir(undefinedResult)
+        t.equal(undefinedResult, 0, 'Remove undefined job returns 0 result')
         return queueRemoveJob(q, ['not a job']).then(() => {
           t.fail('queue-remove-job is not failing on an invalid job')
         }).catch((err) => {
-          t.equal(err, enums.error.idInvalid, 'Invalid job returns a rejected Promise')
+          t.ok(err.message.includes(enums.error.idInvalid), 'Invalid job returns a rejected Promise')
         })
       }).then(() => {
         return q.reset()

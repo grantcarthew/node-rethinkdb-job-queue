@@ -27,7 +27,6 @@ module.exports.job = function jobParseJob (job) {
   if (!job) { return [] }
   let jobs = Array.isArray(job) ? job : [job]
   let validJobs = []
-  console.dir(jobs)
   for (let j of jobs) {
     let detail = false
     if (!isUuid(j.id)) { detail = 'Job id: ' + j.id }

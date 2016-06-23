@@ -1,24 +1,19 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const enums = require('./enums')
 const dbResult = require('./db-result')
-const isUuid = require('isuuid')
+const jobParse = require('./job-parse')
 
 module.exports = function (q, jobId) {
   logger('getJobById: ', jobId)
-  let jobParse = Array.isArray(jobId) ? jobId : [jobId]
-  for (let id of jobParse) {
-    if (!isUuid(id)) {
-      return Promise.reject(enums.error.idInvalid)
-    }
-  }
-
-  return q.r
-    .db(q.db)
-    .table(q.name)
-    .getAll(...jobParse)
-    .run()
-    .then((jobsData) => {
-      return dbResult.toJob(q, jobsData)
-    })
+  return Promise.resolve().then(() => {
+    return jobParse.id(jobId)
+  }).then((ids) => {
+    return q.r
+      .db(q.db)
+      .table(q.name)
+      .getAll(...ids)
+      .run()
+  }).then((jobsData) => {
+    return dbResult.toJob(q, jobsData)
+  })
 }

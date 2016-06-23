@@ -32,7 +32,7 @@ module.exports = function () {
         return queueAddJob(q, {}).then(() => {
           t.fail('Job invalid is not returning a rejected promise')
         }).catch((err) => {
-          t.equal(err, enums.error.jobInvalid, 'Job invalid returns a rejected promise')
+          t.ok(err.message.includes(enums.error.jobInvalid), 'Job invalid returns a rejected promise')
         })
       }).then(() => {
         job.status = 'waiting'

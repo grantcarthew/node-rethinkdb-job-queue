@@ -9,7 +9,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-get-job test', (t) => {
-      t.plan(11)
+      t.plan(12)
 
       const q = testQueue()
       const job1 = q.createJob(testData)
@@ -26,12 +26,12 @@ module.exports = function () {
       .then((savedJobs) => {
         jobsSaved = savedJobs
         t.equal(savedJobs.length, 3, 'Job saved successfully')
-        return queueGetJob(q).catch((err) => {
-          t.equal(err, enums.error.idInvalid, 'Undefined returns rejected Promise')
-        })
-      }).then(() => {
+        return queueGetJob(q)
+      }).then((undefinedResult) => {
+        t.ok(Array.isArray(undefinedResult), 'Undefined returns an Array')
+        t.equal(undefinedResult.length, 0, 'Undefined returns an empty Array')
         return queueGetJob(q, ['invalid id']).catch((err) => {
-          t.equal(err, enums.error.idInvalid, 'Invalid id returns rejected Promise')
+          t.ok(err.message.includes(enums.error.idInvalid), 'Invalid id returns rejected Promise')
         })
       }).then((empty) => {
         return queueGetJob(q, [])
