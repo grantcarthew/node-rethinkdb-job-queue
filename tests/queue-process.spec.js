@@ -33,13 +33,12 @@ module.exports = function () {
 
       // ----------  Test ----------
       const job = q.createJob(testData)
-      console.dir(q)
+      //  console.dir(q)
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return queueProcess(q, testHandler)
-      }).then((processResult) => {
-        console.log('Process result !!!!!!');
-        console.dir(processResult)
+      }).then(() => {
+        console.log('Finished !!!!!!!!!!!!!!!!!');
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
