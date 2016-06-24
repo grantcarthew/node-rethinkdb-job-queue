@@ -62,7 +62,7 @@ module.exports = function () {
         }, 1000)
       }
 
-      // ----------  Test ----------
+      // ---------- Processing Test ----------
       const jobs = q.createJob(testData, null, 4)
       return q.ready.then(() => {
         q.paused = true
