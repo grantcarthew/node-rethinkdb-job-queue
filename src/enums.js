@@ -28,7 +28,6 @@ const enums = module.exports = {
     idle: 'idle',
     paused: 'paused',
     error: 'error',
-    warning: 'warning',
     review: 'review',
     reviewEnabled: 'review enabled',
     reviewDisabled: 'review disabled',
@@ -72,7 +71,6 @@ const enums = module.exports = {
     idInvalid: 'The job id is invalid',
     reviewOptionInvalid: 'The queue.review option is invalid',
     dbError: 'RethinkDB returned an error',
-    isPausedInvalid: 'Queue.paused requires a boolean',
-    processRestartInvalid: 'Cannot call process.restart without first calling process.addHandler'
+    isPausedInvalid: 'Queue.paused requires a boolean'
   }
 }

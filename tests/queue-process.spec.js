@@ -10,7 +10,7 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(5)
+      t.plan(6)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())

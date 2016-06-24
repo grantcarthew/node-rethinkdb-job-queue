@@ -95,10 +95,6 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 
 module.exports.restart = function queueProcessRestart (q) {
   logger('restart')
-  if (!q.handler) {
-    q.emit(enums.queueStatus.warning, enums.error.processRestartInvalid)
-    return
-  }
-
+  if (!q.handler) { return }
   setImmediate(jobTick, q)
 }
