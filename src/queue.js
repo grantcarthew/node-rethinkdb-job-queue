@@ -56,7 +56,10 @@ class Queue extends EventEmitter {
     if (isPaused) {
       this.emit(enums.queueStatus.paused)
     } else {
-      this.emit(enums.queueStatus.ready)
+      this.ready.then(() => {
+        queueProcess.restart(this)
+        this.emit(enums.queueStatus.ready)
+      })
     }
   }
 
@@ -127,7 +130,7 @@ class Queue extends EventEmitter {
   process (handler) {
     logger('process')
     return this.ready.then(() => {
-      return queueProcess(this, handler)
+      return queueProcess.addHandler(this, handler)
     })
   }
 

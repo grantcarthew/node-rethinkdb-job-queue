@@ -1,12 +1,14 @@
 const logger = require('./logger')(module)
-const moment = require('moment')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
 module.exports = function (q) {
   logger('getNextJob')
   logger(`Concurrency: ${q.concurrency} Running: ${q.running}`)
-  const quantity = q.concurrency - q.running
+  let quantity = q.concurrency - q.running
+  if (quantity < 0) {
+    return Promise.resolve([])
+  }
   return q.r
     .table(q.name)
     .orderBy({index: enums.index.inactive_priority_dateCreated})

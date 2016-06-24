@@ -6,12 +6,12 @@ const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
 const jobFailed = require('./job-failed')
 
-const jobRun = function (job) {
+const jobRun = function jobRun (job) {
   logger('jobRun')
   let handled = false
-  // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-  // console.dir(job)
-  // console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+  console.dir(job.id)
+  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
@@ -39,7 +39,7 @@ const jobRun = function (job) {
   job.q.handler(job, nextHandler)
 }
 
-const jobTick = function (q) {
+const jobTick = function jobTick (q) {
   logger('jobTick')
   //console.dir(q.paused)
   if (q.paused) {
@@ -73,8 +73,8 @@ const jobTick = function (q) {
   })
 }
 
-module.exports = function (q, handler) {
-  logger('process')
+module.exports.addHandler = function queueProcessAddHandler (q, handler) {
+  logger('addHandler')
 
   if (q.handler) {
     return Promise.reject(new Error(enums.error.processTwice))
@@ -91,4 +91,14 @@ module.exports = function (q, handler) {
     setImmediate(jobTick, q)
     return null
   })
+}
+
+module.exports.restart = function queueProcessRestart (q) {
+  logger('restart')
+  if (!q.handler) {
+    q.emit(enums.queueStatus.warning, enums.error.processRestartInvalid)
+    return
+  }
+
+  setImmediate(jobTick, q)
 }
