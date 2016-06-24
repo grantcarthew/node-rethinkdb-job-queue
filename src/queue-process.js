@@ -41,6 +41,7 @@ const jobRun = function (job) {
 
 const jobTick = function (q) {
   logger('jobTick')
+  //console.dir(q.paused)
   if (q.paused) {
     return
   }
@@ -62,7 +63,7 @@ const jobTick = function (q) {
     }
     return
   }).catch((err) => {
-    if (err === enums.queueStatus.idle) {
+    if (err.message === enums.queueStatus.idle) {
       logger('queue idle')
       q.emit(enums.queueStatus.idle)
       return
@@ -86,7 +87,7 @@ module.exports = function (q, handler) {
       return null
     }
     return dbReview.run(q, enums.reviewRun.once)
-  }).then((dbReviewResult) => {
+  }).then(() => {
     setImmediate(jobTick, q)
     return null
   })

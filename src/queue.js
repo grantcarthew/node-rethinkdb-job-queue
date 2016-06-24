@@ -36,7 +36,7 @@ class Queue extends EventEmitter {
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this._changeFeed = false
-    this.paused = true
+    this._paused = true
     this.id = [
       require('os').hostname(),
       this.db,
@@ -44,6 +44,20 @@ class Queue extends EventEmitter {
       process.pid
     ].join(':')
     queueDb.attach(this)
+  }
+
+  get paused () {
+    return this._paused
+  }
+
+  set paused (isPaused) {
+    if (!is.bool(isPaused)) { throw new Error(enums.error.isPausedInvalid) }
+    this._paused = isPaused
+    if (isPaused) {
+      this.emit(enums.queueStatus.paused)
+    } else {
+      this.emit(enums.queueStatus.ready)
+    }
   }
 
   get connection () {

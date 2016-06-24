@@ -26,6 +26,7 @@ const enums = module.exports = {
     enqueue: 'enqueue',
     processing: 'processing',
     idle: 'idle',
+    paused: 'paused',
     error: 'error',
     review: 'review',
     reviewEnabled: 'review enabled',
@@ -69,6 +70,7 @@ const enums = module.exports = {
     queueDeleted: 'The queue has been deleted',
     idInvalid: 'The job id is invalid',
     reviewOptionInvalid: 'The queue.review option is invalid',
-    dbError: 'RethinkDB returned an error'
+    dbError: 'RethinkDB returned an error',
+    isPausedInvalid: 'Queue.paused requires a boolean'
   }
 }

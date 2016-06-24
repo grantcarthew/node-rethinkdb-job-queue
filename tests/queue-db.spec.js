@@ -9,7 +9,7 @@ const enums = require('../src/enums')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-db test', (t) => {
-      t.plan(60)
+      t.plan(61)
 
       const q = testQueue()
 
@@ -18,6 +18,12 @@ module.exports = function () {
         this.removeListener(enums.queueStatus.ready, readyEventHandler)
       }
       q.on(enums.queueStatus.ready, readyEventHandler)
+
+      function pausedEventHandler () {
+        t.pass('Queue paused event raised')
+        this.removeListener(enums.queueStatus.paused, pausedEventHandler)
+      }
+      q.on(enums.queueStatus.paused, pausedEventHandler)
 
       function detachedEventHandler () {
         t.pass('Queue detached event raised')

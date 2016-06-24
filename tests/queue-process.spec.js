@@ -14,8 +14,11 @@ module.exports = function () {
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
+      let reviewCount = 0
       function reviewEventHandler (replaceCount) {
-        console.log('Review: ' + replaceCount)
+        reviewCount++
+        // TODO: test count or.....
+        console.log(`Review Replaced: ${replaceCount} Event Count: ${reviewCount}`)
       }
       q.on(enums.queueStatus.review, reviewEventHandler)
       function reviewEnabledEventHandler () {
@@ -26,6 +29,10 @@ module.exports = function () {
         console.log('Review disabled')
       }
       q.on(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
+      function pausedEventHandler () {
+        console.log('Queue Paused')
+      }
+      q.on(enums.queueStatus.paused, pausedEventHandler)
       function testHandler (job, next) {
         console.dir('Job Started: ' + job.id)
         setTimeout(function () {
@@ -35,14 +42,17 @@ module.exports = function () {
 
       // ----------  Test ----------
       const job = q.createJob(testData)
-      q.addJob(job).then((savedJob) => {
+      return q.ready.then(() => {
+        q.paused = true
+        return q.addJob(job)
+      }).then((savedJob) => {
+        console.log(q.paused)
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return queueProcess(q, testHandler)
       }).then(() => {
         return queueProcess(q, testHandler).then(() => {
           t.fail('Calling queue-process twice should fail and is not')
         }).catch((err) => {
-          console.dir(err)
           t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).then(() => {
