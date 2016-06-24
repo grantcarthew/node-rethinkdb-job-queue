@@ -9,9 +9,9 @@ const jobFailed = require('./job-failed')
 const jobRun = function jobRun (job) {
   logger('jobRun')
   let handled = false
-  console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-  console.dir(job.id)
-  console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+  // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+  // console.dir(job.id)
+  // console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
@@ -36,19 +36,20 @@ const jobRun = function jobRun (job) {
 
   const timedOutMessage = 'Job ' + job.id + ' timed out (' + job.timeout + ' sec)'
   jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)), job.timeout * 1000)
+  job.q.emit(enums.queueStatus.processing, job.id)
   job.q.handler(job, nextHandler)
 }
 
 const jobTick = function jobTick (q) {
   logger('jobTick')
-  //console.dir(q.paused)
   if (q.paused) {
     return
   }
 
   return queueGetNextJob(q).then((jobsToDo) => {
     if (jobsToDo.length < 1) {
-      return Promise.reject(new Error(enums.queueStatus.idle))
+      // This is not an error! Skipping Promise chain.
+      return Promise.reject(enums.queueStatus.idle)
     }
     return jobsToDo
   }).then((jobsToDo) => {
@@ -63,13 +64,13 @@ const jobTick = function jobTick (q) {
     }
     return
   }).catch((err) => {
-    if (err.message === enums.queueStatus.idle) {
+    if (err === enums.queueStatus.idle) {
       logger('queue idle')
       q.emit(enums.queueStatus.idle)
-      return
+      return null
     }
     q.emit(enums.queueStatus.error, err.message)
-    return setImmediate(jobTick, q)
+    return Promise.reject(err)
   })
 }
 

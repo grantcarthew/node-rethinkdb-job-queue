@@ -10,7 +10,7 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(6)
+      t.plan(10)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -24,17 +24,19 @@ module.exports = function () {
       q.on(enums.queueStatus.review, reviewEventHandler)
 
       function reviewEnabledEventHandler () {
-        console.log('Event: Review Enabled')
+        t.pass('Event: Review enabled')
+        q.removeListener(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
       }
       q.on(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
 
       function reviewDisabledEventHandler () {
-        console.log('Event: Review Disabled')
+        t.pass('Event: Review disabled')
+        q.removeListener(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
       }
       q.on(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
 
       function pausedEventHandler () {
-        t.pass('Event: Queue paused event raised')
+        t.pass('Event: Queue paused')
         q.removeListener(enums.queueStatus.paused, pausedEventHandler)
       }
       q.on(enums.queueStatus.paused, pausedEventHandler)
@@ -42,10 +44,16 @@ module.exports = function () {
       let readyCount = 0
       function readyEventHandler () {
         readyCount++
-        t.pass(`Event: Queue ready event raised [${readyCount}]`)
+        t.pass(`Event: Queue ready [${readyCount}]`)
         //q.removeListener(enums.queueStatus.ready, readyEventHandler)
       }
       q.on(enums.queueStatus.ready, readyEventHandler)
+
+      function processingEventHandler (jobId) {
+        t.pass(`Event: Queue processing [${jobId}]`)
+        //q.removeListener(enums.queueStatus.processing, processingEventHandler)
+      }
+      q.on(enums.queueStatus.processing, processingEventHandler)
 
       function testHandler (job, next) {
         console.dir('Job Started: ' + job.id)
@@ -55,13 +63,12 @@ module.exports = function () {
       }
 
       // ----------  Test ----------
-      const job = q.createJob(testData)
+      const jobs = q.createJob(testData, null, 4)
       return q.ready.then(() => {
         q.paused = true
-        return q.addJob(job)
-      }).then((savedJob) => {
-        console.log(q.paused)
-        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs.length, 4, 'Jobs saved successfully')
         return queueProcess.addHandler(q, testHandler)
       }).then(() => {
         return queueProcess.addHandler(q, testHandler).then(() => {
@@ -72,7 +79,7 @@ module.exports = function () {
       }).then(() => {
         setTimeout(() => { q.paused = false }, 2000)
         // q.paused = false
-        console.log('Finished !!!!!!!!!!!!!!!!!')
+        console.log('End of Chain !!!!!!!!!!!!!!!!!')
       //   return q.reset()
       // }).then((resetResult) => {
       //   t.ok(resetResult >= 0, 'Queue reset')
