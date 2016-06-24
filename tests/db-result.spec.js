@@ -2,6 +2,7 @@ const test = require('tape')
 const Promise = require('bluebird')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
+const enums = require('../src/enums')
 const dbResult = require('../src/db-result')
 const testData = require('./test-options').testData
 
@@ -43,7 +44,7 @@ module.exports = function () {
         return dbResult.toJob(q, mockChange).then((noErr) => {
           t.fail('Does not fail if errors exist in db result')
         }).catch((err) => {
-          t.deepEqual(err, mockChange, 'Returns rejected Promise on error')
+          t.equal(err.message, enums.error.dbError, 'Returns rejected Promise on error')
         })
       }).then(() => {
         mockChange.errors = 0

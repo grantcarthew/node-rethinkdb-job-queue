@@ -47,7 +47,7 @@ const jobTick = function (q) {
 
   return queueGetNextJob(q).then((jobsToDo) => {
     if (jobsToDo.length < 1) {
-      return Promise.reject(enums.queueStatus.idle)
+      return Promise.reject(new Error(enums.queueStatus.idle))
     }
     return jobsToDo
   }).then((jobsToDo) => {
@@ -76,12 +76,17 @@ module.exports = function (q, handler) {
   logger('process')
 
   if (q.handler) {
-    throw Error(enums.error.processTwice)
+    return Promise.reject(new Error(enums.error.processTwice))
   }
 
   q.handler = handler
   q.running = 0
-  return dbReview.run(q, enums.reviewRun.once).then((dbReviewResult) => {
+  return Promise.resolve().then(() => {
+    if (q.isMaster) {
+      return null
+    }
+    return dbReview.run(q, enums.reviewRun.once)
+  }).then((dbReviewResult) => {
     setImmediate(jobTick, q)
     return null
   })

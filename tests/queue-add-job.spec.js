@@ -39,7 +39,7 @@ module.exports = function () {
         return queueAddJob(q, job).then(() => {
           t.fail('Promise is not being rejected when job status is invalid')
         }).catch((err) => {
-          t.equal(err, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
+          t.equal(err.message, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
         })
       }).then(() => {
         return q.reset()

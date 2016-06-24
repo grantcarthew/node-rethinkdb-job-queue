@@ -88,7 +88,7 @@ module.exports.run = function run (q, reviewRun) {
   logger('run', reviewRun)
   if (!Object.keys(enums.reviewRun)
   .map(key => enums.reviewRun[key]).includes(reviewRun)) {
-    return Promise.reject(enums.error.reviewOptionInvalid)
+    return Promise.reject(new Error(enums.error.reviewOptionInvalid))
   }
   if (reviewRun === enums.reviewRun.enable) {
     reviewEnable(q)

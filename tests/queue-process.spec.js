@@ -10,10 +10,10 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(2)
+      t.plan(3)
 
       // ---------- Test Setup ----------
-      const q = testQueue(true, testOptions.queueMaster())
+      const q = testQueue(testOptions.queueMaster())
       function reviewEventHandler (replaceCount) {
         console.log('Review: ' + replaceCount)
       }
@@ -27,22 +27,30 @@ module.exports = function () {
       }
       q.on(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
       function testHandler (job, next) {
-        console.dir(job)
-        next(null, 'testHandler')
+        console.dir('Job Started: ' + job.id)
+        setTimeout(function () {
+          next(null, 'Job Completed: ' + job.id)
+        }, 1000)
       }
 
       // ----------  Test ----------
       const job = q.createJob(testData)
-      //  console.dir(q)
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return queueProcess(q, testHandler)
       }).then(() => {
-        console.log('Finished !!!!!!!!!!!!!!!!!');
-        return q.reset()
-      }).then((resetResult) => {
-        t.ok(resetResult >= 0, 'Queue reset')
-        resolve()
+        return queueProcess(q, testHandler).then(() => {
+          t.fail('Calling queue-process twice should fail and is not')
+        }).catch((err) => {
+          console.dir(err)
+          t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
+        })
+      }).then(() => {
+        console.log('Finished !!!!!!!!!!!!!!!!!')
+      //   return q.reset()
+      // }).then((resetResult) => {
+      //   t.ok(resetResult >= 0, 'Queue reset')
+      //   resolve()
       }).catch(err => testError(err, module, t))
     })
   })

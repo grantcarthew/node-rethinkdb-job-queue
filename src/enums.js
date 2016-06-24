@@ -68,6 +68,7 @@ const enums = module.exports = {
     missingTimeout: 'Timeout parameter required to stop or delete queue',
     queueDeleted: 'The queue has been deleted',
     idInvalid: 'The job id is invalid',
-    reviewOptionInvalid: 'The queue.review option is invalid'
+    reviewOptionInvalid: 'The queue.review option is invalid',
+    dbError: 'RethinkDB returned an error'
   }
 }

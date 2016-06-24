@@ -3,6 +3,7 @@ const Promise = require('bluebird')
 const testError = require('./test-error')
 const testMockQueue = require('./test-mock-queue')
 const testQueue = require('./test-queue')
+const testOptionsDefault = require('./test-options').queueDefault()
 const queueDelete = require('../src/queue-delete')
 const enums = require('../src/enums')
 
@@ -30,7 +31,7 @@ module.exports = function () {
         return mockQueue.r.db(mockQueue.db).tableList()
       }).then((tableList) => {
         t.notOk(tableList.includes(mockQueue.name), 'Table deleted from database')
-        q = testQueue(true)
+        q = testQueue(testOptionsDefault)
         return q.ready
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
@@ -42,7 +43,7 @@ module.exports = function () {
         return mockQueue.r.db(mockQueue.db).tableList()
       }).then((tableList) => {
         t.notOk(tableList.includes(mockQueue.name), 'Table deleted from database')
-        q = testQueue(true)
+        q = testQueue(testOptionsDefault)
         return q.ready
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')

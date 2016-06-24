@@ -27,7 +27,7 @@ class Queue extends EventEmitter {
     this.host = options.host || 'localhost'
     this.port = options.port || 28015
     this.db = options.db || 'rjqJobQueue'
-    this.isMaster = options.isMaster == null ? false
+    this.isMaster = options.isMaster == null ? true
       : options.isMaster
     this.masterReviewPeriod = options.masterReviewPeriod || 300
     this.enableChangeFeed = options.enableChangeFeed == null ? true

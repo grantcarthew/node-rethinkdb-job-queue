@@ -21,7 +21,7 @@ module.exports = function () {
       {id: uuid.v4()}
     ]
     const objWithIdsResult = jobParse.id(ids)
-    const mix = ids.concat(objWithIds)
+    const mix = [...ids, ...objWithIds]
     const mixResult = jobParse.id(mix)
 
     // ---------- Parse Ids ----------
