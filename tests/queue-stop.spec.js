@@ -10,19 +10,17 @@ const enums = require('../src/enums')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-stop test', (t) => {
-      t.plan(46)
+      t.plan(52)
 
       const q = testQueue()
 
       function stoppingEventHandler () {
-        t.pass('Queue stopping event raised')
-        this.removeListener(enums.queueStatus.stopping, stoppingEventHandler)
+        t.pass('Event: Queue stopping')
       }
       q.on(enums.queueStatus.stopping, stoppingEventHandler)
 
       function stoppedEventHandler () {
-        t.pass('Queue stopped event raised')
-        this.removeListener(enums.queueStatus.stopped, stoppedEventHandler)
+        t.pass('Event: Queue stopped')
       }
       q.on(enums.queueStatus.stopped, stoppedEventHandler)
 
@@ -47,6 +45,7 @@ module.exports = function () {
         t.notOk(this.ready, 'Queue is not ready')
         return queueDb.attach(q)
       }).then((ready) => {
+        q.paused = false
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
@@ -64,6 +63,7 @@ module.exports = function () {
         t.notOk(q.ready, 'Queue is not ready')
         return queueDb.attach(q)
       }).then((ready) => {
+        q.paused = false
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
@@ -86,6 +86,7 @@ module.exports = function () {
       }).then(() => {
         return queueDb.attach(q)
       }).then((ready) => {
+        q.paused = false
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
@@ -108,10 +109,15 @@ module.exports = function () {
       }).then(() => {
         return queueDb.attach(q)
       }).then((ready) => {
+        q.paused = false
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
+
+        // ---------- Clean Up ----------
+        q.removeListener(enums.queueStatus.stopping, stoppingEventHandler)
+        q.removeListener(enums.queueStatus.stopped, stoppedEventHandler)
         return resolve()
       }).catch(err => testError(err, module, t))
     })

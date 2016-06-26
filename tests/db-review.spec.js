@@ -19,7 +19,7 @@ module.exports = function () {
       q.masterReviewPeriod = 1
       function reviewEventHandler (total) {
         reviewCount++
-        t.pass('Database review event: ' + reviewCount)
+        t.pass(`Event: Database review [Review Count: ${reviewCount}]`)
         t.ok(is.integer(total), 'Review event return value is an Integer')
         if (reviewCount > 2) {
           t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
@@ -37,11 +37,11 @@ module.exports = function () {
         }
       }
       function reviewEnabledEventHandler () {
-        t.pass('Review enabled event raised')
+        t.pass('Event: Review enabled')
         q.removeListener(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
       }
       function reviewDisabledEventHandler () {
-        t.pass('Review disabled event raised')
+        t.pass('Event: Review disabled')
         q.removeListener(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
       }
       q.on(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)

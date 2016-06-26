@@ -20,7 +20,7 @@ module.exports = function () {
       let eventCount = 0
       function resetEventHandler (total) {
         eventCount++
-        t.pass('Queue raised reset event')
+        t.pass('Event: Queue reset')
         if (eventCount < 2) { return }
         t.equal(total, 3, 'Queue reset removed valid number of jobs')
         return q.summary().then((afterSummary) => {

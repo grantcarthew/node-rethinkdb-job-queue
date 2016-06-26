@@ -55,7 +55,6 @@ module.exports.detach = function dbDetach (q, drainPool) {
   }).then(() => {
     if (drainPool) {
       q.ready = false
-      q.paused = true
       return q.r.getPoolMaster().drain()
     }
     return null

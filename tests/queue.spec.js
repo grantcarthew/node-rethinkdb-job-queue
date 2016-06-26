@@ -14,7 +14,7 @@ module.exports = function () {
 
       const q = new Queue(connectionOptionsOnly)
       q.on('ready', () => {
-        t.pass('Queue ready event called')
+        t.pass('Event: Queue ready')
       })
       q.on('enqueue', (job) => {
         t.pass('Queue enqueue event called')
