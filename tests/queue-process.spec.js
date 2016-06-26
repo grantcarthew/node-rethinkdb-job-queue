@@ -10,7 +10,7 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(16)
+      t.plan(17)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -49,7 +49,10 @@ module.exports = function () {
           eventCount('Queue resumed')
         })
         q.on(enums.queueStatus.processing, function processing (jobId) {
-          eventCount(`Queue processing [${jobId}] [${eventTotal}]`)
+          eventCount(`Queue processing [${jobId}]`)
+        })
+        q.on(enums.queueStatus.completed, function completed (jobId) {
+          eventCount(`Queue completed [${jobId}]`)
         })
       }
 
@@ -70,6 +73,7 @@ module.exports = function () {
         t.equal(savedJobs.length, 4, 'Jobs saved successfully')
         return queueProcess.addHandler(q, testHandler)
       }).then(() => {
+        t.equal(q.running, 0, 'Queue not processing jobs')
         return queueProcess.addHandler(q, testHandler).then(() => {
           t.fail('Calling queue-process twice should fail and is not')
         }).catch((err) => {

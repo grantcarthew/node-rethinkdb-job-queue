@@ -21,6 +21,7 @@ module.exports = function completed (job, data) {
     progress: job.progress,
     log: job.q.r.row('log').append(log)
   }).run().then((updateResult) => {
+    job.q.emit(enums.queueStatus.completed, job.id)
     return dbResult.status(job.q, updateResult, 'replaced')
   })
 }

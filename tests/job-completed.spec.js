@@ -10,10 +10,13 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-completed test', (t) => {
-      t.plan(14)
+      t.plan(15)
 
       const q = testQueue()
       const job = q.createJob(testData)
+      q.on(enums.queueStatus.completed, (jobId) => {
+        t.equal(jobId, job.id, 'Event: Queue completed')
+      })
 
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
