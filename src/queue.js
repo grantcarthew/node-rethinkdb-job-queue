@@ -58,7 +58,7 @@ class Queue extends EventEmitter {
     } else {
       this.ready.then(() => {
         queueProcess.restart(this)
-        this.emit(enums.queueStatus.ready)
+        this.emit(enums.queueStatus.resume)
       })
     }
   }

@@ -26,7 +26,7 @@ module.exports.queueMaster = function () {
     queueName,
     concurrency: 3,
     isMaster: true,
-    masterReviewPeriod: 6
+    masterReviewPeriod: 4
   }
 }
 
