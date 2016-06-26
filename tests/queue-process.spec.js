@@ -10,53 +10,63 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(10)
+      t.plan(30)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
 
-      let reviewCount = 0
+      let eventTotal = 0
+      function eventCount () {
+        eventTotal++
+        if (eventTotal >= 100) {
+          q.removeListener(enums.queueStatus.review, reviewEventHandler)
+          q.removeListener(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
+          q.removeListener(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
+          q.removeListener(enums.queueStatus.paused, pausedEventHandler)
+          q.removeListener(enums.queueStatus.ready, readyEventHandler)
+          q.removeListener(enums.queueStatus.processing, processingEventHandler)
+          resolve()
+        }
+      }
+
+      function readyEventHandler () {
+        t.pass(`Event: Queue ready [${eventTotal}]`)
+        eventCount()
+      }
+      q.on(enums.queueStatus.ready, readyEventHandler)
+
       function reviewEventHandler (replaceCount) {
-        reviewCount++
-        // TODO: test count or.....
-        console.log(`Event: Review [Replaced: ${replaceCount}] [Event Count: ${reviewCount}]`)
+        t.pass(`Event: Review [Replaced: ${replaceCount}] [${eventTotal}]`)
+        eventCount()
       }
       q.on(enums.queueStatus.review, reviewEventHandler)
 
       function reviewEnabledEventHandler () {
-        t.pass('Event: Review enabled')
-        q.removeListener(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
+        t.pass(`Event: Review enabled [${eventTotal}]`)
+        eventCount()
       }
       q.on(enums.queueStatus.reviewEnabled, reviewEnabledEventHandler)
 
       function reviewDisabledEventHandler () {
-        t.pass('Event: Review disabled')
-        q.removeListener(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
+        t.pass(`Event: Review disabled [${eventTotal}]`)
+        eventCount()
       }
       q.on(enums.queueStatus.reviewDisabled, reviewDisabledEventHandler)
 
       function pausedEventHandler () {
-        t.pass('Event: Queue paused')
-        q.removeListener(enums.queueStatus.paused, pausedEventHandler)
+        t.pass(`Event: Queue paused [${eventTotal}]`)
+        eventCount()
       }
       q.on(enums.queueStatus.paused, pausedEventHandler)
 
-      let readyCount = 0
-      function readyEventHandler () {
-        readyCount++
-        t.pass(`Event: Queue ready [${readyCount}]`)
-        //q.removeListener(enums.queueStatus.ready, readyEventHandler)
-      }
-      q.on(enums.queueStatus.ready, readyEventHandler)
-
       function processingEventHandler (jobId) {
-        t.pass(`Event: Queue processing [${jobId}]`)
-        //q.removeListener(enums.queueStatus.processing, processingEventHandler)
+        t.pass(`Event: Queue processing [${jobId}] [${eventTotal}]`)
+        eventCount()
       }
       q.on(enums.queueStatus.processing, processingEventHandler)
 
       function testHandler (job, next) {
-        console.dir('Job Started: ' + job.id)
+        t.pass('Job Started: ' + job.id)
         setTimeout(function () {
           next(null, 'Job Completed: ' + job.id)
         }, 1000)
@@ -79,7 +89,6 @@ module.exports = function () {
       }).then(() => {
         setTimeout(() => { q.paused = false }, 2000)
         // q.paused = false
-        console.log('End of Chain !!!!!!!!!!!!!!!!!')
       //   return q.reset()
       // }).then((resetResult) => {
       //   t.ok(resetResult >= 0, 'Queue reset')

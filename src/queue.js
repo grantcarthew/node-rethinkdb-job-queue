@@ -36,7 +36,7 @@ class Queue extends EventEmitter {
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this._changeFeed = false
-    this._paused = true
+    this._paused = false
     this.id = [
       require('os').hostname(),
       this.db,
