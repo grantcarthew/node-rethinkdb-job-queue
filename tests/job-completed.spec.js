@@ -14,9 +14,10 @@ module.exports = function () {
 
       const q = testQueue()
       const job = q.createJob(testData)
-      q.on(enums.queueStatus.completed, (jobId) => {
-        t.equal(jobId, job.id, 'Event: Queue completed')
-      })
+      function completed (jobId) {
+        t.equal(jobId, job.id, `Event: Job completed`)
+      }
+      q.on(enums.queueStatus.completed, completed)
 
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
@@ -39,6 +40,7 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
+        q.removeListener(enums.queueStatus.completed, completed)
         resolve()
       }).catch(err => testError(err, module, t))
     })

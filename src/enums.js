@@ -26,6 +26,7 @@ const enums = module.exports = {
     enqueue: 'enqueue',
     processing: 'processing',
     completed: 'completed',
+    failed: 'failed',
     idle: 'idle',
     paused: 'paused',
     resumed: 'resumed',

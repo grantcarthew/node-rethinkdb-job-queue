@@ -10,10 +10,18 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed test', (t) => {
-      t.plan(54)
+      t.plan(57)
 
       const q = testQueue()
       const job = q.createJob(testData)
+      let failedEventCount = 0
+      q.on(enums.queueStatus.failed, function failed (jobId) {
+        failedEventCount++
+        t.equal(jobId, job.id, `Event: Job failed [${failedEventCount}]`)
+        if (failedEventCount >= 3) {
+          q.removeListener(enums.queueStatus.failed, failed)
+        }
+      })
 
       q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')

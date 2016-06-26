@@ -7,7 +7,7 @@ module.exports = function failed (err, job, data) {
   logger('failed: ' + job.id)
   logger('Error', err)
   job.status = enums.jobStatus.failed
-  job.q.emit('job failed', job.id)
+  job.q.emit(enums.queueStatus.failed, job.id)
   if (job.retryCount < job.retryMax) {
     job.status = enums.jobStatus.retry
     job.retryCount++
