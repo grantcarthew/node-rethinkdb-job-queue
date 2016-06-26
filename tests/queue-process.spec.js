@@ -14,6 +14,9 @@ module.exports = function () {
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
+      q.on(enums.queueStatus.ready, function ready () {
+        eventCount('Queue ready')
+      })
 
       let eventTotal = 0
       function eventCount (eventMessage) {
@@ -29,27 +32,26 @@ module.exports = function () {
         }
       }
 
-      q.on(enums.queueStatus.ready, function ready () {
-        eventCount('Queue ready')
-      })
-      q.on(enums.queueStatus.review, function review (replaceCount) {
-        eventCount(`Review [Replaced: ${replaceCount}]`)
-      })
-      q.on(enums.queueStatus.reviewEnabled, function reviewEnabled () {
-        eventCount('Review enabled')
-      })
-      q.on(enums.queueStatus.reviewDisabled, function reviewDisabled () {
-        eventCount('Review disabled')
-      })
-      q.on(enums.queueStatus.paused, function paused () {
-        eventCount('Queue paused')
-      })
-      q.on(enums.queueStatus.paused, function resumed () {
-        eventCount('Queue resumed')
-      })
-      q.on(enums.queueStatus.processing, function processing (jobId) {
-        eventCount(`Queue processing [${jobId}] [${eventTotal}]`)
-      })
+      function addEvents () {
+        q.on(enums.queueStatus.review, function review (replaceCount) {
+          eventCount(`Review [Replaced: ${replaceCount}]`)
+        })
+        q.on(enums.queueStatus.reviewEnabled, function reviewEnabled () {
+          eventCount('Review enabled')
+        })
+        q.on(enums.queueStatus.reviewDisabled, function reviewDisabled () {
+          eventCount('Review disabled')
+        })
+        q.on(enums.queueStatus.paused, function paused () {
+          eventCount('Queue paused')
+        })
+        q.on(enums.queueStatus.resumed, function resumed () {
+          eventCount('Queue resumed')
+        })
+        q.on(enums.queueStatus.processing, function processing (jobId) {
+          eventCount(`Queue processing [${jobId}] [${eventTotal}]`)
+        })
+      }
 
       function testHandler (job, next) {
         t.pass('Job Started: ' + job.id)
@@ -61,6 +63,7 @@ module.exports = function () {
       // ---------- Processing Test ----------
       const jobs = q.createJob(testData, null, 4)
       return q.ready.then(() => {
+        addEvents()
         q.paused = true
         return q.addJob(jobs)
       }).then((savedJobs) => {

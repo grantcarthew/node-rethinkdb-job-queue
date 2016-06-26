@@ -32,7 +32,6 @@ module.exports.attach = function dbAttach (q) {
     }
     return null
   }).then(() => {
-    q.paused = false
     q.emit(enums.queueStatus.ready)
     return true
   })
