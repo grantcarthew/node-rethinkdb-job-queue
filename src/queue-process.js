@@ -9,14 +9,11 @@ const jobFailed = require('./job-failed')
 const jobRun = function jobRun (job) {
   logger('jobRun')
   let handled = false
-  // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
-  // console.dir(job.id)
-  // console.log('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+  console.dir('Running: ' + job.q.running)
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
     logger('nextHandler')
-    console.dir(err)
     console.dir(data)
     // Ignore mulpiple calls to next()
     if (handled) { return }
@@ -30,6 +27,10 @@ const jobRun = function jobRun (job) {
       finalPromise = jobCompleted(job, data)
     }
     return finalPromise.then((finalResult) => {
+      if (job.q.concurrency > 1) {
+        // Calls jobTick with a  random delay to prevent multiple calls as once
+        return setTimeout(jobTick, Math.floor(Math.random() * 1000), job.q)
+      }
       return setImmediate(jobTick, job.q)
     })
   }
@@ -47,6 +48,7 @@ const jobTick = function jobTick (q) {
   }
 
   return queueGetNextJob(q).then((jobsToDo) => {
+    console.dir('jobsToDo: ' + jobsToDo.length)
     if (jobsToDo.length < 1) {
       // This is not an error! Skipping Promise chain.
       return Promise.reject(enums.queueStatus.idle)
@@ -97,5 +99,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 module.exports.restart = function queueProcessRestart (q) {
   logger('restart')
   if (!q.handler) { return }
-  setImmediate(jobTick, q)
+  if (q.running < q.concurrency) {
+    setImmediate(jobTick, q)
+  }
 }

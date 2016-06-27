@@ -10,7 +10,7 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(17)
+      t.plan(40)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -19,12 +19,17 @@ module.exports = function () {
       })
 
       let eventTotal = 0
+      const eventMax = 40
+      const noOfJobsToCreate = 1000
+      const jobDelay = 100
+
       function eventCount (eventMessage) {
         eventTotal++
-        if (eventTotal < 11) {
+
+        if (eventTotal < eventMax) {
           t.pass(`Event: ${eventMessage} [${eventTotal}]`)
         }
-        if (eventTotal >= 11) {
+        if (eventTotal >= eventMax) {
           Object.keys(enums.queueStatus).forEach((n) => {
             q.listeners(n).forEach((f) => q.removeListener(n, f))
           })
@@ -60,17 +65,17 @@ module.exports = function () {
         t.pass('Job Started: ' + job.id)
         setTimeout(function () {
           next(null, 'Job Completed: ' + job.id)
-        }, 1000)
+        }, jobDelay)
       }
 
       // ---------- Processing Test ----------
-      const jobs = q.createJob(testData, null, 4)
+      const jobs = q.createJob(testData, null, noOfJobsToCreate)
       return q.ready.then(() => {
         addEvents()
         q.paused = true
         return q.addJob(jobs)
       }).then((savedJobs) => {
-        t.equal(savedJobs.length, 4, 'Jobs saved successfully')
+        t.equal(savedJobs.length, noOfJobsToCreate, 'Jobs saved successfully')
         return queueProcess.addHandler(q, testHandler)
       }).then(() => {
         t.equal(q.running, 0, 'Queue not processing jobs')
@@ -79,8 +84,10 @@ module.exports = function () {
         }).catch((err) => {
           t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
-      }).then(() => {
-        setTimeout(() => { q.paused = false }, 2000)
+      }).delay(jobDelay / 2).then(() => {
+        q.paused = false
+      }).delay(jobDelay / 2).then(() => {
+        t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
         // q.paused = false
       //   return q.reset()
       // }).then((resetResult) => {

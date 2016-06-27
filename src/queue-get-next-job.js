@@ -6,7 +6,8 @@ module.exports = function (q) {
   logger('getNextJob')
   logger(`Concurrency: ${q.concurrency} Running: ${q.running}`)
   let quantity = q.concurrency - q.running
-  if (quantity < 0) {
+  console.log('Quantity: ' + quantity)
+  if (quantity < 1) {
     return Promise.resolve([])
   }
   return q.r

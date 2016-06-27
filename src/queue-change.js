@@ -5,18 +5,39 @@ const dbResult = require('./db-result')
 
 module.exports = function queueChange (q, err, change) {
   logger('queueChange')
-  // console.log('------------- QUEUE CHANGE -------------')
-  // console.dir(change)
-  // console.log('----------------------------------------')
+  const newData = change.new_val
+  const oldData = change.old_val
+
+  if (newData && newData)
+
+  console.log('------------- QUEUE CHANGE -------------')
+  console.dir(change)
+  console.log('----------------------------------------')
 
   if (err) { throw new Error(err) }
 
   // New job added
-  if (change && change.new_val && !change.old_val) {
-    let newJob = dbResult.toJob(q, change)
-    q.emit(enums.queueStatus.enqueue, newJob)
+  if (newData && !oldData) {
+    q.emit(enums.queueStatus.enqueue, dbResult.toJob(q, change))
     //this.handler(newJob) TODO
   }
+
+
+
+  // Status change
+  if (change &&
+      change.new_val &&
+      change.old_val &&
+      change.new_val.status !== change.old_val.status) {
+        switch (change.new_val.status) {
+          case enums.queueStatus.completed:
+            q.emit(enums.queueStatus.completed)
+            break;
+          default:
+
+        }
+        q.emit()
+      }
   return
 
   message = JSON.parse(message)
