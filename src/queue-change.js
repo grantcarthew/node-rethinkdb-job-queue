@@ -8,11 +8,13 @@ module.exports = function queueChange (q, err, change) {
   const newData = change.new_val
   const oldData = change.old_val
 
-  if (newData && newData) {}// do not process own
+  // Prevent any change processing if change is caused by this queue
+  if (newData && newData.queueId === q.id ||
+      !newData && oldData && oldData.queueId === q.id) { return }
 
-  // console.log('------------- QUEUE CHANGE -------------')
-  // console.dir(change)
-  // console.log('----------------------------------------')
+  console.log('------------- QUEUE CHANGE -------------')
+  console.dir(change)
+  console.log('----------------------------------------')
 
   if (err) { throw new Error(err) }
 
