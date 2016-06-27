@@ -8,7 +8,10 @@ module.exports = function addLog (job, log) {
   }
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)
-  .update({ log: job.q.r.row('log').append(log) })
+  .update({
+    log: job.q.r.row('log').append(log),
+    queueId: job.q.id
+  })
   .then((updateResult) => {
     return updateResult.replaced
   })

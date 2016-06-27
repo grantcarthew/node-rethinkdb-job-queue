@@ -10,7 +10,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-completed test', (t) => {
-      t.plan(15)
+      t.plan(16)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -29,6 +29,7 @@ module.exports = function () {
         t.equal(updatedJob[0].status, enums.jobStatus.completed, 'Job status is completed')
         t.ok(moment.isDate(updatedJob[0].dateCompleted), 'Job dateCompleted is a date')
         t.equal(updatedJob[0].progress, 100, 'Job progress is 100')
+        t.equal(updatedJob[0].queueId, q.id, 'Job queueId is valid')
         t.equal(updatedJob[0].log.length, 1, 'Job log exists')
         t.ok(moment.isDate(updatedJob[0].log[0].date), 'Log date is a date')
         t.equal(updatedJob[0].log[0].queueId, q.id, 'Log queueId is valid')

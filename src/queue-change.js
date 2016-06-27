@@ -8,11 +8,11 @@ module.exports = function queueChange (q, err, change) {
   const newData = change.new_val
   const oldData = change.old_val
 
-  if (newData && newData)
+  if (newData && newData) {}// do not process own
 
-  console.log('------------- QUEUE CHANGE -------------')
-  console.dir(change)
-  console.log('----------------------------------------')
+  // console.log('------------- QUEUE CHANGE -------------')
+  // console.dir(change)
+  // console.log('----------------------------------------')
 
   if (err) { throw new Error(err) }
 
@@ -25,19 +25,19 @@ module.exports = function queueChange (q, err, change) {
 
 
   // Status change
-  if (change &&
-      change.new_val &&
-      change.old_val &&
-      change.new_val.status !== change.old_val.status) {
-        switch (change.new_val.status) {
-          case enums.queueStatus.completed:
-            q.emit(enums.queueStatus.completed)
-            break;
-          default:
-
-        }
-        q.emit()
-      }
+  // if (change &&
+  //     change.new_val &&
+  //     change.old_val &&
+  //     change.new_val.status !== change.old_val.status) {
+  //       switch (change.new_val.status) {
+  //         case enums.queueStatus.completed:
+  //           q.emit(enums.queueStatus.completed)
+  //           break;
+  //         default:
+  //
+  //       }
+  //       q.emit()
+  //     }
   return
 
   message = JSON.parse(message)

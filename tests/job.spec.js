@@ -11,7 +11,7 @@ const isUuid = require('isuuid')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job test', (t) => {
-      t.plan(59)
+      t.plan(62)
 
       const q = testQueue()
       try {
@@ -35,13 +35,14 @@ module.exports = function () {
       t.equal(newJob.retryMax, 3, 'New job retryMax is 3')
       t.equal(newJob.retryDelay, 600, 'New job retryDelay is 600')
       t.equal(newJob.progress, 0, 'New job progress is 0')
+      t.equal(newJob.queueId, q.id, 'New job queueId is valid')
       t.equal(newJob.retryCount, 0, 'New job retryCount is 0')
       t.equal(newJob.log.length, 0, 'New job log is an empty array')
       t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
       t.ok(moment.isDate(newJob.dateRetry), 'New job dateRetry is a date')
 
       const cleanJob = newJob.cleanCopy
-      t.equal(Object.keys(cleanJob).length, 12, 'Clean job has valid number of properties')
+      t.equal(Object.keys(cleanJob).length, 13, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
       t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
       t.equal(cleanJob.priority, enums.priority[newJob.priority], 'Clean job priority is valid')
@@ -54,6 +55,7 @@ module.exports = function () {
       t.equal(cleanJob.dateCreated, newJob.dateCreated, 'Clean job dateCreated is valid')
       t.equal(cleanJob.dateRetry, newJob.dateRetry, 'Clean job dateRetry is valid')
       t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
+      t.equal(cleanJob.queueId, newJob.queueId, 'Clean job progress is valid')
 
       let log = newJob.createLog(testData)
       log.data = testData
@@ -85,6 +87,7 @@ module.exports = function () {
         t.equal(newJobFromData.dateCreated, savedJob.dateCreated, 'Clean job dateCreated is valid')
         t.equal(newJobFromData.dateRetry, savedJob.dateRetry, 'Clean job dateRetry is valid')
         t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
+        t.equal(newJobFromData.queueId, q.id, 'New job from data queueId is valid')
 
         return savedJob.addLog(log)
       }).then((logAddedResult) => {

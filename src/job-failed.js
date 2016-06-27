@@ -32,7 +32,8 @@ module.exports = function failed (err, job, data) {
     retryCount: job.retryCount,
     progress: job.progress,
     dateFailed: job.dateFailed,
-    log: job.q.r.row('log').append(log)
+    log: job.q.r.row('log').append(log),
+    queueId: job.q.id
   }, {returnChanges: true})
   .run()
   .then((updateResult) => {

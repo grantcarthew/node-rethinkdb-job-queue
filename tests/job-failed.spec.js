@@ -10,7 +10,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed test', (t) => {
-      t.plan(57)
+      t.plan(61)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -31,6 +31,7 @@ module.exports = function () {
         t.equal(retry1[0].status, enums.jobStatus.retry, 'Job status is retry')
         t.equal(retry1[0].retryCount, 1, 'Job retryCount is 1')
         t.equal(retry1[0].progress, 0, 'Job progress is 0')
+        t.equal(retry1[0].queueId, q.id, 'Job queueId is valid')
         t.ok(moment.isDate(retry1[0].dateFailed), 'Job dateFailed is a date')
         t.equal(retry1[0].log.length, 1, 'Job has 1 log entry')
         t.ok(moment.isDate(retry1[0].log[0].date), 'Log date is a date')
@@ -46,6 +47,7 @@ module.exports = function () {
         t.equal(retry2[0].status, enums.jobStatus.retry, 'Job status is retry')
         t.equal(retry2[0].retryCount, 2, 'Job retryCount is 2')
         t.equal(retry2[0].progress, 0, 'Job progress is 0')
+        t.equal(retry2[0].queueId, q.id, 'Job queueId is valid')
         t.ok(moment.isDate(retry2[0].dateFailed), 'Job dateFailed is a date')
         t.equal(retry2[0].log.length, 2, 'Job has 2 log entries')
         t.ok(moment.isDate(retry2[0].log[1].date), 'Log date is a date')
@@ -61,6 +63,7 @@ module.exports = function () {
         t.equal(retry3[0].status, enums.jobStatus.retry, 'Job status is retry')
         t.equal(retry3[0].retryCount, 3, 'Job retryCount is 3')
         t.equal(retry3[0].progress, 0, 'Job progress is 0')
+        t.equal(retry3[0].queueId, q.id, 'Job queueId is valid')
         t.ok(moment.isDate(retry3[0].dateFailed), 'Job dateFailed is a date')
         t.equal(retry3[0].log.length, 3, 'Job has 3 log entries')
         t.ok(moment.isDate(retry3[0].log[2].date), 'Log date is a date')
@@ -76,6 +79,7 @@ module.exports = function () {
         t.equal(failed[0].status, enums.jobStatus.failed, 'Job status is failed')
         t.equal(failed[0].retryCount, 3, 'Job retryCount is 3')
         t.equal(failed[0].progress, 0, 'Job progress is 0')
+        t.equal(failed[0].queueId, q.id, 'Job queueId is valid')
         t.ok(moment.isDate(failed[0].dateFailed), 'Job dateFailed is a date')
         t.equal(failed[0].log.length, 4, 'Job has 4 log entries')
         t.ok(moment.isDate(failed[0].log[3].date), 'Log date is a date')

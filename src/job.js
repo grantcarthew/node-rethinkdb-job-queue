@@ -1,7 +1,6 @@
 const logger = require('./logger')(module)
 const uuid = require('node-uuid')
 const moment = require('moment')
-const is = require('is')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
 const jobAddLog = require('./job-add-log')
@@ -45,7 +44,7 @@ class Job {
       this.dateCompleted
       this.dateTimeout
       this.dateFailed
-      this.workerId
+      this.queueId = q.id
     }
   }
 

@@ -30,19 +30,24 @@ module.exports.job = function jobParseJob (job) {
   for (let j of jobs) {
     let detail = false
     if (!isUuid(j.id)) { detail = 'Job id: ' + j.id }
-    if (!j.q) { detail = 'Job q: ' + j.q }
-    if (!j.priority) { detail = 'Job priority: ' + j.priority }
+    if (!j.q) { detail = 'Job q missing' }
+    if (!j.priority) { detail = 'Job priority missing' }
     if (j.timeout < 0) { detail = 'Job timeout: ' + j.timeout }
     if (j.retryDelay < 0) { detail = 'Job retryDelay: ' + j.retryDelay }
     if (j.retryMax < 0) { detail = 'Job retryMax: ' + j.retryMax }
     if (j.retryCount < 0) { detail = 'Job retryCount: ' + j.retryCount }
-    if (!j.status) { detail = 'Job status: ' + j.status }
+    if (!j.status) { detail = 'Job status missing' }
     if (!Array.isArray(j.log)) { detail = 'Job log: ' + j.log }
-    if (!moment.isDate(j.dateCreated)) { detail = 'Job dateCreated: ' + j.dateCreated }
-    if (!moment.isDate(j.dateRetry)) { detail = 'Job dateRetry: ' + j.dateRetry }
+    if (!moment.isDate(j.dateCreated)) {
+      detail = 'Job dateCreated: ' + j.dateCreated
+    }
+    if (!moment.isDate(j.dateRetry)) {
+      detail = 'Job dateRetry: ' + j.dateRetry
+    }
     if (j.progress < 0 || j.progress > 100) {
       detail = 'Job progress: ' + j.progress
     }
+    if (!j.queueId) { detail = 'Job queueId missing' }
     if (!detail) {
       validJobs.push(j)
     } else {

@@ -20,7 +20,8 @@ module.exports = function (q) {
       dateStarted: q.r.now(),
       dateRetry: q.r.now()
       .add(q.r.row('timeout'))
-      .add(q.r.row('retryDelay').mul(q.r.row('retryCount')))
+      .add(q.r.row('retryDelay').mul(q.r.row('retryCount'))),
+      queueId: q.id
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {

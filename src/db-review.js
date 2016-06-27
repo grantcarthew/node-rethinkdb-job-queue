@@ -52,7 +52,8 @@ function jobReview (q) {
       duration: q.r.now().toEpochTime()
         .sub(q.r.row('dateStarted').toEpochTime())
         .mul(1000).round()
-    })
+    }),
+    queueId: q.id
   })
   .run()
   .then((updateResult) => {

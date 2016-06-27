@@ -7,7 +7,8 @@ module.exports = function () {
     mockQueue = {
       r: rethinkdbdash(testOptions.connectionOptions),
       db: testOptions.dbName,
-      name: testOptions.queueName
+      name: testOptions.queueName,
+      id: 'mock:queue:id'
     }
   }
   return mockQueue

@@ -7,7 +7,7 @@ const testData = require('./test-options').testData
 
 module.exports = function () {
   test('job-parse test', (t) => {
-    t.plan(39)
+    t.plan(40)
 
     const ids = [
       uuid.v4(),
@@ -102,5 +102,8 @@ module.exports = function () {
     job = new Job(mockQueue, testData)
     job.progress = 101
     t.throws(() => { jobParse.job(job) }, 'Invalid job progress throws an exception')
+    job = new Job(mockQueue, testData)
+    job.queueId = null
+    t.throws(() => { jobParse.job(job) }, 'Invalid job queueId throws an exception')
   })
 }
