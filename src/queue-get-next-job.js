@@ -4,9 +4,9 @@ const dbResult = require('./db-result')
 
 module.exports = function (q) {
   logger('getNextJob')
-  logger(`Concurrency: ${q.concurrency} Running: ${q.running}`)
+  logger(`Concurrency: [${q.concurrency}] Running: [${q.running}]`)
   let quantity = q.concurrency - q.running
-  console.log('Quantity: ' + quantity)
+  logger(`Query Limit: [${quantity}]`)
   if (quantity < 1) {
     return Promise.resolve([])
   }

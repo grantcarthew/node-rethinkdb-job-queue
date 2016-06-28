@@ -40,7 +40,7 @@ module.exports = function () {
 
       function addEvents () {
         q.on(enums.queueStatus.review, function review (replaceCount) {
-          eventCount(`Review [Replaced: ${replaceCount}]`)
+          eventCount(`Review Replaced: [${replaceCount}]`)
         })
         q.on(enums.queueStatus.reviewEnabled, function reviewEnabled () {
           eventCount('Review enabled')
@@ -80,17 +80,20 @@ module.exports = function () {
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, 'Jobs saved successfully')
+        q.concurrency = 1
         return queueProcess.addHandler(q, testHandler)
-      }).then(() => {
+      }).delay(jobDelay / 2).then(() => {
         t.equal(q.running, 0, 'Queue not processing jobs')
+        q.paused = false
         return queueProcess.addHandler(q, testHandler).then(() => {
           t.fail('Calling queue-process twice should fail and is not')
         }).catch((err) => {
           t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).delay(jobDelay / 2).then(() => {
-        q.paused = false
-      }).delay(jobDelay / 2).then(() => {
+        t.equal(q.running, q.concurrency, 'Queue is processing only one job')
+        q.concurrency = 3
+      }).delay(jobDelay * 1.5).then(() => {
         t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
         // q.paused = false
       //   return q.reset()

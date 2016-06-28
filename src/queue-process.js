@@ -13,7 +13,7 @@ const jobRun = function jobRun (job) {
 
   const nextHandler = (err, data) => {
     logger('nextHandler', `Running: [${job.q.running}]`)
-    console.dir(data)
+    logger('Job data', data)
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
