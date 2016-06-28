@@ -7,13 +7,12 @@ const jobCompleted = require('./job-completed')
 const jobFailed = require('./job-failed')
 
 const jobRun = function jobRun (job) {
-  logger('jobRun')
+  logger('jobRun', `Running: [${job.q.running}]`)
   let handled = false
-  console.dir('Running: ' + job.q.running)
   let jobTimeoutId
 
   const nextHandler = (err, data) => {
-    logger('nextHandler')
+    logger('nextHandler', `Running: [${job.q.running}]`)
     console.dir(data)
     // Ignore mulpiple calls to next()
     if (handled) { return }
@@ -27,10 +26,6 @@ const jobRun = function jobRun (job) {
       finalPromise = jobCompleted(job, data)
     }
     return finalPromise.then((finalResult) => {
-      if (job.q.concurrency > 1) {
-        // Calls jobTick with a  random delay to prevent multiple calls as once
-        return setTimeout(jobTick, Math.floor(Math.random() * 1000), job.q)
-      }
       return setImmediate(jobTick, job.q)
     })
   }
@@ -42,33 +37,40 @@ const jobRun = function jobRun (job) {
 }
 
 const jobTick = function jobTick (q) {
-  logger('jobTick')
-  if (q.paused) {
+  logger('jobTick', `Running: [${q.running}]`)
+  if (q.paused || q.gettingNextJob) {
     return
   }
 
+  // q.gettingNextJob stops jobs that finish at the same time causing
+  // multiple database queries at the same time breaking concurrency.
+  // This was an issue because the q.running++ is not incremented until
+  // after the async database query has finished.
+  q.gettingNextJob = true
   return queueGetNextJob(q).then((jobsToDo) => {
-    console.dir('jobsToDo: ' + jobsToDo.length)
+    logger('jobsToDo', `Retrieved: [${jobsToDo.length}]`)
     if (jobsToDo.length < 1) {
       // This is not an error! Skipping Promise chain.
+      q.gettingNextJob = false
       return Promise.reject(enums.queueStatus.idle)
     }
     return jobsToDo
   }).then((jobsToDo) => {
-    logger('jobsToDo', jobsToDo.map(j => j.id))
-
+    q.running += jobsToDo.length
+    q.gettingNextJob = false
     for (let jobToDo of jobsToDo) {
-      q.running++
       jobRun(jobToDo)
     }
     if (q.running < q.concurrency) {
       setImmediate(jobTick, q)
     }
-    return
+    return null
   }).catch((err) => {
     if (err === enums.queueStatus.idle) {
-      logger('queue idle')
-      q.emit(enums.queueStatus.idle)
+      if (q.running < 1) {
+        logger('queue idle')
+        q.emit(enums.queueStatus.idle)
+      }
       return null
     }
     q.emit(enums.queueStatus.error, err.message)
@@ -97,7 +99,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 }
 
 module.exports.restart = function queueProcessRestart (q) {
-  logger('restart')
+  logger('restart', `Running: [${q.running}]`)
   if (!q.handler) { return }
   if (q.running < q.concurrency) {
     setImmediate(jobTick, q)

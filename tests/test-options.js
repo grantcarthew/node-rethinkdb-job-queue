@@ -22,12 +22,13 @@ module.exports.queueDefault = function () {
   return Object.assign(opts, connection())
 }
 module.exports.queueMaster = function () {
-  return {
-    queueName,
+  const opts = {
+    name: queueName,
     concurrency: 3,
     isMaster: true,
     masterReviewPeriod: 4
   }
+  return Object.assign(opts, connection())
 }
 
 module.exports.jobOptionsHigh = function () {

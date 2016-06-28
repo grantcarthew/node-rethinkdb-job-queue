@@ -10,7 +10,7 @@ const queueProcess = require('../src/queue-process')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(40)
+      t.plan(4000000)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -18,9 +18,10 @@ module.exports = function () {
         eventCount('Queue ready')
       })
 
+      q.concurrency = 3
       let eventTotal = 0
-      const eventMax = 40
-      const noOfJobsToCreate = 1000
+      const eventMax = 4000000
+      const noOfJobsToCreate = 10
       const jobDelay = 100
 
       function eventCount (eventMessage) {
@@ -58,6 +59,9 @@ module.exports = function () {
         })
         q.on(enums.queueStatus.completed, function completed (jobId) {
           eventCount(`Queue completed [${jobId}]`)
+        })
+        q.on(enums.queueStatus.idle, function idle () {
+          eventCount(`Queue idle`)
         })
       }
 
