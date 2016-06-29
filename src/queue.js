@@ -147,7 +147,7 @@ class Queue extends EventEmitter {
     })
   }
 
-  get isIdle () {
+  get idle () {
     return this.running < 1
   }
 

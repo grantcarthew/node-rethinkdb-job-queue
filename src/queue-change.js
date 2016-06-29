@@ -12,9 +12,9 @@ module.exports = function queueChange (q, err, change) {
   if (newData && newData.queueId === q.id ||
       !newData && oldData && oldData.queueId === q.id) { return }
 
-  console.log('------------- QUEUE CHANGE -------------')
-  console.dir(change)
-  console.log('----------------------------------------')
+  // console.log('------------- QUEUE CHANGE -------------')
+  // console.dir(change)
+  // console.log('----------------------------------------')
 
   if (err) { throw new Error(err) }
 

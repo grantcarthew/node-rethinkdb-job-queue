@@ -11,14 +11,13 @@ const jobRun = function jobRun (job) {
   let handled = false
   let jobTimeoutId
 
-  const nextHandler = (err, data) => {
+  function nextHandler (err, data) {
     logger('nextHandler', `Running: [${job.q.running}]`)
     logger('Job data', data)
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
     clearTimeout(jobTimeoutId)
-    job.q.running--
     let finalPromise
     if (err) {
       finalPromise = jobFailed(err, job, data)
@@ -26,53 +25,60 @@ const jobRun = function jobRun (job) {
       finalPromise = jobCompleted(job, data)
     }
     return finalPromise.then((finalResult) => {
+      job.q.running--
       return setImmediate(jobTick, job.q)
     })
   }
 
-  const timedOutMessage = 'Job ' + job.id + ' timed out (' + job.timeout + ' sec)'
-  jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)), job.timeout * 1000)
+  const timedOutMessage = `Job ${job.id} timed out (${job.timeout} sec)`
+  jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)),
+    job.timeout * 1000)
   job.q.emit(enums.queueStatus.processing, job.id)
   job.q.handler(job, nextHandler)
 }
 
 const jobTick = function jobTick (q) {
   logger('jobTick', `Running: [${q.running}]`)
-  if (q.paused || q.gettingNextJob) {
-    return
+  if (q._getNextJobActive) { q._getNextJobCalled = true }
+  if (q.paused || q._getNextJobActive) { return }
+
+  function getNextJobCleanup (runAgain) {
+    logger(`getNextJobCleanup`)
+    logger(`runAgain: [${runAgain}]`)
+    logger(`Running: [${q.running}]`)
+    q._getNextJobActive = false
+    q._getNextJobCalled = false
+    if (q.running < q.concurrency && runAgain) {
+      // q.running has been decremented whilst talking to the database.
+      setImmediate(jobTick, q)
+      return
+    }
+    if (q.idle && !runAgain) {
+      // No running jobs and no jobs in the database, we are idle.
+      logger('queue idle')
+      q.emit(enums.queueStatus.idle)
+    }
   }
 
-  // q.gettingNextJob stops jobs that finish at the same time causing
-  // multiple database queries at the same time breaking concurrency.
-  // This was an issue because the q.running++ is not incremented until
+  // q._getNextJobActive stops jobs that finish at the same time causing
+  // multiple database queries and breaking concurrency.
+  // This is an issue because the q.running++ is not incremented until
   // after the async database query has finished.
-  q.gettingNextJob = true
+  // If a call to jobTick is made whilst the getNextJob query is active,
+  // then q._getNextJobCalled is flagged to initiate another call
+  // on completion of the getNextJob database query.
+  q._getNextJobActive = true
   return queueGetNextJob(q).then((jobsToDo) => {
     logger('jobsToDo', `Retrieved: [${jobsToDo.length}]`)
-    if (jobsToDo.length < 1) {
-      // This is not an error! Skipping Promise chain.
-      q.gettingNextJob = false
-      return Promise.reject(enums.queueStatus.idle)
+    if (jobsToDo.length > 0) {
+      q.running += jobsToDo.length
+      jobsToDo.forEach(j => jobRun(j))
     }
-    return jobsToDo
-  }).then((jobsToDo) => {
-    q.running += jobsToDo.length
-    q.gettingNextJob = false
-    for (let jobToDo of jobsToDo) {
-      jobRun(jobToDo)
-    }
-    if (q.running < q.concurrency) {
-      setImmediate(jobTick, q)
-    }
+    getNextJobCleanup(q._getNextJobCalled)
     return null
   }).catch((err) => {
-    if (err === enums.queueStatus.idle) {
-      if (q.running < 1) {
-        logger('queue idle')
-        q.emit(enums.queueStatus.idle)
-      }
-      return null
-    }
+    logger('queueGetNextJob Error:', err)
+    getNextJobCleanup(q._getNextJobCalled)
     q.emit(enums.queueStatus.error, err.message)
     return Promise.reject(err)
   })
@@ -88,9 +94,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q.handler = handler
   q.running = 0
   return Promise.resolve().then(() => {
-    if (q.isMaster) {
-      return null
-    }
+    if (q.isMaster) { return null }
     return dbReview.run(q, enums.reviewRun.once)
   }).then(() => {
     setImmediate(jobTick, q)

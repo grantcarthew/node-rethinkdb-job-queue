@@ -18,7 +18,6 @@ module.exports = function () {
         eventCount('Queue ready')
       })
 
-      q.concurrency = 3
       let eventTotal = 0
       const eventMax = 4000000
       const noOfJobsToCreate = 10
