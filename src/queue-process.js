@@ -14,12 +14,15 @@ const jobRun = function jobRun (job) {
   function nextHandler (err, data) {
     logger('nextHandler', `Running: [${job.q.running}]`)
     logger('Job data', data)
+    logger('Error', err)
+    logger('handled', handled)
     // Ignore mulpiple calls to next()
     if (handled) { return }
     handled = true
     clearTimeout(jobTimeoutId)
     let finalPromise
     if (err) {
+      console.log('############################')
       finalPromise = jobFailed(err, job, data)
     } else {
       finalPromise = jobCompleted(job, data)
@@ -31,8 +34,12 @@ const jobRun = function jobRun (job) {
   }
 
   const timedOutMessage = `Job ${job.id} timed out (${job.timeout} sec)`
-  jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)),
-    job.timeout * 1000)
+  jobTimeoutId = setTimeout(function timeoutHandler () {
+    console.log(job.timeout)
+    nextHandler(Error(timedOutMessage))
+  }, job.timeout * 1000)
+    // jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)),
+    //   job.timeout * 1000)
   job.q.emit(enums.queueStatus.processing, job.id)
   job.q.handler(job, nextHandler)
 }

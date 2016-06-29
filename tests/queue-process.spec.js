@@ -18,10 +18,13 @@ module.exports = function () {
         eventCount('Queue ready')
       })
 
+      let jobs
       let eventTotal = 0
+      let jobsCompletedTotal = 0
+      let jobDelay = 200
       const eventMax = 4000000
       const noOfJobsToCreate = 10
-      const jobDelay = 100
+      const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
 
       function eventCount (eventMessage) {
         eventTotal++
@@ -57,6 +60,7 @@ module.exports = function () {
           eventCount(`Queue processing [${jobId}]`)
         })
         q.on(enums.queueStatus.completed, function completed (jobId) {
+          jobsCompletedTotal++
           eventCount(`Queue completed [${jobId}]`)
         })
         q.on(enums.queueStatus.idle, function idle () {
@@ -65,20 +69,23 @@ module.exports = function () {
       }
 
       function testHandler (job, next) {
-        t.pass('Job Started: ' + job.id)
+        t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
         setTimeout(function () {
           next(null, 'Job Completed: ' + job.id)
         }, jobDelay)
       }
 
-      // ---------- Processing Test ----------
-      const jobs = q.createJob(testData, null, noOfJobsToCreate)
+      // ---------- Processing, Pause, and Concurrency Test ----------
+      jobs = q.createJob(testData, null, noOfJobsToCreate)
       return q.ready.then(() => {
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
         addEvents()
         q.paused = true
         return q.addJob(jobs)
       }).then((savedJobs) => {
-        t.equal(savedJobs.length, noOfJobsToCreate, 'Jobs saved successfully')
+        t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
         q.concurrency = 1
         return queueProcess.addHandler(q, testHandler)
       }).delay(jobDelay / 2).then(() => {
@@ -90,10 +97,49 @@ module.exports = function () {
           t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).delay(jobDelay / 2).then(() => {
+        q.pause()
         t.equal(q.running, q.concurrency, 'Queue is processing only one job')
         q.concurrency = 3
-      }).delay(jobDelay * 1.5).then(() => {
+      }).delay(jobDelay).then(() => {
+        q.resume()
+      }).delay(jobDelay / 2).then(() => {
         t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
+      }).delay(jobDelay * 8).then(() => {
+        t.equal(jobsCompletedTotal, noOfJobsToCreate, `Queue has completed ${jobsCompletedTotal} jobs`)
+        t.ok(q.idle, 'Queue is idle')
+
+        // ---------- Processing Restart on Job Add Test ----------
+        jobs = q.createJob(testData, null, noOfJobsToCreate)
+        q.concurrency = 10
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
+      }).delay(allJobsDelay).then(() => {
+        t.equal(jobsCompletedTotal, noOfJobsToCreate * 2, `Queue has completed ${jobsCompletedTotal} jobs`)
+        t.ok(q.idle, 'Queue is idle')
+        q.pause()
+
+        // ---------- Processing Restart Test ----------
+        jobs = q.createJob(testData, null, noOfJobsToCreate)
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
+        q._paused = false
+        return queueProcess.restart(q)
+      }).delay(allJobsDelay).then(() => {
+        t.equal(jobsCompletedTotal, noOfJobsToCreate * 3, `Queue has completed ${jobsCompletedTotal} jobs`)
+        t.pass('Restart processing succeeded')
+        t.ok(q.idle, 'Queue is idle')
+
+        // ---------- Processing with Job Timeout Test ----------
+        jobs = q.createJob(testData)
+        jobs.timeout = 1
+        jobDelay = 2000
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        console.dir(savedJobs)
+        t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
+
         // q.paused = false
       //   return q.reset()
       // }).then((resetResult) => {

@@ -46,6 +46,14 @@ class Queue extends EventEmitter {
     queueDb.attach(this)
   }
 
+  pause () {
+    this.paused = true
+  }
+
+  resume () {
+    this.paused = false
+  }
+
   get paused () {
     return this._paused
   }
