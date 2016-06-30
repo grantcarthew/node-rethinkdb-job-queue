@@ -8,22 +8,23 @@ module.exports = function failed (err, job, data) {
   logger('Error', err)
   job.status = enums.jobStatus.failed
   job.q.emit(enums.queueStatus.failed, job.id)
+  let logType = enums.log.error
   if (job.retryCount < job.retryMax) {
     job.status = enums.jobStatus.retry
     job.retryCount++
     job.priority = 1
+    logType = enums.log.warning
   }
   job.dateFailed = moment().toDate()
   job.progress = 0
   let duration = moment(job.dateFailed).diff(moment(job.dateStarted))
   duration = duration >= 0 ? duration : 0
 
-  let errMessage = err && err.message ? err.message : err
-  errMessage = `${enums.message.failed}: ${errMessage}`
-
-  const log = job.createLog(errMessage, enums.log.error)
+  const errMessage = err && err.message ? err.message : err
+  const log = job.createLog(errMessage, logType)
   log.duration = duration
   log.data = data
+  log.retryCount = job.retryCount
 
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)

@@ -14,6 +14,7 @@ module.exports = function completed (job, data) {
   const log = job.createLog(enums.message.completed)
   log.duration = duration
   log.data = data
+  log.retryCount = job.retryCount
 
   return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
     status: job.status,

@@ -7,6 +7,12 @@ queue-change
 queue-process
 queue
 
+db-review tests need to test queueProcess.restart
+queue-get-next-job need to test log
+logs should have retryCount
+check for more places to add logs
+db-review has dateRetry in log
+
 ## List of Changes and Events
 
 *   Queue ready

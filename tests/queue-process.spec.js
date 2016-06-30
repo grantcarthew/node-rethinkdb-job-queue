@@ -66,6 +66,9 @@ module.exports = function () {
         q.on(enums.queueStatus.idle, function idle () {
           eventCount(`Queue idle`)
         })
+        q.on(enums.queueStatus.failed, function failed (jobId) {
+          eventCount(`Queue failed [${jobId}]`)
+        })
       }
 
       function testHandler (job, next) {
@@ -82,58 +85,64 @@ module.exports = function () {
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
         addEvents()
-        q.paused = true
-        return q.addJob(jobs)
-      }).then((savedJobs) => {
-        t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
-        q.concurrency = 1
+      //   q.paused = true
+      //   return q.addJob(jobs)
+      // }).then((savedJobs) => {
+      //   t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
+      //   q.concurrency = 1
+      //   return queueProcess.addHandler(q, testHandler)
+      // }).delay(jobDelay / 2).then(() => {
+      //   t.equal(q.running, 0, 'Queue not processing jobs')
+      //   q.paused = false
+      //   return queueProcess.addHandler(q, testHandler).then(() => {
+      //     t.fail('Calling queue-process twice should fail and is not')
+      //   }).catch((err) => {
+      //     t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
+      //   })
+      // }).delay(jobDelay / 2).then(() => {
+      //   q.pause()
+      //   t.equal(q.running, q.concurrency, 'Queue is processing only one job')
+      //   q.concurrency = 3
+      // }).delay(jobDelay).then(() => {
+      //   q.resume()
+      // }).delay(jobDelay / 2).then(() => {
+      //   t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
+      // }).delay(jobDelay * 8).then(() => {
+      //   t.equal(jobsCompletedTotal, noOfJobsToCreate, `Queue has completed ${jobsCompletedTotal} jobs`)
+      //   t.ok(q.idle, 'Queue is idle')
+      //
+      //   // ---------- Processing Restart on Job Add Test ----------
+      //   jobs = q.createJob(testData, null, noOfJobsToCreate)
+      //   q.concurrency = 10
+      //   return q.addJob(jobs)
+      // }).then((savedJobs) => {
+      //   t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
+      // }).delay(allJobsDelay).then(() => {
+      //   t.equal(jobsCompletedTotal, noOfJobsToCreate * 2, `Queue has completed ${jobsCompletedTotal} jobs`)
+      //   t.ok(q.idle, 'Queue is idle')
+      //   q.pause()
+      //
+      //   // ---------- Processing Restart Test ----------
+      //   jobs = q.createJob(testData, null, noOfJobsToCreate)
+      //   return q.addJob(jobs)
+      // }).then((savedJobs) => {
+      //   t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
+      //   q._paused = false
+      //   return queueProcess.restart(q)
+      // }).delay(allJobsDelay).then(() => {
+      //   t.equal(jobsCompletedTotal, noOfJobsToCreate * 3, `Queue has completed ${jobsCompletedTotal} jobs`)
+      //   t.pass('Restart processing succeeded')
+      //   t.ok(q.idle, 'Queue is idle')
+
+      // DELETE THE following
         return queueProcess.addHandler(q, testHandler)
-      }).delay(jobDelay / 2).then(() => {
-        t.equal(q.running, 0, 'Queue not processing jobs')
-        q.paused = false
-        return queueProcess.addHandler(q, testHandler).then(() => {
-          t.fail('Calling queue-process twice should fail and is not')
-        }).catch((err) => {
-          t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
-        })
-      }).delay(jobDelay / 2).then(() => {
-        q.pause()
-        t.equal(q.running, q.concurrency, 'Queue is processing only one job')
-        q.concurrency = 3
-      }).delay(jobDelay).then(() => {
-        q.resume()
-      }).delay(jobDelay / 2).then(() => {
-        t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
-      }).delay(jobDelay * 8).then(() => {
-        t.equal(jobsCompletedTotal, noOfJobsToCreate, `Queue has completed ${jobsCompletedTotal} jobs`)
-        t.ok(q.idle, 'Queue is idle')
+      }).then(() => {
 
-        // ---------- Processing Restart on Job Add Test ----------
-        jobs = q.createJob(testData, null, noOfJobsToCreate)
-        q.concurrency = 10
-        return q.addJob(jobs)
-      }).then((savedJobs) => {
-        t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
-      }).delay(allJobsDelay).then(() => {
-        t.equal(jobsCompletedTotal, noOfJobsToCreate * 2, `Queue has completed ${jobsCompletedTotal} jobs`)
-        t.ok(q.idle, 'Queue is idle')
-        q.pause()
-
-        // ---------- Processing Restart Test ----------
-        jobs = q.createJob(testData, null, noOfJobsToCreate)
-        return q.addJob(jobs)
-      }).then((savedJobs) => {
-        t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
-        q._paused = false
-        return queueProcess.restart(q)
-      }).delay(allJobsDelay).then(() => {
-        t.equal(jobsCompletedTotal, noOfJobsToCreate * 3, `Queue has completed ${jobsCompletedTotal} jobs`)
-        t.pass('Restart processing succeeded')
-        t.ok(q.idle, 'Queue is idle')
 
         // ---------- Processing with Job Timeout Test ----------
         jobs = q.createJob(testData)
         jobs.timeout = 1
+        jobs.retryDelay = 3
         jobDelay = 2000
         return q.addJob(jobs)
       }).then((savedJobs) => {

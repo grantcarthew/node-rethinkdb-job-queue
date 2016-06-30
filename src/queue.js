@@ -33,6 +33,7 @@ class Queue extends EventEmitter {
     this.enableChangeFeed = options.enableChangeFeed == null ? true
       : options.enableChangeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
+    this.handler = false
     this.running = 0
     this._jobDefaultOptions = jobOptions()
     this._changeFeed = false

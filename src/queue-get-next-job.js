@@ -21,7 +21,15 @@ module.exports = function (q) {
       dateRetry: q.r.now()
       .add(q.r.row('timeout'))
       .add(q.r.row('retryDelay').mul(q.r.row('retryCount'))),
-      queueId: q.id
+      queueId: q.id,
+      log: q.r.row('log').append({
+        date: q.r.now(),
+        queueId: q.id,
+        type: enums.log.information,
+        status: enums.jobStatus.active,
+        retryCount: q.r.row('retryCount'),
+        message: enums.message.active
+      })
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {

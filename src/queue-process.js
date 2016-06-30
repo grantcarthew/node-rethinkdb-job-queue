@@ -22,7 +22,6 @@ const jobRun = function jobRun (job) {
     clearTimeout(jobTimeoutId)
     let finalPromise
     if (err) {
-      console.log('############################')
       finalPromise = jobFailed(err, job, data)
     } else {
       finalPromise = jobCompleted(job, data)
@@ -33,9 +32,8 @@ const jobRun = function jobRun (job) {
     })
   }
 
-  const timedOutMessage = `Job ${job.id} timed out (${job.timeout} sec)`
+  const timedOutMessage = `Job timed out (run time > ${job.timeout} sec)`
   jobTimeoutId = setTimeout(function timeoutHandler () {
-    console.log(job.timeout)
     nextHandler(Error(timedOutMessage))
   }, job.timeout * 1000)
     // jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)),

@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const moment = require('moment')
 const dbResult = require('./db-result')
+const queueProcess = require('./queue-process')
 const enums = require('./enums')
 
 let dbReviewIntervalId = false
@@ -48,10 +49,9 @@ function jobReview (q) {
         enums.jobStatus.timeout,
         enums.jobStatus.failed
       ),
-      message: enums.message.timeout,
-      duration: q.r.now().toEpochTime()
-        .sub(q.r.row('dateStarted').toEpochTime())
-        .mul(1000).round()
+      retryCount: q.r.row('retryCount'),
+      message: 'Master: ' + enums.message.timeout,
+      dateRetry: q.r.row('dateRetry')
     }),
     queueId: q.id
   })
@@ -60,6 +60,7 @@ function jobReview (q) {
     return dbResult.status(q, updateResult, 'replaced')
   }).then((replaceCount) => {
     q.emit(enums.queueStatus.review, replaceCount)
+    queueProcess.restart(q)
     return replaceCount
   })
 }
