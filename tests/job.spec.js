@@ -11,7 +11,7 @@ const isUuid = require('isuuid')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job test', (t) => {
-      t.plan(62)
+      t.plan(64)
 
       const q = testQueue()
       try {
@@ -64,6 +64,7 @@ module.exports = function () {
       t.equal(log.queueId, q.id, 'Log queueId is valid')
       t.equal(log.type, enums.log.information, 'Log type is information')
       t.equal(log.status, enums.jobStatus.created, 'Log status is created')
+      t.ok(log.retryCount >= 0, 'Log retryCount is valid')
       t.equal(log.message, testData, 'Log message is valid')
       t.equal(log.data, testData, 'Log data is valid')
 
@@ -100,6 +101,7 @@ module.exports = function () {
         t.equal(jobsFromDb[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(jobsFromDb[0].log[0].type, enums.log.information, 'Log type is information')
         t.equal(jobsFromDb[0].log[0].status, enums.jobStatus.created, 'Log status is created')
+        t.ok(jobsFromDb[0].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobsFromDb[0].log[0].message, testData, 'Log message is valid')
         t.equal(jobsFromDb[0].log[0].data, testData, 'Log data is valid')
         return q.reset()

@@ -34,7 +34,7 @@ const jobRun = function jobRun (job) {
 
   const timedOutMessage = `Job timed out (run time > ${job.timeout} sec)`
   jobTimeoutId = setTimeout(function timeoutHandler () {
-    nextHandler(Error(timedOutMessage))
+    nextHandler(new Error(timedOutMessage))
   }, job.timeout * 1000)
     // jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)),
     //   job.timeout * 1000)

@@ -10,7 +10,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log test', (t) => {
-      t.plan(19)
+      t.plan(21)
 
       const q = testQueue()
       let job = q.createJob(testData)
@@ -31,6 +31,7 @@ module.exports = function () {
         t.equal(jobWithLog1[0].log[0].queueId, q.id, 'Log 1 queueId is valid')
         t.equal(jobWithLog1[0].log[0].type, enums.log.information, 'Log 1 type is information')
         t.equal(jobWithLog1[0].log[0].status, enums.jobStatus.waiting, 'Log 1 status is waiting')
+        t.ok(jobWithLog1[0].log[0].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog1[0].log[0].message, testData, 'Log 1 message is valid')
         t.equal(jobWithLog1[0].log[0].data, testData, 'Log 1 data is valid')
         testLog.extra = extra
@@ -44,6 +45,7 @@ module.exports = function () {
         t.equal(jobWithLog2[0].log[1].queueId, q.id, 'Log 2 queueId is valid')
         t.equal(jobWithLog2[0].log[1].type, enums.log.information, 'Log 2 type is information')
         t.equal(jobWithLog2[0].log[1].status, enums.jobStatus.waiting, 'Log 2 status is waiting')
+        t.ok(jobWithLog2[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog2[0].log[1].message, testData, 'Log 2 message is valid')
         t.equal(jobWithLog2[0].log[1].data, testData, 'Log 2 data is valid')
         t.equal(jobWithLog2[0].log[1].extra, extra, 'Log 2 extra data is valid')

@@ -63,6 +63,7 @@ class Job {
       queueId: this.q.id,
       type: type,
       status: status,
+      retryCount: this.retryCount,
       message: message
     }
   }
