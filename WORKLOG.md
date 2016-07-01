@@ -7,7 +7,6 @@ queue-change
 queue-process
 queue
 
-db-review tests need to test queueProcess.restart
 check for more places to add logs
 db-review has dateRetry in log
 

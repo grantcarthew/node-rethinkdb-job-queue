@@ -5,14 +5,23 @@ const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
-const dbReview = require('../src/db-review')
+// const dbReview = require('../src/db-review')
 const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
+const proxyquire = require('proxyquire')
+
+const processStub = {}
+const dbReview = proxyquire('../src/db-review',
+  { './queue-process': processStub })
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review test', (t) => {
-      t.plan(39)
+      t.plan(42)
+
+      processStub.restart = function (q) {
+        t.ok(q.id, 'Queue process restart called')
+      }
 
       let q = testQueue()
       let reviewCount = 0
