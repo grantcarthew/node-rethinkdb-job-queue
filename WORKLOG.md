@@ -8,7 +8,6 @@ queue-process
 queue
 
 check for more places to add logs
-db-review has dateRetry in log
 
 ## List of Changes and Events
 

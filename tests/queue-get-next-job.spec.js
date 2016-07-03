@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-get-next-job test', (t) => {
-      t.plan(91)
+      t.plan(92)
 
       // ---------- Creating Priority Test Jobs ----------
       const q = testQueue()
@@ -161,9 +161,13 @@ module.exports = function () {
       }).then((moreSavedJobs) => {
         t.equal(moreSavedJobs.length, 7, 'Jobs saved successfully')
         q.concurrency = 3
-        q.running = 3
+        q.running = 4
 
         // ---------- Testing Concurrency and Running ----------
+        return queueGetNextJob(q)
+      }).then((group0) => {
+        t.equals(group0.length, 0, 'Returned zero jobs due to concurrency and running')
+        q.running = 3
         return queueGetNextJob(q)
       }).then((group0) => {
         t.equals(group0.length, 0, 'Returned zero jobs due to concurrency and running')

@@ -17,7 +17,7 @@ const dbReview = proxyquire('../src/db-review',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review test', (t) => {
-      t.plan(42)
+      t.plan(43)
 
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
@@ -107,6 +107,7 @@ module.exports = function () {
         t.equal(reviewedJob2[0].log[0].type, enums.log.error, 'Log type is error')
         t.equal(reviewedJob2[0].log[0].status, enums.jobStatus.failed, 'Log status is failed')
         t.ok(reviewedJob2[0].log[0].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(moment.isDate(reviewedJob2[0].log[0].dateRetry), 'Log dateRetry is a date')
         t.ok(reviewedJob2[0].log[0].message, 'Log message is present')
         t.ok(!reviewedJob2[0].log[0].data, 'Log data is null')
         return dbReview.run(q, enums.reviewRun.enable)
