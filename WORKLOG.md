@@ -2,7 +2,6 @@
 
 queue.updateJobProgress
 Need tests for the following;
-add concurrency < running test to getNextJob
 queue-change
 queue-process
 queue

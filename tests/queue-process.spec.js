@@ -146,7 +146,7 @@ module.exports = function () {
         jobDelay = 2000
         return q.addJob(jobs)
       }).then((savedJobs) => {
-        console.dir(savedJobs)
+        //console.dir(savedJobs)
         t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
 
         // q.paused = false

@@ -29,7 +29,7 @@ class Queue extends EventEmitter {
     this.db = options.db || 'rjqJobQueue'
     this.isMaster = options.isMaster == null ? true
       : options.isMaster
-    this.masterReviewPeriod = options.masterReviewPeriod || 300
+    this.masterReviewPeriod = options.masterReviewPeriod || 310
     this.enableChangeFeed = options.enableChangeFeed == null ? true
       : options.enableChangeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1

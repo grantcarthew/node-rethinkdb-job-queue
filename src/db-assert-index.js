@@ -35,17 +35,15 @@ function createIndexPriorityDateCreated (q) {
   })
 }
 
-function createIndexActiveRetryDateRetry (q) {
-  logger('createIndexActiveRetryDateRetry')
-  let indexName = enums.index.active_retry_dateRetry
+function createIndexActiveDateRetry (q) {
+  logger('createIndexActiveDateRetry')
+  let indexName = enums.index.active_dateRetry
   return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq('active'),
-        row('dateRetry'),
-        row('status').eq('retry'),
         row('dateRetry'),
         null
       )
@@ -82,7 +80,7 @@ module.exports = function assertIndex (q) {
     createIndexStatus(q),
     createIndexDateRetry(q),
     createIndexPriorityDateCreated(q),
-    createIndexActiveRetryDateRetry(q),
+    createIndexActiveDateRetry(q),
     createIndexInactivePriorityDateCreated(q)
   ]).then((indexCreateResult) => {
     logger('Waiting for index...')
