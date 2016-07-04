@@ -4,6 +4,7 @@ const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
 const jobAddLog = require('./job-add-log')
+const jobCancel = require('./job-cancel')
 
 class Job {
 
@@ -71,6 +72,11 @@ class Job {
   addLog (log) {
     logger('addLog')
     return jobAddLog(this, log)
+  }
+
+  cancel (reason) {
+    logger('cancel')
+    return jobCancel(this, reason)
   }
 }
 
