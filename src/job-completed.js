@@ -5,7 +5,7 @@ const dbResult = require('./db-result')
 
 module.exports = function completed (job, data) {
   logger('completed: ' + job.id)
-  job.status = enums.jobStatus.completed
+  job.status = enums.status.completed
   job.dateCompleted = moment().toDate()
   job.progress = 100
   let duration = moment(job.dateCompleted).diff(moment(job.dateStarted))
@@ -23,7 +23,7 @@ module.exports = function completed (job, data) {
     log: job.q.r.row('log').append(log),
     queueId: job.q.id
   }).run().then((updateResult) => {
-    job.q.emit(enums.queueStatus.completed, job.id)
+    job.q.emit(enums.status.completed, job.id)
     return dbResult.status(job.q, updateResult, 'replaced')
   })
 }

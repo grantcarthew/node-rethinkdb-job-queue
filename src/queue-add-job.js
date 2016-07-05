@@ -11,10 +11,10 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
   return Promise.resolve().then(() => {
     return jobParse.job(job)
   }).map((oneJob) => {
-    if (!skipStatusCheck && oneJob.status !== enums.jobStatus.created) {
+    if (!skipStatusCheck && oneJob.status !== enums.status.created) {
       return Promise.reject(new Error(enums.error.jobAlreadyAdded))
     }
-    if (!skipStatusCheck) { oneJob.status = enums.jobStatus.waiting }
+    if (!skipStatusCheck) { oneJob.status = enums.status.waiting }
     return oneJob.cleanCopy
   }).then((cleanJobs) => {
     return q.r.db(q.db).table(q.name)

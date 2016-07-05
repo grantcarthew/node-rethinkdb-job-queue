@@ -5,7 +5,7 @@ const queueDb = require('./queue-db')
 
 module.exports = function queueStop (q, stopTimeout, drainPool = true) {
   logger('queueStop with drain:', drainPool)
-  q.emit(enums.queueStatus.stopping)
+  q.emit(enums.status.stopping)
   q.paused = true
   let stopIntervalId
   let stopTimeoutId
@@ -23,7 +23,7 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
       stopTimeoutId = setTimeout(() => {
         logger('Queue stopped forcefully: ', drainPool)
         return cleanUp().then(() => {
-          q.emit(enums.queueStatus.stopped)
+          q.emit(enums.status.stopped)
           q.running < 1 ? resolve(enums.message.allJobsStopped)
             : resolve(enums.message.failedToStop)
         })
@@ -33,7 +33,7 @@ module.exports = function queueStop (q, stopTimeout, drainPool = true) {
         if (q.running < 1) {
           logger('Queue stopped gracefully: ', drainPool)
           return cleanUp().then(() => {
-            q.emit(enums.queueStatus.stopped)
+            q.emit(enums.status.stopped)
             resolve(enums.message.allJobsStopped)
           })
         }

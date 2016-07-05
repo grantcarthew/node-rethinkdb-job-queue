@@ -16,7 +16,7 @@ module.exports = function (q) {
     .limit(quantity)
     .filter(q.r.row('dateRetry').le(q.r.now()))
     .update({
-      status: enums.jobStatus.active,
+      status: enums.status.active,
       dateStarted: q.r.now(),
       dateRetry: q.r.now()
       .add(q.r.row('timeout'))
@@ -26,7 +26,7 @@ module.exports = function (q) {
         date: q.r.now(),
         queueId: q.id,
         type: enums.log.information,
-        status: enums.jobStatus.active,
+        status: enums.status.active,
         retryCount: q.r.row('retryCount'),
         message: enums.message.active
       })

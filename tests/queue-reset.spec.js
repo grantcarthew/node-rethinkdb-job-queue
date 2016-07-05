@@ -25,11 +25,11 @@ module.exports = function () {
         t.equal(total, 3, 'Queue reset removed valid number of jobs')
         return q.summary().then((afterSummary) => {
           t.equal(afterSummary.waiting, 0, 'Status summary contains no waiting jobs')
-          q.removeListener(enums.queueStatus.reset, resetEventHandler)
+          q.removeListener(enums.status.reset, resetEventHandler)
           resolve()
         }).catch(err => testError(err, module, t))
       }
-      q.on(enums.queueStatus.reset, resetEventHandler)
+      q.on(enums.status.reset, resetEventHandler)
 
       return q.reset().then((initialDelete) => {
         t.ok(initialDelete >= 0, 'Initial reset succeeded')

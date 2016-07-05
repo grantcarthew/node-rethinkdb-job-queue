@@ -6,11 +6,11 @@ const dbResult = require('./db-result')
 module.exports = function failed (err, job, data) {
   logger('failed: ' + job.id)
   logger('Error', err)
-  job.status = enums.jobStatus.failed
-  job.q.emit(enums.queueStatus.failed, job.id)
+  job.status = enums.status.failed
+  job.q.emit(enums.status.failed, job.id)
   let logType = enums.log.error
   if (job.retryCount < job.retryMax) {
-    job.status = enums.jobStatus.retry
+    job.status = enums.status.retry
     job.retryCount++
     job.priority = 1
     logType = enums.log.warning

@@ -32,7 +32,7 @@ module.exports.attach = function dbAttach (q) {
     }
     return null
   }).then(() => {
-    q.emit(enums.queueStatus.ready)
+    q.emit(enums.status.ready)
     return true
   })
   return q.ready
@@ -60,7 +60,7 @@ module.exports.detach = function dbDetach (q, drainPool) {
     return null
   }).then(() => {
     if (drainPool) {
-      q.emit(enums.queueStatus.detached)
+      q.emit(enums.status.detached)
     }
     return null
   })

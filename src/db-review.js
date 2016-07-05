@@ -17,8 +17,8 @@ function jobReview (q) {
   ).update({
     status: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),
-      enums.jobStatus.timeout,
-      enums.jobStatus.failed
+      enums.status.timeout,
+      enums.status.failed
     ),
     priority: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),
@@ -46,8 +46,8 @@ function jobReview (q) {
       ),
       status: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
-        enums.jobStatus.timeout,
-        enums.jobStatus.failed
+        enums.status.timeout,
+        enums.status.failed
       ),
       retryCount: q.r.row('retryCount'),
       message: 'Master: ' + enums.message.timeout,
@@ -59,7 +59,7 @@ function jobReview (q) {
   .then((updateResult) => {
     return dbResult.status(q, updateResult, 'replaced')
   }).then((replaceCount) => {
-    q.emit(enums.queueStatus.review, replaceCount)
+    q.emit(enums.status.review, replaceCount)
     queueProcess.restart(q)
     return replaceCount
   })
@@ -71,7 +71,7 @@ function reviewEnable (q) {
     return
   }
   const interval = q.masterReviewPeriod * 1000
-  q.emit(enums.queueStatus.reviewEnabled)
+  q.emit(enums.status.reviewEnabled)
   dbReviewIntervalId = setInterval(() => {
     return jobReview(q)
   }, interval)
@@ -80,7 +80,7 @@ function reviewEnable (q) {
 function reviewDisable (q) {
   logger('db-review disable')
   if (dbReviewIntervalId) {
-    q.emit(enums.queueStatus.reviewDisabled)
+    q.emit(enums.status.reviewDisabled)
     clearInterval(dbReviewIntervalId)
     dbReviewIntervalId = false
   }

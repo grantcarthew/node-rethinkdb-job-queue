@@ -14,7 +14,7 @@ module.exports = function () {
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
-      q.on(enums.queueStatus.ready, function ready () {
+      q.on(enums.status.ready, function ready () {
         eventCount('Queue ready')
       })
 
@@ -33,7 +33,7 @@ module.exports = function () {
           t.pass(`Event: ${eventMessage} [${eventTotal}]`)
         }
         if (eventTotal >= eventMax) {
-          Object.keys(enums.queueStatus).forEach((n) => {
+          Object.keys(enums.status).forEach((n) => {
             q.listeners(n).forEach((f) => q.removeListener(n, f))
           })
           resolve()
@@ -41,32 +41,32 @@ module.exports = function () {
       }
 
       function addEvents () {
-        q.on(enums.queueStatus.review, function review (replaceCount) {
+        q.on(enums.status.review, function review (replaceCount) {
           eventCount(`Review Replaced: [${replaceCount}]`)
         })
-        q.on(enums.queueStatus.reviewEnabled, function reviewEnabled () {
+        q.on(enums.status.reviewEnabled, function reviewEnabled () {
           eventCount('Review enabled')
         })
-        q.on(enums.queueStatus.reviewDisabled, function reviewDisabled () {
+        q.on(enums.status.reviewDisabled, function reviewDisabled () {
           eventCount('Review disabled')
         })
-        q.on(enums.queueStatus.paused, function paused () {
+        q.on(enums.status.paused, function paused () {
           eventCount('Queue paused')
         })
-        q.on(enums.queueStatus.resumed, function resumed () {
+        q.on(enums.status.resumed, function resumed () {
           eventCount('Queue resumed')
         })
-        q.on(enums.queueStatus.processing, function processing (jobId) {
+        q.on(enums.status.processing, function processing (jobId) {
           eventCount(`Queue processing [${jobId}]`)
         })
-        q.on(enums.queueStatus.completed, function completed (jobId) {
+        q.on(enums.status.completed, function completed (jobId) {
           jobsCompletedTotal++
           eventCount(`Queue completed [${jobId}]`)
         })
-        q.on(enums.queueStatus.idle, function idle () {
+        q.on(enums.status.idle, function idle () {
           eventCount(`Queue idle`)
         })
-        q.on(enums.queueStatus.failed, function failed (jobId) {
+        q.on(enums.status.failed, function failed (jobId) {
           eventCount(`Queue failed [${jobId}]`)
         })
       }

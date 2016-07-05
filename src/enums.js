@@ -11,25 +11,21 @@ const enums = module.exports = {
     highest: 10,
     retry: 1 // Used for retries after a job has timed out or failed.
   },
-  jobStatus: {
+  status: {
+    ready: 'ready',
     created: 'created',
+    enqueue: 'enqueue',
     waiting: 'waiting',
     active: 'active',
-    completed: 'completed',
-    timeout: 'timeout',
-    retry: 'retry',
-    failed: 'failed',
-    deleted: 'deleted'
-  },
-  queueStatus: {
-    ready: 'ready',
-    enqueue: 'enqueue',
     processing: 'processing',
     completed: 'completed',
+    cancelled: 'cancelled',
+    timeout: 'timeout',
     failed: 'failed',
     idle: 'idle',
     paused: 'paused',
     resumed: 'resumed',
+    retry: 'retry',
     error: 'error',
     review: 'review',
     reviewEnabled: 'review enabled',

@@ -9,6 +9,7 @@ const queueDb = require('./queue-db')
 const queueProcess = require('./queue-process')
 const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
+const queueCancelJob = require('./queue-cancel-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueReset = require('./queue-reset')
 const queueSummary = require('./queue-summary')
@@ -63,11 +64,11 @@ class Queue extends EventEmitter {
     if (!is.bool(isPaused)) { throw new Error(enums.error.isPausedInvalid) }
     this._paused = isPaused
     if (isPaused) {
-      this.emit(enums.queueStatus.paused)
+      this.emit(enums.status.paused)
     } else {
       this.ready.then(() => {
         queueProcess.restart(this)
-        this.emit(enums.queueStatus.resumed)
+        this.emit(enums.status.resumed)
       })
     }
   }
@@ -104,6 +105,13 @@ class Queue extends EventEmitter {
     logger('addJob')
     return this.ready.then(() => {
       return queueAddJob(this, job)
+    })
+  }
+
+  cancelJob (job, reason) {
+    logger('cancelJob')
+    return this.ready.then(() => {
+      return queueCancelJob(this, job, reason)
     })
   }
 

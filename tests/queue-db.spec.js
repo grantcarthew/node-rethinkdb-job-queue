@@ -14,20 +14,20 @@ module.exports = function () {
       const q = testQueue()
 
       let readyEventCount = 0
-      q.on(enums.queueStatus.ready, function readyEventHandler () {
+      q.on(enums.status.ready, function readyEventHandler () {
         readyEventCount++
         t.pass('Event: Queue ready')
         if (readyEventCount >= 6) {
-          this.removeListener(enums.queueStatus.ready, readyEventHandler)
+          this.removeListener(enums.status.ready, readyEventHandler)
         }
       })
 
       let detachEventCount = 0
-      q.on(enums.queueStatus.detached, function detachedEventHandler () {
+      q.on(enums.status.detached, function detachedEventHandler () {
         detachEventCount++
         t.pass('Event: Queue detached')
         if (detachEventCount >= 6) {
-          this.removeListener(enums.queueStatus.detached, detachedEventHandler)
+          this.removeListener(enums.status.detached, detachedEventHandler)
         }
       })
 

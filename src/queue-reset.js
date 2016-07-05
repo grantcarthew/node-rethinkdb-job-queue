@@ -9,9 +9,9 @@ module.exports = function (q) {
   .delete()
   .run()
   .then((resetResult) => {
-    return dbResult.status(q, resetResult, enums.jobStatus.deleted)
+    return dbResult.status(q, resetResult, enums.status.deleted)
   }).then((totalDeleted) => {
-    q.emit(enums.queueStatus.reset, totalDeleted)
+    q.emit(enums.status.reset, totalDeleted)
     return totalDeleted
   })
 }

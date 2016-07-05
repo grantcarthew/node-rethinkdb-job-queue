@@ -17,9 +17,9 @@ module.exports = function () {
 
       function deletedEventHandler () {
         t.pass('Event: Queue deleted')
-        this.removeListener(enums.queueStatus.deleted, deletedEventHandler)
+        this.removeListener(enums.status.deleted, deletedEventHandler)
       }
-      q.on(enums.queueStatus.deleted, deletedEventHandler)
+      q.on(enums.status.deleted, deletedEventHandler)
 
       q.ready.then(() => {
         t.pass('Queue in a ready state')

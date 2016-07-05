@@ -4,7 +4,7 @@ const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
 const jobAddLog = require('./job-add-log')
-const jobCancel = require('./job-cancel')
+const queueCancelJob = require('./queue-cancel-job')
 
 class Job {
 
@@ -37,12 +37,13 @@ class Job {
       this.retryMax = options.retryMax
       this.retryCount = 0
       this.progress = 0
-      this.status = enums.jobStatus.created
+      this.status = enums.status.created
       this.log = []
       this.dateCreated = now
       this.dateRetry = now
       this.dateStarted
       this.dateCompleted
+      this.dateCancelled
       this.dateTimeout
       this.dateFailed
       this.queueId = q.id
@@ -76,7 +77,7 @@ class Job {
 
   cancel (reason) {
     logger('cancel')
-    return jobCancel(this, reason)
+    return queueCancelJob(this, reason)
   }
 }
 

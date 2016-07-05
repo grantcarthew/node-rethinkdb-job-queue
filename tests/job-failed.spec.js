@@ -16,11 +16,11 @@ module.exports = function () {
       const job = q.createJob(testData)
       const err = new Error('Test error from job-failed tests')
       let failedEventCount = 0
-      q.on(enums.queueStatus.failed, function failed (jobId) {
+      q.on(enums.status.failed, function failed (jobId) {
         failedEventCount++
         t.equal(jobId, job.id, `Event: Job failed [${failedEventCount}]`)
         if (failedEventCount >= 3) {
-          q.removeListener(enums.queueStatus.failed, failed)
+          q.removeListener(enums.status.failed, failed)
         }
       })
 
@@ -29,7 +29,7 @@ module.exports = function () {
         t.pass('Job failure - original')
         return jobFailed(err, savedJob[0], testData)
       }).then((retry1) => {
-        t.equal(retry1[0].status, enums.jobStatus.retry, 'Job status is retry')
+        t.equal(retry1[0].status, enums.status.retry, 'Job status is retry')
         t.equal(retry1[0].retryCount, 1, 'Job retryCount is 1')
         t.equal(retry1[0].progress, 0, 'Job progress is 0')
         t.equal(retry1[0].queueId, q.id, 'Job queueId is valid')
@@ -38,7 +38,7 @@ module.exports = function () {
         t.ok(moment.isDate(retry1[0].log[0].date), 'Log date is a date')
         t.equal(retry1[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(retry1[0].log[0].type, enums.log.warning, 'Log type is warning')
-        t.equal(retry1[0].log[0].status, enums.jobStatus.retry, 'Log status is retry')
+        t.equal(retry1[0].log[0].status, enums.status.retry, 'Log status is retry')
         t.ok(retry1[0].log[0].retryCount = 1, 'Log retryCount is valid')
         t.ok(retry1[0].log[0].message, 'Log message exists')
         t.ok(retry1[0].log[0].duration >= 0, 'Log duration is >= 0')
@@ -46,7 +46,7 @@ module.exports = function () {
         t.pass('Job failure - first retry')
         return jobFailed(err, retry1[0], testData)
       }).then((retry2) => {
-        t.equal(retry2[0].status, enums.jobStatus.retry, 'Job status is retry')
+        t.equal(retry2[0].status, enums.status.retry, 'Job status is retry')
         t.equal(retry2[0].retryCount, 2, 'Job retryCount is 2')
         t.equal(retry2[0].progress, 0, 'Job progress is 0')
         t.equal(retry2[0].queueId, q.id, 'Job queueId is valid')
@@ -55,7 +55,7 @@ module.exports = function () {
         t.ok(moment.isDate(retry2[0].log[1].date), 'Log date is a date')
         t.equal(retry2[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(retry2[0].log[1].type, enums.log.warning, 'Log type is warning')
-        t.equal(retry2[0].log[1].status, enums.jobStatus.retry, 'Log status is retry')
+        t.equal(retry2[0].log[1].status, enums.status.retry, 'Log status is retry')
         t.ok(retry2[0].log[1].retryCount = 2, 'Log retryCount is valid')
         t.ok(retry2[0].log[1].message, 'Log message exists')
         t.ok(retry2[0].log[1].duration >= 0, 'Log duration is >= 0')
@@ -63,7 +63,7 @@ module.exports = function () {
         t.pass('Job failure - second retry')
         return jobFailed(err, retry2[0], testData)
       }).then((retry3) => {
-        t.equal(retry3[0].status, enums.jobStatus.retry, 'Job status is retry')
+        t.equal(retry3[0].status, enums.status.retry, 'Job status is retry')
         t.equal(retry3[0].retryCount, 3, 'Job retryCount is 3')
         t.equal(retry3[0].progress, 0, 'Job progress is 0')
         t.equal(retry3[0].queueId, q.id, 'Job queueId is valid')
@@ -72,7 +72,7 @@ module.exports = function () {
         t.ok(moment.isDate(retry3[0].log[2].date), 'Log date is a date')
         t.equal(retry3[0].log[2].queueId, q.id, 'Log queueId is valid')
         t.equal(retry3[0].log[2].type, enums.log.warning, 'Log type is warning')
-        t.equal(retry3[0].log[2].status, enums.jobStatus.retry, 'Log status is retry')
+        t.equal(retry3[0].log[2].status, enums.status.retry, 'Log status is retry')
         t.ok(retry3[0].log[2].retryCount = 3, 'Log retryCount is valid')
         t.ok(retry3[0].log[2].message, 'Log message exists')
         t.ok(retry3[0].log[2].duration >= 0, 'Log duration is >= 0')
@@ -80,7 +80,7 @@ module.exports = function () {
         t.pass('Job failure - third retry')
         return jobFailed(err, retry3[0], testData)
       }).then((failed) => {
-        t.equal(failed[0].status, enums.jobStatus.failed, 'Job status is failed')
+        t.equal(failed[0].status, enums.status.failed, 'Job status is failed')
         t.equal(failed[0].retryCount, 3, 'Job retryCount is 3')
         t.equal(failed[0].progress, 0, 'Job progress is 0')
         t.equal(failed[0].queueId, q.id, 'Job queueId is valid')
@@ -89,7 +89,7 @@ module.exports = function () {
         t.ok(moment.isDate(failed[0].log[3].date), 'Log date is a date')
         t.equal(failed[0].log[3].queueId, q.id, 'Log queueId is valid')
         t.equal(failed[0].log[3].type, enums.log.error, 'Log type is error')
-        t.equal(failed[0].log[3].status, enums.jobStatus.failed, 'Log status is failed')
+        t.equal(failed[0].log[3].status, enums.status.failed, 'Log status is failed')
         t.ok(failed[0].log[3].retryCount = 3, 'Log retryCount is valid')
         t.ok(failed[0].log[3].message, 'Log message exists')
         t.ok(failed[0].log[3].duration >= 0, 'Log duration is >= 0')

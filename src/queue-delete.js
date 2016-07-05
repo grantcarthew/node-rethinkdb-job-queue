@@ -11,7 +11,7 @@ module.exports = function (q, deleteTimeout) {
   }).then(() => {
     return queueDb.detach(q, true)
   }).then(() => {
-    q.emit(enums.queueStatus.deleted)
+    q.emit(enums.status.deleted)
     return true
   })
 }

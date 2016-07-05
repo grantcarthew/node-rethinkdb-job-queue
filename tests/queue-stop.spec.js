@@ -17,12 +17,12 @@ module.exports = function () {
       function stoppingEventHandler () {
         t.pass('Event: Queue stopping')
       }
-      q.on(enums.queueStatus.stopping, stoppingEventHandler)
+      q.on(enums.status.stopping, stoppingEventHandler)
 
       function stoppedEventHandler () {
         t.pass('Event: Queue stopped')
       }
-      q.on(enums.queueStatus.stopped, stoppedEventHandler)
+      q.on(enums.status.stopped, stoppedEventHandler)
 
       q.ready.then(() => {
         q.running = 1
@@ -116,8 +116,8 @@ module.exports = function () {
         t.notOk(q.paused, 'Queue is not paused')
 
         // ---------- Clean Up ----------
-        q.removeListener(enums.queueStatus.stopping, stoppingEventHandler)
-        q.removeListener(enums.queueStatus.stopped, stoppedEventHandler)
+        q.removeListener(enums.status.stopping, stoppingEventHandler)
+        q.removeListener(enums.status.stopped, stoppedEventHandler)
         return resolve()
       }).catch(err => testError(err, module, t))
     })

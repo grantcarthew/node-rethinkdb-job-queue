@@ -20,7 +20,7 @@ module.exports = function queueChange (q, err, change) {
 
   // New job added
   if (newData && !oldData) {
-    q.emit(enums.queueStatus.enqueue, dbResult.toJob(q, change))
+    q.emit(enums.status.enqueue, dbResult.toJob(q, change))
     //this.handler(newJob) TODO
   }
 
@@ -32,8 +32,8 @@ module.exports = function queueChange (q, err, change) {
   //     change.old_val &&
   //     change.new_val.status !== change.old_val.status) {
   //       switch (change.new_val.status) {
-  //         case enums.queueStatus.completed:
-  //           q.emit(enums.queueStatus.completed)
+  //         case enums.status.completed:
+  //           q.emit(enums.status.completed)
   //           break;
   //         default:
   //

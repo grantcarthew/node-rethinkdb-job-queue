@@ -64,14 +64,14 @@ function jobTimeout (q) {
     moment().toDate(),
     q.id,
     enums.log.warning,
-    enums.jobStatus.timeout,
+    enums.status.timeout,
     enums.message.timeout
   )
 
   return q.r.db(q.db).table(q.name)
   .between(q.r.minval, timeoutDate, { index: enums.index.active_dateRetry })
   .update({
-    status: enums.jobStatus.timeout,
+    status: enums.status.timeout,
     log: q.r.row('log').append(log)
   }).run()
 }
