@@ -10,6 +10,7 @@ module.exports = function summary (q) {
       waiting: 0,
       active: 0,
       completed: 0,
+      cancelled: 0,
       timeout: 0,
       delayed: 0,
       retry: 0,

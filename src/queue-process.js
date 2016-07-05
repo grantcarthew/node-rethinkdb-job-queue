@@ -40,8 +40,6 @@ const jobRun = function jobRun (job) {
   jobTimeoutId = setTimeout(function timeoutHandler () {
     nextHandler(new Error(timedOutMessage))
   }, job.timeout * 1000)
-    // jobTimeoutId = setTimeout(nextHandler.bind(null, Error(timedOutMessage)),
-    //   job.timeout * 1000)
   job.q.emit(enums.status.processing, job.id)
   job.q.handler(job, nextHandler)
 }

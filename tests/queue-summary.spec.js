@@ -9,17 +9,18 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-summary test', (t) => {
-      t.plan(8)
+      t.plan(9)
 
       const q = testQueue()
-      const jobs = q.createJob(testData, null, 7)
+      const jobs = q.createJob(testData, null, 8)
       jobs[0].status = 'waiting'
       jobs[1].status = 'active'
       jobs[2].status = 'completed'
-      jobs[3].status = 'timeout'
-      jobs[4].status = 'delayed'
-      jobs[5].status = 'retry'
-      jobs[6].status = 'failed'
+      jobs[3].status = 'cancelled'
+      jobs[4].status = 'timeout'
+      jobs[5].status = 'delayed'
+      jobs[6].status = 'retry'
+      jobs[7].status = 'failed'
 
       return q.reset().then(() => {
         return queueAddJob(q, jobs, true)
@@ -29,6 +30,7 @@ module.exports = function () {
         t.equal(summary.waiting, 1, 'Queue status summary includes waiting')
         t.equal(summary.active, 1, 'Queue status summary includes active')
         t.equal(summary.completed, 1, 'Queue status summary includes completed')
+        t.equal(summary.cancelled, 1, 'Queue status summary includes cancelled')
         t.equal(summary.timeout, 1, 'Queue status summary includes timeout')
         t.equal(summary.delayed, 1, 'Queue status summary includes delayed')
         t.equal(summary.retry, 1, 'Queue status summary includes retry')

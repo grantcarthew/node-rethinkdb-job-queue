@@ -26,7 +26,7 @@ module.exports.queueMaster = function () {
     name: queueName,
     concurrency: 3,
     isMaster: true,
-    masterReviewPeriod: 10
+    masterReviewPeriod: 5
   }
   return Object.assign(opts, connection())
 }

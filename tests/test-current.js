@@ -25,43 +25,9 @@ const jobFailed = require('./job-failed.spec')
 const dbReview = require('./db-review.spec')
 const queueSummary = require('./queue-summary.spec')
 
-return dbAssertDatabase().then(() => {
+return dbAssert().then(() => {
 }).then(() => {
-//   return dbAssertTable()
-// }).then(() => {
-//   return dbAssertIndex()
-// }).then(() => {
-//   return dbAssert()
-// }).then(() => {
-  // return Promise.all([
-    // enums(),
-    // jobOptions(),
-    // job(),
-    // jobAddLog(),
-    // queueGetJob(),
-    // dbResult(),
-    // queueAddJob(),
-    // queueRemoveJob(),
-    // jobCompleted(),
-    // jobFailed()
-//   ])
-// }).then(() => {
-//   return dbReview()
-// }).then(() => {
-//   return queueSummary()
-// }).then(() => {
-//   return queueReset()
-// }).then(() => {
-//   return queueGetNextJob()
-// }).then(() => {
-//   return queueDb()
-// }).then(() => {
-//   return queueStop()
-// }).then(() => {
-//   return queueDelete()
-// }).then(() => {
-  // return queueProcess()
-  return queueCancelJob()
+  return queueProcess()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()
