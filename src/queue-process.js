@@ -4,6 +4,7 @@ const enums = require('./enums')
 const dbReview = require('./db-review')
 const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
+const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 
 const jobRun = function jobRun (job) {
@@ -21,7 +22,10 @@ const jobRun = function jobRun (job) {
     handled = true
     clearTimeout(jobTimeoutId)
     let finalPromise
-    if (err) {
+    if (err && err.cancelJob) {
+      const reason = err.cancelReason ? err.cancelReason : enums.message.cancel
+      finalPromise = queueCancelJob(job.q, job, reason)
+    } else if (err) {
       finalPromise = jobFailed(err, job, data)
     } else {
       finalPromise = jobCompleted(job, data)

@@ -59,7 +59,8 @@ const enums = module.exports = {
     failed: 'Job processing failed',
     timeout: 'Job processing has timed out',
     allJobsStopped: 'All running jobs have stopped',
-    failedToStop: 'Failed to gracefully stop jobs, force quit'
+    failedToStop: 'Failed to gracefully stop jobs, force quit',
+    cancel: 'Job cancelled by Queue process handler'
   },
   error: {
     jobNotAdded: 'Job not added to the queue',
