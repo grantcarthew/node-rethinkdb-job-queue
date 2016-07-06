@@ -1,5 +1,5 @@
 const logger = require('./logger')(module)
-const isUuid = require('isuuid')
+const is = require('./is')
 const moment = require('moment')
 const enums = require('./enums')
 
@@ -9,13 +9,13 @@ module.exports.id = function jobParseId (job) {
   let jobs = Array.isArray(job) ? job : [job]
   let validIds = []
   for (let j of jobs) {
-    if (!isUuid(j) && !isUuid(j.id)) {
+    if (!is.uuid(j) && !is.uuid(j.id)) {
       throw new Error(enums.error.idInvalid)
     }
-    if (isUuid(j)) {
+    if (is.uuid(j)) {
       validIds.push(j)
     }
-    if (isUuid(j.id)) {
+    if (is.uuid(j.id)) {
       validIds.push(j.id)
     }
   }
@@ -29,7 +29,7 @@ module.exports.job = function jobParseJob (job) {
   let validJobs = []
   for (let j of jobs) {
     let detail = false
-    if (!isUuid(j.id)) { detail = 'Job id: ' + j.id }
+    if (!is.uuid(j.id)) { detail = 'Job id: ' + j.id }
     if (!j.q) { detail = 'Job q missing' }
     if (!j.priority) { detail = 'Job priority missing' }
     if (j.timeout < 0) { detail = 'Job timeout: ' + j.timeout }

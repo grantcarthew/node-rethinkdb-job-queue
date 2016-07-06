@@ -65,44 +65,29 @@ function jobReview (q) {
   })
 }
 
-function reviewEnable (q) {
+module.exports.enable = function enable (q) {
   logger('db-review enable')
-  if (dbReviewIntervalId) {
-    return
+  if (!dbReviewIntervalId) {
+    const interval = q.masterReviewPeriod * 1000
+    dbReviewIntervalId = setInterval(() => {
+      return jobReview(q)
+    }, interval)
   }
-  const interval = q.masterReviewPeriod * 1000
-  q.emit(enums.status.reviewEnabled)
-  dbReviewIntervalId = setInterval(() => {
-    return jobReview(q)
-  }, interval)
+  return true
 }
 
-function reviewDisable (q) {
+module.exports.disable = function disable (q) {
   logger('db-review disable')
   if (dbReviewIntervalId) {
-    q.emit(enums.status.reviewDisabled)
     clearInterval(dbReviewIntervalId)
     dbReviewIntervalId = false
   }
+  return true
 }
 
-module.exports.run = function run (q, reviewRun) {
-  logger('run', reviewRun)
-  if (!Object.keys(enums.reviewRun)
-  .map(key => enums.reviewRun[key]).includes(reviewRun)) {
-    return Promise.reject(new Error(enums.error.reviewOptionInvalid))
-  }
-  if (reviewRun === enums.reviewRun.enable) {
-    reviewEnable(q)
-    return jobReview(q)
-  }
-  if (reviewRun === enums.reviewRun.disable) {
-    reviewDisable(q)
-    return Promise.resolve(0)
-  }
-  if (reviewRun === enums.reviewRun.once) {
-    return jobReview(q)
-  }
+module.exports.runOnce = function run (q) {
+  logger('run')
+  return jobReview(q)
 }
 
 module.exports.isEnabled = function reviewIsEnabled () {

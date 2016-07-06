@@ -1,7 +1,7 @@
 const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
 const Promise = require('bluebird')
-const is = require('is')
+const is = require('./is')
 const enums = require('./enums')
 const Job = require('./job')
 const dbReview = require('./db-review')
@@ -61,7 +61,7 @@ class Queue extends EventEmitter {
   }
 
   set paused (isPaused) {
-    if (!is.bool(isPaused)) { throw new Error(enums.error.isPausedInvalid) }
+    if (!is.boolean(isPaused)) { throw new Error(enums.error.isPausedInvalid) }
     this._paused = isPaused
     if (isPaused) {
       this.emit(enums.status.paused)
@@ -151,16 +151,10 @@ class Queue extends EventEmitter {
     })
   }
 
-  review (reviewRun) {
-    logger('review: ', reviewRun)
-    if (reviewRun === enums.reviewRun.enable) {
-      this.isMaster = true
-    }
-    if (reviewRun === enums.reviewRun.disable) {
-      this.isMaster = false
-    }
+  review () {
+    logger('review')
     return this.ready.then(() => {
-      return dbReview.run(this, reviewRun)
+      return dbReview.run(this)
     })
   }
 

@@ -28,8 +28,6 @@ const enums = module.exports = {
     retry: 'retry',
     error: 'error',
     review: 'review',
-    reviewEnabled: 'reviewEnabled',
-    reviewDisabled: 'reviewDisabled',
     detached: 'detached',
     reset: 'reset',
     stopping: 'stopping',

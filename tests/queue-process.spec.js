@@ -1,17 +1,19 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
+const is = require('../src/is')
 const enums = require('../src/enums')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const testOptions = require('./test-options')
 const testData = require('./test-options').testData
 const queueProcess = require('../src/queue-process')
+const dbReview = require('../src/db-review')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process test', (t) => {
-      t.plan(153)
+      t.plan(145)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -89,9 +91,10 @@ module.exports = function () {
       return q.ready.then(() => {
         return q.reset()
       }).then((resetResult) => {
-        t.ok(resetResult >= 0, 'Queue reset')
-        addEvents()
+        t.ok(is.integer(resetResult), 'Queue reset')
         q.paused = true
+        dbReview.disable(q)
+        addEvents()
 
         // ---------- Processing, Pause, and Concurrency Test ----------
         t.comment('queue-process: Process, Pause, and Concurrency')
@@ -159,11 +162,14 @@ module.exports = function () {
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
-      }).delay(18000).then(() => {
+      }).delay(5200).then(() => {
+        dbReview.runOnce(q)
+      }).delay(5200).then(() => {
+        dbReview.runOnce(q)
+      }).delay(3200).then(() => {
         jobDelay = 200
         testTimes = false
         t.equal(tryCount, 4, 'Job failed and retried correctly')
-        return q.review('disable')
       }).then(() => {
         jobs = q.createJob(testData)
 

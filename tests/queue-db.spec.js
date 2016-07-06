@@ -34,7 +34,7 @@ module.exports = function () {
       q.ready.then(() => {
         q.isMaster = true
         q.enableChangeFeed = true
-        return q.review(enums.reviewRun.enable)
+        return dbReview.enable(q)
       }).then((ready) => {
         t.ok(ready >= 0, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')

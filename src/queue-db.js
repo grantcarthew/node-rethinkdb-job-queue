@@ -28,7 +28,7 @@ module.exports.attach = function dbAttach (q) {
   }).then(() => {
     if (q.isMaster) {
       logger('Queue is a master')
-      return dbReview.run(q, enums.reviewRun.enable)
+      return dbReview.enable(q)
     }
     return null
   }).then(() => {
@@ -49,7 +49,7 @@ module.exports.detach = function dbDetach (q, drainPool) {
     return null
   }).then(() => {
     if (q.isMaster) {
-      return dbReview.run(q, enums.reviewRun.disable)
+      return dbReview.disable(q)
     }
     return null
   }).then(() => {
