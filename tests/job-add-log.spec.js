@@ -1,6 +1,7 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
+const is = require('../src/is')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
@@ -9,18 +10,24 @@ const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-add-log test', (t) => {
-      t.plan(21)
+    test('job-add-log', (t) => {
+      t.plan(22)
 
       const q = testQueue()
       let job = q.createJob(testData)
       let testLog
       let extra = 'extra data'
-      return q.addJob(job).then((newJob) => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
+        return q.addJob(job)
+      }).then((newJob) => {
         job = newJob[0]
         t.equal(job.status, enums.status.waiting, 'New job added successfully')
         testLog = job.createLog(testData)
         testLog.data = testData
+
+        // ---------- Add First Log Tests ----------
+        t.comment('job-add-log: Add First Log')
         return jobAddLog(job, testLog)
       }).then((updateResult1) => {
         t.equal(updateResult1, 1, 'Log 1 added to job successfully')
@@ -35,6 +42,9 @@ module.exports = function () {
         t.equal(jobWithLog1[0].log[0].message, testData, 'Log 1 message is valid')
         t.equal(jobWithLog1[0].log[0].data, testData, 'Log 1 data is valid')
         testLog.extra = extra
+
+        // ---------- Add Second Log Tests ----------
+        t.comment('job-add-log: Add Second Log')
         return jobAddLog(job, testLog)
       }).then((updateResult2) => {
         t.equal(updateResult2, 1, 'Log 2 added to job successfully')

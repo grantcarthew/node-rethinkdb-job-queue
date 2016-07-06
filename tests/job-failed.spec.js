@@ -1,7 +1,8 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const testError = require('./test-error')
 const moment = require('moment')
+const is = require('../src/is')
+const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const enums = require('../src/enums')
 const jobFailed = require('../src/job-failed')
@@ -9,8 +10,8 @@ const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-failed test', (t) => {
-      t.plan(65)
+    test('job-failed', (t) => {
+      t.plan(62)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -24,9 +25,14 @@ module.exports = function () {
         }
       })
 
-      q.addJob(job).then((savedJob) => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
+        return q.addJob(job)
+      }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        t.pass('Job failure - original')
+
+        // ---------- Job Failed Retry 0 Test ----------
+        t.comment('job-failed: Original Job Failure')
         return jobFailed(err, savedJob[0], testData)
       }).then((retry1) => {
         t.equal(retry1[0].status, enums.status.retry, 'Job status is retry')
@@ -43,7 +49,9 @@ module.exports = function () {
         t.ok(retry1[0].log[0].message, 'Log message exists')
         t.ok(retry1[0].log[0].duration >= 0, 'Log duration is >= 0')
         t.equal(retry1[0].log[0].data, job.data, 'Log data is valid')
-        t.pass('Job failure - first retry')
+
+        // ---------- Job Failed Retry 1 Test ----------
+        t.comment('job-failed: First Retry Job Failure')
         return jobFailed(err, retry1[0], testData)
       }).then((retry2) => {
         t.equal(retry2[0].status, enums.status.retry, 'Job status is retry')
@@ -60,7 +68,9 @@ module.exports = function () {
         t.ok(retry2[0].log[1].message, 'Log message exists')
         t.ok(retry2[0].log[1].duration >= 0, 'Log duration is >= 0')
         t.equal(retry2[0].log[1].data, job.data, 'Log data is valid')
-        t.pass('Job failure - second retry')
+
+        // ---------- Job Failed Retry 2 Test ----------
+        t.comment('job-failed: Second Retry Job Failure')
         return jobFailed(err, retry2[0], testData)
       }).then((retry3) => {
         t.equal(retry3[0].status, enums.status.retry, 'Job status is retry')
@@ -77,7 +87,9 @@ module.exports = function () {
         t.ok(retry3[0].log[2].message, 'Log message exists')
         t.ok(retry3[0].log[2].duration >= 0, 'Log duration is >= 0')
         t.equal(retry3[0].log[2].data, job.data, 'Log data is valid')
-        t.pass('Job failure - third retry')
+
+        // ---------- Job Failed Retry 3 Test ----------
+        t.comment('job-failed: Third and Final Retry Job Failure')
         return jobFailed(err, retry3[0], testData)
       }).then((failed) => {
         t.equal(failed[0].status, enums.status.failed, 'Job status is failed')

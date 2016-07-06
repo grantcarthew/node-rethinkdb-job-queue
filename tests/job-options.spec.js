@@ -3,7 +3,7 @@ const testError = require('./test-error')
 const jobOptions = require('../src/job-options')
 
 module.exports = function () {
-  test('job-options test', (t) => {
+  test('job-options', (t) => {
     t.plan(8)
 
     try {

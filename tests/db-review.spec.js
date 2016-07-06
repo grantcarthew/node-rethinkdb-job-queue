@@ -16,7 +16,7 @@ const dbReview = proxyquire('../src/db-review',
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-review test', (t) => {
+    test('db-review', (t) => {
       t.plan(42)
 
       processStub.restart = function (q) {
@@ -32,6 +32,9 @@ module.exports = function () {
         t.ok(is.integer(total), 'Review event return value is an Integer')
         if (reviewCount > 2) {
           t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
+
+          //  ---------- disable Tests ----------
+          t.comment('db-review: disable')
           dbReview.disable(q)
           t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
           q.masterReviewPeriod = 300
@@ -71,6 +74,8 @@ module.exports = function () {
         t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
         t.equal(savedJobs[1].id, job2.id, 'Job 2 saved successfully')
       }).then(() => {
+        //
+        //  ---------- runOnce Tests ----------
         t.comment('db-review: runOnce')
         return dbReview.runOnce(q)
       }).then((reviewResult) => {
@@ -104,6 +109,9 @@ module.exports = function () {
         t.ok(moment.isDate(reviewedJob2[0].log[0].dateRetry), 'Log dateRetry is a date')
         t.ok(reviewedJob2[0].log[0].message, 'Log message is present')
         t.ok(!reviewedJob2[0].log[0].data, 'Log data is null')
+
+        //  ---------- enable Tests ----------
+        t.comment('db-review: enable')
         return dbReview.enable(q)
       }).catch(err => testError(err, module, t))
     })

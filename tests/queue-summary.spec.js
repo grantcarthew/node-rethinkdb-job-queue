@@ -1,5 +1,8 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const moment = require('moment')
+const is = require('../src/is')
+const enums = require('../src/enums')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const queueSummary = require('../src/queue-summary')
@@ -8,8 +11,8 @@ const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-summary test', (t) => {
-      t.plan(9)
+    test('queue-summary', (t) => {
+      t.plan(10)
 
       const q = testQueue()
       const jobs = q.createJob(testData, null, 8)
@@ -22,7 +25,8 @@ module.exports = function () {
       jobs[6].status = 'retry'
       jobs[7].status = 'failed'
 
-      return q.reset().then(() => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
         return queueAddJob(q, jobs, true)
       }).then(() => {
         return queueSummary(q)

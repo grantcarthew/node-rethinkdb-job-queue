@@ -12,13 +12,14 @@ const dbReview = require('../src/db-review')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-process test', (t) => {
+    test('queue-process', (t) => {
       t.plan(145)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
       q.on(enums.status.ready, function ready () {
         t.pass('Queue ready')
+        dbReview.disable(q)
       })
 
       let jobs
@@ -88,12 +89,9 @@ module.exports = function () {
 
       // ---------- Test Setup ----------
       jobs = q.createJob(testData, null, noOfJobsToCreate)
-      return q.ready.then(() => {
-        return q.reset()
-      }).then((resetResult) => {
+      return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         q.paused = true
-        dbReview.disable(q)
         addEvents()
 
         // ---------- Processing, Pause, and Concurrency Test ----------

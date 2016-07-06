@@ -1,16 +1,17 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const moment = require('moment')
+const is = require('../src/is')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
-const moment = require('moment')
 const enums = require('../src/enums')
 const jobCompleted = require('../src/job-completed')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-completed test', (t) => {
-      t.plan(17)
+    test('job-completed', (t) => {
+      t.plan(18)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -19,7 +20,10 @@ module.exports = function () {
       }
       q.on(enums.status.completed, completed)
 
-      q.addJob(job).then((savedJob) => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
+        return q.addJob(job)
+      }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return jobCompleted(savedJob[0], testData)
       }).then((changeResult) => {

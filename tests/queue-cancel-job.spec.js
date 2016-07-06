@@ -1,8 +1,9 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const moment = require('moment')
+const is = require('../src/is')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
-const moment = require('moment')
 const enums = require('../src/enums')
 const queueCancelJob = require('../src/queue-cancel-job')
 const testData = require('./test-options').testData
@@ -10,8 +11,8 @@ const isUuid = require('isuuid')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-cancel-job test', (t) => {
-      t.plan(20)
+    test('queue-cancel-job', (t) => {
+      t.plan(21)
 
       const q = testQueue()
       function cancelled (jobId) {
@@ -21,8 +22,14 @@ module.exports = function () {
 
       const jobsToCreate = 5
       let jobs = q.createJob(testData, null, jobsToCreate)
-      return q.addJob(jobs).then((savedJobs) => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
         t.equal(savedJobs.length, jobsToCreate, 'Jobs saved successfully')
+
+        // ---------- Cancel Multiple Jobs Tests ----------
+        t.comment('queue-cancel-job: Cancel Multiple Jobs')
         return queueCancelJob(q, savedJobs, testData)
       }).then((cancelResult) => {
         t.equal(cancelResult.length, jobsToCreate, 'Job cancelled successfully')
@@ -30,6 +37,9 @@ module.exports = function () {
         return q.addJob(jobs)
       }).then((singleJob) => {
         t.equal(singleJob[0].id, jobs.id, 'Jobs saved successfully')
+
+        // ---------- Cancel Single Job Tests ----------
+        t.comment('queue-cancel-job: Cancel Single Job')
         return queueCancelJob(q, singleJob[0], testData)
       }).then((cancelledJob) => {
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job status is cancelled')

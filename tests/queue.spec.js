@@ -9,7 +9,7 @@ const customJobDefaultOptions = testOptions.jobOptionsHigh()
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue test', (t) => {
+    test('queue', (t) => {
       t.plan(6)
 
       const q = new Queue(connectionOptionsOnly)

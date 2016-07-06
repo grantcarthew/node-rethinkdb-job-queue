@@ -1,16 +1,17 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
+const is = require('../src/is')
+const enums = require('../src/enums')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
-const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
 const queueGetNextJob = require('../src/queue-get-next-job')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-get-next-job test', (t) => {
+    test('queue-get-next-job', (t) => {
       t.plan(92)
 
       // ---------- Creating Priority Test Jobs ----------
@@ -76,12 +77,13 @@ module.exports = function () {
 
       // ---------- Adding Jobs for Testing ----------
       return q.reset().then((resetResult) => {
-        t.ok(resetResult >= 0, 'Queue reset successfully')
+        t.ok(is.integer(resetResult), 'Queue reset')
         return queueAddJob(q, allCreatedJobs, true)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 12, 'Jobs saved successfully')
 
         // ---------- Getting Jobs in Priority Order ----------
+        t.comment('queue-get-next-job: Jobs in Priority Order')
         return queueGetNextJob(q)
       }).then((retry) => {
         t.equals(retry[0].id, jobRetry.id, 'Retry status job returned first')
@@ -168,6 +170,7 @@ module.exports = function () {
         q.running = 4
 
         // ---------- Testing Concurrency and Running ----------
+        t.comment('queue-get-next-job: Concurrency and Running')
         return queueGetNextJob(q)
       }).then((group0) => {
         t.equals(group0.length, 0, 'Returned zero jobs due to concurrency and running')
@@ -205,7 +208,8 @@ module.exports = function () {
         t.equals(group4[0].status, enums.status.active, 'Returned job is active status')
         t.ok(moment.isDate(group4[0].dateStarted), 'Returned job dateStarted is a date')
 
-        // ---------- Testing dateRetry ----------
+        // ---------- Testing dateRetry Values ----------
+        t.comment('queue-get-next-job: dateRetry Values')
         retryJobs = q.createJob(testData, null, 2)
         retryJobs[0].dateRetry = moment().add(100, 'seconds').toDate()
         retryJobs[1].dateRetry = moment().add(-100, 'seconds').toDate()
@@ -218,6 +222,7 @@ module.exports = function () {
         t.equal(retryGet[0].id, retryJobs[1].id, 'Retry job valid')
 
         // ---------- Testing dateRetry with retryCount ----------
+        t.comment('queue-get-next-job: dateRetry with retryCount')
         retryJobs = q.createJob(testData, null, 4)
         retryJobs[0].retryCount = 0
         retryJobs[0].dateRetry = moment().add(-100, 'seconds').toDate()

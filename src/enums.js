@@ -34,11 +34,6 @@ const enums = module.exports = {
     stopped: 'stopped',
     deleted: 'deleted'
   },
-  reviewRun: {
-    enable: 'enable',
-    once: 'once',
-    disable: 'disable'
-  },
   index: {
     status: 'status',
     dateRetry: 'dateRetry',

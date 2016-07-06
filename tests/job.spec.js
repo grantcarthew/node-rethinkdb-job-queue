@@ -1,7 +1,8 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const testError = require('./test-error')
 const moment = require('moment')
+const is = require('../src/is')
+const testError = require('./test-error')
 const enums = require('../src/enums')
 const testQueue = require('./test-queue')
 const Job = require('../src/job')
@@ -10,8 +11,8 @@ const isUuid = require('isuuid')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job test', (t) => {
-      t.plan(64)
+    test('job', (t) => {
+      t.plan(65)
 
       const q = testQueue()
       try {
@@ -25,6 +26,9 @@ module.exports = function () {
       let newJobFromData
       let savedJob
 
+
+      // ---------- New Job Tests ----------
+      t.comment('job: New Job')
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(isUuid(newJob.id), 'New job has valid id')
@@ -41,6 +45,9 @@ module.exports = function () {
       t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
       t.ok(moment.isDate(newJob.dateRetry), 'New job dateRetry is a date')
 
+
+      // ---------- Clean Job Tests ----------
+      t.comment('job: Clean Job')
       const cleanJob = newJob.cleanCopy
       t.equal(Object.keys(cleanJob).length, 13, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
@@ -57,6 +64,9 @@ module.exports = function () {
       t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
       t.equal(cleanJob.queueId, newJob.queueId, 'Clean job progress is valid')
 
+
+      // ---------- New Job Tests ----------
+      t.comment('job: Creat Log')
       let log = newJob.createLog(testData)
       log.data = testData
       t.equal(typeof log, 'object', 'Job createLog returns a log object')
@@ -68,11 +78,17 @@ module.exports = function () {
       t.equal(log.message, testData, 'Log message is valid')
       t.equal(log.data, testData, 'Log data is valid')
 
-      return q.addJob(newJob).then((addedJobs) => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
+        return q.addJob(newJob)
+      }).then((addedJobs) => {
         savedJob = addedJobs[0]
         t.equal(savedJob.id, newJob.id, 'Job saved successfully')
         let jobCopy = Object.assign({}, savedJob)
         jobCopy.priority = 40
+
+        // ---------- New Job From Data ----------
+        t.comment('job: New Job from Data')
         return new Job(q, null, jobCopy)
       }).then((newJobFromData) => {
         t.equal(newJobFromData.id, savedJob.id, 'New job from data created successfully')
@@ -90,6 +106,9 @@ module.exports = function () {
         t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
         t.equal(newJobFromData.queueId, q.id, 'New job from data queueId is valid')
 
+
+        // ---------- Add Job Log ----------
+        t.comment('job: Add Job Log')
         return savedJob.addLog(log)
       }).then((logAddedResult) => {
         t.equal(logAddedResult, 1, 'Job log added successfully')

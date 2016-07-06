@@ -6,7 +6,7 @@ const enums = require('./enums')
 module.exports.id = function jobParseId (job) {
   logger('jobParseId', job)
   if (!job) { return [] }
-  let jobs = Array.isArray(job) ? job : [job]
+  let jobs = is.array(job) ? job : [job]
   let validIds = []
   for (let j of jobs) {
     if (!is.uuid(j) && !is.uuid(j.id)) {
@@ -25,7 +25,7 @@ module.exports.id = function jobParseId (job) {
 module.exports.job = function jobParseJob (job) {
   logger('jobParseJob', job)
   if (!job) { return [] }
-  let jobs = Array.isArray(job) ? job : [job]
+  let jobs = is.array(job) ? job : [job]
   let validJobs = []
   for (let j of jobs) {
     let detail = false
@@ -37,7 +37,7 @@ module.exports.job = function jobParseJob (job) {
     if (j.retryMax < 0) { detail = 'Job retryMax: ' + j.retryMax }
     if (j.retryCount < 0) { detail = 'Job retryCount: ' + j.retryCount }
     if (!j.status) { detail = 'Job status missing' }
-    if (!Array.isArray(j.log)) { detail = 'Job log: ' + j.log }
+    if (!is.array(j.log)) { detail = 'Job log: ' + j.log }
     if (!moment.isDate(j.dateCreated)) {
       detail = 'Job dateCreated: ' + j.dateCreated
     }

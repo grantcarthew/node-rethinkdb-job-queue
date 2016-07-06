@@ -1,16 +1,18 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const moment = require('moment')
+const is = require('../src/is')
+const enums = require('../src/enums')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const queueStop = require('../src/queue-stop')
 const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
-const enums = require('../src/enums')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-stop test', (t) => {
-      t.plan(52)
+    test('queue-stop', (t) => {
+      t.plan(53)
 
       const q = testQueue()
 
@@ -24,7 +26,8 @@ module.exports = function () {
       }
       q.on(enums.status.stopped, stoppedEventHandler)
 
-      q.ready.then(() => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
         q.running = 1
         q.isMaster = true
         return dbReview.enable(q)
@@ -35,6 +38,7 @@ module.exports = function () {
         t.notOk(q.paused, 'Queue is not paused')
 
         // ---------- Forcefully with Drain ----------
+        t.comment('queue-stop: Forcefully with Drain')
         return queueStop(q, 500, true)
       }).then((forceStopMessage) => {
         t.pass('Queue stopped forcefully after timeout with pool drain')
@@ -53,6 +57,7 @@ module.exports = function () {
         setTimeout((q) => { q.running = 0 }, 200, q)
 
         // ---------- Gracefully with Drain ----------
+        t.comment('queue-stop: Gracefully with Drain')
         return queueStop(q, 500, true)
       }).then((jobsStoppedMessage) => {
         t.pass('Queue stopped gracefully with pool drain')
@@ -71,6 +76,7 @@ module.exports = function () {
         q.running = 1
 
         // ---------- Forcefully without Drain ----------
+        t.comment('queue-stop: Forcefully without Drain')
         return queueStop(q, 500, false)
       }).then((forceStopMessage2) => {
         t.pass('Queue stopped forcefully after timeout without pool drain')
@@ -94,6 +100,7 @@ module.exports = function () {
         setTimeout((q) => { q.running = 0 }, 200, q)
 
         // ---------- Gracefully without Drain ----------
+        t.comment('queue-stop: Gracefully without Drain')
         return queueStop(q, 500, false)
       }).then((forceStopMessage2) => {
         t.pass('Queue stopped gracefully after timeout without pool drain')

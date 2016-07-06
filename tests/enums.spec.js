@@ -3,8 +3,8 @@ const testError = require('./test-error')
 const enums = require('../src/enums')
 
 module.exports = function () {
-  test('enums test', (t) => {
-    t.plan(14)
+  test('enums', (t) => {
+    t.plan(13)
 
     try {
       t.equal(enums.priorityFromValue(60), 'lowest', 'Priority from value 60 returns lowest')
@@ -15,8 +15,7 @@ module.exports = function () {
       t.equal(enums.priorityFromValue(10), 'highest', 'Priority from value 10 returns highest')
       t.equal(enums.priorityFromValue(1), 'retry', 'Priority from value 1 returns retry')
       t.equal(Object.keys(enums.priority).length, 7, 'Enums priority has has correct number of keys')
-      t.equal(Object.keys(enums.status).length, 23, 'Enums status has correct number of keys')
-      t.equal(Object.keys(enums.reviewRun).length, 3, 'Enums queueStatus has correct number of keys')
+      t.equal(Object.keys(enums.status).length, 21, 'Enums status has correct number of keys')
       t.equal(Object.keys(enums.index).length, 5, 'Enums index has has correct number of keys')
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has has correct number of keys')
       t.equal(Object.keys(enums.message).length, 7, 'Enums message has has correct number of keys')

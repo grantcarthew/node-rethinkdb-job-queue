@@ -6,7 +6,7 @@ const dbAssertIndex = require('../src/db-assert-index')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-index test', (t) => {
+    test('db-index', (t) => {
       t.plan(1)
 
       const q = testMockQueue()

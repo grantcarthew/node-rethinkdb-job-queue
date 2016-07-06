@@ -7,7 +7,7 @@ const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('XXXXXXXX test', (t) => {
+    test('XXXXXXXX', (t) => {
       t.plan(2)
 
       const q = testQueue()

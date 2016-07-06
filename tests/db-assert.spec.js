@@ -9,7 +9,7 @@ const testMockQueue = require('./test-mock-queue')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-assert test', (t) => {
+    test('db-assert', (t) => {
       t.plan(1)
 
       const q = testMockQueue()

@@ -6,7 +6,7 @@ const dbAssertDatabase = require('../src/db-assert-database')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-assert-database test', (t) => {
+    test('db-assert-database', (t) => {
       t.plan(1)
 
       const q = testMockQueue()

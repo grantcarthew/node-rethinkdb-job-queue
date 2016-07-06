@@ -1,15 +1,17 @@
 const test = require('tape')
 const Promise = require('bluebird')
+const moment = require('moment')
+const is = require('../src/is')
+const enums = require('../src/enums')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const queueGetJob = require('../src/queue-get-job')
-const enums = require('../src/enums')
 const testData = require('./test-options').testData
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-get-job test', (t) => {
-      t.plan(12)
+    test('queue-get-job', (t) => {
+      t.plan(13)
 
       const q = testQueue()
       const job1 = q.createJob(testData)
@@ -22,25 +24,42 @@ module.exports = function () {
       ]
       let jobsSaved
 
-      return q.addJob(jobs)
-      .then((savedJobs) => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
         jobsSaved = savedJobs
         t.equal(savedJobs.length, 3, 'Job saved successfully')
+
+        // ---------- Undefined Tests ----------
+        t.comment('queue-get-job: Undefined Job')
         return queueGetJob(q)
       }).then((undefinedResult) => {
-        t.ok(Array.isArray(undefinedResult), 'Undefined returns an Array')
+        t.ok(is.array(undefinedResult), 'Undefined returns an Array')
         t.equal(undefinedResult.length, 0, 'Undefined returns an empty Array')
+
+        // ---------- Invalid Id Tests ----------
+        t.comment('queue-get-job: Invalid Id')
         return queueGetJob(q, ['invalid id']).catch((err) => {
           t.ok(err.message.includes(enums.error.idInvalid), 'Invalid id returns rejected Promise')
         })
       }).then((empty) => {
+        //
+        // ---------- Empty Array Tests ----------
+        t.comment('queue-get-job: Empty Array')
         return queueGetJob(q, [])
       }).then((empty) => {
         t.equal(empty.length, 0, 'Empty array returns empty array')
+
+        // ---------- Single Id Tests ----------
+        t.comment('queue-get-job: Single Id')
         return queueGetJob(q, job1.id)
       }).then((retrievedJob) => {
         t.equal(retrievedJob.length, 1, 'One jobs retrieved')
         t.deepEqual(retrievedJob[0], jobsSaved[0], 'Job retrieved successfully')
+
+        // ---------- Id Array Tests ----------
+        t.comment('queue-get-job: Array of Ids')
         return queueGetJob(q, [job1.id, job2.id, job3.id])
       }).then((retrievedJobs) => {
         const retrievedIds = retrievedJobs.map(j => j.id)

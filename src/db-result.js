@@ -1,5 +1,6 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
+const is = require('./is')
 const enums = require('./enums')
 
 module.exports.toJob = function toJob (q, dbResult) {
@@ -10,10 +11,10 @@ module.exports.toJob = function toJob (q, dbResult) {
     err.dbError = dbResult
     return Promise.reject(err)
   }
-  if (Array.isArray(dbResult)) {
+  if (is.array(dbResult)) {
     return Promise.map(dbResult, jobData => q.createJob(null, jobData))
   }
-  if (Array.isArray(dbResult.changes)) {
+  if (is.array(dbResult.changes)) {
     return Promise.map(dbResult.changes, (change) => {
       return q.createJob(null, change.new_val)
     })
