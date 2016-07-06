@@ -1,14 +1,15 @@
 # Worklog
 
-test db-review enable/disable
 queue.updateJobProgress
+
 Need tests for the following;
 queue-change
-queue-process
-  need to test handler err.cancelJob and err.cancelReason
 queue
 
 check for more places to add logs
+Search for "TODO" in code
+
+DOCUMENTATION!!!! LOTS OF...
 
 ## List of Changes and Events
 
