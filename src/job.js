@@ -3,6 +3,7 @@ const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const jobOptions = require('./job-options')
+const jobProgress = require('./job-progress')
 const jobAddLog = require('./job-add-log')
 const queueCancelJob = require('./queue-cancel-job')
 
@@ -48,6 +49,12 @@ class Job {
       this.dateFailed
       this.queueId = q.id
     }
+  }
+
+  setProgress (percent) {
+    return this.q.ready.then(() => {
+      return jobProgress.set(this, percent)
+    })
   }
 
   get cleanCopy () {

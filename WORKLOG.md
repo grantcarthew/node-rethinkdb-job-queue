@@ -1,6 +1,6 @@
 # Worklog
 
-queue.updateJobProgress
+ensure job.xxx is on q.ready
 
 Need tests for the following;
 queue-change
@@ -30,7 +30,6 @@ DOCUMENTATION!!!! LOTS OF...
 *   Job timeout
 *   Job failed
 *   Job retry
-*   Job delayed ???
 *   Queue empty or reset
 
 ## Retry Workflow

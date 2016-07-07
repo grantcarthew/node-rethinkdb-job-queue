@@ -8,6 +8,7 @@ const dbAssert = require('./db-assert.spec')
 const enums = require('./enums.spec')
 const jobOptions = require('./job-options.spec')
 const job = require('./job.spec')
+const jobProgress = require('./job-progress.spec')
 const jobAddLog = require('./job-add-log.spec')
 const dbResult = require('./db-result.spec')
 const queueAddJob = require('./queue-add-job.spec')
@@ -27,11 +28,10 @@ const queueSummary = require('./queue-summary.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queueProcess()
+  return jobProgress()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()
-  // TODO: Change below to delete and re-run tests before publishing
   testQueue().stop(100)
   return true
 })

@@ -13,7 +13,7 @@ const dbReview = require('../src/db-review')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(145)
+      t.plan(153)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -23,43 +23,58 @@ module.exports = function () {
       })
 
       let jobs
-      let jobsCompletedTotal = 0
       let jobDelay = 200
       const noOfJobsToCreate = 10
       const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
 
-      let events = true
+      let ec = {
+        review: 0,
+        paused: 0,
+        resumed: 0,
+        processing: 0,
+        completed: 0,
+        cancelled: 0,
+        idle: 0,
+        failed: 0
+      }
       function addEvents () {
         q.on(enums.status.review, function review (replaceCount) {
-          if (events) { t.pass(`Review Replaced: [${replaceCount}]`) }
-        })
-        q.on(enums.status.reviewEnabled, function reviewEnabled () {
-          if (events) { t.pass('Review enabled') }
-        })
-        q.on(enums.status.reviewDisabled, function reviewDisabled () {
-          if (events) { t.pass('Review disabled') }
+          ec.review++
+          t.pass(`Event: Review Replaced [${ec.review}] [${replaceCount}]`)
         })
         q.on(enums.status.paused, function paused () {
-          if (events) { t.pass('Queue paused') }
+          ec.paused++
+          t.pass(`Event: Queue paused [${ec.paused}]`)
         })
         q.on(enums.status.resumed, function resumed () {
-          if (events) { t.pass('Queue resumed') }
+          ec.resumed++
+          t.pass(`Event: Queue resumed [${ec.resumed}]`)
         })
         q.on(enums.status.processing, function processing (jobId) {
-          if (events) { t.pass(`Queue processing [${jobId}]`) }
+          ec.processing++
+          t.ok(is.uuid(jobId),
+            `Event: Queue processing [${ec.processing}] [${jobId}]`)
         })
         q.on(enums.status.completed, function completed (jobId) {
-          jobsCompletedTotal++
-          if (events) { t.pass(`Queue completed [${jobId}]`) }
+          ec.completed++
+          t.ok(is.uuid(jobId),
+            `Event: Queue completed [${ec.completed}] [${jobId}]`)
         })
         q.on(enums.status.cancelled, function cancelled (jobId) {
-          if (events) { t.pass(`Queue cancelled [${jobId}]`) }
+          ec.cancelled++
+          t.ok(is.uuid(jobId),
+            `Event: Queue cancelled [${ec.cancelled}] [${jobId}]`)
         })
         q.on(enums.status.idle, function idle () {
-          if (events) { t.pass(`Queue idle`) }
+          ec.idle++
+          if (ec.idle < 8) {
+            t.pass(`Event: Queue idle [${ec.idle}]`)
+          }
         })
         q.on(enums.status.failed, function failed (jobId) {
-          if (events) { t.pass(`Queue failed [${jobId}]`) }
+          ec.failed++
+          t.ok(is.uuid(jobId),
+            `Event: Queue failed [${ec.failed}] [${jobId}]`)
         })
       }
 
@@ -118,7 +133,7 @@ module.exports = function () {
       }).delay(jobDelay / 2).then(() => {
         t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
-        t.equal(jobsCompletedTotal, noOfJobsToCreate, `Queue has completed ${jobsCompletedTotal} jobs`)
+        t.equal(ec.completed, noOfJobsToCreate, `Queue has completed ${ec.completed} jobs`)
         t.ok(q.idle, 'Queue is idle')
 
         // ---------- Processing Restart on Job Add Test ----------
@@ -129,7 +144,7 @@ module.exports = function () {
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
       }).delay(allJobsDelay).then(() => {
-        t.equal(jobsCompletedTotal, noOfJobsToCreate * 2, `Queue has completed ${jobsCompletedTotal} jobs`)
+        t.equal(ec.completed, noOfJobsToCreate * 2, `Queue has completed ${ec.completed} jobs`)
         t.ok(q.idle, 'Queue is idle')
         q.pause()
 
@@ -142,7 +157,7 @@ module.exports = function () {
         q._paused = false
         return queueProcess.restart(q)
       }).delay(allJobsDelay).then(() => {
-        t.equal(jobsCompletedTotal, noOfJobsToCreate * 3, `Queue has completed ${jobsCompletedTotal} jobs`)
+        t.equal(ec.completed, noOfJobsToCreate * 3, `Queue has completed ${ec.completed} jobs`)
         t.pass('Restart processing succeeded')
         t.ok(q.idle, 'Queue is idle')
 
@@ -181,12 +196,19 @@ module.exports = function () {
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job is cancelled')
         return q.summary()
       }).then((queueSummary) => {
+        t.equal(ec.review, 2, 'Review event raised correct number of times')
+        t.equal(ec.paused, 2, 'Paused event raised correct number of times')
+        t.equal(ec.resumed, 2, 'Resumed event raised correct number of times')
+        t.equal(ec.processing, 35, 'Processing event raised correct number of times')
+        t.equal(ec.completed, 30, 'Completed event raised correct number of times')
+        t.equal(ec.cancelled, 1, 'Cancelled event raised')
+        t.equal(ec.idle, 7, 'idle event raised correct number of times')
+        t.equal(ec.failed, 4, 'failed event raised correct number of times')
         t.equal(queueSummary.completed, 30, 'Summary 30 jobs completed')
         t.equal(queueSummary.cancelled, 1, 'Summary 1 job cancelled')
         t.equal(queueSummary.failed, 1, 'Summary 1 job failed')
 
         // ---------- Test Cleanup ----------
-        events = false
         Object.keys(enums.status).forEach((n) => {
           q.listeners(n).forEach((f) => q.removeListener(n, f))
         })
