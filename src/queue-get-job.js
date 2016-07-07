@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 
-module.exports = function (q, jobId) {
+module.exports = function queueGetJob (q, jobId) {
   logger('getJobById: ', jobId)
   return Promise.resolve().then(() => {
     return jobParse.id(jobId)

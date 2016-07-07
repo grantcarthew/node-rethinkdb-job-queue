@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function (q) {
+module.exports = function queueGetNextJob (q) {
   logger('getNextJob')
   logger(`Concurrency: [${q.concurrency}] Running: [${q.running}]`)
   let quantity = q.concurrency - q.running

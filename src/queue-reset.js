@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function (q) {
+module.exports = function queueReset (q) {
   logger('reset')
   return q.r.db(q.db)
   .table(q.name)
