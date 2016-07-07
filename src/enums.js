@@ -18,6 +18,7 @@ const enums = module.exports = {
     waiting: 'waiting',
     active: 'active',
     processing: 'processing',
+    progress: 'progress',
     completed: 'completed',
     cancelled: 'cancelled',
     timeout: 'timeout',

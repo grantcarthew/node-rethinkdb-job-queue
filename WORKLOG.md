@@ -3,21 +3,18 @@
 Need tests for the following;
 queue-change
 queue
+job-parse + clean tests
 
 Consider a function to remove jobs after a time period (week? month? 6 months?)
-
-Name all functions exported
-
-Check enums...
-
-Check .emit(
+Consider enable/disable changefeed.
 
 Check database return values (prevent the change/update results from being returned to the user)
-
 check array return types
-
 check for more places to add logs
 
-Search for "TODO" in code
+## Final Checks
 
-DOCUMENTATION!!!! LOTS OF...
+-   Name all functions
+-   Check enums usage
+-   Check index usage
+-   Search for "TODO"

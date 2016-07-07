@@ -2,11 +2,11 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
+const enums = require('../src/enums')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
-const enums = require('../src/enums')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {

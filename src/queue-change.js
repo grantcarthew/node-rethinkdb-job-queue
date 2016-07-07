@@ -1,26 +1,34 @@
 const logger = require('./logger')(module)
+const is = require('./is')
+const jobParse = require('./job-parse')
 const enums = require('./enums')
 const Job = require('./job')
 const dbResult = require('./db-result')
 
 module.exports = function queueChange (q, err, change) {
   logger('queueChange')
-  const newData = change.new_val
-  const oldData = change.old_val
+  const newVal = change.new_val
+  const oldVal = change.old_val
+  // const queueId = newVal.queueId || oldVal.queueId
+  //
+  // // Prevent any change processing if change is caused by this queue
+  // if (queueId === q.id &&
+  //     !q.testing) {
+  //   console.log('SKIPPING DUE TO SELF')
+  //   return
+  // }
 
-  // Prevent any change processing if change is caused by this queue
-  if (newData && newData.queueId === q.id ||
-      !newData && oldData && oldData.queueId === q.id) { return }
-
-  // console.log('------------- QUEUE CHANGE -------------')
-  // console.dir(change)
-  // console.log('----------------------------------------')
+  if (q.testing) {
+    console.log('------------- QUEUE CHANGE -------------')
+    console.dir(change)
+    console.log('----------------------------------------')
+  }
 
   if (err) { throw new Error(err) }
 
   // New job added
-  if (newData && !oldData) {
-    q.emit(enums.status.enqueue, dbResult.toJob(q, change))
+  if (is.job(newVal) && !is.job(oldVal)) {
+    q.emit(enums.status.enqueue, q.createJob(null, newVal))
     //this.handler(newJob) TODO
   }
 
