@@ -15,7 +15,7 @@ module.exports = function () {
       t.plan(9)
 
       const q = testQueue()
-      const jobs = q.createJob(testData, null, 7)
+      const jobs = q.createJob(testData, 7)
       jobs[0].status = 'waiting'
       jobs[1].status = 'active'
       jobs[2].status = 'completed'

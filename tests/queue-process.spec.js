@@ -103,7 +103,7 @@ module.exports = function () {
       }
 
       // ---------- Test Setup ----------
-      jobs = q.createJob(testData, null, noOfJobsToCreate)
+      jobs = q.createJob(testData, noOfJobsToCreate)
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         q.pause()
@@ -139,7 +139,7 @@ module.exports = function () {
 
         // ---------- Processing Restart on Job Add Test ----------
         t.comment('queue-process: Process Restart on Job Add')
-        jobs = q.createJob(testData, null, noOfJobsToCreate)
+        jobs = q.createJob(testData, noOfJobsToCreate)
         q.concurrency = 10
         return q.addJob(jobs)
       }).then((savedJobs) => {
@@ -151,7 +151,7 @@ module.exports = function () {
 
         // ---------- Processing Restart Test ----------
         t.comment('queue-process: Process Restart')
-        jobs = q.createJob(testData, null, noOfJobsToCreate)
+        jobs = q.createJob(testData, noOfJobsToCreate)
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)

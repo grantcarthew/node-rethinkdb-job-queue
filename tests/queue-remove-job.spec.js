@@ -14,7 +14,7 @@ module.exports = function () {
       t.plan(16)
 
       const q = testQueue()
-      let jobs = q.createJob(testData, null, 3)
+      let jobs = q.createJob(testData, 3)
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
@@ -30,7 +30,7 @@ module.exports = function () {
         return q.getJob(jobs.map(j => j.id))
       }).then((getResult) => {
         t.equal(getResult.length, 0, 'Jobs no longer in database')
-        let jobs = q.createJob(testData, null, 3)
+        let jobs = q.createJob(testData, 3)
         return q.addJob(jobs)
       }).then((savedAgain) => {
         t.equal(savedAgain.length, 3, 'Jobs saved successfully (again)')

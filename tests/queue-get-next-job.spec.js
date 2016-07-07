@@ -210,7 +210,7 @@ module.exports = function () {
 
         // ---------- Testing dateRetry Values ----------
         t.comment('queue-get-next-job: dateRetry Values')
-        retryJobs = q.createJob(testData, null, 2)
+        retryJobs = q.createJob(testData, 2)
         retryJobs[0].dateRetry = moment().add(100, 'seconds').toDate()
         retryJobs[1].dateRetry = moment().add(-100, 'seconds').toDate()
         return q.addJob(retryJobs)
@@ -223,7 +223,7 @@ module.exports = function () {
 
         // ---------- Testing dateRetry with retryCount ----------
         t.comment('queue-get-next-job: dateRetry with retryCount')
-        retryJobs = q.createJob(testData, null, 4)
+        retryJobs = q.createJob(testData, 4)
         retryJobs[0].retryCount = 0
         retryJobs[0].dateRetry = moment().add(-100, 'seconds').toDate()
         retryJobs[1].retryCount = 1

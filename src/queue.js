@@ -82,8 +82,11 @@ class Queue extends EventEmitter {
   }
 
   createJob (data, options = this._jobOptions, quantity = 1) {
-    // TODO test for option === number switch
     logger('createJob')
+    if (is.integer(options)) {
+      quantity = options
+      options = this._jobOptions
+    }
     if (quantity > 1) {
       const jobs = []
       for (let i = 0; i < quantity; i++) {

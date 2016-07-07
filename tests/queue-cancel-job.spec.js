@@ -21,7 +21,7 @@ module.exports = function () {
       q.on(enums.status.cancelled, cancelled)
 
       const jobsToCreate = 5
-      let jobs = q.createJob(testData, null, jobsToCreate)
+      let jobs = q.createJob(testData, jobsToCreate)
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(jobs)
