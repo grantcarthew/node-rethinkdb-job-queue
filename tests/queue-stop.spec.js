@@ -49,8 +49,9 @@ module.exports = function () {
         t.notOk(this.ready, 'Queue is not ready')
         return queueDb.attach(q)
       }).then((ready) => {
-        q.paused = false
         t.ok(ready, 'Queue in a ready state')
+        return q.resume()
+      }).then(() => {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
@@ -68,8 +69,9 @@ module.exports = function () {
         t.notOk(q.ready, 'Queue is not ready')
         return queueDb.attach(q)
       }).then((ready) => {
-        q.paused = false
         t.ok(ready, 'Queue in a ready state')
+        return q.resume()
+      }).then(() => {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
@@ -92,8 +94,9 @@ module.exports = function () {
       }).then(() => {
         return queueDb.attach(q)
       }).then((ready) => {
-        q.paused = false
         t.ok(ready, 'Queue in a ready state')
+        return q.resume()
+      }).then(() => {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
@@ -116,8 +119,9 @@ module.exports = function () {
       }).then(() => {
         return queueDb.attach(q)
       }).then((ready) => {
-        q.paused = false
         t.ok(ready, 'Queue in a ready state')
+        return q.resume()
+      }).then(() => {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeed.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')

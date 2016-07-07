@@ -79,12 +79,16 @@ class Job {
 
   addLog (log) {
     logger('addLog')
-    return jobAddLog(this, log)
+    return this.q.ready.then(() => {
+      return jobAddLog(this, log)
+    })
   }
 
   cancel (reason) {
     logger('cancel')
-    return queueCancelJob(this, reason)
+    return this.q.ready.then(() => {
+      return queueCancelJob(this, reason)
+    })
   }
 }
 

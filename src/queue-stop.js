@@ -6,7 +6,7 @@ const queueDb = require('./queue-db')
 module.exports = function queueStop (q, stopTimeout, drainPool = true) {
   logger('queueStop with drain:', drainPool)
   q.emit(enums.status.stopping)
-  q.paused = true
+  q.pause()
   let stopIntervalId
   let stopTimeoutId
   function cleanUp () {

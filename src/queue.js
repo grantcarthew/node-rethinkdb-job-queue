@@ -36,7 +36,7 @@ class Queue extends EventEmitter {
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.handler = false
     this.running = 0
-    this._jobDefaultOptions = jobOptions()
+    this._jobOptions = jobOptions()
     this._changeFeed = false
     this._paused = false
     this.id = [
@@ -49,28 +49,21 @@ class Queue extends EventEmitter {
   }
 
   pause () {
-    this.paused = true
-  }
-
-  resume () {
-    this.paused = false
+    this._paused = true
+    this.emit(enums.status.paused)
   }
 
   get paused () {
     return this._paused
   }
 
-  set paused (isPaused) {
-    if (!is.boolean(isPaused)) { throw new Error(enums.error.isPausedInvalid) }
-    this._paused = isPaused
-    if (isPaused) {
-      this.emit(enums.status.paused)
-    } else {
-      this.ready.then(() => {
-        queueProcess.restart(this)
-        this.emit(enums.status.resumed)
-      })
-    }
+  resume () {
+    this._paused = false
+    return this.ready.then(() => {
+      queueProcess.restart(this)
+      this.emit(enums.status.resumed)
+      return true
+    })
   }
 
   get connection () {
@@ -78,17 +71,17 @@ class Queue extends EventEmitter {
     return this.r
   }
 
-  get jobDefaultOptions () {
-    logger('get jobDefaultOptions')
-    return this._jobDefaultOptions
+  get jobOptions () {
+    logger('get jobOptions')
+    return this._jobOptions
   }
 
-  set jobDefaultOptions (options) {
-    logger('set jobDefaultOptions')
-    this._jobDefaultOptions = jobOptions(options)
+  set jobOptions (options) {
+    logger('set jobOptions')
+    this._jobOptions = jobOptions(options)
   }
 
-  createJob (data, options = this._jobDefaultOptions, quantity = 1) {
+  createJob (data, options = this._jobOptions, quantity = 1) {
     // TODO test for option === number switch
     logger('createJob')
     if (quantity > 1) {
@@ -127,11 +120,6 @@ class Queue extends EventEmitter {
     return this.ready.then(() => {
       return queueGetJob(this, jobId)
     })
-  }
-
-  updateJobProgress (job, percent) {
-    // TODO
-
   }
 
   get jobConcurrency () {

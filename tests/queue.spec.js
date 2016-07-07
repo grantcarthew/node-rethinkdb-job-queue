@@ -5,7 +5,7 @@ const testError = require('./test-error')
 const testOptions = require('./test-options')
 const connectionOptionsOnly = testOptions.connection()
 const queueDefaultOptions = testOptions.queueDefault()
-const customJobDefaultOptions = testOptions.jobOptionsHigh()
+const customjobOptions = testOptions.jobOptionsHigh()
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
@@ -76,8 +76,8 @@ module.exports = function () {
         console.dir(deleteResult)
       }).catch(err => testError(err, module, t))
 
-      q.jobDefaultOptions = customJobDefaultOptions
-      t.deepEqual(q.jobDefaultOptions, customJobDefaultOptions, 'Set default job options')
+      q.jobOptions = customjobOptions
+      t.deepEqual(q.jobOptions, customjobOptions, 'Set default job options')
     })
   })
 }

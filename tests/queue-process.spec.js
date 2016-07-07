@@ -106,7 +106,7 @@ module.exports = function () {
       jobs = q.createJob(testData, null, noOfJobsToCreate)
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q.paused = true
+        q.pause()
         addEvents()
 
         // ---------- Processing, Pause, and Concurrency Test ----------
@@ -118,7 +118,8 @@ module.exports = function () {
         return queueProcess.addHandler(q, testHandler)
       }).delay(jobDelay / 2).then(() => {
         t.equal(q.running, 0, 'Queue not processing jobs')
-        q.paused = false
+        return q.resume()
+      }).then(() => {
         return queueProcess.addHandler(q, testHandler).then(() => {
           t.fail('Calling queue-process twice should fail and is not')
         }).catch((err) => {
