@@ -16,26 +16,26 @@ module.exports = function () {
       const job2 = q.createJob(testData)
       const job3 = q.createJob(testData)
       const mockArray = [
-        job1.cleanCopy,
-        job2.cleanCopy,
-        job3.cleanCopy
+        job1.getCleanCopy(),
+        job2.getCleanCopy(),
+        job3.getCleanCopy()
       ]
       const mockChange = {
         changes: [
           {
-            new_val: job1.cleanCopy
+            new_val: job1.getCleanCopy()
           },
           {
-            new_val: job2.cleanCopy
+            new_val: job2.getCleanCopy()
           },
           {
-            new_val: job3.cleanCopy
+            new_val: job3.getCleanCopy()
           }
         ],
         errors: 1
       }
       const mockSingleChange = {
-        new_val: job1.cleanCopy,
+        new_val: job1.getCleanCopy(),
         what: '?'
       }
 
@@ -63,11 +63,11 @@ module.exports = function () {
         return dbResult.toJob(q, mockSingleChange)
       }).then((singleResult) => {
         t.equal(singleResult.length, 1, 'Single change returns jobs array')
-        t.deepEqual(singleResult[0].cleanCopy, job1.cleanCopy, 'Single returned job is valid')
-        return dbResult.toJob(q, job1.cleanCopy)
+        t.deepEqual(singleResult[0].getCleanCopy(), job1.getCleanCopy(), 'Single returned job is valid')
+        return dbResult.toJob(q, job1.getCleanCopy())
       }).then((jobResult) => {
         t.equal(jobResult.length, 1, 'Job data returns jobs array')
-        t.deepEqual(jobResult[0].cleanCopy, job1.cleanCopy, 'Job data returned job is valid')
+        t.deepEqual(jobResult[0].getCleanCopy(), job1.getCleanCopy(), 'Job data returned job is valid')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

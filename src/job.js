@@ -57,8 +57,8 @@ class Job {
     })
   }
 
-  get cleanCopy () {
-    logger('cleanCopy')
+  getCleanCopy () {
+    logger('getCleanCopy')
     const jobCopy = Object.assign({}, this)
     jobCopy.priority = enums.priority[jobCopy.priority]
     delete jobCopy.q

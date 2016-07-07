@@ -48,7 +48,7 @@ module.exports = function () {
 
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
-      const cleanJob = newJob.cleanCopy
+      const cleanJob = newJob.getCleanCopy()
       t.equal(Object.keys(cleanJob).length, 13, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
       t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
