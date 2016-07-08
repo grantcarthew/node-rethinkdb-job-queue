@@ -16,8 +16,8 @@ module.exports = function () {
       q.on('ready', () => {
         t.pass('Event: Queue ready')
       })
-      q.on('enqueue', (job) => {
-        t.pass('Queue enqueue event called')
+      q.on('added', (job) => {
+        t.pass('Queue added event called')
       })
       q.on('processing', (processingValue) => {
         t.pass('Queue processing event called')

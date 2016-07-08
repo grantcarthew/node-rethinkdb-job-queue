@@ -14,7 +14,7 @@ const enums = module.exports = {
   status: {
     ready: 'ready',
     created: 'created',
-    enqueue: 'enqueue',
+    added: 'added',
     waiting: 'waiting',
     active: 'active',
     processing: 'processing',

@@ -28,11 +28,11 @@ module.exports = function queueChange (q, err, change) {
 
   // New job added
   if (is.job(newVal) && !is.job(oldVal)) {
-    q.emit(enums.status.enqueue, q.createJob(null, newVal))
+    q.emit(enums.status.added, q.createJob(null, newVal))
     setTimeout(function () {
       queueProcess.restart(q)
     }, Math.floor(Math.random() * 1000))
-    return enums.status.enqueue
+    return enums.status.added
   }
 
   // Job removed

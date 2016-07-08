@@ -15,7 +15,7 @@ module.exports = function () {
 
       const q = testQueue()
       let ec = {
-        enqueue: 0,
+        added: 0,
         active: 0,
         progress: 0,
         completed: 0,
@@ -27,9 +27,9 @@ module.exports = function () {
         removed: 0
       }
       function addEvents () {
-        q.on(enums.status.enqueue, function enqueue (job) {
-          ec.enqueue++
-          t.ok(is.uuid(job.id), `Event: Enqueue [${ec.enqueue}] [${job.id}]`)
+        q.on(enums.status.added, function added (job) {
+          ec.added++
+          t.ok(is.uuid(job.id), `Event: added [${ec.added}] [${job.id}]`)
         })
         q.on(enums.status.removed, function removed (jobId) {
           ec.removed++
