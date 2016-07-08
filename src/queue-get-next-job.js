@@ -33,11 +33,11 @@ module.exports = function queueGetNextJob (q) {
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {
-      if (updateResult.changes) {
-        for (let change of updateResult.changes) {
-          q.emit(enums.status.active, change.new_val.id)
-        }
-      }
       return dbResult.toJob(q, updateResult)
+    }).then((updatedJobs) => {
+      for (let job of updatedJobs) {
+        q.emit(enums.status.active, job)
+      }
+      return updatedJobs
     })
 }

@@ -37,7 +37,8 @@ module.exports.job = function isJob (value) {
   if (!isUuid(value.id)) { return false }
   if (!value.queueId) { return false }
   if (!moment.isDate(value.dateCreated)) { return false }
-  if (!isNumber(value.priority)) { return false }
+  if (!isNumber(value.priority) &&
+      !Object.keys(enums.priority).includes(value.priority)) { return false }
   if (!Object.keys(enums.status).includes(value.status)) { return false }
   return true
 }

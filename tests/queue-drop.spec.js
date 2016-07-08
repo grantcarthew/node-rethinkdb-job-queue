@@ -19,7 +19,7 @@ module.exports = function () {
 
       function droppedEventHandler () {
         t.pass('Event: Queue dropped')
-        this.removeListener(enums.status.removed, droppedEventHandler)
+        this.removeListener(enums.status.dropped, droppedEventHandler)
       }
       q.on(enums.status.dropped, droppedEventHandler)
 

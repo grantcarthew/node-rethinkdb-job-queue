@@ -1,13 +1,12 @@
 # WORKLOG
 
 Need tests for the following;
-queue-get-next-job active event tests
+is tests
 add active event tests throughout
-queue-drop status dropped
 queue-change
 queue
 queue-process addHandler when the q is not the master.
-Consider a function to remove jobs after a time period (week? month? 6 months?)
+Consider a function to remove jobs after a time period
 Consider enable/disable changefeed.
 
 Check database return values (prevent the change/update results from being returned to the user)

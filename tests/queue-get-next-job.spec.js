@@ -12,11 +12,17 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-get-next-job', (t) => {
-      t.plan(92)
+      t.plan(113)
 
       // ---------- Creating Priority Test Jobs ----------
       const q = testQueue()
       q.concurrency = 1
+      let activeCount = 0
+      q.on(enums.status.active, function active (job) {
+        activeCount++
+        t.ok(is.job(job), `Event: Job Active [${activeCount}] [${job.id}]`)
+      })
+
       const jobLowest = q.createJob(testData, {priority: 'lowest'})
       jobLowest.status = 'waiting'
       jobLowest.data = 'Lowest'
@@ -251,6 +257,7 @@ module.exports = function () {
       }).then((retryGet3) => {
         t.equal(retryGet3.length, 1, 'Last job retrieved successfully')
         t.equal(retryGet3[0].id, retryJobs[0].id, 'Last job is valid')
+        t.equal(activeCount, 20, 'Active event count valid')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

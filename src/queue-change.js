@@ -20,7 +20,7 @@ module.exports = function queueChange (q, err, change) {
   // Prevent any change processing if change is caused by this queue
   if (queueId === q.id &&
       !q.testing) {
-    console.log('SKIPPING DUE TO SELF')
+    // console.log('SKIPPING DUE TO SELF')
     return
   }
 
