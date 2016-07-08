@@ -2,7 +2,8 @@
 
 Need tests for the following;
 is tests
-add active event tests throughout
+should we only return ids for events?
+add active, added event tests throughout
 queue-change
 queue
 queue-process addHandler when the q is not the master.

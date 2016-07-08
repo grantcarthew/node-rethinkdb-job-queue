@@ -11,9 +11,16 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-add-job', (t) => {
-      t.plan(8)
+      t.plan(12)
 
       const q = testQueue()
+      let addCount = 0
+      function addedEventHandler (job) {
+        addCount++
+        t.ok(is.job(job), `Event: Job Added [${addCount}] [${job.id}]`)
+      }
+      q.on(enums.status.added, addedEventHandler)
+
       const job = q.createJob(testData)
       const jobs = [
         q.createJob(testData),
@@ -62,6 +69,7 @@ module.exports = function () {
           t.equal(err.message, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
         })
       }).then(() => {
+        t.equal(addCount, 3, 'Jobs added event count is valid')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

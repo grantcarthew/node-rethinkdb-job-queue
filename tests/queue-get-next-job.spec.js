@@ -18,10 +18,11 @@ module.exports = function () {
       const q = testQueue()
       q.concurrency = 1
       let activeCount = 0
-      q.on(enums.status.active, function active (job) {
+      function activeEventHandler (job) {
         activeCount++
         t.ok(is.job(job), `Event: Job Active [${activeCount}] [${job.id}]`)
-      })
+      }
+      q.on(enums.status.active, activeEventHandler)
 
       const jobLowest = q.createJob(testData, {priority: 'lowest'})
       jobLowest.status = 'waiting'
@@ -258,6 +259,7 @@ module.exports = function () {
         t.equal(retryGet3.length, 1, 'Last job retrieved successfully')
         t.equal(retryGet3[0].id, retryJobs[0].id, 'Last job is valid')
         t.equal(activeCount, 20, 'Active event count valid')
+        q.removeListener(enums.status.active, activeEventHandler)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

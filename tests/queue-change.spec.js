@@ -35,6 +35,10 @@ module.exports = function () {
           ec.active++
           t.ok(is.uuid(job.id), `Event: active [${ec.active}] [${job.id}]`)
         })
+        q.on(enums.status.completed, function completed (jobId) {
+          ec.completed++
+          t.ok(is.uuid(jobId), `Event: completed [${ec.completed}] [${jobId}]`)
+        })
         q.on(enums.status.removed, function removed (jobId) {
           ec.removed++
           t.ok(is.uuid(jobId), `Event: Removed [${ec.removed}] [${job.id}]`)
