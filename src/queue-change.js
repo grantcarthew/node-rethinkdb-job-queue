@@ -4,24 +4,24 @@ const jobParse = require('./job-parse')
 const enums = require('./enums')
 const Job = require('./job')
 const dbResult = require('./db-result')
+const queueProcess = require('./queue-process')
 
 module.exports = function queueChange (q, err, change) {
   logger('queueChange')
   const newVal = change.new_val
   const oldVal = change.old_val
-  // const queueId = newVal.queueId || oldVal.queueId
-  //
-  // // Prevent any change processing if change is caused by this queue
-  // if (queueId === q.id &&
-  //     !q.testing) {
-  //   console.log('SKIPPING DUE TO SELF')
-  //   return
-  // }
+  let queueId = false
+  if (newVal && newVal.id) { queueId = newVal.queueId }
+  if (!newVal && oldVal && oldVal.queueId) { queueId = oldVal.queueId }
 
-  if (q.testing) {
-    console.log('------------- QUEUE CHANGE -------------')
-    console.dir(change)
-    console.log('----------------------------------------')
+  // console.log('Change queueId: ' + queueId)
+  // console.log('Current queueId: ' + q.id)
+
+  // Prevent any change processing if change is caused by this queue
+  if (queueId === q.id &&
+      !q.testing) {
+    console.log('SKIPPING DUE TO SELF')
+    return
   }
 
   if (err) { throw new Error(err) }
@@ -29,9 +29,22 @@ module.exports = function queueChange (q, err, change) {
   // New job added
   if (is.job(newVal) && !is.job(oldVal)) {
     q.emit(enums.status.enqueue, q.createJob(null, newVal))
-    //this.handler(newJob) TODO
+    setTimeout(function () {
+      queueProcess.restart(q)
+    }, Math.floor(Math.random() * 1000))
+    return enums.status.enqueue
   }
 
+  // Job removed
+  if (!is.job(newVal) && is.job(oldVal)) {
+    q.emit(enums.status.removed, oldVal.id)
+  }
+
+  if (q.testing) {
+    console.log('------------- QUEUE CHANGE -------------')
+    console.dir(change)
+    console.log('----------------------------------------')
+  }
 
 
   // Status change
@@ -48,26 +61,6 @@ module.exports = function queueChange (q, err, change) {
   //       }
   //       q.emit()
   //     }
-  return
-
-  message = JSON.parse(message)
-  if (message.event === 'failed' || message.event === 'retrying') {
-    message.data = Error(message.data)
-  }
-
-  this.emit('job ' + message.event, message.id, message.data)
-
-  if (this.jobs[message.id]) {
-    if (message.event === 'progress') {
-      this.jobs[message.id].progress = message.data
-    } else if (message.event === 'retrying') {
-      this.jobs[message.id].options.retries -= 1
-    }
-
-    this.jobs[message.id].emit(message.event, message.data)
-
-    if (message.event === 'succeeded' || message.event === 'failed') {
-      delete this.jobs[message.id]
-    }
-  }
+  //
+  console.log('####################################')
 }

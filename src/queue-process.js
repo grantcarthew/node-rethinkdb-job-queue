@@ -102,7 +102,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q.running = 0
   return Promise.resolve().then(() => {
     if (q.isMaster) { return null }
-    return dbReview.run(q, enums.reviewRun.once)
+    return dbReview.runOnce(q)
   }).then(() => {
     setImmediate(jobTick, q)
     return null

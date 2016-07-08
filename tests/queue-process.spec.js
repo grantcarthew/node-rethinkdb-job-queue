@@ -162,10 +162,6 @@ module.exports = function () {
         t.pass('Restart processing succeeded')
         t.ok(q.idle, 'Queue is idle')
 
-      // DELETE THE following
-      //   return queueProcess.addHandler(q, testHandler)
-      // }).then(() => {
-
         // ---------- Processing with Job Timeout Test ----------
         t.comment('queue-process: Processing with Job Timeout')
         jobs = q.createJob(testData)

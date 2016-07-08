@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
-      t.plan(3)
+      t.plan(30)
 
       const q = testQueue()
       let ec = {
@@ -24,29 +24,42 @@ module.exports = function () {
         failed: 0,
         retry: 0,
         reset: 0,
-        deleted: 0
+        removed: 0
       }
       function addEvents () {
         q.on(enums.status.enqueue, function enqueue (job) {
           ec.enqueue++
           t.ok(is.uuid(job.id), `Event: Enqueue [${ec.enqueue}] [${job.id}]`)
         })
+        q.on(enums.status.removed, function removed (jobId) {
+          ec.removed++
+          t.ok(is.uuid(jobId), `Event: Removed [${ec.removed}] [${job.id}]`)
+        })
       }
 
 
       const job = q.createJob(testData)
 
-      return q.ready.then(() => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
         q.testing = true
+        q.pause()
+        q.process((j, next) => {
+          t.equal(j.id, job.id, `Job Processed [${j.id}]`)
+          next(null, 'queue-change')
+        })
         addEvents()
       }).then(() => {
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        // return q.reset()
+        return q.removeJob(job.id)
       }).then((resetResult) => {
+        t.ok(!q.paused, 'Queue not paused')
+        return q.resume()
+      }).then(() => {
         t.skip(resetResult >= 0, 'Queue reset')
-        resolve()
+        // resolve()
       }).catch(err => testError(err, module, t))
     })
   })

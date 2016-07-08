@@ -21,7 +21,7 @@ const queueReset = require('./queue-reset.spec')
 const queueDb = require('./queue-db.spec')
 const queueProcess = require('./queue-process.spec')
 const queueStop = require('./queue-stop.spec')
-const queueDelete = require('./queue-delete.spec')
+const queueDrop = require('./queue-drop.spec')
 const jobCompleted = require('./job-completed.spec')
 const jobFailed = require('./job-failed.spec')
 const dbReview = require('./db-review.spec')
@@ -66,11 +66,11 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return queueStop()
 }).then(() => {
-  return queueDelete()
+  return queueDrop()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()
-  // TODO: Change below to delete and re-run tests before publishing
+  // TODO: Change below to drop and re-run tests before publishing
   testQueue().stop(100)
   return true
 })

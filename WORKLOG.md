@@ -1,10 +1,10 @@
 # WORKLOG
 
 Need tests for the following;
+queue-drop status dropped
 queue-change
 queue
-job-parse + clean tests
-
+queue-process addHandler when the q is not the master.
 Consider a function to remove jobs after a time period (week? month? 6 months?)
 Consider enable/disable changefeed.
 

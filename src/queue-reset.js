@@ -9,9 +9,9 @@ module.exports = function queueReset (q) {
   .delete()
   .run()
   .then((resetResult) => {
-    return dbResult.status(q, resetResult, enums.status.deleted)
-  }).then((totalDeleted) => {
-    q.emit(enums.status.reset, totalDeleted)
-    return totalDeleted
+    return dbResult.status(q, resetResult, enums.dbResult.deleted)
+  }).then((totalRemoved) => {
+    q.emit(enums.status.reset, totalRemoved)
+    return totalRemoved
   })
 }

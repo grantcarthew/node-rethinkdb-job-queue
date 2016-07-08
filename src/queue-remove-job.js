@@ -1,5 +1,6 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
+const enums = require('./enums')
 const jobParse = require('./job-parse')
 const dbResult = require('./db-result')
 
@@ -14,7 +15,7 @@ module.exports = function removeJob (q, job) {
     .getAll(...jobs)
     .delete()
     .run()
-  }).then((deleteResult) => {
-    return dbResult.status(q, deleteResult, 'deleted')
+  }).then((removeResult) => {
+    return dbResult.status(q, removeResult, enums.dbResult.deleted)
   })
 }

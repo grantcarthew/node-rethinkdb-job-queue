@@ -14,7 +14,7 @@ const queueRemoveJob = require('./queue-remove-job')
 const queueReset = require('./queue-reset')
 const queueSummary = require('./queue-summary')
 const queueStop = require('./queue-stop')
-const queueDelete = require('./queue-delete')
+const queueDrop = require('./queue-drop')
 const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
@@ -145,7 +145,7 @@ class Queue extends EventEmitter {
   review () {
     logger('review')
     return this.ready.then(() => {
-      return dbReview.run(this)
+      return dbReview.runOnce(this)
     })
   }
 
@@ -173,10 +173,10 @@ class Queue extends EventEmitter {
     return queueStop(this, stopTimeout)
   }
 
-  delete (deleteTimeout) {
-    logger('delete')
-    if (!deleteTimeout) { throw new Error(enums.error.missingTimeout) }
-    return queueDelete(this, deleteTimeout)
+  drop (dropTimeout) {
+    logger('drop')
+    if (!dropTimeout) { throw new Error(enums.error.missingTimeout) }
+    return queueDrop(this, dropTimeout)
   }
 }
 

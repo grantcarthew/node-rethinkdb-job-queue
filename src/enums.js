@@ -33,7 +33,8 @@ const enums = module.exports = {
     reset: 'reset',
     stopping: 'stopping',
     stopped: 'stopped',
-    deleted: 'deleted'
+    removed: 'removed',
+    dropped: 'dropped'
   },
   index: {
     status: 'status',
@@ -41,6 +42,15 @@ const enums = module.exports = {
     priority_dateCreated: 'priority_dateCreated',
     active_dateRetry: 'active_dateRetry',
     inactive_priority_dateCreated: 'inactive_priority_dateCreated'
+  },
+  dbResult: {
+    deleted: 'deleted',
+    errors: 'errors',
+    inserted: 'inserted',
+    replaced: 'replaced',
+    skipped: 'skipped',
+    changes: 'changes',
+    unchanged: 'unchanged'
   },
   log: {
     information: 'information',
@@ -61,8 +71,8 @@ const enums = module.exports = {
     jobAlreadyAdded: 'Job is already added to the queue',
     jobInvalid: 'Job object is invalid',
     processTwice: 'Cannot call queue process twice',
-    missingTimeout: 'Timeout parameter required to stop or delete queue',
-    queueDeleted: 'The queue has been deleted',
+    missingTimeout: 'Timeout parameter required to stop or drop queue',
+    queueDropped: 'The queue has been dropped',
     idInvalid: 'The job id is invalid',
     reviewOptionInvalid: 'The queue.review option is invalid',
     dbError: 'RethinkDB returned an error',

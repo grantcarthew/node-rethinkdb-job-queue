@@ -19,7 +19,7 @@ module.exports.attach = function dbAttach (q) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
         q._changeFeed = changeFeed
         q._changeFeed.each((err, change) => {
-          queueChange(q, err, change)
+          return queueChange(q, err, change)
         })
       })
     }

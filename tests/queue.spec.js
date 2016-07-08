@@ -70,10 +70,10 @@ module.exports = function () {
         console.log('~~~~~~~~~~ summary ~~~~~~~~~~')
         console.dir(d)
       }).then(() => {
-        return q.delete(4000)
-      }).then((deleteResult) => {
-        console.log('~~~~~~~~~~ deleteResult ~~~~~~~~~~')
-        console.dir(deleteResult)
+        return q.drop(4000)
+      }).then((removeResult) => {
+        console.log('~~~~~~~~~~ removeResult ~~~~~~~~~~')
+        console.dir(removeResult)
       }).catch(err => testError(err, module, t))
 
       q.jobOptions = customjobOptions

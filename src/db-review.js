@@ -57,7 +57,7 @@ function jobReview (q) {
   })
   .run()
   .then((updateResult) => {
-    return dbResult.status(q, updateResult, 'replaced')
+    return dbResult.status(q, updateResult, enums.dbResult.replaced)
   }).then((replaceCount) => {
     q.emit(enums.status.review, replaceCount)
     queueProcess.restart(q)

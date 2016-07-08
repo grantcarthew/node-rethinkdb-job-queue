@@ -33,8 +33,8 @@ module.exports = function () {
       }
       q.on(enums.status.reset, resetEventHandler)
 
-      return q.reset().then((initialDelete) => {
-        t.ok(is.integer(initialDelete), 'Initial reset succeeded')
+      return q.reset().then((removed) => {
+        t.ok(is.integer(removed), 'Initial reset succeeded')
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 3, 'Jobs saved successfully')

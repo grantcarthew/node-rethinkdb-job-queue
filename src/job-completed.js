@@ -24,6 +24,6 @@ module.exports = function completed (job, data) {
     queueId: job.q.id
   }).run().then((updateResult) => {
     job.q.emit(enums.status.completed, job.id)
-    return dbResult.status(job.q, updateResult, 'replaced')
+    return dbResult.status(job.q, updateResult, enums.dbResult.replaced)
   })
 }

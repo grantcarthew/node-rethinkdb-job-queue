@@ -67,8 +67,8 @@ module.exports = function () {
         job2
       ]
 
-      return q.reset().then((deleted) => {
-        t.ok(is.integer(deleted), 'Queue reset')
+      return q.reset().then((removed) => {
+        t.ok(is.integer(removed), 'Queue reset')
         return queueAddJob(q, jobs, true)
       }).then((savedJobs) => {
         t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
