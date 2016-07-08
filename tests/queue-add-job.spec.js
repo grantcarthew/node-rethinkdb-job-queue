@@ -14,10 +14,10 @@ module.exports = function () {
       t.plan(12)
 
       const q = testQueue()
-      let addCount = 0
+      let addedCount = 0
       function addedEventHandler (job) {
-        addCount++
-        t.ok(is.job(job), `Event: Job Added [${addCount}] [${job.id}]`)
+        addedCount++
+        t.ok(is.job(job), `Event: Job Added [${addedCount}] [${job.id}]`)
       }
       q.on(enums.status.added, addedEventHandler)
 
@@ -69,7 +69,8 @@ module.exports = function () {
           t.equal(err.message, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
         })
       }).then(() => {
-        t.equal(addCount, 3, 'Jobs added event count is valid')
+        t.equal(addedCount, 3, 'Jobs added event count is valid')
+        q.removeListener(enums.status.added, addedEventHandler)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
