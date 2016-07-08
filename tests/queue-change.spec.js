@@ -31,6 +31,10 @@ module.exports = function () {
           ec.added++
           t.ok(is.uuid(job.id), `Event: added [${ec.added}] [${job.id}]`)
         })
+        q.on(enums.status.active, function active (job) {
+          ec.active++
+          t.ok(is.uuid(job.id), `Event: active [${ec.active}] [${job.id}]`)
+        })
         q.on(enums.status.removed, function removed (jobId) {
           ec.removed++
           t.ok(is.uuid(jobId), `Event: Removed [${ec.removed}] [${job.id}]`)
@@ -53,11 +57,13 @@ module.exports = function () {
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        return q.removeJob(job.id)
-      }).then((resetResult) => {
-        t.ok(!q.paused, 'Queue not paused')
         return q.resume()
       }).then(() => {
+        t.ok(!q.paused, 'Queue not paused')
+        //return q.removeJob(job.id)
+      }).then((removeResult) => {
+        //return q.reset()
+      }).then((resetResult) => {
         t.skip(resetResult >= 0, 'Queue reset')
         // resolve()
       }).catch(err => testError(err, module, t))

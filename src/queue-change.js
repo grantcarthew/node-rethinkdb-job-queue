@@ -35,9 +35,28 @@ module.exports = function queueChange (q, err, change) {
     return enums.status.added
   }
 
+  // Job active
+  if (is.job(newVal) &&
+      newVal.status === enums.status.active &&
+      is.job(oldVal) &&
+      oldVal.status !== enums.status.active) {
+    q.emit(enums.status.active, q.createJob(null, newVal))
+    return enums.status.active
+  }
+
+  // Job completed
+  if (is.job(newVal) &&
+      newVal.status === enums.status.completed &&
+      is.job(oldVal) &&
+      oldVal.status !== enums.status.completed) {
+    q.emit(enums.status.completed, newVal.id)
+    return enums.status.completed
+  }
+
   // Job removed
   if (!is.job(newVal) && is.job(oldVal)) {
     q.emit(enums.status.removed, oldVal.id)
+    return enums.status.removed
   }
 
   if (q.testing) {

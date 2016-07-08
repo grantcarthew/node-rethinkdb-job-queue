@@ -1,6 +1,8 @@
 # WORKLOG
 
 Need tests for the following;
+queue-get-next-job active event tests
+add active event tests throughout
 queue-drop status dropped
 queue-change
 queue
