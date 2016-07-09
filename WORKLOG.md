@@ -4,11 +4,19 @@ Need tests for the following;
 is tests
 should we only return ids for events?
 add active, added event tests throughout
+add more error events?
 queue-change
 queue
 queue-process addHandler when the q is not the master.
 Consider a function to remove jobs after a time period
 Consider enable/disable changefeed.
+
+Non-events;
+created: 'created': Not needed
+waiting: 'waiting': Not needed
+timeout: 'timeout': ???
+retry: 'retry': ???
+
 
 Check database return values (prevent the change/update results from being returned to the user)
 check array return types
