@@ -13,7 +13,7 @@ module.exports = function summary (q) {
       cancelled: 0,
       timeout: 0,
       retry: 0,
-      failed: 0
+      terminated: 0
     }
     for (let stat of reduction) {
       summary[stat.group.status] = stat.reduction

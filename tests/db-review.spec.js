@@ -96,7 +96,7 @@ module.exports = function () {
         t.ok(!reviewedJob1[0].log[0].data, 'Log data is null')
         return q.getJob(job2.id)
       }).then((reviewedJob2) => {
-        t.equal(reviewedJob2[0].status, enums.status.failed, 'Reviewed job 2 is failed status')
+        t.equal(reviewedJob2[0].status, enums.status.terminated, 'Reviewed job 2 is terminated status')
         t.equal(reviewedJob2[0].priority, 'normal', 'Reviewed job 2 is normal priority')
         t.ok(moment.isDate(reviewedJob2[0].dateTimeout), 'Reviewed job 2 dateTimeout is a date')
         t.ok(moment.isDate(reviewedJob2[0].dateFailed), 'Reviewed job 2 dateFailed is a date')
@@ -104,7 +104,7 @@ module.exports = function () {
         t.ok(moment.isDate(reviewedJob2[0].log[0].date), 'Log date is a date')
         t.equal(reviewedJob2[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(reviewedJob2[0].log[0].type, enums.log.error, 'Log type is error')
-        t.equal(reviewedJob2[0].log[0].status, enums.status.failed, 'Log status is failed')
+        t.equal(reviewedJob2[0].log[0].status, enums.status.terminated, 'Log status is terminated')
         t.ok(reviewedJob2[0].log[0].retryCount >= 0, 'Log retryCount is valid')
         t.ok(moment.isDate(reviewedJob2[0].log[0].dateRetry), 'Log dateRetry is a date')
         t.ok(reviewedJob2[0].log[0].message, 'Log message is present')

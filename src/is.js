@@ -12,7 +12,7 @@ module.exports.boolean = function isBoolean (value) {
 }
 
 module.exports.date = function idDate (value) {
-  return moment(value).isDate()
+  return moment.isDate(value)
 }
 
 const isUuid = module.exports.uuid = function isUuid (value) {

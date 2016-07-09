@@ -2,13 +2,14 @@
 
 Need tests for the following;
 is tests
-add active, added event tests throughout
+add active, added, retry, terminated event tests throughout
 add more error events?
 queue-change
 queue
 queue-process addHandler when the q is not the master.
 Consider a function to remove jobs after a time period
 Consider enable/disable changefeed.
+update inactive_priority_dateCreated index
 
 Non-events;
 created: 'created': Not needed

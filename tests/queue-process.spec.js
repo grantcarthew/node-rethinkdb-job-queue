@@ -13,7 +13,7 @@ const dbReview = require('../src/db-review')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(153)
+      t.plan(155)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -35,7 +35,8 @@ module.exports = function () {
         completed: 0,
         cancelled: 0,
         idle: 0,
-        failed: 0
+        failed: 0,
+        terminated: 0
       }
       function addEvents () {
         q.on(enums.status.review, function review (replaceCount) {
@@ -75,6 +76,11 @@ module.exports = function () {
           ec.failed++
           t.ok(is.uuid(jobId),
             `Event: Queue failed [${ec.failed}] [${jobId}]`)
+        })
+        q.on(enums.status.terminated, function terminated (jobId) {
+          ec.terminated++
+          t.ok(is.uuid(jobId),
+            `Event: Queue terminated [${ec.terminated}] [${jobId}]`)
         })
       }
 
@@ -201,9 +207,10 @@ module.exports = function () {
         t.equal(ec.cancelled, 1, 'Cancelled event raised')
         t.equal(ec.idle, 7, 'idle event raised correct number of times')
         t.equal(ec.failed, 4, 'failed event raised correct number of times')
+        t.equal(ec.terminated, 1, 'terminated event raised correct number of times')
         t.equal(queueSummary.completed, 30, 'Summary 30 jobs completed')
         t.equal(queueSummary.cancelled, 1, 'Summary 1 job cancelled')
-        t.equal(queueSummary.failed, 1, 'Summary 1 job failed')
+        t.equal(queueSummary.terminated, 1, 'Summary 1 job terminated')
 
         // ---------- Test Cleanup ----------
         Object.keys(enums.status).forEach((n) => {

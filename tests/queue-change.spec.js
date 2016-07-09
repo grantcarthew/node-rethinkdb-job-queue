@@ -27,13 +27,13 @@ module.exports = function () {
         removed: 0
       }
       function addEvents () {
-        q.on(enums.status.added, function added (job) {
+        q.on(enums.status.added, function added (jobId) {
           ec.added++
-          t.ok(is.uuid(job.id), `Event: added [${ec.added}] [${job.id}]`)
+          t.ok(is.uuid(jobId), `Event: added [${ec.added}] [${jobId}]`)
         })
-        q.on(enums.status.active, function active (job) {
+        q.on(enums.status.active, function active (jobId) {
           ec.active++
-          t.ok(is.uuid(job.id), `Event: active [${ec.active}] [${job.id}]`)
+          t.ok(is.uuid(jobId), `Event: active [${ec.active}] [${jobId}]`)
         })
         q.on(enums.status.completed, function completed (jobId) {
           ec.completed++
@@ -41,7 +41,7 @@ module.exports = function () {
         })
         q.on(enums.status.removed, function removed (jobId) {
           ec.removed++
-          t.ok(is.uuid(jobId), `Event: Removed [${ec.removed}] [${job.id}]`)
+          t.ok(is.uuid(jobId), `Event: Removed [${ec.removed}] [${jobId}]`)
         })
       }
 

@@ -65,7 +65,7 @@ function createIndexInactivePriorityDateCreated (q) {
         null,
         row('status').eq('cancelled'),
         null,
-        row('status').eq('failed'),
+        row('status').eq('terminated'),
         null, [
           row('priority'),
           row('dateRetry'),

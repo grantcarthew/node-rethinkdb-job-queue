@@ -22,7 +22,7 @@ module.exports = function () {
       jobs[3].status = 'cancelled'
       jobs[4].status = 'timeout'
       jobs[5].status = 'retry'
-      jobs[6].status = 'failed'
+      jobs[6].status = 'terminated'
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
@@ -36,7 +36,7 @@ module.exports = function () {
         t.equal(summary.cancelled, 1, 'Queue status summary includes cancelled')
         t.equal(summary.timeout, 1, 'Queue status summary includes timeout')
         t.equal(summary.retry, 1, 'Queue status summary includes retry')
-        t.equal(summary.failed, 1, 'Queue status summary includes failed')
+        t.equal(summary.terminated, 1, 'Queue status summary includes terminated')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

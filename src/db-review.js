@@ -18,7 +18,7 @@ function jobReview (q) {
     status: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),
       enums.status.timeout,
-      enums.status.failed
+      enums.status.terminated
     ),
     priority: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),
@@ -47,7 +47,7 @@ function jobReview (q) {
       status: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
         enums.status.timeout,
-        enums.status.failed
+        enums.status.terminated
       ),
       retryCount: q.r.row('retryCount'),
       message: 'Master: ' + enums.message.timeout,

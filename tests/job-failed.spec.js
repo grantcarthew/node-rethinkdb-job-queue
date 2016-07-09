@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed', (t) => {
-      t.plan(62)
+      t.plan(69)
 
       const q = testQueue()
       const job = q.createJob(testData)
@@ -19,9 +19,30 @@ module.exports = function () {
       let failedEventCount = 0
       q.on(enums.status.failed, function failed (jobId) {
         failedEventCount++
-        t.equal(jobId, job.id, `Event: Job failed [${failedEventCount}]`)
+        t.equal(jobId, job.id,
+          `Event: Job failed [${failedEventCount}] [${jobId}]`)
         if (failedEventCount >= 3) {
           q.removeListener(enums.status.failed, failed)
+        }
+      })
+      let retryEventCount = 0
+      q.on(enums.status.retry, function retry (jobId, dateRetry) {
+        retryEventCount++
+        t.equal(jobId, job.id,
+          `Event: Job retry [${retryEventCount}] [${jobId}]`)
+        t.ok(is.date(dateRetry),
+          `Event: Job retry dateRetry is a date [${dateRetry}]`)
+        if (retryEventCount >= 3) {
+          q.removeListener(enums.status.retry, retry)
+        }
+      })
+      let terminatedEventCount = 0
+      q.on(enums.status.terminated, function terminated (jobId) {
+        terminatedEventCount++
+        t.equal(jobId, job.id,
+          `Event: Job terminated [${terminatedEventCount}] [${jobId}]`)
+        if (terminatedEventCount >= 3) {
+          q.removeListener(enums.status.terminated, terminated)
         }
       })
 
@@ -92,7 +113,7 @@ module.exports = function () {
         t.comment('job-failed: Third and Final Retry Job Failure')
         return jobFailed(err, retry3[0], testData)
       }).then((failed) => {
-        t.equal(failed[0].status, enums.status.failed, 'Job status is failed')
+        t.equal(failed[0].status, enums.status.terminated, 'Job status is terminated')
         t.equal(failed[0].retryCount, 3, 'Job retryCount is 3')
         t.equal(failed[0].progress, 0, 'Job progress is 0')
         t.equal(failed[0].queueId, q.id, 'Job queueId is valid')
@@ -101,7 +122,7 @@ module.exports = function () {
         t.ok(moment.isDate(failed[0].log[3].date), 'Log date is a date')
         t.equal(failed[0].log[3].queueId, q.id, 'Log queueId is valid')
         t.equal(failed[0].log[3].type, enums.log.error, 'Log type is error')
-        t.equal(failed[0].log[3].status, enums.status.failed, 'Log status is failed')
+        t.equal(failed[0].log[3].status, enums.status.terminated, 'Log status is terminated')
         t.ok(failed[0].log[3].retryCount = 3, 'Log retryCount is valid')
         t.ok(failed[0].log[3].message, 'Log message exists')
         t.ok(failed[0].log[3].duration >= 0, 'Log duration is >= 0')

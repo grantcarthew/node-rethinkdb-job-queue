@@ -59,8 +59,8 @@ module.exports = function () {
       jobCancelled.status = 'cancelled'
       jobCancelled.data = 'Cancelled'
       const jobFailed = q.createJob(testData, {priority: 'retry'})
-      jobFailed.status = 'failed'
-      jobFailed.data = 'Failed'
+      jobFailed.status = 'terminated'
+      jobFailed.data = 'Terminated'
       let allCreatedJobs = [
         jobLowest,
         jobLow,
@@ -165,7 +165,7 @@ module.exports = function () {
         t.equal(lowest[0].log[0].message, enums.message.active, 'Log message is valid')
         return queueGetNextJob(q)
       }).then((noneLeft) => {
-        t.equals(noneLeft.length, 0, 'Skips active, completed, and failed jobs')
+        t.equals(noneLeft.length, 0, 'Skips active, completed, and terminated jobs')
         let moreJobs = []
         for (let i = 0; i < 7; i++) {
           moreJobs.push(q.createJob(testData))
