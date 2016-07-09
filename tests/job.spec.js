@@ -7,7 +7,6 @@ const enums = require('../src/enums')
 const testQueue = require('./test-queue')
 const Job = require('../src/job')
 const testData = require('./test-options').testData
-const isUuid = require('isuuid')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
@@ -31,7 +30,7 @@ module.exports = function () {
       t.comment('job: New Job')
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
-      t.ok(isUuid(newJob.id), 'New job has valid id')
+      t.ok(is.uuid(newJob.id), 'New job has valid id')
       t.equal(newJob.data, testData, 'New job data is valid')
       t.equal(newJob.priority, 'normal', 'New job priority is normal')
       t.equal(newJob.status, 'created', 'New job status is created')

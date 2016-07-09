@@ -7,7 +7,6 @@ const testQueue = require('./test-queue')
 const enums = require('../src/enums')
 const queueCancelJob = require('../src/queue-cancel-job')
 const testData = require('./test-options').testData
-const isUuid = require('isuuid')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
@@ -16,7 +15,7 @@ module.exports = function () {
 
       const q = testQueue()
       function cancelled (jobId) {
-        t.ok(isUuid(jobId), `Event: Job cancelled [${jobId}]`)
+        t.ok(is.uuid(jobId), `Event: Job cancelled [${jobId}]`)
       }
       q.on(enums.status.cancelled, cancelled)
 

@@ -3,7 +3,6 @@ const is = require('../src/is')
 const jobParse = require('../src/job-parse')
 const Job = require('../src/job')
 const uuid = require('node-uuid')
-const isUuid = require('isuuid')
 const testData = require('./test-options').testData
 
 module.exports = function () {
@@ -32,19 +31,19 @@ module.exports = function () {
     t.equal(jobParse.id().length, 0, 'Null or undefined returns an empty array')
     t.ok(is.array(jobParse.id(uuid.v4())), 'Single id returns an array')
     t.equal(jobParse.id(uuid.v4()).length, 1, 'Single id returns one item in an array')
-    t.ok(isUuid(jobParse.id(uuid.v4())[0]), 'Single id returns one valid id in an array')
+    t.ok(is.uuid(jobParse.id(uuid.v4())[0]), 'Single id returns one valid id in an array')
     t.ok(is.array(jobParse.id({id: uuid.v4()})), 'Single object.id returns an array')
     t.equal(jobParse.id({id: uuid.v4()}).length, 1, 'Single object.id returns one item in an array')
-    t.ok(isUuid(jobParse.id({id: uuid.v4()})[0]), 'Single object.id returns one valid id in an array')
+    t.ok(is.uuid(jobParse.id({id: uuid.v4()})[0]), 'Single object.id returns one valid id in an array')
     t.ok(is.array(idsResult), 'Array of ids returns an array')
     t.equal(idsResult.length, 3, 'Array of ids returns valid number of items')
-    t.ok(isUuid(idsResult[0]), 'Array of ids returns valid ids')
+    t.ok(is.uuid(idsResult[0]), 'Array of ids returns valid ids')
     t.ok(is.array(objWithIdsResult), 'Array of object.ids returns an array')
     t.equal(objWithIdsResult.length, 3, 'Array of object.ids returns valid number of items')
-    t.ok(isUuid(objWithIdsResult[0]), 'Array of object.ids returns valid ids')
+    t.ok(is.uuid(objWithIdsResult[0]), 'Array of object.ids returns valid ids')
     t.ok(is.array(mixResult), 'Array of mixed objects and ids returns an array')
     t.equal(mixResult.length, 6, 'Array of mixed objects and ids returns valid number of items')
-    t.ok(isUuid(mixResult[0]), 'Array of mixed objects and ids returns valid ids')
+    t.ok(is.uuid(mixResult[0]), 'Array of mixed objects and ids returns valid ids')
 
     // ---------- Parse Single Job ----------
     t.comment('job-parse: Parse Single Job')
@@ -55,7 +54,7 @@ module.exports = function () {
     t.equal(jobParse.job().length, 0, 'Null or undefined returns an empty array')
     t.ok(is.array(jobParse.job(job)), 'Single job returns an Array')
     t.equal(jobParse.job(job).length, 1, 'Single job returns one item in an array')
-    t.ok(isUuid(jobParse.job(job)[0].id), 'Single job returns one valid job in an Array')
+    t.ok(is.uuid(jobParse.job(job)[0].id), 'Single job returns one valid job in an Array')
 
     // ---------- Parse Array of Jobs ----------
     t.comment('job-parse: Parse Job Array')
@@ -67,7 +66,7 @@ module.exports = function () {
     let jobsResult = jobParse.job(jobs)
     t.ok(is.array(jobsResult), 'Array of jobs returns an array')
     t.equal(jobsResult.length, 3, 'Array of jobs returns valid number of items')
-    t.ok(isUuid(jobsResult[0].id), 'Array of jobs returns valid jobs')
+    t.ok(is.uuid(jobsResult[0].id), 'Array of jobs returns valid jobs')
 
     // ---------- Parse Invalid Job ----------
     t.comment('job-parse: Parse Invalid Job')
