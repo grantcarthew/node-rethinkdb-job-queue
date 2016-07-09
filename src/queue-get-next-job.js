@@ -36,7 +36,7 @@ module.exports = function queueGetNextJob (q) {
       return dbResult.toJob(q, updateResult)
     }).then((updatedJobs) => {
       for (let job of updatedJobs) {
-        q.emit(enums.status.active, job)
+        q.emit(enums.status.active, job.id)
       }
       return updatedJobs
     })

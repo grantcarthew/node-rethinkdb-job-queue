@@ -15,9 +15,9 @@ module.exports = function () {
 
       const q = testQueue()
       let addedCount = 0
-      function addedEventHandler (job) {
+      function addedEventHandler (jobId) {
         addedCount++
-        t.ok(is.job(job), `Event: Job Added [${addedCount}] [${job.id}]`)
+        t.ok(is.uuid(jobId), `Event: Job Added [${addedCount}] [${jobId.id}]`)
       }
       q.on(enums.status.added, addedEventHandler)
 

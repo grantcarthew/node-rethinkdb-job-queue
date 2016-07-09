@@ -28,7 +28,7 @@ module.exports = function queueChange (q, err, change) {
 
   // New job added
   if (is.job(newVal) && !is.job(oldVal)) {
-    q.emit(enums.status.added, q.createJob(null, newVal))
+    q.emit(enums.status.added, newVal.id)
     setTimeout(function () {
       queueProcess.restart(q)
     }, Math.floor(Math.random() * 1000))
@@ -40,7 +40,7 @@ module.exports = function queueChange (q, err, change) {
       newVal.status === enums.status.active &&
       is.job(oldVal) &&
       oldVal.status !== enums.status.active) {
-    q.emit(enums.status.active, q.createJob(null, newVal))
+    q.emit(enums.status.active, newVal.id)
     return enums.status.active
   }
 
@@ -65,21 +65,5 @@ module.exports = function queueChange (q, err, change) {
     console.log('----------------------------------------')
   }
 
-
-  // Status change
-  // if (change &&
-  //     change.new_val &&
-  //     change.old_val &&
-  //     change.new_val.status !== change.old_val.status) {
-  //       switch (change.new_val.status) {
-  //         case enums.status.completed:
-  //           q.emit(enums.status.completed)
-  //           break;
-  //         default:
-  //
-  //       }
-  //       q.emit()
-  //     }
-  //
   console.log('####################################')
 }

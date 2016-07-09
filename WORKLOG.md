@@ -2,7 +2,6 @@
 
 Need tests for the following;
 is tests
-should we only return ids for events?
 add active, added event tests throughout
 add more error events?
 queue-change
@@ -16,6 +15,7 @@ created: 'created': Not needed
 waiting: 'waiting': Not needed
 timeout: 'timeout': ???
 retry: 'retry': ???
+
 
 
 Check database return values (prevent the change/update results from being returned to the user)

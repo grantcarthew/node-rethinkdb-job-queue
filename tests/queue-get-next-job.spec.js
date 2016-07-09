@@ -18,9 +18,9 @@ module.exports = function () {
       const q = testQueue()
       q.concurrency = 1
       let activeCount = 0
-      function activeEventHandler (job) {
+      function activeEventHandler (jobId) {
         activeCount++
-        t.ok(is.job(job), `Event: Job Active [${activeCount}] [${job.id}]`)
+        t.ok(is.uuid(jobId), `Event: Job Active [${activeCount}] [${jobId}]`)
       }
       q.on(enums.status.active, activeEventHandler)
 
