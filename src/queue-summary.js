@@ -12,7 +12,7 @@ module.exports = function summary (q) {
       completed: 0,
       cancelled: 0,
       timeout: 0,
-      retry: 0,
+      failed: 0,
       terminated: 0
     }
     for (let stat of reduction) {

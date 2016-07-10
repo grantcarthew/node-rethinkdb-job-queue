@@ -2,7 +2,7 @@
 
 Need tests for the following;
 is tests
-add active, added, retry, terminated event tests throughout
+add active, added, failed, terminated event tests throughout
 add more error events?
 queue-change
 queue
@@ -15,7 +15,6 @@ Non-events;
 created: 'created': Not needed
 waiting: 'waiting': Not needed
 timeout: 'timeout': ???
-retry: 'retry': ???
 
 
 

@@ -22,7 +22,6 @@ module.exports = function () {
         cancelled: 0,
         timeout: 0,
         failed: 0,
-        retry: 0,
         reset: 0,
         removed: 0
       }

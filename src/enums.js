@@ -13,6 +13,16 @@ const enums = module.exports = {
   },
   status: {
     ready: 'ready', // Queue status
+    paused: 'paused', // Queue status
+    resumed: 'resumed', // Queue status
+    idle: 'idle', // Queue status
+    reset: 'reset', // Queue status
+    error: 'error', // Queue status
+    review: 'review', // Queue status
+    detached: 'detached', // Queue status
+    stopping: 'stopping', // Queue status
+    stopped: 'stopped', // Queue status
+    dropped: 'dropped', // Queue status
     created: 'created', // Job status (non-event)
     added: 'added', // Job status
     waiting: 'waiting', // Job status (non-event)
@@ -24,18 +34,7 @@ const enums = module.exports = {
     timeout: 'timeout', // Job status (non-event)
     failed: 'failed', // Job status
     terminated: 'terminated', // Job status
-    idle: 'idle', // Queue status
-    paused: 'paused', // Queue status
-    resumed: 'resumed', // Queue status
-    retry: 'retry', // Job status
-    error: 'error',
-    review: 'review',
-    detached: 'detached', // Queue status
-    reset: 'reset',
-    stopping: 'stopping',
-    stopped: 'stopped',
-    removed: 'removed',
-    dropped: 'dropped'
+    removed: 'removed' // Job status
   },
   index: {
     status: 'status',

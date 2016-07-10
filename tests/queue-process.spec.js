@@ -13,7 +13,7 @@ const dbReview = require('../src/db-review')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(155)
+      t.plan(154)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -206,7 +206,7 @@ module.exports = function () {
         t.equal(ec.completed, 30, 'Completed event raised correct number of times')
         t.equal(ec.cancelled, 1, 'Cancelled event raised')
         t.equal(ec.idle, 7, 'idle event raised correct number of times')
-        t.equal(ec.failed, 4, 'failed event raised correct number of times')
+        t.equal(ec.failed, 3, 'failed event raised correct number of times')
         t.equal(ec.terminated, 1, 'terminated event raised correct number of times')
         t.equal(queueSummary.completed, 30, 'Summary 30 jobs completed')
         t.equal(queueSummary.cancelled, 1, 'Summary 1 job cancelled')

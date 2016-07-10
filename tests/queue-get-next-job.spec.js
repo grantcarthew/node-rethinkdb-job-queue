@@ -42,9 +42,9 @@ module.exports = function () {
       const jobHighest = q.createJob(testData, {priority: 'highest'})
       jobHighest.status = 'waiting'
       jobHighest.data = 'Highest'
-      const jobRetry = q.createJob(testData, {priority: 'retry'})
-      jobRetry.status = 'retry'
-      jobRetry.data = 'Retry'
+      const jobFailed = q.createJob(testData, {priority: 'retry'})
+      jobFailed.status = 'failed'
+      jobFailed.data = 'Failed'
       const jobTimeout = q.createJob(testData, {priority: 'retry'})
       jobTimeout.status = 'timeout'
       jobTimeout.data = 'Timeout'
@@ -58,9 +58,9 @@ module.exports = function () {
       const jobCancelled = q.createJob(testData, {priority: 'retry'})
       jobCancelled.status = 'cancelled'
       jobCancelled.data = 'Cancelled'
-      const jobFailed = q.createJob(testData, {priority: 'retry'})
-      jobFailed.status = 'terminated'
-      jobFailed.data = 'Terminated'
+      const jobTerminated = q.createJob(testData, {priority: 'retry'})
+      jobTerminated.status = 'terminated'
+      jobTerminated.data = 'Terminated'
       let allCreatedJobs = [
         jobLowest,
         jobLow,
@@ -68,12 +68,12 @@ module.exports = function () {
         jobMedium,
         jobHigh,
         jobHighest,
-        jobRetry,
+        jobFailed,
         jobTimeout,
         jobActive,
         jobCompleted,
         jobCancelled,
-        jobFailed
+        jobTerminated
       ]
       let retryJobs
 
@@ -92,14 +92,14 @@ module.exports = function () {
         // ---------- Getting Jobs in Priority Order ----------
         t.comment('queue-get-next-job: Jobs in Priority Order')
         return queueGetNextJob(q)
-      }).then((retry) => {
-        t.equals(retry[0].id, jobRetry.id, 'Retry status job returned first')
-        t.ok(moment.isDate(retry[0].log[0].date), 'Log date is a date')
-        t.equal(retry[0].log[0].queueId, q.id, 'Log queueId is valid')
-        t.equal(retry[0].log[0].type, enums.log.information, 'Log type is information')
-        t.equal(retry[0].log[0].status, enums.status.active, 'Log status is active')
-        t.equal(retry[0].retryCount, 0, 'Log retryCount is valid')
-        t.equal(retry[0].log[0].message, enums.message.active, 'Log message is valid')
+      }).then((failed) => {
+        t.equals(failed[0].id, jobFailed.id, 'Failed status job returned first')
+        t.ok(moment.isDate(failed[0].log[0].date), 'Log date is a date')
+        t.equal(failed[0].log[0].queueId, q.id, 'Log queueId is valid')
+        t.equal(failed[0].log[0].type, enums.log.information, 'Log type is information')
+        t.equal(failed[0].log[0].status, enums.status.active, 'Log status is active')
+        t.equal(failed[0].retryCount, 0, 'Log retryCount is valid')
+        t.equal(failed[0].log[0].message, enums.message.active, 'Log message is valid')
         return queueGetNextJob(q)
       }).then((timeout) => {
         t.equals(timeout[0].id, jobTimeout.id, 'Timeout status job returned second (dateCreated + 1sec)')

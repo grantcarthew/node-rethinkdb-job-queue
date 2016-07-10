@@ -31,12 +31,12 @@ module.exports = function () {
       q.on('success', (jobId) => {
         t.pass('Queue success event called')
       })
-      q.on('failure', (jobId) => {
+      q.on('failed', (jobId) => {
         t.pass('Queue failure event called')
       })
-      q.on('retry', (jobId) => {
-        t.pass('Queue retry event called')
-      })
+      // q.on('retry', (jobId) => {
+      //   t.pass('Queue retry event called')
+      // })
       q.on('job failed', (jobId) => {
         console.log('job failed: ' + jobId)
         t.pass('Queue idle event called')

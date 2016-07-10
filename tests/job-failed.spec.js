@@ -26,14 +26,14 @@ module.exports = function () {
         }
       })
       let retryEventCount = 0
-      q.on(enums.status.retry, function retry (jobId, dateRetry) {
+      q.on(enums.status.failed, function failed (jobId, dateRetry) {
         retryEventCount++
         t.equal(jobId, job.id,
-          `Event: Job retry [${retryEventCount}] [${jobId}]`)
+          `Event: Job failed [${retryEventCount}] [${jobId}]`)
         t.ok(is.date(dateRetry),
-          `Event: Job retry dateRetry is a date [${dateRetry}]`)
+          `Event: Job failed dateRetry is a date [${dateRetry}]`)
         if (retryEventCount >= 3) {
-          q.removeListener(enums.status.retry, retry)
+          q.removeListener(enums.status.failed, failed)
         }
       })
       let terminatedEventCount = 0
@@ -56,7 +56,7 @@ module.exports = function () {
         t.comment('job-failed: Original Job Failure')
         return jobFailed(err, savedJob[0], testData)
       }).then((retry1) => {
-        t.equal(retry1[0].status, enums.status.retry, 'Job status is retry')
+        t.equal(retry1[0].status, enums.status.failed, 'Job status is failed')
         t.equal(retry1[0].retryCount, 1, 'Job retryCount is 1')
         t.equal(retry1[0].progress, 0, 'Job progress is 0')
         t.equal(retry1[0].queueId, q.id, 'Job queueId is valid')
@@ -65,7 +65,7 @@ module.exports = function () {
         t.ok(moment.isDate(retry1[0].log[0].date), 'Log date is a date')
         t.equal(retry1[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(retry1[0].log[0].type, enums.log.warning, 'Log type is warning')
-        t.equal(retry1[0].log[0].status, enums.status.retry, 'Log status is retry')
+        t.equal(retry1[0].log[0].status, enums.status.failed, 'Log status is failed')
         t.ok(retry1[0].log[0].retryCount = 1, 'Log retryCount is valid')
         t.ok(retry1[0].log[0].message, 'Log message exists')
         t.ok(retry1[0].log[0].duration >= 0, 'Log duration is >= 0')
@@ -75,7 +75,7 @@ module.exports = function () {
         t.comment('job-failed: First Retry Job Failure')
         return jobFailed(err, retry1[0], testData)
       }).then((retry2) => {
-        t.equal(retry2[0].status, enums.status.retry, 'Job status is retry')
+        t.equal(retry2[0].status, enums.status.failed, 'Job status is failed')
         t.equal(retry2[0].retryCount, 2, 'Job retryCount is 2')
         t.equal(retry2[0].progress, 0, 'Job progress is 0')
         t.equal(retry2[0].queueId, q.id, 'Job queueId is valid')
@@ -84,7 +84,7 @@ module.exports = function () {
         t.ok(moment.isDate(retry2[0].log[1].date), 'Log date is a date')
         t.equal(retry2[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(retry2[0].log[1].type, enums.log.warning, 'Log type is warning')
-        t.equal(retry2[0].log[1].status, enums.status.retry, 'Log status is retry')
+        t.equal(retry2[0].log[1].status, enums.status.failed, 'Log status is failed')
         t.ok(retry2[0].log[1].retryCount = 2, 'Log retryCount is valid')
         t.ok(retry2[0].log[1].message, 'Log message exists')
         t.ok(retry2[0].log[1].duration >= 0, 'Log duration is >= 0')
@@ -94,7 +94,7 @@ module.exports = function () {
         t.comment('job-failed: Second Retry Job Failure')
         return jobFailed(err, retry2[0], testData)
       }).then((retry3) => {
-        t.equal(retry3[0].status, enums.status.retry, 'Job status is retry')
+        t.equal(retry3[0].status, enums.status.failed, 'Job status is failed')
         t.equal(retry3[0].retryCount, 3, 'Job retryCount is 3')
         t.equal(retry3[0].progress, 0, 'Job progress is 0')
         t.equal(retry3[0].queueId, q.id, 'Job queueId is valid')
@@ -103,7 +103,7 @@ module.exports = function () {
         t.ok(moment.isDate(retry3[0].log[2].date), 'Log date is a date')
         t.equal(retry3[0].log[2].queueId, q.id, 'Log queueId is valid')
         t.equal(retry3[0].log[2].type, enums.log.warning, 'Log type is warning')
-        t.equal(retry3[0].log[2].status, enums.status.retry, 'Log status is retry')
+        t.equal(retry3[0].log[2].status, enums.status.failed, 'Log status is failed')
         t.ok(retry3[0].log[2].retryCount = 3, 'Log retryCount is valid')
         t.ok(retry3[0].log[2].message, 'Log message exists')
         t.ok(retry3[0].log[2].duration >= 0, 'Log duration is >= 0')

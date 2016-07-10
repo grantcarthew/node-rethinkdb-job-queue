@@ -7,12 +7,10 @@ module.exports = function failed (err, job, data) {
   logger('failed: ' + job.id)
   logger('Error', err)
 
-  job.q.emit(enums.status.failed, job.id, err)
-
   let logType = enums.log.error
   if (job.retryCount < job.retryMax) {
-    job.status = enums.status.retry
-    job.q.emit(enums.status.retry, job.id, job.dateRetry)
+    job.status = enums.status.failed
+    job.q.emit(enums.status.failed, job.id, job.dateRetry)
     job.retryCount++
     job.priority = 1
     logType = enums.log.warning
