@@ -1,43 +1,9 @@
 const logger = require('./logger')(module)
 const enums = require('./enums')
-// TODO: Ensure all indexes are used befor publishing
-
-function createIndexStatus (q) {
-  logger('createIndexStatus')
-  let indexName = enums.index.status
-  return q.r.db(q.db).table(q.name).indexList()
-  .contains(indexName).run().then((exists) => {
-    if (exists) { return exists }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName).run()
-  })
-}
-
-function createIndexDateRetry (q) {
-  logger('createIndexDateRetry')
-  let indexName = enums.index.dateRetry
-  return q.r.db(q.db).table(q.name).indexList()
-  .contains(indexName).run().then((exists) => {
-    if (exists) { return exists }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName).run()
-  })
-}
-
-function createIndexPriorityDateCreated (q) {
-  logger('createIndexPriorityDateCreated')
-  let indexName = enums.index.priority_dateCreated
-  return q.r.db(q.db).table(q.name).indexList()
-  .contains(indexName).run().then((exists) => {
-    if (exists) { return exists }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName, [
-      q.r.row('priority'),
-      q.r.row('dateCreated')
-    ]).run()
-  })
-}
 
 function createIndexActiveDateRetry (q) {
   logger('createIndexActiveDateRetry')
-  let indexName = enums.index.active_dateRetry
+  let indexName = enums.index.indexActiveDateRetry
   return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -53,7 +19,7 @@ function createIndexActiveDateRetry (q) {
 
 function createIndexInactivePriorityDateCreated (q) {
   logger('createIndexInactivePriorityDateCreated')
-  let indexName = enums.index.inactive_priority_dateCreated
+  let indexName = enums.index.indexInactivePriorityDateCreated
   return q.r.db(q.db).table(q.name).indexList()
   .contains(indexName).run().then((exists) => {
     if (exists) { return exists }
@@ -79,9 +45,6 @@ function createIndexInactivePriorityDateCreated (q) {
 module.exports = function assertIndex (q) {
   logger('assertIndex')
   return Promise.all([
-    createIndexStatus(q),
-    createIndexDateRetry(q),
-    createIndexPriorityDateCreated(q),
     createIndexActiveDateRetry(q),
     createIndexInactivePriorityDateCreated(q)
   ]).then((indexCreateResult) => {

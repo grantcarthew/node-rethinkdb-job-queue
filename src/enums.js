@@ -37,11 +37,8 @@ const enums = module.exports = {
     removed: 'removed' // Job status
   },
   index: {
-    status: 'status',
-    dateRetry: 'dateRetry',
-    priority_dateCreated: 'priority_dateCreated',
-    active_dateRetry: 'active_dateRetry',
-    inactive_priority_dateCreated: 'inactive_priority_dateCreated'
+    indexActiveDateRetry: 'indexActiveDateRetry', // Used by db-review
+    indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated'
   },
   dbResult: {
     deleted: 'deleted',

@@ -12,7 +12,7 @@ module.exports = function queueGetNextJob (q) {
   }
   return q.r
     .table(q.name)
-    .orderBy({index: enums.index.inactive_priority_dateCreated})
+    .orderBy({index: enums.index.indexInactivePriorityDateCreated})
     .limit(quantity)
     .filter(q.r.row('dateRetry').le(q.r.now()))
     .update({

@@ -11,7 +11,7 @@ function jobReview (q) {
   logger('jobReview: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
   return q.r.db(q.db).table(q.name)
-  .orderBy({index: enums.index.active_dateRetry})
+  .orderBy({index: enums.index.indexActiveDateRetry})
   .filter(
     q.r.row('dateRetry').lt(q.r.now())
   ).update({
