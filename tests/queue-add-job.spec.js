@@ -59,7 +59,7 @@ module.exports = function () {
           t.ok(err.message.includes(enums.error.jobInvalid), 'Job invalid returns a rejected promise')
         })
       }).then(() => {
-        job.status = 'waiting'
+        job.status = enums.status.added
 
         // ---------- Add Invalid Status Job Tests ----------
         t.comment('queue-add-job: Add Invalid Status Job')

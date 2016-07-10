@@ -16,7 +16,7 @@ module.exports = function () {
 
       const q = testQueue()
       const jobs = q.createJob(testData, 7)
-      jobs[0].status = 'waiting'
+      jobs[0].status = 'added'
       jobs[1].status = 'active'
       jobs[2].status = 'completed'
       jobs[3].status = 'cancelled'
@@ -30,7 +30,7 @@ module.exports = function () {
       }).then(() => {
         return queueSummary(q)
       }).then((summary) => {
-        t.equal(summary.waiting, 1, 'Queue status summary includes waiting')
+        t.equal(summary.added, 1, 'Queue status summary includes added')
         t.equal(summary.active, 1, 'Queue status summary includes active')
         t.equal(summary.completed, 1, 'Queue status summary includes completed')
         t.equal(summary.cancelled, 1, 'Queue status summary includes cancelled')

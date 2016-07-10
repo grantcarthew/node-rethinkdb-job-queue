@@ -7,7 +7,7 @@ module.exports = function summary (q) {
     return job.pluck('status')
   }).count().then((reduction) => {
     const summary = {
-      waiting: 0,
+      added: 0,
       active: 0,
       completed: 0,
       cancelled: 0,

@@ -14,7 +14,7 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
     if (!skipStatusCheck && oneJob.status !== enums.status.created) {
       return Promise.reject(new Error(enums.error.jobAlreadyAdded))
     }
-    if (!skipStatusCheck) { oneJob.status = enums.status.waiting }
+    if (!skipStatusCheck) { oneJob.status = enums.status.added }
     return oneJob.getCleanCopy()
   }).then((cleanJobs) => {
     return q.r.db(q.db).table(q.name)

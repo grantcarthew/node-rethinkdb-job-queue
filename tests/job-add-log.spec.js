@@ -22,7 +22,7 @@ module.exports = function () {
         return q.addJob(job)
       }).then((newJob) => {
         job = newJob[0]
-        t.equal(job.status, enums.status.waiting, 'New job added successfully')
+        t.equal(job.status, enums.status.added, 'New job added successfully')
         testLog = job.createLog(testData)
         testLog.data = testData
 
@@ -37,7 +37,7 @@ module.exports = function () {
         t.ok(moment.isDate(jobWithLog1[0].log[0].date), 'Log 1 date is a date')
         t.equal(jobWithLog1[0].log[0].queueId, q.id, 'Log 1 queueId is valid')
         t.equal(jobWithLog1[0].log[0].type, enums.log.information, 'Log 1 type is information')
-        t.equal(jobWithLog1[0].log[0].status, enums.status.waiting, 'Log 1 status is waiting')
+        t.equal(jobWithLog1[0].log[0].status, enums.status.added, 'Log 1 status is added')
         t.ok(jobWithLog1[0].log[0].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog1[0].log[0].message, testData, 'Log 1 message is valid')
         t.equal(jobWithLog1[0].log[0].data, testData, 'Log 1 data is valid')
@@ -54,7 +54,7 @@ module.exports = function () {
         t.ok(moment.isDate(jobWithLog2[0].log[1].date), 'Log 2 date is a date')
         t.equal(jobWithLog2[0].log[1].queueId, q.id, 'Log 2 queueId is valid')
         t.equal(jobWithLog2[0].log[1].type, enums.log.information, 'Log 2 type is information')
-        t.equal(jobWithLog2[0].log[1].status, enums.status.waiting, 'Log 2 status is waiting')
+        t.equal(jobWithLog2[0].log[1].status, enums.status.added, 'Log 2 status is added')
         t.ok(jobWithLog2[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog2[0].log[1].message, testData, 'Log 2 message is valid')
         t.equal(jobWithLog2[0].log[1].data, testData, 'Log 2 data is valid')

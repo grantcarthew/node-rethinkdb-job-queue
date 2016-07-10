@@ -25,7 +25,6 @@ const enums = module.exports = {
     dropped: 'dropped', // Queue status
     created: 'created', // Job status (non-event)
     added: 'added', // Job status
-    waiting: 'waiting', // Job status (non-event)
     active: 'active', // Job status
     processing: 'processing', // Job status
     progress: 'progress', // Job status
@@ -37,7 +36,7 @@ const enums = module.exports = {
     removed: 'removed' // Job status
   },
   index: {
-    indexActiveDateRetry: 'indexActiveDateRetry', // Used by db-review
+    indexActiveDateRetry: 'indexActiveDateRetry',
     indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated'
   },
   dbResult: {
