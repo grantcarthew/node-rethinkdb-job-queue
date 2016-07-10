@@ -1,5 +1,8 @@
 # WORKLOG
 
+Working on new index.
+
+check for dateFailed/dateCompleted/dateTimeout values
 Need tests for the following;
 is tests
 add active, added, failed, terminated event tests throughout
@@ -8,12 +11,10 @@ queue-change
 queue
 queue-process addHandler when the q is not the master.
 Consider a function to remove jobs after a time period
-Consider enable/disable changefeed.
 update indexInactivePriorityDateCreated index, look for specific status
 
 Non-events;
 created: 'created': Not needed
-timeout: 'timeout': ???
 
 
 

@@ -30,7 +30,6 @@ const enums = module.exports = {
     progress: 'progress', // Job status
     completed: 'completed', // Job status
     cancelled: 'cancelled', // Job status
-    timeout: 'timeout', // Job status (non-event)
     failed: 'failed', // Job status
     terminated: 'terminated', // Job status
     removed: 'removed' // Job status
@@ -57,7 +56,6 @@ const enums = module.exports = {
     active: 'Job retrieved and active',
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
-    timeout: 'Job processing has timed out',
     allJobsStopped: 'All running jobs have stopped',
     failedToStop: 'Failed to gracefully stop jobs, force quit',
     cancel: 'Job cancelled by Queue process handler'

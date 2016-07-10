@@ -20,7 +20,6 @@ module.exports = function () {
         progress: 0,
         completed: 0,
         cancelled: 0,
-        timeout: 0,
         failed: 0,
         reset: 0,
         removed: 0

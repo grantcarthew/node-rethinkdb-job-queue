@@ -43,10 +43,7 @@ class Job {
       this.dateCreated = now
       this.dateRetry = now
       this.dateStarted
-      this.dateCompleted
-      this.dateCancelled
-      this.dateTimeout
-      this.dateFailed
+      this.dateFinished
       this.queueId = q.id
     }
   }

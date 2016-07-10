@@ -17,7 +17,7 @@ function jobReview (q) {
   ).update({
     status: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),
-      enums.status.timeout,
+      enums.status.failed,
       enums.status.terminated
     ),
     priority: q.r.branch(
@@ -25,12 +25,7 @@ function jobReview (q) {
       enums.priority.retry,
       q.r.row('priority')
     ),
-    dateTimeout: q.r.now(),
-    dateFailed: q.r.branch(
-      q.r.row('retryCount').lt(q.r.row('retryMax')),
-      null,
-      q.r.now()
-    ),
+    dateFinished: q.r.now(),
     retryCount: q.r.branch(
       q.r.row('retryCount').lt(q.r.row('retryMax')),
       q.r.row('retryCount').add(1),
@@ -46,11 +41,66 @@ function jobReview (q) {
       ),
       status: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
-        enums.status.timeout,
+        enums.status.failed,
         enums.status.terminated
       ),
       retryCount: q.r.row('retryCount'),
-      message: 'Master: ' + enums.message.timeout,
+      message: `Master: job ${enums.message.failed}`,
+      dateRetry: q.r.row('dateRetry')
+    }),
+    queueId: q.id
+  })
+  .run()
+  .then((updateResult) => {
+    return dbResult.status(q, updateResult, enums.dbResult.replaced)
+  }).then((replaceCount) => {
+    q.emit(enums.status.review, replaceCount)
+    queueProcess.restart(q)
+    return replaceCount
+  })
+}
+
+function removeJobHistory (q) {
+  logger('removeJobHistory: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+
+  if (q.removeJobHistory === 0 || q.removeJobHistory === false) { return }
+
+  return q.r.db(q.db).table(q.name)
+  .orderBy({index: enums.index.indexActiveDateRetry})
+  .filter(
+    q.r.row('dateRetry').lt(q.r.now())
+  ).update({
+    status: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      enums.status.failed,
+      enums.status.terminated
+    ),
+    priority: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      enums.priority.retry,
+      q.r.row('priority')
+    ),
+    dateFinished: q.r.now(),
+    retryCount: q.r.branch(
+      q.r.row('retryCount').lt(q.r.row('retryMax')),
+      q.r.row('retryCount').add(1),
+      q.r.row('retryCount')
+    ),
+    log: q.r.row('log').append({
+      date: q.r.now(),
+      queueId: q.id,
+      type: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        enums.log.warning,
+        enums.log.error
+      ),
+      status: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        enums.status.failed,
+        enums.status.terminated
+      ),
+      retryCount: q.r.row('retryCount'),
+      message: `Master: job ${enums.message.failed}`,
       dateRetry: q.r.row('dateRetry')
     }),
     queueId: q.id

@@ -17,7 +17,7 @@ const dbReview = proxyquire('../src/db-review',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(42)
+      t.plan(40)
 
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
@@ -82,15 +82,14 @@ module.exports = function () {
         t.ok(reviewResult >= 2, 'Job updated by db review')
         return q.getJob(job1.id)
       }).then((reviewedJob1) => {
-        t.equal(reviewedJob1[0].status, enums.status.timeout, 'Reviewed job 1 is timeout status')
+        t.equal(reviewedJob1[0].status, enums.status.failed, 'Reviewed job 1 is failed status')
         t.equal(reviewedJob1[0].priority, 'retry', 'Reviewed job 1 is retry priority')
-        t.ok(moment.isDate(reviewedJob1[0].dateTimeout), 'Reviewed job 1 dateTimeout is a date')
-        t.ok(!reviewedJob1[0].dateFailed, 'Reviewed job 1 dateFailed is null')
+        t.ok(moment.isDate(reviewedJob1[0].dateFinished), 'Reviewed job 1 dateFinished is a date')
         t.equal(reviewedJob1[0].retryCount, 1, 'Reviewed job 1 retryCount is 1')
         t.ok(moment.isDate(reviewedJob1[0].log[0].date), 'Log date is a date')
         t.equal(reviewedJob1[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(reviewedJob1[0].log[0].type, enums.log.warning, 'Log type is warning')
-        t.equal(reviewedJob1[0].log[0].status, enums.status.timeout, 'Log status is timeout')
+        t.equal(reviewedJob1[0].log[0].status, enums.status.failed, 'Log status is failed')
         t.ok(reviewedJob1[0].log[0].retryCount >= 0, 'Log retryCount is valid')
         t.ok(reviewedJob1[0].log[0].message, 'Log message is present')
         t.ok(!reviewedJob1[0].log[0].data, 'Log data is null')
@@ -98,8 +97,7 @@ module.exports = function () {
       }).then((reviewedJob2) => {
         t.equal(reviewedJob2[0].status, enums.status.terminated, 'Reviewed job 2 is terminated status')
         t.equal(reviewedJob2[0].priority, 'normal', 'Reviewed job 2 is normal priority')
-        t.ok(moment.isDate(reviewedJob2[0].dateTimeout), 'Reviewed job 2 dateTimeout is a date')
-        t.ok(moment.isDate(reviewedJob2[0].dateFailed), 'Reviewed job 2 dateFailed is a date')
+        t.ok(moment.isDate(reviewedJob2[0].dateFinished), 'Reviewed job 2 dateFinished is a date')
         t.equal(reviewedJob2[0].retryCount, 1, 'Reviewed job 2 retryCount is 1')
         t.ok(moment.isDate(reviewedJob2[0].log[0].date), 'Log date is a date')
         t.equal(reviewedJob2[0].log[0].queueId, q.id, 'Log queueId is valid')

@@ -42,6 +42,8 @@ function createIndexInactivePriorityDateCreated (q) {
   })
 }
 
+// function createIndex
+
 module.exports = function assertIndex (q) {
   logger('assertIndex')
   return Promise.all([

@@ -11,7 +11,6 @@ module.exports = function summary (q) {
       active: 0,
       completed: 0,
       cancelled: 0,
-      timeout: 0,
       failed: 0,
       terminated: 0
     }

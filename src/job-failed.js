@@ -18,9 +18,9 @@ module.exports = function failed (err, job, data) {
     job.status = enums.status.terminated
     job.q.emit(enums.status.terminated, job.id)
   }
-  job.dateFailed = moment().toDate()
+  job.dateFinished = moment().toDate()
   job.progress = 0
-  let duration = moment(job.dateFailed).diff(moment(job.dateStarted))
+  let duration = moment(job.dateFinished).diff(moment(job.dateStarted))
   duration = duration >= 0 ? duration : 0
 
   const errMessage = err && err.message ? err.message : err
@@ -35,7 +35,7 @@ module.exports = function failed (err, job, data) {
     status: job.status,
     retryCount: job.retryCount,
     progress: job.progress,
-    dateFailed: job.dateFailed,
+    dateFinished: job.dateFinished,
     log: job.q.r.row('log').append(log),
     queueId: job.q.id
   }, {returnChanges: true})

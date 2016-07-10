@@ -15,7 +15,7 @@ module.exports = function cancel (q, job, reason) {
     .getAll(...ids)
     .update({
       status: enums.status.cancelled,
-      dateCancelled: moment().toDate(),
+      dateFinished: moment().toDate(),
       log: q.r.row('log').append({
         date: moment().toDate(),
         queueId: q.id,

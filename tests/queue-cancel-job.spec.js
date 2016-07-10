@@ -42,7 +42,7 @@ module.exports = function () {
         return queueCancelJob(q, singleJob[0], testData)
       }).then((cancelledJob) => {
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job status is cancelled')
-        t.ok(moment.isDate(cancelledJob[0].dateCancelled), 'Job dateCancelled is a date')
+        t.ok(moment.isDate(cancelledJob[0].dateFinished), 'Job dateFinished is a date')
         t.equal(cancelledJob[0].queueId, q.id, 'Job queueId is valid')
         t.equal(cancelledJob[0].log.length, 1, 'Job log exists')
         t.ok(moment.isDate(cancelledJob[0].log[0].date), 'Log date is a date')

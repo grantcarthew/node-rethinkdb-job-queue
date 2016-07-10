@@ -31,9 +31,11 @@ class Queue extends EventEmitter {
     this.isMaster = options.isMaster == null ? true
       : options.isMaster
     this.masterReviewPeriod = options.masterReviewPeriod || 310
-    this.enableChangeFeed = options.enableChangeFeed == null ? true
-      : options.enableChangeFeed
+    this.enableChangeFeed = options.enableChangeFeed == null
+      ? true : options.enableChangeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
+    this.removeJobHistory = options.removeJobHistory == null
+      ? 6 : options.removeJobHistory
     this.handler = false
     this.running = 0
     this._jobOptions = jobOptions()
