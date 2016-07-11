@@ -35,7 +35,7 @@ class Queue extends EventEmitter {
       ? true : options.enableChangeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.removeJobHistory = options.removeJobHistory == null
-      ? 6 : options.removeJobHistory
+      ? 180 : options.removeJobHistory
     this.handler = false
     this.running = 0
     this._jobOptions = jobOptions()

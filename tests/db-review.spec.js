@@ -17,7 +17,7 @@ const dbReview = proxyquire('../src/db-review',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(47)
+      t.plan(56)
 
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
@@ -52,29 +52,58 @@ module.exports = function () {
       }
       q.on(enums.status.review, reviewEventHandler)
 
-      let job1 = q.createJob(testData)
-      job1.status = enums.status.active
-      job1.dateStarted = moment().add(-400, 'seconds').toDate()
-      job1.retryCount = 0
-      job1.retryMax = 1
+      let retryCount0Job = q.createJob(testData)
+      retryCount0Job.status = enums.status.active
+      retryCount0Job.dateStarted = moment().add(-400, 'seconds').toDate()
+      retryCount0Job.retryCount = 0
+      retryCount0Job.retryMax = 1
 
-      let job2 = q.createJob(testData)
-      job2.status = enums.status.active
-      job2.dateStarted = moment().add(-400, 'seconds').toDate()
-      job2.retryCount = 1
-      job2.retryMax = 1
+      let retryCount1Job = q.createJob(testData)
+      retryCount1Job.status = enums.status.active
+      retryCount1Job.dateStarted = moment().add(-400, 'seconds').toDate()
+      retryCount1Job.retryCount = 1
+      retryCount1Job.retryMax = 1
+
+      let completedJobPre = q.createJob(testData)
+      completedJobPre.status = enums.status.completed
+      completedJobPre.dateStarted = moment().add(-179, 'days').toDate()
+      completedJobPre.dateFinished = moment().add(-179, 'days').toDate()
+
+      let completedJobPost = q.createJob(testData)
+      completedJobPost.status = enums.status.completed
+      completedJobPost.dateStarted = moment().add(-181, 'days').toDate()
+      completedJobPost.dateFinished = moment().add(-181, 'days').toDate()
+
+      let cancelledJobPost = q.createJob(testData)
+      cancelledJobPost.status = enums.status.terminated
+      cancelledJobPost.dateStarted = moment().add(-181, 'days').toDate()
+      cancelledJobPost.dateFinished = moment().add(-181, 'days').toDate()
+
+      let terminatedJobPost = q.createJob(testData)
+      terminatedJobPost.status = enums.status.terminated
+      terminatedJobPost.dateStarted = moment().add(-181, 'days').toDate()
+      terminatedJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
       let jobs = [
-        job1,
-        job2
+        retryCount0Job,
+        retryCount1Job,
+        completedJobPre,
+        completedJobPost,
+        cancelledJobPost,
+        terminatedJobPost
       ]
 
       return q.reset().then((removed) => {
         t.ok(is.integer(removed), 'Queue reset')
         return queueAddJob(q, jobs, true)
       }).then((savedJobs) => {
-        t.equal(savedJobs[0].id, job1.id, 'Job 1 saved successfully')
-        t.equal(savedJobs[1].id, job2.id, 'Job 2 saved successfully')
+        t.equal(savedJobs.length, 6, 'Jobs saved successfully')
+        t.equal(savedJobs[0].id, retryCount0Job.id, 'Job with retryCount 0 saved successfully')
+        t.equal(savedJobs[1].id, retryCount1Job.id, 'Job with retryCount 1 saved successfully')
+        t.equal(savedJobs[2].id, completedJobPre.id, 'Completed job pre-remove date saved successfully')
+        t.equal(savedJobs[3].id, completedJobPost.id, 'Completed job post-remove date saved successfully')
+        t.equal(savedJobs[4].id, cancelledJobPost.id, 'Cancelled job post-remove date saved successfully')
+        t.equal(savedJobs[5].id, terminatedJobPost.id, 'Terminated job post-remove date saved successfully')
       }).then(() => {
         //
         //  ---------- runOnce Tests ----------
@@ -82,34 +111,46 @@ module.exports = function () {
         return dbReview.runOnce(q)
       }).then((reviewResult) => {
         t.equal(reviewResult.reviewed, 2, 'Jobs updated by db review')
-        t.equal(reviewResult.removed, 0, 'No jobs removed db review')
-        return q.getJob(job1.id)
-      }).then((reviewedJob1) => {
-        t.equal(reviewedJob1[0].status, enums.status.failed, 'Reviewed job 1 is failed status')
-        t.equal(reviewedJob1[0].priority, 'retry', 'Reviewed job 1 is retry priority')
-        t.ok(moment.isDate(reviewedJob1[0].dateFinished), 'Reviewed job 1 dateFinished is a date')
-        t.equal(reviewedJob1[0].retryCount, 1, 'Reviewed job 1 retryCount is 1')
-        t.ok(moment.isDate(reviewedJob1[0].log[0].date), 'Log date is a date')
-        t.equal(reviewedJob1[0].log[0].queueId, q.id, 'Log queueId is valid')
-        t.equal(reviewedJob1[0].log[0].type, enums.log.warning, 'Log type is warning')
-        t.equal(reviewedJob1[0].log[0].status, enums.status.failed, 'Log status is failed')
-        t.ok(reviewedJob1[0].log[0].retryCount >= 0, 'Log retryCount is valid')
-        t.ok(reviewedJob1[0].log[0].message, 'Log message is present')
-        t.ok(!reviewedJob1[0].log[0].data, 'Log data is null')
-        return q.getJob(job2.id)
-      }).then((reviewedJob2) => {
-        t.equal(reviewedJob2[0].status, enums.status.terminated, 'Reviewed job 2 is terminated status')
-        t.equal(reviewedJob2[0].priority, 'normal', 'Reviewed job 2 is normal priority')
-        t.ok(moment.isDate(reviewedJob2[0].dateFinished), 'Reviewed job 2 dateFinished is a date')
-        t.equal(reviewedJob2[0].retryCount, 1, 'Reviewed job 2 retryCount is 1')
-        t.ok(moment.isDate(reviewedJob2[0].log[0].date), 'Log date is a date')
-        t.equal(reviewedJob2[0].log[0].queueId, q.id, 'Log queueId is valid')
-        t.equal(reviewedJob2[0].log[0].type, enums.log.error, 'Log type is error')
-        t.equal(reviewedJob2[0].log[0].status, enums.status.terminated, 'Log status is terminated')
-        t.ok(reviewedJob2[0].log[0].retryCount >= 0, 'Log retryCount is valid')
-        t.ok(moment.isDate(reviewedJob2[0].log[0].dateRetry), 'Log dateRetry is a date')
-        t.ok(reviewedJob2[0].log[0].message, 'Log message is present')
-        t.ok(!reviewedJob2[0].log[0].data, 'Log data is null')
+        t.equal(reviewResult.removed, 3, 'Jobs removed by db review')
+        return q.getJob(retryCount0Job.id)
+      }).then((reviewedRetryCount0Job) => {
+        t.equal(reviewedRetryCount0Job[0].status, enums.status.failed, 'Reviewed job 1 is failed status')
+        t.equal(reviewedRetryCount0Job[0].priority, 'retry', 'Reviewed job 1 is retry priority')
+        t.ok(moment.isDate(reviewedRetryCount0Job[0].dateFinished), 'Reviewed job 1 dateFinished is a date')
+        t.equal(reviewedRetryCount0Job[0].retryCount, 1, 'Reviewed job 1 retryCount is 1')
+        t.ok(moment.isDate(reviewedRetryCount0Job[0].log[0].date), 'Log date is a date')
+        t.equal(reviewedRetryCount0Job[0].log[0].queueId, q.id, 'Log queueId is valid')
+        t.equal(reviewedRetryCount0Job[0].log[0].type, enums.log.warning, 'Log type is warning')
+        t.equal(reviewedRetryCount0Job[0].log[0].status, enums.status.failed, 'Log status is failed')
+        t.ok(reviewedRetryCount0Job[0].log[0].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(reviewedRetryCount0Job[0].log[0].message, 'Log message is present')
+        t.ok(!reviewedRetryCount0Job[0].log[0].data, 'Log data is null')
+        return q.getJob(retryCount1Job.id)
+      }).then((reviewedRetryCount1Job) => {
+        t.equal(reviewedRetryCount1Job[0].status, enums.status.terminated, 'Reviewed job 2 is terminated status')
+        t.equal(reviewedRetryCount1Job[0].priority, 'normal', 'Reviewed job 2 is normal priority')
+        t.ok(moment.isDate(reviewedRetryCount1Job[0].dateFinished), 'Reviewed job 2 dateFinished is a date')
+        t.equal(reviewedRetryCount1Job[0].retryCount, 1, 'Reviewed job 2 retryCount is 1')
+        t.ok(moment.isDate(reviewedRetryCount1Job[0].log[0].date), 'Log date is a date')
+        t.equal(reviewedRetryCount1Job[0].log[0].queueId, q.id, 'Log queueId is valid')
+        t.equal(reviewedRetryCount1Job[0].log[0].type, enums.log.error, 'Log type is error')
+        t.equal(reviewedRetryCount1Job[0].log[0].status, enums.status.terminated, 'Log status is terminated')
+        t.ok(reviewedRetryCount1Job[0].log[0].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(moment.isDate(reviewedRetryCount1Job[0].log[0].dateRetry), 'Log dateRetry is a date')
+        t.ok(reviewedRetryCount1Job[0].log[0].message, 'Log message is present')
+        t.ok(!reviewedRetryCount1Job[0].log[0].data, 'Log data is null')
+        return q.getJob(completedJobPre.id)
+      }).then((reviewedCompletedJobPre) => {
+        t.equal(reviewedCompletedJobPre[0].id, completedJobPre.id, 'Completed job pre-remove date still exists')
+        return q.getJob(completedJobPost.id)
+      }).then((reviewedCompletedJobPost) => {
+        t.equal(reviewedCompletedJobPost.length, 0, 'Completed job post-remove date deleted')
+        return q.getJob(cancelledJobPost.id)
+      }).then((reviewedCancelledJobPost) => {
+        t.equal(reviewedCancelledJobPost.length, 0, 'Cancelled job post-remove date deleted')
+        return q.getJob(terminatedJobPost.id)
+      }).then((reviewedTerminatedJobPost) => {
+        t.equal(reviewedTerminatedJobPost.length, 0, 'Terminated job post-remove date deleted')
 
         //  ---------- enable Tests ----------
         t.comment('db-review: enable')
