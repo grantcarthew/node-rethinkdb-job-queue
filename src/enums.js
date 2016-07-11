@@ -12,31 +12,34 @@ const enums = module.exports = {
     retry: 1 // Used for retries after a job has timed out or failed.
   },
   status: {
-    ready: 'ready', // Queue status
-    paused: 'paused', // Queue status
-    resumed: 'resumed', // Queue status
-    idle: 'idle', // Queue status
-    reset: 'reset', // Queue status
-    error: 'error', // Queue status
-    review: 'review', // Queue status
-    detached: 'detached', // Queue status
-    stopping: 'stopping', // Queue status
-    stopped: 'stopped', // Queue status
-    dropped: 'dropped', // Queue status
-    created: 'created', // Job status (non-event)
-    added: 'added', // Job status
-    active: 'active', // Job status
-    processing: 'processing', // Job status
-    progress: 'progress', // Job status
-    completed: 'completed', // Job status
-    cancelled: 'cancelled', // Job status
-    failed: 'failed', // Job status
-    terminated: 'terminated', // Job status
-    removed: 'removed' // Job status
+    // ---------- Queue Status Values ----------
+    ready: 'ready',
+    processing: 'processing',
+    progress: 'progress',
+    paused: 'paused',
+    resumed: 'resumed',
+    removed: 'removed',
+    idle: 'idle',
+    reset: 'reset',
+    error: 'error',
+    review: 'review',
+    detached: 'detached',
+    stopping: 'stopping',
+    stopped: 'stopped',
+    dropped: 'dropped',
+    // ---------- Job Status Values ----------
+    created: 'created', // Non-event, initial create job status
+    added: 'added',
+    active: 'active',
+    completed: 'completed',
+    cancelled: 'cancelled',
+    failed: 'failed',
+    terminated: 'terminated'
   },
   index: {
     indexActiveDateRetry: 'indexActiveDateRetry',
-    indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated'
+    indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',
+    indexFinishedDateFinished: 'indexFinishedDateFinished'
   },
   dbResult: {
     deleted: 'deleted',

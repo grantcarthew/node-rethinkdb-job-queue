@@ -1,7 +1,10 @@
 const moment = require('moment')
 const enums = require('./enums')
-const jobParse = require('./job-parse')
 const uuidRegExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+module.exports.object = function isObject (value) {
+  return Object.prototype.toString.call(value) === '[object Object]'
+}
 
 const isNumber = module.exports.number = function isNumber (value) {
   return Object.prototype.toString.call(value) === '[object Number]'

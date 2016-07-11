@@ -65,7 +65,7 @@ module.exports = function () {
 
 
       // ---------- New Job Tests ----------
-      t.comment('job: Creat Log')
+      t.comment('job: Create Log')
       let log = newJob.createLog(testData)
       log.data = testData
       t.equal(typeof log, 'object', 'Job createLog returns a log object')
@@ -78,6 +78,7 @@ module.exports = function () {
       t.equal(log.data, testData, 'Log data is valid')
 
       return q.reset().then((resetResult) => {
+        console.dir(resetResult)
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(newJob)
       }).then((addedJobs) => {

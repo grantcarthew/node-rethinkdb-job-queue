@@ -17,7 +17,7 @@ const dbReview = proxyquire('../src/db-review',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(40)
+      t.plan(47)
 
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
@@ -26,10 +26,12 @@ module.exports = function () {
       let q = testQueue()
       let reviewCount = 0
       q.masterReviewPeriod = 1
-      function reviewEventHandler (total) {
+      function reviewEventHandler (reviewResult) {
         reviewCount++
         t.pass(`Event: Database review [Review Count: ${reviewCount}]`)
-        t.ok(is.integer(total), 'Review event return value is an Integer')
+        t.ok(is.object(reviewResult), 'Review event returns an Object')
+        t.ok(is.integer(reviewResult.reviewed), 'Review event returns reviewed as integer')
+        t.ok(is.integer(reviewResult.removed), 'Review event returns removed as integer')
         if (reviewCount > 2) {
           t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
 
@@ -79,7 +81,8 @@ module.exports = function () {
         t.comment('db-review: runOnce')
         return dbReview.runOnce(q)
       }).then((reviewResult) => {
-        t.ok(reviewResult >= 2, 'Job updated by db review')
+        t.equal(reviewResult.reviewed, 2, 'Jobs updated by db review')
+        t.equal(reviewResult.removed, 0, 'No jobs removed db review')
         return q.getJob(job1.id)
       }).then((reviewedJob1) => {
         t.equal(reviewedJob1[0].status, enums.status.failed, 'Reviewed job 1 is failed status')

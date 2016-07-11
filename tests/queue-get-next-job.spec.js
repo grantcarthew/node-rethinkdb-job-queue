@@ -42,13 +42,13 @@ module.exports = function () {
       const jobHighest = q.createJob(testData, {priority: 'highest'})
       jobHighest.status = enums.status.added
       jobHighest.data = 'Highest'
-      const jobFailed = q.createJob(testData, {priority: 'retry'})
-      jobFailed.status = enums.status.failed
-      jobFailed.data = 'Failed'
-      const jobTimeout = q.createJob(testData, {priority: 'retry'})
-      jobTimeout.status = enums.status.failed
-      jobTimeout.data = 'Timeout'
-      jobTimeout.dateCreated = moment().add(1, 'seconds').toDate()
+      const jobFailed1 = q.createJob(testData, {priority: 'retry'})
+      jobFailed1.status = enums.status.failed
+      jobFailed1.data = 'Failed'
+      const jobFailed2 = q.createJob(testData, {priority: 'retry'})
+      jobFailed2.status = enums.status.failed
+      jobFailed2.data = 'Timeout'
+      jobFailed2.dateCreated = moment().add(1, 'seconds').toDate()
       const jobActive = q.createJob(testData, {priority: 'retry'})
       jobActive.status = enums.status.active
       jobActive.data = 'Active'
@@ -68,8 +68,8 @@ module.exports = function () {
         jobMedium,
         jobHigh,
         jobHighest,
-        jobFailed,
-        jobTimeout,
+        jobFailed1,
+        jobFailed2,
         jobActive,
         jobCompleted,
         jobCancelled,
@@ -93,7 +93,7 @@ module.exports = function () {
         t.comment('queue-get-next-job: Jobs in Priority Order')
         return queueGetNextJob(q)
       }).then((failed) => {
-        t.equals(failed[0].id, jobFailed.id, 'Failed status job returned first')
+        t.equals(failed[0].id, jobFailed1.id, 'Failed status job1 returned first')
         t.ok(moment.isDate(failed[0].log[0].date), 'Log date is a date')
         t.equal(failed[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(failed[0].log[0].type, enums.log.information, 'Log type is information')
@@ -102,7 +102,7 @@ module.exports = function () {
         t.equal(failed[0].log[0].message, enums.message.active, 'Log message is valid')
         return queueGetNextJob(q)
       }).then((timeout) => {
-        t.equals(timeout[0].id, jobTimeout.id, 'Timeout status job returned second (dateCreated + 1sec)')
+        t.equals(timeout[0].id, jobFailed2.id, 'Failed status job2 returned second (dateCreated + 1sec)')
         t.ok(moment.isDate(timeout[0].log[0].date), 'Log date is a date')
         t.equal(timeout[0].log[0].queueId, q.id, 'Log queueId is valid')
         t.equal(timeout[0].log[0].type, enums.log.information, 'Log type is information')
