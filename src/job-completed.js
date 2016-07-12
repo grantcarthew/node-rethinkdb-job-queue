@@ -1,5 +1,6 @@
 const logger = require('./logger')(module)
 const moment = require('moment')
+const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
@@ -25,5 +26,14 @@ module.exports = function completed (job, data) {
   }).run().then((updateResult) => {
     job.q.emit(enums.status.completed, job.id)
     return dbResult.status(job.q, updateResult, enums.dbResult.replaced)
+  }).then((replacedValue) => {
+    if (is.true(job.q.removeFinishedJobs)) {
+      return job.q.removeJob(job).then((deleteResult) => {
+        job.q.emit(enums.status.removed, job.id)
+        return deleteResult
+      })
+    } else {
+      return replacedValue
+    }
   })
 }

@@ -10,8 +10,16 @@ const isNumber = module.exports.number = function isNumber (value) {
   return Object.prototype.toString.call(value) === '[object Number]'
 }
 
-module.exports.boolean = function isBoolean (value) {
+const isBoolean = module.exports.boolean = function isBoolean (value) {
   return Object.prototype.toString.call(value) === '[object Boolean]'
+}
+
+module.exports.true = function isTrue (value) {
+  return isBoolean(value) && value === true
+}
+
+module.exports.false = function isFalse (value) {
+  return isBoolean(value) && value === false
 }
 
 module.exports.date = function idDate (value) {

@@ -3,6 +3,11 @@
 Working on new index.
 
 Need tests for the following;
+job-failed with q.removeFinishedJobs = true/false/number with events
+job-completed with q.removeFinishedJobs = true/false/number with events
+queue-cancel-job with q.removeFinishedJobs = true/false/number with events
+
+change job-failed return to id rather than job
 is tests
 add active, added, failed, terminated event tests throughout
 add more error events?

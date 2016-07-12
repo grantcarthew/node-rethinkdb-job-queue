@@ -11,23 +11,44 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-completed', (t) => {
-      t.plan(18)
+      t.plan(22)
 
       const q = testQueue()
-      const job = q.createJob(testData)
+      let job = q.createJob(testData)
+      let testEvents = false
       function completed (jobId) {
-        t.equal(jobId, job.id, `Event: Job completed`)
+        if (testEvents) {
+          t.equal(jobId, job.id, `Event: Job completed [${jobId}]`)
+        }
       }
-      q.on(enums.status.completed, completed)
+      function removed (jobId) {
+        if (testEvents) {
+          t.equal(jobId, job.id, `Event: Job removed [${jobId}]`)
+        }
+      }
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.completed, completed)
+        q.on(enums.status.removed, removed)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.completed, completed)
+        q.removeListener(enums.status.removed, removed)
+      }
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+
+        // ---------- Job Completed Test ----------
+        addEventHandlers()
+        t.comment('job-completed: Job Completed')
         return jobCompleted(savedJob[0], testData)
-      }).then((changeResult) => {
-        t.equal(changeResult, 1, 'Job updated successfully')
+      }).then((completedResult) => {
+        t.equal(completedResult, 1, 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].status, enums.status.completed, 'Job status is completed')
@@ -43,10 +64,22 @@ module.exports = function () {
         t.ok(updatedJob[0].log[0].message, 'Log message is present')
         t.ok(updatedJob[0].log[0].duration >= 0, 'Log duration is >= 0')
         t.equal(updatedJob[0].log[0].data, testData, 'Log data is valid')
+
+        // ---------- Job Completed with Remove Test ----------
+        t.comment('job-completed: Job Completed with Remove')
+        job = q.createJob(testData)
+        return q.addJob(job)
+      }).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        q.removeFinishedJobs = true
+        return jobCompleted(savedJob[0], testData)
+      }).then((removedResult) => {
+        t.equal(removedResult, 1, 'Job removed successfully')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
-        q.removeListener(enums.status.completed, completed)
+        removeEventHandlers()
+        q.removeFinishedJobs = 180
         resolve()
       }).catch(err => testError(err, module, t))
     })

@@ -56,16 +56,16 @@ function updateFailedJobs (q) {
   })
 }
 
-function removeJobHistory (q) {
-  logger('removeJobHistory: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+function removeFinishedJobs (q) {
+  logger('removeFinishedJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
-  if (q.removeJobHistory === 0 || q.removeJobHistory === false) { return }
+  if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
 
   return q.r.db(q.db).table(q.name)
   .orderBy({index: enums.index.indexFinishedDateFinished})
   .filter(
     q.r.row('dateFinished').add(
-      q.r.expr(q.removeJobHistory).mul(86400)
+      q.r.expr(q.removeFinishedJobs).mul(86400)
     ).lt(q.r.now())
   ).delete()
   .run()
@@ -77,7 +77,7 @@ function removeJobHistory (q) {
 function runReviewTasks (q) {
   return Promise.props({
     reviewed: updateFailedJobs(q),
-    removed: removeJobHistory(q)
+    removed: removeFinishedJobs(q)
   }).then((result) => {
     q.emit(enums.status.review, result)
     queueProcess.restart(q)
