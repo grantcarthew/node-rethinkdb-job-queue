@@ -11,30 +11,32 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-completed', (t) => {
-      t.plan(22)
+      t.plan(23)
 
       const q = testQueue()
       let job = q.createJob(testData)
+
+      // ---------- Event Handler Setup ----------
       let testEvents = false
-      function completed (jobId) {
+      function completedEventHandler (jobId) {
         if (testEvents) {
           t.equal(jobId, job.id, `Event: Job completed [${jobId}]`)
         }
       }
-      function removed (jobId) {
+      function removedEventHandler (jobId) {
         if (testEvents) {
           t.equal(jobId, job.id, `Event: Job removed [${jobId}]`)
         }
       }
       function addEventHandlers () {
         testEvents = true
-        q.on(enums.status.completed, completed)
-        q.on(enums.status.removed, removed)
+        q.on(enums.status.completed, completedEventHandler)
+        q.on(enums.status.removed, removedEventHandler)
       }
       function removeEventHandlers () {
         testEvents = false
-        q.removeListener(enums.status.completed, completed)
-        q.removeListener(enums.status.removed, removed)
+        q.removeListener(enums.status.completed, completedEventHandler)
+        q.removeListener(enums.status.removed, removedEventHandler)
       }
 
       return q.reset().then((resetResult) => {
@@ -47,9 +49,9 @@ module.exports = function () {
         addEventHandlers()
         t.comment('job-completed: Job Completed')
         return jobCompleted(savedJob[0], testData)
-      }).then((completedResult) => {
-        t.equal(completedResult, 1, 'Job updated successfully')
-        return q.getJob(job.id)
+      }).then((completedIds) => {
+        t.equal(completedIds.length, 1, 'Job updated successfully')
+        return q.getJob(completedIds)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].status, enums.status.completed, 'Job status is completed')
         t.ok(moment.isDate(updatedJob[0].dateFinished), 'Job dateFinished is a date')
@@ -73,8 +75,11 @@ module.exports = function () {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         q.removeFinishedJobs = true
         return jobCompleted(savedJob[0], testData)
-      }).then((removedResult) => {
-        t.equal(removedResult, 1, 'Job removed successfully')
+      }).then((removedIds) => {
+        t.equal(removedIds.length, 1, 'Job removed successfully')
+        return q.getJob(removedIds[0])
+      }).then((exist) => {
+        t.equal(exist.length, 0, 'Job not in database')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

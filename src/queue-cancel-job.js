@@ -9,40 +9,41 @@ const jobParse = require('./job-parse')
 module.exports = function cancel (q, job, reason) {
   logger('cancel')
 
-  if (is.boolean(job.q.removeFinishedJobs) &&
-      job.q.removeFinishedJobs === true) {
-    return q.removeJob(job).then((deleteResult) => {
-      q.emit(enums.status.cancelled, j.id)
-      job.q.emit(enums.status.removed, deleteResult.id)
-      return deleteResult
+  return Promise.resolve().then(() => {
+    return jobParse.id(job)
+  }).then((ids) => {
+    return q.r.db(q.db).table(q.name)
+    .getAll(...ids)
+    .update({
+      status: enums.status.cancelled,
+      dateFinished: moment().toDate(),
+      log: q.r.row('log').append({
+        date: moment().toDate(),
+        queueId: q.id,
+        type: enums.log.information,
+        status: enums.status.cancelled,
+        retryCount: q.r.row('retryCount'),
+        message: reason
+      }),
+      queueId: q.id
+    }, {returnChanges: true})
+    .run()
+  }).then((updateResult) => {
+    return dbResult.toIds(q, updateResult)
+  }).then((jobIds) => {
+    jobIds.forEach((jobId) => {
+      q.emit(enums.status.cancelled, jobId)
     })
-  } else {
-    return Promise.resolve().then(() => {
-      return jobParse.id(job)
-    }).then((ids) => {
-        return q.r.db(q.db).table(q.name)
-        .getAll(...ids)
-        .update({
-          status: enums.status.cancelled,
-          dateFinished: moment().toDate(),
-          log: q.r.row('log').append({
-            date: moment().toDate(),
-            queueId: q.id,
-            type: enums.log.information,
-            status: enums.status.cancelled,
-            retryCount: q.r.row('retryCount'),
-            message: reason
-          }),
-          queueId: q.id
-        }, {returnChanges: true})
-        .run()
-    }).then((updateResult) => {
-      return dbResult.toJob(q, updateResult)
-    }).then((cancelledJobs) => {
-      cancelledJobs.forEach((j) => {
-        q.emit(enums.status.cancelled, j.id)
+    if (is.true(q.removeFinishedJobs)) {
+      return q.removeJob(jobIds).then((deleteResult) => {
+        logger(`Removed [${deleteResult}] job(s)`, jobIds)
+        jobIds.forEach((jobId) => {
+          q.emit(enums.status.removed, jobId)
+        })
+        return jobIds
       })
-      return cancelledJobs
-    })
-  }
+    } else {
+      return jobIds
+    }
+  })
 }

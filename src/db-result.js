@@ -3,29 +3,49 @@ const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
 
+function getJobsData (dbResult) {
+  logger('getJobsData:', dbResult)
+  return Promise.resolve().then(() => {
+    if (!dbResult) { return [] }
+    if (dbResult.errors > 0) {
+      const err = new Error(enums.error.dbError)
+      err.dbError = dbResult
+      return Promise.reject(err)
+    }
+    if (is.array(dbResult)) {
+      return dbResult
+    }
+    if (is.array(dbResult.changes)) {
+      return dbResult.changes.map((change) => {
+        return change.new_val
+      })
+    }
+    if (dbResult.new_val) {
+      return [dbResult.new_val]
+    }
+    if (dbResult.id) {
+      return [dbResult]
+    }
+    return []
+  })
+}
+
 module.exports.toJob = function toJob (q, dbResult) {
   logger('toJob:', dbResult)
-  if (!dbResult) { return Promise.resolve([]) }
-  if (dbResult.errors > 0) {
-    const err = new Error(enums.error.dbError)
-    err.dbError = dbResult
-    return Promise.reject(err)
-  }
-  if (is.array(dbResult)) {
-    return Promise.map(dbResult, jobData => q.createJob(null, jobData))
-  }
-  if (is.array(dbResult.changes)) {
-    return Promise.map(dbResult.changes, (change) => {
-      return q.createJob(null, change.new_val)
+  return getJobsData(dbResult).then((jobsData) => {
+    return jobsData.map((data) => {
+      return q.createJob(null, data)
     })
-  }
-  if (dbResult.new_val) {
-    return Promise.resolve([q.createJob(null, dbResult.new_val)])
-  }
-  if (dbResult.id) {
-    return Promise.resolve([q.createJob(null, dbResult)])
-  }
-  return []
+  })
+}
+
+module.exports.toIds = function toIds (q, dbResult) {
+  logger('toIds', dbResult)
+  return getJobsData(dbResult).then((jobsData) => {
+    return jobsData.map((data) => {
+      return data.id
+    })
+  })
 }
 
 module.exports.status = function status (q, dbResult, prop) {

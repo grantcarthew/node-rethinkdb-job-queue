@@ -5,7 +5,6 @@ const enums = require('./enums')
 const jobOptions = require('./job-options')
 const jobProgress = require('./job-progress')
 const jobAddLog = require('./job-add-log')
-const queueCancelJob = require('./queue-cancel-job')
 
 class Job {
 
@@ -78,13 +77,6 @@ class Job {
     logger('addLog')
     return this.q.ready.then(() => {
       return jobAddLog(this, log)
-    })
-  }
-
-  cancel (reason) {
-    logger('cancel')
-    return this.q.ready.then(() => {
-      return queueCancelJob(this, reason)
     })
   }
 }

@@ -17,23 +17,28 @@ module.exports = function completed (job, data) {
   log.data = data
   log.retryCount = job.retryCount
 
-  return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
+  return job.q.r.db(job.q.db).table(job.q.name)
+  .get(job.id)
+  .update({
     status: job.status,
     dateFinished: job.dateFinished,
     progress: job.progress,
     log: job.q.r.row('log').append(log),
     queueId: job.q.id
-  }).run().then((updateResult) => {
-    job.q.emit(enums.status.completed, job.id)
-    return dbResult.status(job.q, updateResult, enums.dbResult.replaced)
-  }).then((replacedValue) => {
+  }, { returnChanges: true })
+  .run()
+  .then((updateResult) => {
+    return dbResult.toIds(job.q, updateResult)
+  }).then((jobIds) => {
+    job.q.emit(enums.status.completed, jobIds[0])
     if (is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
-        job.q.emit(enums.status.removed, job.id)
-        return deleteResult
+        logger(`Removed [${deleteResult}] job with id [${jobIds[0]}]`)
+        job.q.emit(enums.status.removed, jobIds[0])
+        return jobIds
       })
     } else {
-      return replacedValue
+      return jobIds
     }
   })
 }
