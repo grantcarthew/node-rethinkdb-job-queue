@@ -11,6 +11,7 @@ const jobRun = function jobRun (job) {
   logger('jobRun', `Running: [${job.q.running}]`)
   let handled = false
   let jobTimeoutId
+  let finalPromise
 
   function nextHandler (err, data) {
     logger('nextHandler', `Running: [${job.q.running}]`)
@@ -18,10 +19,11 @@ const jobRun = function jobRun (job) {
     logger('Error', err)
     logger('handled', handled)
     // Ignore mulpiple calls to next()
-    if (handled) { return }
+    if (handled) {
+      return Promise.resolve(job.q.running)
+    }
     handled = true
     clearTimeout(jobTimeoutId)
-    let finalPromise
     if (err && err.cancelJob) {
       const reason = err.cancelReason ? err.cancelReason : enums.message.cancel
       finalPromise = queueCancelJob(job.q, job, reason)
@@ -32,7 +34,8 @@ const jobRun = function jobRun (job) {
     }
     return finalPromise.then((finalResult) => {
       job.q.running--
-      return setImmediate(jobTick, job.q)
+      setImmediate(jobTick, job.q)
+      return job.q.running
     })
   }
 

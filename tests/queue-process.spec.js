@@ -13,7 +13,7 @@ const dbReview = require('../src/db-review')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(152)
+      t.plan(186)
 
       // ---------- Test Setup ----------
       const q = testQueue(testOptions.queueMaster())
@@ -129,6 +129,9 @@ module.exports = function () {
         } else {
           setTimeout(function () {
             next(null, 'Job Completed: ' + job.id)
+            .then((runningJobs) => {
+              t.ok(is.integer(runningJobs), `Next call returns running jobs [${runningJobs}]`)
+            })
           }, jobDelay)
         }
       }

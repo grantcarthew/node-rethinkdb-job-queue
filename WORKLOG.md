@@ -1,28 +1,12 @@
 # WORKLOG
 
-Working on new index.
-
 Need tests for the following;
-check returned promise on next() call 'next().then()...'
 is tests
-add active, added, failed, terminated event tests throughout
 add more error events?
 queue-change
 queue
-
-Consider a function to remove jobs after a time period
-
-update indexInactivePriorityDateCreated index, look for specific status
-
-Non-events;
-created: 'created': Not needed
-
-
-
-Check database return values (prevent the change/update results from being returned to the user)
-check array return types
+Non-events; created: Not needed
 check for more places to add logs
-add logger statements
 
 ## Final Checks
 
@@ -33,3 +17,4 @@ add logger statements
 
 ## Notes for documentation
 Job parsing errors have a custom property err.dbError
+next() returns a promise with the number of running jobs
