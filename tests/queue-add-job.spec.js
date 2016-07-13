@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-add-job', (t) => {
-      t.plan(12)
+      t.plan(30)
 
       const q = testQueue()
       let addedCount = 0
@@ -35,6 +35,14 @@ module.exports = function () {
         return queueAddJob(q, job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job 1 saved successfully')
+        return q.getJob(job.id)
+      }).then((jobsFromDb) => {
+        t.ok(moment.isDate(jobsFromDb[0].log[0].date), 'Log job 1 date is a date')
+        t.equal(jobsFromDb[0].log[0].queueId, q.id, 'Log job 1 queueId is valid')
+        t.equal(jobsFromDb[0].log[0].type, enums.log.information, 'Log job 1 type is information')
+        t.equal(jobsFromDb[0].log[0].status, enums.status.added, 'Log job 1 status is added')
+        t.equal(jobsFromDb[0].retryCount, 0, 'Log job 1 retryCount is valid')
+        t.equal(jobsFromDb[0].log[0].message, enums.message.jobAdded, 'Log job 1 message is valid')
 
         // ---------- Add Multiple Jobs Tests ----------
         t.comment('queue-add-job: Add Multiple Job')
@@ -42,6 +50,23 @@ module.exports = function () {
       }).then((savedJobs) => {
         t.equal(savedJobs[0].id, jobs[0].id, 'Job 2 saved successfully')
         t.equal(savedJobs[1].id, jobs[1].id, 'Job 3 saved successfully')
+
+        return q.getJob(jobs[0].id)
+      }).then((jobsFromDb2) => {
+        t.ok(moment.isDate(jobsFromDb2[0].log[0].date), 'Log job 2 date is a date')
+        t.equal(jobsFromDb2[0].log[0].queueId, q.id, 'Log job 2 queueId is valid')
+        t.equal(jobsFromDb2[0].log[0].type, enums.log.information, 'Log job 2 type is information')
+        t.equal(jobsFromDb2[0].log[0].status, enums.status.added, 'Log job 2 status is added')
+        t.equal(jobsFromDb2[0].retryCount, 0, 'Log job 2 retryCount is valid')
+        t.equal(jobsFromDb2[0].log[0].message, enums.message.jobAdded, 'Log job 2 message is valid')
+        return q.getJob(jobs[1].id)
+      }).then((jobsFromDb3) => {
+        t.ok(moment.isDate(jobsFromDb3[0].log[0].date), 'Log job 3 date is a date')
+        t.equal(jobsFromDb3[0].log[0].queueId, q.id, 'Log job 3 queueId is valid')
+        t.equal(jobsFromDb3[0].log[0].type, enums.log.information, 'Log job 3 type is information')
+        t.equal(jobsFromDb3[0].log[0].status, enums.status.added, 'Log job 3 status is added')
+        t.equal(jobsFromDb3[0].retryCount, 0, 'Log job 3 retryCount is valid')
+        t.equal(jobsFromDb3[0].log[0].message, enums.message.jobAdded, 'Log job 3 message is valid')
       }).then(() => {
         //
         // ---------- Add Null Job Tests ----------

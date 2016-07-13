@@ -5,7 +5,6 @@ is tests
 add more error events?
 queue-change
 queue
-Non-events; created: Not needed
 check for more places to add logs
 
 ## Final Checks

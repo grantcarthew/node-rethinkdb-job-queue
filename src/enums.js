@@ -59,6 +59,7 @@ const enums = module.exports = {
     error: 'error'
   },
   message: {
+    jobAdded: 'Job added to the queue',
     active: 'Job retrieved and active',
     completed: 'Job completed successfully',
     failed: 'Job processing failed',

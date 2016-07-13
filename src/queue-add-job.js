@@ -15,6 +15,11 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
       return Promise.reject(new Error(enums.error.jobAlreadyAdded))
     }
     if (!skipStatusCheck) { oneJob.status = enums.status.added }
+    const log = oneJob.createLog(
+      enums.message.jobAdded,
+      enums.log.information,
+      enums.status.added)
+    oneJob.log.push(log)
     return oneJob.getCleanCopy()
   }).then((cleanJobs) => {
     logger(`cleanJobs`, cleanJobs)
