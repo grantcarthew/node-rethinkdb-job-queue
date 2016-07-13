@@ -3,16 +3,12 @@
 Working on new index.
 
 Need tests for the following;
-ready/detached/dropped/idle/stopping/stopped/paused/resumed events return q.id
 check returned promise on next() call 'next().then()...'
 is tests
 add active, added, failed, terminated event tests throughout
 add more error events?
 queue-change
 queue
-queue-process addHandler when the q is not the master.
-
-Tests: dbResult.toIds
 
 Consider a function to remove jobs after a time period
 

@@ -12,17 +12,19 @@ const dbReview = require('../src/db-review')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-stop', (t) => {
-      t.plan(53)
+      t.plan(61)
 
       const q = testQueue()
 
-      function stoppingEventHandler () {
-        t.pass('Event: Queue stopping')
+      function stoppingEventHandler (qid) {
+        t.pass(`Event: Queue stopping [${qid}]`)
+        t.equal(qid, q.id, `Event: Queue stopping id is valid`)
       }
       q.on(enums.status.stopping, stoppingEventHandler)
 
-      function stoppedEventHandler () {
-        t.pass('Event: Queue stopped')
+      function stoppedEventHandler (qid) {
+        t.pass(`Event: Queue stopped [${qid}]`)
+        t.equal(qid, q.id, `Event: Queue stopped id is valid`)
       }
       q.on(enums.status.stopped, stoppedEventHandler)
 

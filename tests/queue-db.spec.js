@@ -11,23 +11,25 @@ const dbReview = require('../src/db-review')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-db', (t) => {
-      t.plan(58)
+      t.plan(70)
 
       const q = testQueue()
 
       let readyEventCount = 0
-      q.on(enums.status.ready, function readyEventHandler () {
+      q.on(enums.status.ready, function readyEventHandler (qid) {
         readyEventCount++
-        t.pass('Event: Queue ready')
+        t.pass(`Event: Queue ready [${qid}]`)
+        t.equal(qid, q.id, `Event: Queue ready id is valid`)
         if (readyEventCount >= 6) {
           this.removeListener(enums.status.ready, readyEventHandler)
         }
       })
 
       let detachEventCount = 0
-      q.on(enums.status.detached, function detachedEventHandler () {
+      q.on(enums.status.detached, function detachedEventHandler (qid) {
         detachEventCount++
-        t.pass('Event: Queue detached')
+        t.pass(`Event: Queue detached [${qid}]`)
+        t.equal(qid, q.id, `Event: Queue detached id valid`)
         if (detachEventCount >= 6) {
           this.removeListener(enums.status.detached, detachedEventHandler)
         }

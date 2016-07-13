@@ -12,13 +12,14 @@ const queueDrop = require('../src/queue-drop')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-drop', (t) => {
-      t.plan(8)
+      t.plan(9)
 
       const mockQueue = testMockQueue()
       let q = testQueue()
 
-      function droppedEventHandler () {
-        t.pass('Event: Queue dropped')
+      function droppedEventHandler (qid) {
+        t.pass(`Event: Queue dropped [${qid}]`)
+        t.equal(qid, q.id, `Event: Queue dropped id is valid`)
         this.removeListener(enums.status.dropped, droppedEventHandler)
       }
       q.on(enums.status.dropped, droppedEventHandler)
