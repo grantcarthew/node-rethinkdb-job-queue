@@ -3,14 +3,18 @@ const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
 
+function getResultError (dbResult) {
+  const err = new Error(enums.error.dbError)
+  err.dbError = dbResult
+  return Promise.reject(err)
+}
+
 function getJobsData (dbResult) {
   logger('getJobsData:', dbResult)
   return Promise.resolve().then(() => {
     if (!dbResult) { return [] }
     if (dbResult.errors > 0) {
-      const err = new Error(enums.error.dbError)
-      err.dbError = dbResult
-      return Promise.reject(err)
+      return getResultError(dbResult)
     }
     if (is.array(dbResult)) {
       return dbResult
@@ -39,7 +43,7 @@ module.exports.toJob = function toJob (q, dbResult) {
   })
 }
 
-module.exports.toIds = function toIds (q, dbResult) {
+module.exports.toIds = function toIds (dbResult) {
   logger('toIds', dbResult)
   return getJobsData(dbResult).then((jobsData) => {
     return jobsData.map((data) => {
@@ -48,10 +52,10 @@ module.exports.toIds = function toIds (q, dbResult) {
   })
 }
 
-module.exports.status = function status (q, dbResult, prop) {
+module.exports.status = function status (dbResult, prop) {
   logger('status:', dbResult)
   if (dbResult.errors > 0) {
-    return Promise.reject(new Error(dbResult))
+    return getResultError(dbResult)
   }
   return Promise.resolve(dbResult[prop])
 }

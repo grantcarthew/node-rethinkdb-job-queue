@@ -16,6 +16,6 @@ module.exports = function removeJob (q, job) {
     .delete()
     .run()
   }).then((removeResult) => {
-    return dbResult.status(q, removeResult, enums.dbResult.deleted)
+    return dbResult.status(removeResult, enums.dbResult.deleted)
   })
 }

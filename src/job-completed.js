@@ -28,7 +28,7 @@ module.exports = function completed (job, data) {
   }, { returnChanges: true })
   .run()
   .then((updateResult) => {
-    return dbResult.toIds(job.q, updateResult)
+    return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     job.q.emit(enums.status.completed, jobIds[0])
     if (is.true(job.q.removeFinishedJobs)) {

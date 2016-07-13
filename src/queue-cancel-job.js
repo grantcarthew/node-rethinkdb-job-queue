@@ -29,7 +29,7 @@ module.exports = function cancel (q, job, reason) {
     }, {returnChanges: true})
     .run()
   }).then((updateResult) => {
-    return dbResult.toIds(q, updateResult)
+    return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     jobIds.forEach((jobId) => {
       q.emit(enums.status.cancelled, jobId)

@@ -41,7 +41,7 @@ module.exports = function failed (err, job, data) {
   }, {returnChanges: true})
   .run()
   .then((updateResult) => {
-    return dbResult.toIds(job.q, updateResult)
+    return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     if (isRetry) {
       job.q.emit(enums.status.failed, jobIds[0], job.dateRetry)

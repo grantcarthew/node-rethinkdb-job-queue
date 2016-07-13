@@ -3,10 +3,7 @@
 Working on new index.
 
 Need tests for the following;
-dbResult.toIds
-job-failed with q.removeFinishedJobs = true
-job-completed with q.removeFinishedJobs = true
-queue-cancel-job with q.removeFinishedJobs = true (done returning ids)
+
 ensure returned values are always arrays
 check returned promise on next() call 'next().then()...'
 check returned jobs on queue for remove etc.

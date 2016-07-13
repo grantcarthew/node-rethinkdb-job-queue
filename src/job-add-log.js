@@ -1,5 +1,6 @@
 const logger = require('./logger')(module)
 const enums = require('./enums')
+const dbResult = require('./db-result')
 
 module.exports = function addLog (job, log) {
   logger('addLog', log)
@@ -13,6 +14,6 @@ module.exports = function addLog (job, log) {
     queueId: job.q.id
   })
   .then((updateResult) => {
-    return updateResult.replaced
+    return dbResult.status(updateResult, enums.dbResult.replaced)
   })
 }

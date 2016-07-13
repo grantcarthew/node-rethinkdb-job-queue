@@ -52,7 +52,7 @@ function updateFailedJobs (q) {
   })
   .run()
   .then((updateResult) => {
-    return dbResult.status(q, updateResult, enums.dbResult.replaced)
+    return dbResult.status(updateResult, enums.dbResult.replaced)
   })
 }
 
@@ -70,7 +70,7 @@ function removeFinishedJobs (q) {
   ).delete()
   .run()
   .then((deleteResult) => {
-    return dbResult.status(q, deleteResult, enums.dbResult.deleted)
+    return dbResult.status(deleteResult, enums.dbResult.deleted)
   })
 }
 
