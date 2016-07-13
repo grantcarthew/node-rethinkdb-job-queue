@@ -5,11 +5,9 @@ const testError = require('./test-error')
 const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
-// const dbReview = require('../src/db-review')
 const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
 const proxyquire = require('proxyquire')
-
 const processStub = {}
 const dbReview = proxyquire('../src/db-review',
   { './queue-process': processStub })
