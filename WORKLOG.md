@@ -1,11 +1,13 @@
 # WORKLOG
 
+Fix log tests now that there is a log added.
+
 Need tests for the following;
 is tests
-add more error events?
 queue-change
 queue
-check for more places to add logs
+
+add more error events?
 
 ## Final Checks
 
@@ -17,3 +19,4 @@ check for more places to add logs
 ## Notes for documentation
 Job parsing errors have a custom property err.dbError
 next() returns a promise with the number of running jobs
+Jobs can be cancelled by adding properties to the err object in next(err)
