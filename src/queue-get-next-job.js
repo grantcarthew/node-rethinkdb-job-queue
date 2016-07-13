@@ -33,9 +33,11 @@ module.exports = function queueGetNextJob (q) {
     }, {returnChanges: true})
     .default({})
     .run().then((updateResult) => {
+      logger('updateResult', updateResult)
       return dbResult.toJob(q, updateResult)
     }).then((updatedJobs) => {
       for (let job of updatedJobs) {
+        logger(`Event: active [${job.id}]`)
         q.emit(enums.status.active, job.id)
       }
       return updatedJobs

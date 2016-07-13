@@ -5,7 +5,7 @@ const enums = require('./enums')
 const dbResult = require('./db-result')
 
 module.exports = function completed (job, data) {
-  logger('completed: ' + job.id)
+  logger(`completed:  [${job.id}]`)
   job.status = enums.status.completed
   job.dateFinished = moment().toDate()
   job.progress = 100
@@ -28,12 +28,14 @@ module.exports = function completed (job, data) {
   }, { returnChanges: true })
   .run()
   .then((updateResult) => {
+    logger(`updateResult`, updateResult)
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
+    logger(`Event: completed [${jobIds[0]}]`)
     job.q.emit(enums.status.completed, jobIds[0])
     if (is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
-        logger(`Removed [${deleteResult}] job with id [${jobIds[0]}]`)
+        logger(`Event: removed [${jobIds[0]}]`)
         job.q.emit(enums.status.removed, jobIds[0])
         return jobIds
       })

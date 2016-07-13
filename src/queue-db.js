@@ -11,8 +11,8 @@ module.exports.attach = function dbAttach (q) {
   q.r = rethinkdbdash({
     host: q.host,
     port: q.port,
-    db: q.db
-    // silent: true TODO: Reinstate
+    db: q.db,
+    silent: true
   })
   q.ready = dbAssert(q).then(() => {
     if (q.enableChangeFeed) {
@@ -32,7 +32,8 @@ module.exports.attach = function dbAttach (q) {
     }
     return null
   }).then(() => {
-    q.emit(enums.status.ready)
+    logger(`Event: ready [${q.id}]`)
+    q.emit(enums.status.ready, q.id)
     return true
   })
   return q.ready
@@ -44,23 +45,27 @@ module.exports.detach = function dbDetach (q, drainPool) {
     if (q._changeFeed) {
       let feed = q._changeFeed
       q._changeFeed = false
+      logger('closing changeFeed')
       return feed.close()
     }
     return null
   }).then(() => {
     if (q.isMaster) {
+      logger('disabling dbReview')
       return dbReview.disable(q)
     }
     return null
   }).then(() => {
     if (drainPool) {
       q.ready = false
+      logger('draining connection pool')
       return q.r.getPoolMaster().drain()
     }
     return null
   }).then(() => {
     if (drainPool) {
-      q.emit(enums.status.detached)
+      logger(`Event: detached [${q.id}]`)
+      q.emit(enums.status.detached, q.id)
     }
     return null
   })

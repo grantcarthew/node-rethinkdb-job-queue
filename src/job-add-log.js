@@ -14,6 +14,7 @@ module.exports = function addLog (job, log) {
     queueId: job.q.id
   })
   .then((updateResult) => {
+    logger(`Log added to job [${job.id}]`, updateResult)
     return dbResult.status(updateResult, enums.dbResult.replaced)
   })
 }

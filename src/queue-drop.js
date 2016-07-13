@@ -11,7 +11,8 @@ module.exports = function queueDrop (q, dropTimeout) {
   }).then(() => {
     return queueDb.detach(q, true)
   }).then(() => {
-    q.emit(enums.status.dropped)
+    logger(`Event: dropped [${q.id}]`)
+    q.emit(enums.status.dropped, q.id)
     return true
   })
 }

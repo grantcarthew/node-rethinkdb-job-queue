@@ -28,6 +28,7 @@ module.exports = function queueChange (q, err, change) {
 
   // New job added
   if (is.job(newVal) && !is.job(oldVal)) {
+    logger(`Event: added [${newVal.id}]`)
     q.emit(enums.status.added, newVal.id)
     setTimeout(function () {
       queueProcess.restart(q)
@@ -40,6 +41,7 @@ module.exports = function queueChange (q, err, change) {
       newVal.status === enums.status.active &&
       is.job(oldVal) &&
       oldVal.status !== enums.status.active) {
+    logger(`Event: active [${newVal.id}]`)
     q.emit(enums.status.active, newVal.id)
     return enums.status.active
   }
@@ -49,12 +51,14 @@ module.exports = function queueChange (q, err, change) {
       newVal.status === enums.status.completed &&
       is.job(oldVal) &&
       oldVal.status !== enums.status.completed) {
+    logger(`Event: completed [${newVal.id}]`)
     q.emit(enums.status.completed, newVal.id)
     return enums.status.completed
   }
 
   // Job removed
   if (!is.job(newVal) && is.job(oldVal)) {
+    logger(`Event: removed [${oldVal.id}]`)
     q.emit(enums.status.removed, oldVal.id)
     return enums.status.removed
   }

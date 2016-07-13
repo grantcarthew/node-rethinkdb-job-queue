@@ -52,6 +52,7 @@ function updateFailedJobs (q) {
   })
   .run()
   .then((updateResult) => {
+    logger(`updateResult`, updateResult)
     return dbResult.status(updateResult, enums.dbResult.replaced)
   })
 }
@@ -70,23 +71,26 @@ function removeFinishedJobs (q) {
   ).delete()
   .run()
   .then((deleteResult) => {
+    logger(`deleteResult`, deleteResult)
     return dbResult.status(deleteResult, enums.dbResult.deleted)
   })
 }
 
 function runReviewTasks (q) {
+  logger(`runReviewTasks`)
   return Promise.props({
     reviewed: updateFailedJobs(q),
     removed: removeFinishedJobs(q)
-  }).then((result) => {
-    q.emit(enums.status.review, result)
+  }).then((runReviewTasksResult) => {
+    logger(`Event: review`, runReviewTasksResult)
+    q.emit(enums.status.review, runReviewTasksResult)
     queueProcess.restart(q)
-    return result
+    return runReviewTasksResult
   })
 }
 
 module.exports.enable = function enable (q) {
-  logger('db-review enable')
+  logger('enable')
   if (!dbReviewIntervalId) {
     const interval = q.masterReviewPeriod * 1000
     dbReviewIntervalId = setInterval(() => {
@@ -97,7 +101,7 @@ module.exports.enable = function enable (q) {
 }
 
 module.exports.disable = function disable (q) {
-  logger('db-review disable')
+  logger('disable')
   if (dbReviewIntervalId) {
     clearInterval(dbReviewIntervalId)
     dbReviewIntervalId = false
@@ -106,10 +110,11 @@ module.exports.disable = function disable (q) {
 }
 
 module.exports.runOnce = function run (q) {
-  logger('run')
+  logger('runOnce')
   return runReviewTasks(q)
 }
 
 module.exports.isEnabled = function reviewIsEnabled () {
+  logger('isEnabled')
   return !!dbReviewIntervalId
 }

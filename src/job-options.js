@@ -7,7 +7,7 @@ const defaultOptions = {
 }
 
 module.exports = function jobOptions (options = {}) {
-  logger('options', options)
+  logger('jobOptions', options)
   return {
     priority: options.priority || defaultOptions.priority,
     timeout: options.timeout || defaultOptions.timeout,

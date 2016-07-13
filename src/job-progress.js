@@ -11,6 +11,7 @@ module.exports = function set (job, percent) {
     progress: percent,
     queueId: job.q.id
   }).run().then((updateResult) => {
+    logger(`Event: progress [${job.id}] [${percent}]`)
     job.q.emit(enums.status.progress, job.id, percent)
     return true
   })

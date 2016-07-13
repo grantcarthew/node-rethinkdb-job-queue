@@ -38,9 +38,12 @@ const jobRun = function jobRun (job) {
 
   const timedOutMessage = `Job timed out (run time > ${job.timeout} sec)`
   jobTimeoutId = setTimeout(function timeoutHandler () {
+    logger('timeoutHandler called, job timeout value exceeded')
     nextHandler(new Error(timedOutMessage))
   }, job.timeout * 1000)
+  logger(`Event: processing [${job.id}]`)
   job.q.emit(enums.status.processing, job.id)
+  logger('calling handler function')
   job.q.handler(job, nextHandler)
 }
 
@@ -62,8 +65,8 @@ const jobTick = function jobTick (q) {
     }
     if (q.idle && !runAgain) {
       // No running jobs and no jobs in the database, we are idle.
-      logger('queue idle')
-      q.emit(enums.status.idle)
+      logger(`Event: idle [${q.id}]`)
+      q.emit(enums.status.idle, q.id)
     }
   }
 
@@ -86,6 +89,7 @@ const jobTick = function jobTick (q) {
   }).catch((err) => {
     logger('queueGetNextJob Error:', err)
     getNextJobCleanup(q._getNextJobCalled)
+    logger(`Event: error [${err.message}]`, err)
     q.emit(enums.status.error, err.message)
     return Promise.reject(err)
   })

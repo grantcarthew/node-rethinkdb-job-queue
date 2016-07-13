@@ -7,7 +7,7 @@ const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 
 module.exports = function cancel (q, job, reason) {
-  logger('cancel')
+  logger('cancel', job, reason)
 
   return Promise.resolve().then(() => {
     return jobParse.id(job)
@@ -29,15 +29,17 @@ module.exports = function cancel (q, job, reason) {
     }, {returnChanges: true})
     .run()
   }).then((updateResult) => {
+    logger('updateResult', updateResult)
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     jobIds.forEach((jobId) => {
+      logger(`Event: cancelled [${jobId}]`)
       q.emit(enums.status.cancelled, jobId)
     })
     if (is.true(q.removeFinishedJobs)) {
       return q.removeJob(jobIds).then((deleteResult) => {
-        logger(`Removed [${deleteResult}] job(s)`, jobIds)
         jobIds.forEach((jobId) => {
+          logger(`Event: removed [${jobId}]`)
           q.emit(enums.status.removed, jobId)
         })
         return jobIds

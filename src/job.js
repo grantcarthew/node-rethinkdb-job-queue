@@ -48,6 +48,7 @@ class Job {
   }
 
   setProgress (percent) {
+    logger(`setProgress [${percent}]`)
     return this.q.ready.then(() => {
       return jobProgress.set(this, percent)
     })
@@ -62,7 +63,7 @@ class Job {
   }
 
   createLog (message, type = enums.log.information, status = this.status) {
-    logger('createLog')
+    logger(`createLog [${message}] [${type}] [${status}]`)
     return {
       date: moment().toDate(),
       queueId: this.q.id,
@@ -74,7 +75,7 @@ class Job {
   }
 
   addLog (log) {
-    logger('addLog')
+    logger('addLog', log)
     return this.q.ready.then(() => {
       return jobAddLog(this, log)
     })

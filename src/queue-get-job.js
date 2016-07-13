@@ -14,6 +14,7 @@ module.exports = function queueGetJob (q, jobId) {
       .getAll(...ids)
       .run()
   }).then((jobsData) => {
+    logger('jobsData', jobsData)
     return dbResult.toJob(q, jobsData)
   })
 }

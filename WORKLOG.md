@@ -3,11 +3,8 @@
 Working on new index.
 
 Need tests for the following;
-
-ensure returned values are always arrays
+ready/detached/dropped/idle/stopping/stopped/paused/resumed events return q.id
 check returned promise on next() call 'next().then()...'
-check returned jobs on queue for remove etc.
-change job-failed return to id rather than job
 is tests
 add active, added, failed, terminated event tests throughout
 add more error events?

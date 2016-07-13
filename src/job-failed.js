@@ -5,8 +5,8 @@ const enums = require('./enums')
 const dbResult = require('./db-result')
 
 module.exports = function failed (err, job, data) {
-  logger('failed: ' + job.id)
-  logger('Error', err)
+  logger(`failed:  [${job.id}]`)
+  logger(`error`, err)
 
   let logType = enums.log.error
   const isRetry = job.retryCount < job.retryMax
@@ -41,17 +41,20 @@ module.exports = function failed (err, job, data) {
   }, {returnChanges: true})
   .run()
   .then((updateResult) => {
+    logger(`updateResult`, updateResult)
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     if (isRetry) {
+      logger(`Event: failed [${jobIds[0]}]`)
       job.q.emit(enums.status.failed, jobIds[0], job.dateRetry)
     } else {
+      logger(`Event: terminated [${jobIds[0]}]`)
       job.q.emit(enums.status.terminated, jobIds[0])
     }
     if (!isRetry &&
         is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
-        logger(`Removed [${deleteResult}] job with id [${jobIds[0]}]`)
+        logger(`Event: removed [${jobIds[0]}]`)
         job.q.emit(enums.status.removed, jobIds[0])
         return jobIds
       })

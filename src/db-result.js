@@ -4,6 +4,7 @@ const is = require('./is')
 const enums = require('./enums')
 
 function getResultError (dbResult) {
+  logger(`getResultError`, dbResult)
   const err = new Error(enums.error.dbError)
   err.dbError = dbResult
   return Promise.reject(err)

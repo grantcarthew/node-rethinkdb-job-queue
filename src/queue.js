@@ -52,7 +52,8 @@ class Queue extends EventEmitter {
 
   pause () {
     this._paused = true
-    this.emit(enums.status.paused)
+    logger(`Event: paused [${this.id}]`)
+    this.emit(enums.status.paused, this.id)
   }
 
   get paused () {
@@ -63,7 +64,8 @@ class Queue extends EventEmitter {
     this._paused = false
     return this.ready.then(() => {
       queueProcess.restart(this)
-      this.emit(enums.status.resumed)
+      logger(`Event: resumed [${this.id}]`)
+      this.emit(enums.status.resumed, this.id)
       return true
     })
   }

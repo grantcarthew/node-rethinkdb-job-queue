@@ -1,5 +1,8 @@
+const logger = require('./logger')(module)
+
 const enums = module.exports = {
-  priorityFromValue: function priorityFromValue (value) {
+  priorityFromValue (value) {
+    logger(`priorityFromValue: [${value}]`)
     return Object.keys(enums.priority).find(key => enums.priority[key] === value)
   },
   priority: {
