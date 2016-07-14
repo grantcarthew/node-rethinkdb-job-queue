@@ -3,9 +3,9 @@ const enums = require('./enums')
 const queueDb = require('./queue-db')
 const queueStop = require('./queue-stop')
 
-module.exports = function queueDrop (q, dropTimeout) {
+module.exports = function queueDrop (q) {
   logger('queueDrop')
-  return queueStop(q, dropTimeout, false).then(() => {
+  return queueStop(q, false).then(() => {
     q.ready = false
     return q.r.db(q.db).tableDrop(q.name).run()
   }).then(() => {

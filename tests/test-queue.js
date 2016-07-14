@@ -6,7 +6,7 @@ module.exports = function (options) {
   let defaults = testOptions.queueDefault()
   if (options) { defaults = options }
   if (options || !testQueue) {
-    if (testQueue) { testQueue.stop(100) }
+    if (testQueue) { testQueue.stop() }
     testQueue = new Queue(defaults)
   }
   return testQueue

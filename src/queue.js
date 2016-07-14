@@ -51,9 +51,21 @@ class Queue extends EventEmitter {
   }
 
   pause () {
-    this._paused = true
-    logger(`Event: paused [${this.id}]`)
-    this.emit(enums.status.paused, this.id)
+    return new Promise((resolve, reject) => {
+      this._paused = true
+      if (this.running < 1) { return resolve(true) }
+      const q = this
+      let intId = setInterval(function pausing () {
+        console.log('Pausing...', q.running)
+        if (q.running < 1) {
+          clearInterval(intId)
+          resolve(true)
+        }
+      }, 400)
+    }).then(() => {
+      logger(`Event: paused [${this.id}]`)
+      this.emit(enums.status.paused, this.id)
+    })
   }
 
   get paused () {
@@ -61,8 +73,8 @@ class Queue extends EventEmitter {
   }
 
   resume () {
-    this._paused = false
     return this.ready.then(() => {
+      this._paused = false
       queueProcess.restart(this)
       logger(`Event: resumed [${this.id}]`)
       this.emit(enums.status.resumed, this.id)
@@ -171,10 +183,9 @@ class Queue extends EventEmitter {
     })
   }
 
-  stop (stopTimeout) {
+  stop () {
     logger('stop')
-    if (!stopTimeout) { throw new Error(enums.error.missingTimeout) }
-    return queueStop(this, stopTimeout)
+    return queueStop(this)
   }
 
   drop (dropTimeout) {

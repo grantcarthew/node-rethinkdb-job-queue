@@ -140,7 +140,8 @@ module.exports = function () {
       jobs = q.createJob(testData, noOfJobsToCreate)
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q.pause()
+        return q.pause()
+      }).then(() => {
         addEventHandlers()
 
         // ---------- Processing, Pause, and Concurrency Test ----------
@@ -160,11 +161,11 @@ module.exports = function () {
           t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).delay(jobDelay / 2).then(() => {
-        q.pause()
         t.equal(q.running, q.concurrency, 'Queue is processing only one job')
         q.concurrency = 3
-      }).delay(jobDelay).then(() => {
-        q.resume()
+        return q.pause()
+      }).then(() => {
+        return q.resume()
       }).delay(jobDelay / 2).then(() => {
         t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
@@ -181,7 +182,8 @@ module.exports = function () {
       }).delay(allJobsDelay).then(() => {
         t.equal(completedEventCounter, noOfJobsToCreate * 2, `Queue has completed ${completedEventCounter} jobs`)
         t.ok(q.idle, 'Queue is idle')
-        q.pause()
+        return q.pause()
+      }).then(() => {
 
         // ---------- Processing Restart Test ----------
         t.comment('queue-process: Process Restart')
@@ -189,7 +191,8 @@ module.exports = function () {
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
-        q._paused = false
+        return q.resume()
+      }).then(() => {
         return queueProcess.restart(q)
       }).delay(allJobsDelay).then(() => {
         t.equal(completedEventCounter, noOfJobsToCreate * 3, `Queue has completed ${completedEventCounter} jobs`)

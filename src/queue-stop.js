@@ -3,47 +3,15 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const queueDb = require('./queue-db')
 
-module.exports = function queueStop (q, stopTimeout, drainPool = true) {
+module.exports = function queueStop (q, drainPool = true) {
   logger('queueStop with drain:', drainPool)
   logger(`Event: stopping [${q.id}]`)
   q.emit(enums.status.stopping, q.id)
-  q.pause()
-  let stopIntervalId
-  let stopTimeoutId
-  function cleanUp () {
-    logger('cleanUp')
-    return queueDb.detach(q, drainPool).then(() => {
-      if (stopIntervalId) { clearInterval(stopIntervalId) }
-      if (stopTimeoutId) { clearTimeout(stopTimeoutId) }
-    })
-  }
-
-  logger('Waiting half stop time')
-  return Promise.delay(stopTimeout / 2)
-  .then(() => {
-    return new Promise((resolve) => {
-      stopTimeoutId = setTimeout(() => {
-        logger('Queue stopped forcefully: ', drainPool)
-        return cleanUp().then(() => {
-          logger(`Event: stopped [${q.id}]`)
-          q.emit(enums.status.stopped, q.id)
-          q.running < 1 ? resolve(enums.message.allJobsStopped)
-            : resolve(enums.message.failedToStop)
-        })
-      }, stopTimeout / 2)
-
-      stopIntervalId = setInterval(() => {
-        if (q.running < 1) {
-          logger('Queue stopped gracefully: ', drainPool)
-          return cleanUp().then(() => {
-            logger(`Event: stopped [${q.id}]`)
-            q.emit(enums.status.stopped, q.id)
-            resolve(enums.message.allJobsStopped)
-          })
-        }
-      }, stopTimeout / 12)
-
-      return queueDb.detach(q, false)
-    })
+  return q.pause().then(() => {
+    return queueDb.detach(q, drainPool)
+  }).then(() => {
+    logger(`Event: stopped [${q.id}]`)
+    q.emit(enums.status.stopped, q.id)
+    return true
   })
 }

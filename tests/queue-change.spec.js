@@ -43,13 +43,13 @@ module.exports = function () {
         })
       }
 
-
       const job = q.createJob(testData)
 
       return q.reset().then((resetResult) => {
+        return q.pause()
+      }).then(() => {
         t.ok(is.integer(resetResult), 'Queue reset')
         q.testing = true
-        q.pause()
         q.process((j, next) => {
           t.equal(j.id, job.id, `Job Processed [${j.id}]`)
           next(null, 'queue-change')

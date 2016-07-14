@@ -29,10 +29,10 @@ const queueSummary = require('./queue-summary.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return jobCompleted()
+  return queueStop()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()
-  testQueue().stop(100)
+  testQueue().stop()
   return true
 })

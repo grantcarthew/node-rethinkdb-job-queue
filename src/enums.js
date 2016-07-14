@@ -63,7 +63,6 @@ const enums = module.exports = {
     active: 'Job retrieved and active',
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
-    allJobsStopped: 'All running jobs have stopped',
     failedToStop: 'Failed to gracefully stop jobs, force quit',
     cancel: 'Job cancelled by Queue process handler'
   },
