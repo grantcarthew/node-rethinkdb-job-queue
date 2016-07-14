@@ -10,7 +10,7 @@ module.exports.id = function jobParseId (job) {
   let validIds = []
   for (let j of jobs) {
     if (!is.uuid(j) && !is.uuid(j.id)) {
-      throw new Error(enums.error.idInvalid)
+      throw new Error(enums.message.idInvalid)
     }
     if (is.uuid(j)) {
       validIds.push(j)
@@ -51,7 +51,7 @@ module.exports.job = function jobParseJob (job) {
     if (!detail) {
       validJobs.push(j)
     } else {
-      throw new Error(enums.error.jobInvalid + ': ' + detail)
+      throw new Error(enums.message.jobInvalid + ': ' + detail)
     }
   }
   return validJobs

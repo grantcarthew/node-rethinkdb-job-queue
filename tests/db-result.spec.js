@@ -46,13 +46,13 @@ module.exports = function () {
         return dbResult.toJob(q, mockChange).then((noErr) => {
           t.fail('Does not fail if errors exist in db result')
         }).catch((err) => {
-          t.equal(err.message, enums.error.dbError, 'Returns rejected Promise on error in toJobs')
+          t.equal(err.message, enums.message.dbError, 'Returns rejected Promise on error in toJobs')
         })
       }).then(() => {
         return dbResult.toIds(mockChange).then((noErr) => {
           t.fail('Does not fail if errors exist in db result')
         }).catch((err) => {
-          t.equal(err.message, enums.error.dbError, 'Returns rejected Promise on error in toIds')
+          t.equal(err.message, enums.message.dbError, 'Returns rejected Promise on error in toIds')
         })
       }).then(() => {
         mockChange.errors = 0

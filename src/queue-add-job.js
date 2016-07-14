@@ -12,7 +12,7 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
     return jobParse.job(job)
   }).map((oneJob) => {
     if (!skipStatusCheck && oneJob.status !== enums.status.created) {
-      return Promise.reject(new Error(enums.error.jobAlreadyAdded))
+      return Promise.reject(new Error(enums.message.jobAlreadyAdded))
     }
     if (!skipStatusCheck) { oneJob.status = enums.status.added }
     const log = oneJob.createLog(

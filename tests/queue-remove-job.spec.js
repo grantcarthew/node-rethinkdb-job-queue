@@ -81,7 +81,7 @@ module.exports = function () {
         return queueRemoveJob(q, ['not a job']).then(() => {
           t.fail('queue-remove-job is not failing on an invalid job')
         }).catch((err) => {
-          t.ok(err.message.includes(enums.error.idInvalid), 'Invalid job returns a rejected Promise')
+          t.ok(err.message.includes(enums.message.idInvalid), 'Invalid job returns a rejected Promise')
         })
       }).then(() => {
         return q.reset()

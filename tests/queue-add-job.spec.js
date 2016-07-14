@@ -81,7 +81,7 @@ module.exports = function () {
         return queueAddJob(q, {}).then(() => {
           t.fail('Job invalid is not returning a rejected promise')
         }).catch((err) => {
-          t.ok(err.message.includes(enums.error.jobInvalid), 'Job invalid returns a rejected promise')
+          t.ok(err.message.includes(enums.message.jobInvalid), 'Job invalid returns a rejected promise')
         })
       }).then(() => {
         job.status = enums.status.added
@@ -91,7 +91,7 @@ module.exports = function () {
         return queueAddJob(q, job).then(() => {
           t.fail('Promise is not being rejected when job status is invalid')
         }).catch((err) => {
-          t.equal(err.message, enums.error.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
+          t.equal(err.message, enums.message.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
         })
       }).then(() => {
         t.equal(addedCount, 3, 'Jobs added event count is valid')

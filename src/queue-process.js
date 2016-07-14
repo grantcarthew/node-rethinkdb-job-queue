@@ -102,7 +102,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   logger('addHandler')
 
   if (q.handler) {
-    return Promise.reject(new Error(enums.error.processTwice))
+    return Promise.reject(new Error(enums.message.processTwice))
   }
 
   q.handler = handler

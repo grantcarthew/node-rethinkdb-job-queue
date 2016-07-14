@@ -158,7 +158,7 @@ module.exports = function () {
         return queueProcess.addHandler(q, testHandler).then(() => {
           t.fail('Calling queue-process twice should fail and is not')
         }).catch((err) => {
-          t.equal(err.message, enums.error.processTwice, 'Calling queue-process twice returns rejected Promise')
+          t.equal(err.message, enums.message.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).delay(jobDelay / 2).then(() => {
         t.equal(q.running, q.concurrency, 'Queue is processing only one job')

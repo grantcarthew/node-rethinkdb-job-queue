@@ -1,9 +1,7 @@
 # WORKLOG
 
-Add pause Promise?
 change .running to ._running and add getter (others?)
 update dateRetry on progress.
-Merge enums message error
 
 Need tests for the following;
 is tests

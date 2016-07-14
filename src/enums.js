@@ -63,9 +63,7 @@ const enums = module.exports = {
     active: 'Job retrieved and active',
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
-    cancel: 'Job cancelled by Queue process handler'
-  },
-  error: {
+    cancel: 'Job cancelled by Queue process handler',
     jobNotAdded: 'Job not added to the queue',
     jobAlreadyAdded: 'Job is already added to the queue',
     jobInvalid: 'Job object is invalid',

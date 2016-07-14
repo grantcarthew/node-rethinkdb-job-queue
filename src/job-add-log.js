@@ -5,7 +5,7 @@ const dbResult = require('./db-result')
 module.exports = function addLog (job, log) {
   logger('addLog', log)
   if (job.status === enums.status.created) {
-    return Promise.reject(new Error(enums.error.jobNotAdded))
+    return Promise.reject(new Error(enums.message.jobNotAdded))
   }
   return job.q.r.db(job.q.db).table(job.q.name)
   .get(job.id)

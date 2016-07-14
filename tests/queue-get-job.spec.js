@@ -41,7 +41,7 @@ module.exports = function () {
         // ---------- Invalid Id Tests ----------
         t.comment('queue-get-job: Invalid Id')
         return queueGetJob(q, ['invalid id']).catch((err) => {
-          t.ok(err.message.includes(enums.error.idInvalid), 'Invalid id returns rejected Promise')
+          t.ok(err.message.includes(enums.message.idInvalid), 'Invalid id returns rejected Promise')
         })
       }).then((empty) => {
         //
