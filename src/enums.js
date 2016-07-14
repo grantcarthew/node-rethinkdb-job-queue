@@ -63,7 +63,6 @@ const enums = module.exports = {
     active: 'Job retrieved and active',
     completed: 'Job completed successfully',
     failed: 'Job processing failed',
-    failedToStop: 'Failed to gracefully stop jobs, force quit',
     cancel: 'Job cancelled by Queue process handler'
   },
   error: {
@@ -71,11 +70,8 @@ const enums = module.exports = {
     jobAlreadyAdded: 'Job is already added to the queue',
     jobInvalid: 'Job object is invalid',
     processTwice: 'Cannot call queue process twice',
-    missingTimeout: 'Timeout parameter required to stop or drop queue',
-    queueDropped: 'The queue has been dropped',
     idInvalid: 'The job id is invalid',
     reviewOptionInvalid: 'The queue.review option is invalid',
-    dbError: 'RethinkDB returned an error',
-    isPausedInvalid: 'Queue.paused requires a boolean'
+    dbError: 'RethinkDB returned an error'
   }
 }

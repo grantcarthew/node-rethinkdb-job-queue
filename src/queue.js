@@ -51,12 +51,13 @@ class Queue extends EventEmitter {
   }
 
   pause () {
+    logger(`pause`)
     return new Promise((resolve, reject) => {
       this._paused = true
       if (this.running < 1) { return resolve(true) }
       const q = this
       let intId = setInterval(function pausing () {
-        console.log('Pausing...', q.running)
+        logger(`Pausing, waiting on running jobs: [${q.running}]`)
         if (q.running < 1) {
           clearInterval(intId)
           resolve(true)
@@ -69,10 +70,12 @@ class Queue extends EventEmitter {
   }
 
   get paused () {
+    logger(`get paused`)
     return this._paused
   }
 
   resume () {
+    logger(`resume`)
     return this.ready.then(() => {
       this._paused = false
       queueProcess.restart(this)
@@ -93,12 +96,12 @@ class Queue extends EventEmitter {
   }
 
   set jobOptions (options) {
-    logger('set jobOptions')
+    logger('set jobOptions', options)
     this._jobOptions = jobOptions(options)
   }
 
   createJob (data, options = this._jobOptions, quantity = 1) {
-    logger('createJob')
+    logger('createJob', data, options, quantity)
     if (is.integer(options)) {
       quantity = options
       options = this._jobOptions
@@ -114,28 +117,28 @@ class Queue extends EventEmitter {
   }
 
   addJob (job) {
-    logger('addJob')
+    logger('addJob', job)
     return this.ready.then(() => {
       return queueAddJob(this, job)
     })
   }
 
   cancelJob (job, reason) {
-    logger('cancelJob')
+    logger('cancelJob', job, reason)
     return this.ready.then(() => {
       return queueCancelJob(this, job, reason)
     })
   }
 
   removeJob (job) {
-    logger('removeJob')
+    logger('removeJob', job)
     return this.ready.then(() => {
       return queueRemoveJob(this, job)
     })
   }
 
   getJob (jobId) {
-    logger('getJob')
+    logger('getJob', jobId)
     return this.ready.then(() => {
       return queueGetJob(this, jobId)
     })
@@ -147,12 +150,12 @@ class Queue extends EventEmitter {
   }
 
   set jobConcurrency (newConcurrencyValue) {
-    logger('set jobConcurrency')
+    logger('set jobConcurrency', newConcurrencyValue)
     this.concurrency = newConcurrencyValue > 1 ? newConcurrencyValue : 1
   }
 
   process (handler) {
-    logger('process')
+    logger('process', handler)
     return this.ready.then(() => {
       return queueProcess.addHandler(this, handler)
     })
@@ -166,6 +169,7 @@ class Queue extends EventEmitter {
   }
 
   get idle () {
+    logger(`get idle`)
     return this.running < 1
   }
 
@@ -188,10 +192,9 @@ class Queue extends EventEmitter {
     return queueStop(this)
   }
 
-  drop (dropTimeout) {
+  drop () {
     logger('drop')
-    if (!dropTimeout) { throw new Error(enums.error.missingTimeout) }
-    return queueDrop(this, dropTimeout)
+    return queueDrop(this)
   }
 }
 

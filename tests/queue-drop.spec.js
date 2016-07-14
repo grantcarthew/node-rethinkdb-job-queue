@@ -12,44 +12,64 @@ const queueDrop = require('../src/queue-drop')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-drop', (t) => {
-      t.plan(9)
+      t.plan(10)
 
       const mockQueue = testMockQueue()
       let q = testQueue()
 
-      function droppedEventHandler (qid) {
-        t.pass(`Event: Queue dropped [${qid}]`)
-        t.equal(qid, q.id, `Event: Queue dropped id is valid`)
-        this.removeListener(enums.status.dropped, droppedEventHandler)
+      let testEvents = false
+      function stoppingEventHandler (qid) {
+        if (testEvents) {
+          t.pass(`Event: Queue stopping [${qid}]`)
+          t.equal(qid, q.id, `Event: Queue stopping id is valid`)
+        }
       }
-      q.on(enums.status.dropped, droppedEventHandler)
+      function stoppedEventHandler (qid) {
+        if (testEvents) {
+          t.pass(`Event: Queue stopped [${qid}]`)
+          t.equal(qid, q.id, `Event: Queue stopped id is valid`)
+        }
+      }
+      function droppedEventHandler (qid) {
+        if (testEvents) {
+          t.pass(`Event: Queue dropped [${qid}]`)
+          t.equal(qid, q.id, `Event: Queue dropped id is valid`)
+        }
+      }
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.stopping, stoppingEventHandler)
+        q.on(enums.status.stopped, stoppedEventHandler)
+        q.on(enums.status.dropped, droppedEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.stopping, stoppingEventHandler)
+        q.removeListener(enums.status.stopped, stoppedEventHandler)
+        q.removeListener(enums.status.dropped, droppedEventHandler)
+      }
+
+      function simulateJobProcessing () {
+        q.running = 1
+        setTimeout(function setRunningToZero () {
+          q.running = 0
+        }, 500)
+      }
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q.running = 1
-
-        // ---------- Drop Queue Forcefully ----------
-        t.comment('queue-drop: Drop Queue Forcefully')
-        return queueDrop(q, 500)
-      }).then((removeResult) => {
-        t.ok(removeResult, 'Queue dropped Forcefully')
-        return mockQueue.r.db(mockQueue.db).tableList()
-      }).then((tableList) => {
-        t.notOk(tableList.includes(mockQueue.name), 'Table dropped from database')
-        q = testQueue(testOptionsDefault)
-        return q.ready
-      }).then((ready) => {
-        t.ok(ready, 'Queue in a ready state')
-        setTimeout((q) => { q.running = 0 }, 200, q)
 
         // ---------- Drop Queue Gracefully ----------
-        t.comment('queue-drop: Drop Queue Gracefully')
-        return queueDrop(q, 500)
+        t.comment('queue-drop: Drop Queue')
+        addEventHandlers()
+        simulateJobProcessing()
+        return queueDrop(q)
       }).then((removeResult) => {
-        t.ok(removeResult, 'Queue dropped gracefully')
+        t.ok(removeResult, 'Queue dropped')
         return mockQueue.r.db(mockQueue.db).tableList()
       }).then((tableList) => {
         t.notOk(tableList.includes(mockQueue.name), 'Table dropped from database')
+        removeEventHandlers()
         q = testQueue(testOptionsDefault)
         return q.ready
       }).then((ready) => {
