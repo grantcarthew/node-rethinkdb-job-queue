@@ -1,6 +1,6 @@
 # WORKLOG
 
-change .running to ._running and add getter (others?)
+change ._running to ._running and add getter (others?)
 
 Need tests for the following;
 is tests
@@ -17,6 +17,7 @@ add more error events?
 -   Search for "TODO"
 
 ## Notes for documentation
+
 Job parsing errors have a custom property err.dbError
 next() returns a promise with the number of running jobs
 Jobs can be cancelled by adding properties to the err object in next(err)

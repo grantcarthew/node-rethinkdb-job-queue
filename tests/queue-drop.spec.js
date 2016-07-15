@@ -50,9 +50,9 @@ module.exports = function () {
       }
 
       function simulateJobProcessing () {
-        q.running = 1
+        q._running = 1
         setTimeout(function setRunningToZero () {
-          q.running = 0
+          q._running = 0
         }, 500)
       }
 

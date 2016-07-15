@@ -41,15 +41,15 @@ module.exports = function () {
       }
 
       function simulateJobProcessing () {
-        q.running = 1
+        q._running = 1
         setTimeout(function setRunningToZero () {
-          q.running = 0
+          q._running = 0
         }, 500)
       }
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q.running = 1
+        q._running = 1
         q.isMaster = true
         return dbReview.enable(q)
       }).then((ready) => {

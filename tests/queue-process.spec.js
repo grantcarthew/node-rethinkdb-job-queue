@@ -152,7 +152,7 @@ module.exports = function () {
         q.concurrency = 1
         return queueProcess.addHandler(q, testHandler)
       }).delay(jobDelay / 2).then(() => {
-        t.equal(q.running, 0, 'Queue not processing jobs')
+        t.equal(q._running, 0, 'Queue not processing jobs')
         return q.resume()
       }).then(() => {
         return queueProcess.addHandler(q, testHandler).then(() => {
@@ -161,13 +161,13 @@ module.exports = function () {
           t.equal(err.message, enums.message.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).delay(jobDelay / 2).then(() => {
-        t.equal(q.running, q.concurrency, 'Queue is processing only one job')
+        t.equal(q._running, q.concurrency, 'Queue is processing only one job')
         q.concurrency = 3
         return q.pause()
       }).then(() => {
         return q.resume()
       }).delay(jobDelay / 2).then(() => {
-        t.equal(q.running, q.concurrency, 'Queue is processing max concurrent jobs')
+        t.equal(q._running, q.concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
         t.equal(completedEventCounter, noOfJobsToCreate, `Queue has completed ${completedEventCounter} jobs`)
         t.ok(q.idle, 'Queue is idle')

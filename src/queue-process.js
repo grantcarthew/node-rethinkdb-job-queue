@@ -8,19 +8,19 @@ const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 
 const jobRun = function jobRun (job) {
-  logger('jobRun', `Running: [${job.q.running}]`)
+  logger('jobRun', `Running: [${job.q._running}]`)
   let handled = false
   let jobTimeoutId
   let finalPromise
 
   function nextHandler (err, data) {
-    logger('nextHandler', `Running: [${job.q.running}]`)
+    logger('nextHandler', `Running: [${job.q._running}]`)
     logger('Job data', data)
     logger('Error', err)
     logger('handled', handled)
     // Ignore mulpiple calls to next()
     if (handled) {
-      return Promise.resolve(job.q.running)
+      return Promise.resolve(job.q._running)
     }
     handled = true
     clearTimeout(jobTimeoutId)
@@ -33,9 +33,9 @@ const jobRun = function jobRun (job) {
       finalPromise = jobCompleted(job, data)
     }
     return finalPromise.then((finalResult) => {
-      job.q.running--
+      job.q._running--
       setImmediate(jobTick, job.q)
-      return job.q.running
+      return job.q._running
     })
   }
 
@@ -51,18 +51,18 @@ const jobRun = function jobRun (job) {
 }
 
 const jobTick = function jobTick (q) {
-  logger('jobTick', `Running: [${q.running}]`)
+  logger('jobTick', `Running: [${q._running}]`)
   if (q._getNextJobActive) { q._getNextJobCalled = true }
   if (q.paused || q._getNextJobActive) { return }
 
   function getNextJobCleanup (runAgain) {
     logger(`getNextJobCleanup`)
     logger(`runAgain: [${runAgain}]`)
-    logger(`Running: [${q.running}]`)
+    logger(`Running: [${q._running}]`)
     q._getNextJobActive = false
     q._getNextJobCalled = false
-    if (q.running < q.concurrency && runAgain) {
-      // q.running has been decremented whilst talking to the database.
+    if (q._running < q.concurrency && runAgain) {
+      // q._running has been decremented whilst talking to the database.
       setImmediate(jobTick, q)
       return
     }
@@ -75,7 +75,7 @@ const jobTick = function jobTick (q) {
 
   // q._getNextJobActive stops jobs that finish at the same time causing
   // multiple database queries and breaking concurrency.
-  // This is an issue because the q.running++ is not incremented until
+  // This is an issue because the q._running++ is not incremented until
   // after the async database query has finished.
   // If a call to jobTick is made whilst the getNextJob query is active,
   // then q._getNextJobCalled is flagged to initiate another call
@@ -84,7 +84,7 @@ const jobTick = function jobTick (q) {
   return queueGetNextJob(q).then((jobsToDo) => {
     logger('jobsToDo', `Retrieved: [${jobsToDo.length}]`)
     if (jobsToDo.length > 0) {
-      q.running += jobsToDo.length
+      q._running += jobsToDo.length
       jobsToDo.forEach(j => jobRun(j))
     }
     getNextJobCleanup(q._getNextJobCalled)
@@ -106,7 +106,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   }
 
   q.handler = handler
-  q.running = 0
+  q._running = 0
   return Promise.resolve().then(() => {
     if (q.isMaster) { return null }
     return dbReview.runOnce(q)
@@ -117,9 +117,9 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 }
 
 module.exports.restart = function queueProcessRestart (q) {
-  logger('restart', `Running: [${q.running}]`)
+  logger('restart', `Running: [${q._running}]`)
   if (!q.handler) { return }
-  if (q.running < q.concurrency) {
+  if (q._running < q.concurrency) {
     setImmediate(jobTick, q)
   }
 }

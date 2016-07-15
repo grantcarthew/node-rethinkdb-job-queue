@@ -37,7 +37,7 @@ class Queue extends EventEmitter {
     this.removeFinishedJobs = options.removeFinishedJobs == null
       ? 180 : options.removeFinishedJobs
     this.handler = false
-    this.running = 0
+    this._running = 0
     this._jobOptions = jobOptions()
     this._changeFeed = false
     this._paused = false
@@ -54,11 +54,11 @@ class Queue extends EventEmitter {
     logger(`pause`)
     return new Promise((resolve, reject) => {
       this._paused = true
-      if (this.running < 1) { return resolve(true) }
+      if (this._running < 1) { return resolve(true) }
       const q = this
       let intId = setInterval(function pausing () {
-        logger(`Pausing, waiting on running jobs: [${q.running}]`)
-        if (q.running < 1) {
+        logger(`Pausing, waiting on running jobs: [${q._running}]`)
+        if (q._running < 1) {
           clearInterval(intId)
           resolve(true)
         }
@@ -161,6 +161,11 @@ class Queue extends EventEmitter {
     })
   }
 
+  get running () {
+    logger(`get running`)
+    return this._running
+  }
+
   review () {
     logger('review')
     return this.ready.then(() => {
@@ -170,7 +175,7 @@ class Queue extends EventEmitter {
 
   get idle () {
     logger(`get idle`)
-    return this.running < 1
+    return this._running < 1
   }
 
   summary () {

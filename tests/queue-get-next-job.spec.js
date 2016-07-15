@@ -174,24 +174,24 @@ module.exports = function () {
       }).then((moreSavedJobs) => {
         t.equal(moreSavedJobs.length, 7, 'Jobs saved successfully')
         q.concurrency = 3
-        q.running = 4
+        q._running = 4
 
         // ---------- Testing Concurrency and Running ----------
         t.comment('queue-get-next-job: Concurrency and Running')
         return queueGetNextJob(q)
       }).then((group0) => {
         t.equals(group0.length, 0, 'Returned zero jobs due to concurrency and running')
-        q.running = 3
+        q._running = 3
         return queueGetNextJob(q)
       }).then((group0) => {
         t.equals(group0.length, 0, 'Returned zero jobs due to concurrency and running')
-        q.running = 2
+        q._running = 2
         return queueGetNextJob(q)
       }).then((group1) => {
         t.equals(group1.length, 1, 'Returned one job due to concurrency and running')
         t.equals(group1[0].status, enums.status.active, 'Returned job is active status')
         t.ok(moment.isDate(group1[0].dateStarted), 'Returned job dateStarted is a date')
-        q.running = 1
+        q._running = 1
         return queueGetNextJob(q)
       }).then((group2) => {
         t.equals(group2.length, 2, 'Returned two jobs due to concurrency and running')
@@ -199,7 +199,7 @@ module.exports = function () {
         t.ok(moment.isDate(group2[0].dateStarted), 'Returned job 1 dateStarted is a date')
         t.equals(group2[0].status, enums.status.active, 'Returned job 2 is active status')
         t.ok(moment.isDate(group2[1].dateStarted), 'Returned job 2 dateStarted is a date')
-        q.running = 0
+        q._running = 0
         return queueGetNextJob(q)
       }).then((group3) => {
         t.equals(group3.length, 3, 'Returned three jobs due to concurrency and running')
