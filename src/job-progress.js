@@ -8,8 +8,11 @@ module.exports = function set (job, percent) {
   if (percent > 100) { percent = 100 }
 
   return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
+    queueId: job.q.id,
     progress: percent,
-    queueId: job.q.id
+    dateRetry: job.q.r.now()
+    .add(job.q.r.row('timeout'))
+    .add(job.q.r.row('retryDelay').mul(job.q.r.row('retryCount')))
   }).run().then((updateResult) => {
     logger(`Event: progress [${job.id}] [${percent}]`)
     job.q.emit(enums.status.progress, job.id, percent)
