@@ -1,11 +1,9 @@
 # WORKLOG
 
-change ._running to ._running and add getter (others?)
-
 Need tests for the following;
-is tests
 queue-change
 queue
+is tests
 
 add more error events?
 

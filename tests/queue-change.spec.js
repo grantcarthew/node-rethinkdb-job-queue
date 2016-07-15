@@ -14,47 +14,92 @@ module.exports = function () {
       t.plan(30)
 
       const q = testQueue()
-      let ec = {
-        added: 0,
-        active: 0,
-        progress: 0,
-        completed: 0,
-        cancelled: 0,
-        failed: 0,
-        reset: 0,
-        removed: 0
+
+      function addedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: added [${jobId}]`)
+        }
       }
-      function addEvents () {
-        q.on(enums.status.added, function added (jobId) {
-          ec.added++
-          t.ok(is.uuid(jobId), `Event: added [${ec.added}] [${jobId}]`)
-        })
-        q.on(enums.status.active, function active (jobId) {
-          ec.active++
-          t.ok(is.uuid(jobId), `Event: active [${ec.active}] [${jobId}]`)
-        })
-        q.on(enums.status.completed, function completed (jobId) {
-          ec.completed++
-          t.ok(is.uuid(jobId), `Event: completed [${ec.completed}] [${jobId}]`)
-        })
-        q.on(enums.status.removed, function removed (jobId) {
-          ec.removed++
-          t.ok(is.uuid(jobId), `Event: Removed [${ec.removed}] [${jobId}]`)
-        })
+      function activeEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: active [${jobId}]`)
+        }
+      }
+      function progressEventHandler (jobId, percent) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: progress [${jobId}]`)
+          t.ok(is.number(percent), `Event: progress [${percent}%]`)
+        }
+      }
+      function completedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: completed [${jobId}]`)
+        }
+      }
+      function cancelledEventHandler (jobIds) {
+        if (testEvents) {
+          t.ok(is.array(jobIds), `Event: cancelled with job id array`)
+          t.ok(is.uuid(jobIds[0]), `Event: cancelled with valid id in array`)
+        }
+      }
+      function failedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: failed [${jobId}]`)
+        }
+      }
+      function terminatedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: terminated [${jobId}]`)
+        }
+      }
+      function removedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: removed [${jobId}]`)
+        }
+      }
+      function resetEventHandler (totalRemoved) {
+        if (testEvents) {
+          t.ok(is.integer(totalRemoved), `Event: reset [${totalRemoved}]`)
+        }
+      }
+      let testEvents = false
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.added, addedEventHandler)
+        q.on(enums.status.active, activeEventHandler)
+        q.on(enums.status.progress, progressEventHandler)
+        q.on(enums.status.completed, completedEventHandler)
+        q.on(enums.status.cancelled, cancelledEventHandler)
+        q.on(enums.status.failed, failedEventHandler)
+        q.on(enums.status.terminated, terminatedEventHandler)
+        q.on(enums.status.removed, removedEventHandler)
+        q.on(enums.status.reset, resetEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.added, addedEventHandler)
+        q.removeListener(enums.status.active, activeEventHandler)
+        q.removeListener(enums.status.progress, progressEventHandler)
+        q.removeListener(enums.status.completed, completedEventHandler)
+        q.removeListener(enums.status.cancelled, cancelledEventHandler)
+        q.removeListener(enums.status.failed, failedEventHandler)
+        q.removeListener(enums.status.terminated, terminatedEventHandler)
+        q.removeListener(enums.status.removed, removedEventHandler)
+        q.removeListener(enums.status.reset, resetEventHandler)
       }
 
       const job = q.createJob(testData)
 
       return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
         return q.pause()
       }).then(() => {
-        t.ok(is.integer(resetResult), 'Queue reset')
         q.testing = true
         q.process((j, next) => {
           t.equal(j.id, job.id, `Job Processed [${j.id}]`)
           next(null, 'queue-change')
         })
-        addEvents()
+        addEventHandlers()
       }).then(() => {
         return q.addJob(job)
       }).then((savedJob) => {
@@ -63,7 +108,8 @@ module.exports = function () {
       }).then(() => {
         t.ok(!q.paused, 'Queue not paused')
         //return q.removeJob(job.id)
-      }).then((removeResult) => {
+      }).delay(100000000).then((removeResult) => {
+        removeEventHandlers()
         //return q.reset()
       }).then((resetResult) => {
         t.skip(resetResult >= 0, 'Queue reset')
