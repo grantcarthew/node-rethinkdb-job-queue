@@ -37,8 +37,8 @@ module.exports = function () {
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q.isMaster = true
-        q.enableChangeFeed = true
+        q._master = true
+        q.changeFeed = true
         return dbReview.enable(q)
       }).then((ready) => {
         t.ok(ready >= 0, 'Queue in a ready state')
@@ -70,8 +70,8 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
-        q.isMaster = false
-        q.enableChangeFeed = true
+        q._master = false
+        q.changeFeed = true
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')
@@ -89,8 +89,8 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
-        q.isMaster = true
-        q.enableChangeFeed = false
+        q._master = true
+        q.changeFeed = false
 
         // ---------- Attach with master NOT change feed ----------
         t.comment('queue-db: Attach with Master NOT Change Feed')
@@ -108,8 +108,8 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
-        q.isMaster = false
-        q.enableChangeFeed = false
+        q._master = false
+        q.changeFeed = false
 
         // ---------- Attach without change feed or master ----------
         t.comment('queue-db: Attach without Change Feed or Master')
@@ -127,8 +127,8 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
-        q.isMaster = true
-        q.enableChangeFeed = true
+        q._master = true
+        q.changeFeed = true
 
         // ---------- Attach with change feed and master ----------
         t.comment('queue-db: Attach with Change Feed and Master')
@@ -153,8 +153,8 @@ module.exports = function () {
         t.comment('queue-db: Detach with Drain')
         return queueDb.detach(q, true)
       }).then(() => {
-        q.isMaster = false
-        q.enableChangeFeed = true
+        q._master = false
+        q.changeFeed = true
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')

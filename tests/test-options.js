@@ -17,7 +17,7 @@ module.exports.queueDefault = function () {
   const opts = {
     name: queueName,
     concurrency: 3,
-    isMaster: false
+    master: false
   }
   return Object.assign(opts, connection())
 }
@@ -25,8 +25,8 @@ module.exports.queueMaster = function () {
   const opts = {
     name: queueName,
     concurrency: 3,
-    isMaster: true,
-    masterReviewPeriod: 5
+    master: true,
+    masterInterval: 5
   }
   return Object.assign(opts, connection())
 }

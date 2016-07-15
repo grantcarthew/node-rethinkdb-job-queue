@@ -23,7 +23,7 @@ module.exports = function () {
 
       let q = testQueue()
       let reviewCount = 0
-      q.masterReviewPeriod = 1
+      q._masterInterval = 1
       function reviewEventHandler (reviewResult) {
         reviewCount++
         t.pass(`Event: Database review [Review Count: ${reviewCount}]`)
@@ -37,7 +37,7 @@ module.exports = function () {
           t.comment('db-review: disable')
           dbReview.disable(q)
           t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
-          q.masterReviewPeriod = 300
+          q._masterInterval = 300
           t.pass('Review timer completed twice')
           q.removeListener(enums.status.review, reviewEventHandler)
           // Test completes here!

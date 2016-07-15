@@ -28,11 +28,11 @@ class Queue extends EventEmitter {
     this.host = options.host || 'localhost'
     this.port = options.port || 28015
     this.db = options.db || 'rjqJobQueue'
-    this.isMaster = options.isMaster == null ? true
-      : options.isMaster
-    this.masterReviewPeriod = options.masterReviewPeriod || 310
-    this.enableChangeFeed = options.enableChangeFeed == null
-      ? true : options.enableChangeFeed
+    this._master = options.master == null ? true
+      : options.master
+    this._masterInterval = options.masterInterval || 310
+    this.changeFeed = options.changeFeed == null
+      ? true : options.changeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.removeFinishedJobs = options.removeFinishedJobs == null
       ? 180 : options.removeFinishedJobs
@@ -144,16 +144,6 @@ class Queue extends EventEmitter {
     })
   }
 
-  get jobConcurrency () {
-    logger('get jobConcurrency')
-    return this.concurrency
-  }
-
-  set jobConcurrency (newConcurrencyValue) {
-    logger('set jobConcurrency', newConcurrencyValue)
-    this.concurrency = newConcurrencyValue > 1 ? newConcurrencyValue : 1
-  }
-
   process (handler) {
     logger('process', handler)
     return this.ready.then(() => {
@@ -164,6 +154,11 @@ class Queue extends EventEmitter {
   get running () {
     logger(`get running`)
     return this._running
+  }
+
+  get master () {
+    logger(`get master`)
+    return this._master
   }
 
   review () {

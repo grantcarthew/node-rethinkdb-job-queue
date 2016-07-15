@@ -92,7 +92,7 @@ function runReviewTasks (q) {
 module.exports.enable = function enable (q) {
   logger('enable')
   if (!dbReviewIntervalId) {
-    const interval = q.masterReviewPeriod * 1000
+    const interval = q._masterInterval * 1000
     dbReviewIntervalId = setInterval(() => {
       return runReviewTasks(q)
     }, interval)

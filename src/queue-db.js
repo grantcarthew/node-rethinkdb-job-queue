@@ -15,7 +15,7 @@ module.exports.attach = function dbAttach (q) {
     silent: true
   })
   q.ready = dbAssert(q).then(() => {
-    if (q.enableChangeFeed) {
+    if (q.changeFeed) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
         q._changeFeed = changeFeed
         q._changeFeed.each((err, change) => {
@@ -26,7 +26,7 @@ module.exports.attach = function dbAttach (q) {
     q._changeFeed = false
     return null
   }).then(() => {
-    if (q.isMaster) {
+    if (q._master) {
       logger('Queue is a master')
       return dbReview.enable(q)
     }
@@ -50,7 +50,7 @@ module.exports.detach = function dbDetach (q, drainPool) {
     }
     return null
   }).then(() => {
-    if (q.isMaster) {
+    if (q._master) {
       logger('disabling dbReview')
       return dbReview.disable(q)
     }
