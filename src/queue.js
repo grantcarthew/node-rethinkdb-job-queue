@@ -31,16 +31,16 @@ class Queue extends EventEmitter {
     this._master = options.master == null ? true
       : options.master
     this._masterInterval = options.masterInterval || 310
+    this._jobOptions = jobOptions()
+    this._changeFeed = false
+    this._paused = false
+    this._running = 0
     this.changeFeed = options.changeFeed == null
       ? true : options.changeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.removeFinishedJobs = options.removeFinishedJobs == null
       ? 180 : options.removeFinishedJobs
     this.handler = false
-    this._running = 0
-    this._jobOptions = jobOptions()
-    this._changeFeed = false
-    this._paused = false
     this.id = [
       require('os').hostname(),
       this.db,
