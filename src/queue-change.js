@@ -6,6 +6,16 @@ const Job = require('./job')
 const dbResult = require('./db-result')
 const queueProcess = require('./queue-process')
 
+// Following is the list of supported change feed events;
+// added
+// active
+// progress
+// completed
+// cancelled
+// failed
+// terminated
+// removed
+
 module.exports = function queueChange (q, err, change) {
   logger('queueChange')
   const newVal = change.new_val
@@ -25,6 +35,11 @@ module.exports = function queueChange (q, err, change) {
   }
 
   if (err) { throw new Error(err) }
+  if (q.testing) {
+    console.log('------------- QUEUE CHANGE -------------')
+    console.dir(change)
+    console.log('----------------------------------------')
+  }
 
   // New job added
   if (is.job(newVal) && !is.job(oldVal)) {
@@ -63,11 +78,6 @@ module.exports = function queueChange (q, err, change) {
     return enums.status.removed
   }
 
-  if (q.testing) {
-    console.log('------------- QUEUE CHANGE -------------')
-    console.dir(change)
-    console.log('----------------------------------------')
-  }
 
   console.log('####################################')
 }

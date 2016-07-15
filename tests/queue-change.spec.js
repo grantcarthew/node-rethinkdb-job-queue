@@ -57,11 +57,6 @@ module.exports = function () {
           t.ok(is.uuid(jobId), `Event: removed [${jobId}]`)
         }
       }
-      function resetEventHandler (totalRemoved) {
-        if (testEvents) {
-          t.ok(is.integer(totalRemoved), `Event: reset [${totalRemoved}]`)
-        }
-      }
       let testEvents = false
       function addEventHandlers () {
         testEvents = true
@@ -73,7 +68,6 @@ module.exports = function () {
         q.on(enums.status.failed, failedEventHandler)
         q.on(enums.status.terminated, terminatedEventHandler)
         q.on(enums.status.removed, removedEventHandler)
-        q.on(enums.status.reset, resetEventHandler)
       }
       function removeEventHandlers () {
         testEvents = false
@@ -85,7 +79,6 @@ module.exports = function () {
         q.removeListener(enums.status.failed, failedEventHandler)
         q.removeListener(enums.status.terminated, terminatedEventHandler)
         q.removeListener(enums.status.removed, removedEventHandler)
-        q.removeListener(enums.status.reset, resetEventHandler)
       }
 
       const job = q.createJob(testData)
@@ -108,11 +101,11 @@ module.exports = function () {
       }).then(() => {
         t.ok(!q.paused, 'Queue not paused')
         //return q.removeJob(job.id)
-      }).delay(100000000).then((removeResult) => {
-        removeEventHandlers()
-        //return q.reset()
-      }).then((resetResult) => {
+      }).then((removeResult) => {
+        return q.reset()
+      }).delay(2000).then((resetResult) => {
         t.skip(resetResult >= 0, 'Queue reset')
+        //removeEventHandlers()
         // resolve()
       }).catch(err => testError(err, module, t))
     })
