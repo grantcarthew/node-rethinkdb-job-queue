@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
-      t.plan(30)
+      t.plan(48)
 
       const q = testQueue()
 
@@ -36,10 +36,9 @@ module.exports = function () {
           t.ok(is.uuid(jobId), `Event: completed [${jobId}]`)
         }
       }
-      function cancelledEventHandler (jobIds) {
+      function cancelledEventHandler (jobId) {
         if (testEvents) {
-          t.ok(is.array(jobIds), `Event: cancelled with job id array`)
-          t.ok(is.uuid(jobIds[0]), `Event: cancelled with valid id in array`)
+          t.ok(is.uuid(jobId), `Event: cancelled [${jobId}]`)
         }
       }
       function failedEventHandler (jobId) {
@@ -57,10 +56,16 @@ module.exports = function () {
           t.ok(is.uuid(jobId), `Event: removed [${jobId}]`)
         }
       }
+      function logEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: log [${jobId}]`)
+        }
+      }
       let testEvents = false
       function addEventHandlers () {
         testEvents = true
         q.on(enums.status.added, addedEventHandler)
+        q.on(enums.status.log, logEventHandler)
         q.on(enums.status.active, activeEventHandler)
         q.on(enums.status.progress, progressEventHandler)
         q.on(enums.status.completed, completedEventHandler)
@@ -72,6 +77,7 @@ module.exports = function () {
       function removeEventHandlers () {
         testEvents = false
         q.removeListener(enums.status.added, addedEventHandler)
+        q.removeListener(enums.status.log, logEventHandler)
         q.removeListener(enums.status.active, activeEventHandler)
         q.removeListener(enums.status.progress, progressEventHandler)
         q.removeListener(enums.status.completed, completedEventHandler)
@@ -81,7 +87,8 @@ module.exports = function () {
         q.removeListener(enums.status.removed, removedEventHandler)
       }
 
-      const job = q.createJob(testData)
+      let job = q.createJob(testData)
+      let processDelay = 500
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
@@ -89,9 +96,15 @@ module.exports = function () {
       }).then(() => {
         q.testing = true
         q.process((j, next) => {
-          t.equal(j.id, job.id, `Job Processed [${j.id}]`)
-          next(null, 'queue-change')
+          setTimeout(function jobProcessing () {
+            t.equal(j.id, job.id, `Job Processed [${j.id}]`)
+            next(null, 'queue-change')
+          }, processDelay)
+          return j.setProgress(50)
         })
+
+        // ---------- Test added, active, progress completed, removed  ----------
+        t.comment('queue-change: added, active, progress, completed, and removed change events')
         addEventHandlers()
       }).then(() => {
         return q.addJob(job)
@@ -100,13 +113,44 @@ module.exports = function () {
         return q.resume()
       }).then(() => {
         t.ok(!q.paused, 'Queue not paused')
-        //return q.removeJob(job.id)
-      }).then((removeResult) => {
+      }).delay(processDelay).then(() => {
+        return q.pause()
+      }).delay(processDelay).then(() => {
+        // t.ok(q.paused, 'Queue paused')
+        return q.removeJob(job.id)
+      }).delay(processDelay).then(() => {
+        job = q.createJob(testData)
+        job.timeout = processDelay / 2000
+        job.retryDelay = 0
+        job.retryMax = 1
+
+        // ---------- Test failed and terminated ----------
+        t.comment('queue-change: failed and terminated change events')
+        return q.addJob(job)
+      }).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        return q.resume()
+      }).then(() => {
+        t.ok(!q.paused, 'Queue not paused')
+      }).delay(processDelay * 2).then(() => {
+        return q.pause()
+      }).delay(processDelay).then(() => {
+        job = q.createJob(testData)
+
+        // ---------- Test log and cancelled ----------
+        t.comment('queue-change: log and cancelled change events')
+        return q.addJob(job)
+      }).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        return savedJob[0].addLog(savedJob[0].createLog('test log'))
+      }).then(() => {
+        return q.cancelJob(job.id, 'testing')
+      }).delay(processDelay).then(() => {
         return q.reset()
-      }).delay(2000).then((resetResult) => {
-        t.skip(resetResult >= 0, 'Queue reset')
-        //removeEventHandlers()
-        // resolve()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
+        removeEventHandlers()
+        resolve()
       }).catch(err => testError(err, module, t))
     })
   })

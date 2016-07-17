@@ -9,14 +9,20 @@ module.exports = function removeJob (q, job) {
 
   return Promise.resolve().then(() => {
     return jobParse.id(job)
-  }).then((jobs) => {
-    return q.r.db(q.db)
-    .table(q.name)
-    .getAll(...jobs)
-    .delete()
-    .run()
-  }).then((removeResult) => {
-    logger('removeResult', removeResult)
-    return dbResult.status(removeResult, enums.dbResult.deleted)
+  }).then((jobIds) => {
+    return Promise.props({
+      jobIds,
+      removeResult: q.r.db(q.db)
+      .table(q.name)
+      .getAll(...jobIds)
+      .delete()
+      .run()
+    })
+  }).then((result) => {
+    for (let id of result.jobIds) {
+      logger(`Event: removed [${id}]`)
+      q.emit(enums.status.removed, id)
+    }
+    return dbResult.status(result.removeResult, enums.dbResult.deleted)
   })
 }

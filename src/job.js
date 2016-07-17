@@ -50,7 +50,7 @@ class Job {
   setProgress (percent) {
     logger(`setProgress [${percent}]`)
     return this.q.ready.then(() => {
-      return jobProgress.set(this, percent)
+      return jobProgress(this, percent)
     })
   }
 

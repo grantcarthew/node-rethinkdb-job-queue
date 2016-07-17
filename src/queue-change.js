@@ -1,13 +1,12 @@
 const logger = require('./logger')(module)
 const is = require('./is')
-const jobParse = require('./job-parse')
+const util = require('util')
 const enums = require('./enums')
-const Job = require('./job')
-const dbResult = require('./db-result')
 const queueProcess = require('./queue-process')
 
 // Following is the list of supported change feed events;
 // added
+// log
 // active
 // progress
 // completed
@@ -15,32 +14,32 @@ const queueProcess = require('./queue-process')
 // failed
 // terminated
 // removed
-// log
 
 module.exports = function queueChange (q, err, change) {
   logger('queueChange')
   const newVal = change.new_val
   const oldVal = change.old_val
   let queueId = false
-  if (newVal && newVal.id) { queueId = newVal.queueId }
-  if (!newVal && oldVal && oldVal.queueId) { queueId = oldVal.queueId }
-
-  // console.log('Change queueId: ' + queueId)
-  // console.log('Current queueId: ' + q.id)
+  if (is.job(newVal)) { queueId = newVal.queueId }
+  if (!is.job(newVal) && is.job(oldVal)) { queueId = oldVal.queueId }
+  if (!queueId) {
+    logger(`Change feed and queueId missing`, change)
+    return
+  }
 
   // Prevent any change processing if change is caused by this queue
   if (queueId === q.id &&
       !q.testing) {
-    // console.log('SKIPPING DUE TO SELF')
+    logger('Change feed by self, skipping events')
     return
   }
 
   if (err) { throw new Error(err) }
 
   if (q.testing) {
-    console.log('------------- QUEUE CHANGE -------------')
-    console.dir(change)
-    console.log('----------------------------------------')
+    logger('------------- QUEUE CHANGE -------------')
+    logger(util.inspect(change, {colors: true}))
+    logger('----------------------------------------')
   }
 
   // Job added
@@ -107,20 +106,21 @@ module.exports = function queueChange (q, err, change) {
       is.job(oldVal) &&
       newVal.progress !== oldVal.progress) {
     logger(`Event: progress [${newVal.progress}]`)
-    q.emit(enums.status.progress, newVal.progress)
+    q.emit(enums.status.progress, newVal.id, newVal.progress)
     return enums.status.progress
   }
 
   // Job log
-  if (is.active(newVal) &&
-      is.active(oldVal) &&
+  if (is.job(newVal) &&
+      is.job(oldVal) &&
       is.array(newVal.log) &&
       is.array(oldVal.log) &&
-      newVal.log.length !== oldVal.log.length) {
+      newVal.log.length > oldVal.log.length) {
     logger(`Event: log`, newVal.log)
     q.emit(enums.status.log, newVal.id)
     return enums.status.log
   }
 
+  // TODO: change this to logger
   console.log('Unknown database change', change)
 }

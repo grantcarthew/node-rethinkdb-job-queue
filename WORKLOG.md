@@ -1,9 +1,12 @@
 # WORKLOG
 
-job-add-log check for log event.
 check for active status on job-progress.
 
 Need tests for the following;
+
+job-add-log check for log event.
+queue-remove-job event test needed
+job setProgress
 queue-change
 queue
 is tests
