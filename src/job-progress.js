@@ -1,9 +1,14 @@
 const logger = require('./logger')(module)
+const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
 
-module.exports = function set (job, percent) {
-  logger('set: ' + job.id)
+module.exports = function jobProgress (job, percent) {
+  logger('jobProgress: ' + job.id)
+  if (!is.active(job)) {
+    logger(`Error: progress called on non-active job`, job)
+    return Promise.resolve(false)
+  }
   if (!percent || !is.number(percent) || percent < 0) { percent = 0 }
   if (percent > 100) { percent = 100 }
 

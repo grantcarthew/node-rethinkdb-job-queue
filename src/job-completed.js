@@ -35,8 +35,6 @@ module.exports = function completed (job, data) {
     job.q.emit(enums.status.completed, jobIds[0])
     if (is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
-        logger(`Event: removed [${jobIds[0]}]`)
-        job.q.emit(enums.status.removed, jobIds[0])
         return jobIds
       })
     } else {

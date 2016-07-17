@@ -11,14 +11,31 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log', (t) => {
-      t.plan(22)
+      t.plan(24)
 
       const q = testQueue()
       let job = q.createJob(testData)
       let testLog
       let extra = 'extra data'
+
+      let testEvents = false
+      function logEventHandler (jobId) {
+        if (testEvents) {
+          t.equal(jobId, job.id, `Event: log [${jobId}]`)
+        }
+      }
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.log, logEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.log, logEventHandler)
+      }
+
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
+        addEventHandlers()
         return q.addJob(job)
       }).then((newJob) => {
         job = newJob[0]
@@ -62,6 +79,7 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
+        removeEventHandlers()
         resolve()
       }).catch(err => testError(err, module, t))
     })

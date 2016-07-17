@@ -11,23 +11,49 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(65)
+      t.plan(71)
 
       const q = testQueue()
-      try {
-        const nullJobArg = new Job(q, null, null)
-        t.pass('Creating a job with null options dose not cause an exception')
-      } catch (e) {
-        t.fail('Creating a job with null options causes an exception')
-      }
 
       const newJob = new Job(q, testData)
-      let newJobFromData
       let savedJob
 
+      // ---------- Event Handler Setup ----------
+      let testEvents = false
+      function addedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: added [${jobId}]`)
+        }
+      }
+      function logEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: log [${jobId}]`)
+        }
+      }
+      function progressEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: progress [${jobId}]`)
+        }
+      }
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.added, addedEventHandler)
+        q.on(enums.status.log, logEventHandler)
+        q.on(enums.status.progress, progressEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.added, addedEventHandler)
+        q.removeListener(enums.status.log, logEventHandler)
+        q.removeListener(enums.status.progress, progressEventHandler)
+      }
+      addEventHandlers()
 
       // ---------- New Job Tests ----------
       t.comment('job: New Job')
+      t.doesNotThrow(() => {
+        savedJob = new Job(q, null, null)
+      }, 'Creating a job with null options dose not cause an exception')
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(is.uuid(newJob.id), 'New job has valid id')
@@ -43,7 +69,6 @@ module.exports = function () {
       t.equal(newJob.log.length, 0, 'New job log is an empty array')
       t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
       t.ok(moment.isDate(newJob.dateRetry), 'New job dateRetry is a date')
-
 
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
@@ -63,8 +88,7 @@ module.exports = function () {
       t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
       t.equal(cleanJob.queueId, newJob.queueId, 'Clean job progress is valid')
 
-
-      // ---------- New Job Tests ----------
+      // ---------- Create Log Tests ----------
       t.comment('job: Create Log')
       let log = newJob.createLog(testData)
       log.data = testData
@@ -78,7 +102,6 @@ module.exports = function () {
       t.equal(log.data, testData, 'Log data is valid')
 
       return q.reset().then((resetResult) => {
-        console.dir(resetResult)
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(newJob)
       }).then((addedJobs) => {
@@ -106,7 +129,6 @@ module.exports = function () {
         t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
         t.equal(newJobFromData.queueId, q.id, 'New job from data queueId is valid')
 
-
         // ---------- Add Job Log ----------
         t.comment('job: Add Job Log')
         return savedJob.addLog(log)
@@ -123,6 +145,19 @@ module.exports = function () {
         t.ok(jobsFromDb[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobsFromDb[0].log[1].message, testData, 'Log message is valid')
         t.equal(jobsFromDb[0].log[1].data, testData, 'Log data is valid')
+
+        // ---------- Set Job Progress ----------
+        t.comment('job: Set Job Progress')
+        savedJob.status = enums.status.active
+        return savedJob.setProgress(50)
+      }).then((progressResult) => {
+        t.ok(progressResult, 'Job setProgress returned true')
+        return q.getJob(savedJob.id)
+      }).then((jobsFromDb) => {
+        t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
+        t.equal(jobsFromDb[0].progress, 50, 'Job progress valid')
+
+        removeEventHandlers()
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

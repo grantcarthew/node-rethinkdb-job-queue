@@ -11,13 +11,29 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-remove-job', (t) => {
-      t.plan(16)
+      t.plan(24)
 
       const q = testQueue()
       let jobs = q.createJob(testData, 3)
 
+      let testEvents = false
+      function removedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: removed [${jobId}]`)
+        }
+      }
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.removed, removedEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.removed, removedEventHandler)
+      }
+
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
+        addEventHandlers()
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 3, 'Jobs saved successfully')
@@ -84,6 +100,7 @@ module.exports = function () {
           t.ok(err.message.includes(enums.message.idInvalid), 'Invalid job returns a rejected Promise')
         })
       }).then(() => {
+        removeEventHandlers()
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

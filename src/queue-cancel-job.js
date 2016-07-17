@@ -38,10 +38,7 @@ module.exports = function cancel (q, job, reason) {
     })
     if (is.true(q.removeFinishedJobs)) {
       return q.removeJob(jobIds).then((deleteResult) => {
-        jobIds.forEach((jobId) => {
-          logger(`Event: removed [${jobId}]`)
-          q.emit(enums.status.removed, jobId)
-        })
+        // TODO: do something with deleteResult????
         return jobIds
       })
     } else {

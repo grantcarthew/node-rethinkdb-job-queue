@@ -54,8 +54,6 @@ module.exports = function failed (err, job, data) {
     if (!isRetry &&
         is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
-        logger(`Event: removed [${jobIds[0]}]`)
-        job.q.emit(enums.status.removed, jobIds[0])
         return jobIds
       })
     } else {
