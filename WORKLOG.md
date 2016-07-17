@@ -1,5 +1,8 @@
 # WORKLOG
 
+job-add-log check for log event.
+check for active status on job-progress.
+
 Need tests for the following;
 queue-change
 queue

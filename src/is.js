@@ -53,7 +53,7 @@ module.exports.array = function isArray (value) {
   return Array.isArray(value)
 }
 
-module.exports.job = function isJob (value) {
+const isJob = module.exports.job = function isJob (value) {
   logger(`isJob`, value)
   if (!value) { return false }
   if (!value.id) { return false }
@@ -64,4 +64,30 @@ module.exports.job = function isJob (value) {
       !Object.keys(enums.priority).includes(value.priority)) { return false }
   if (!Object.keys(enums.status).includes(value.status)) { return false }
   return true
+}
+
+function isStatus (job, status) {
+  if (!isJob(job)) { return false }
+  if (job.status === status) { return true }
+  return false
+}
+
+module.exports.active = function isActive (job) {
+  return isStatus(job, enums.status.active)
+}
+
+module.exports.completed = function isCompleted (job) {
+  return isStatus(job, enums.status.completed)
+}
+
+module.exports.cancelled = function isCancelled (job) {
+  return isStatus(job, enums.status.cancelled)
+}
+
+module.exports.failed = function isFailed (job) {
+  return isStatus(job, enums.status.failed)
+}
+
+module.exports.terminated = function isTerminated (job) {
+  return isStatus(job, enums.status.terminated)
 }

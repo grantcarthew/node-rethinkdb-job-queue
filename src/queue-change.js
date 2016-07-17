@@ -15,6 +15,7 @@ const queueProcess = require('./queue-process')
 // failed
 // terminated
 // removed
+// log
 
 module.exports = function queueChange (q, err, change) {
   logger('queueChange')
@@ -35,14 +36,16 @@ module.exports = function queueChange (q, err, change) {
   }
 
   if (err) { throw new Error(err) }
+
   if (q.testing) {
     console.log('------------- QUEUE CHANGE -------------')
     console.dir(change)
     console.log('----------------------------------------')
   }
 
-  // New job added
-  if (is.job(newVal) && !is.job(oldVal)) {
+  // Job added
+  if (is.job(newVal) &&
+      !is.job(oldVal)) {
     logger(`Event: added [${newVal.id}]`)
     q.emit(enums.status.added, newVal.id)
     setTimeout(function () {
@@ -52,32 +55,72 @@ module.exports = function queueChange (q, err, change) {
   }
 
   // Job active
-  if (is.job(newVal) &&
-      newVal.status === enums.status.active &&
-      is.job(oldVal) &&
-      oldVal.status !== enums.status.active) {
+  if (is.active(newVal) &&
+      !is.active(oldVal)) {
     logger(`Event: active [${newVal.id}]`)
     q.emit(enums.status.active, newVal.id)
     return enums.status.active
   }
 
   // Job completed
-  if (is.job(newVal) &&
-      newVal.status === enums.status.completed &&
-      is.job(oldVal) &&
-      oldVal.status !== enums.status.completed) {
+  if (is.completed(newVal) &&
+      !is.completed(oldVal)) {
     logger(`Event: completed [${newVal.id}]`)
     q.emit(enums.status.completed, newVal.id)
     return enums.status.completed
   }
 
   // Job removed
-  if (!is.job(newVal) && is.job(oldVal)) {
+  if (!is.job(newVal) &&
+      is.job(oldVal)) {
     logger(`Event: removed [${oldVal.id}]`)
     q.emit(enums.status.removed, oldVal.id)
     return enums.status.removed
   }
 
+  // Job cancelled
+  if (is.cancelled(newVal) &&
+      !is.cancelled(oldVal)) {
+    logger(`Event: cancelled [${newVal.id}]`)
+    q.emit(enums.status.cancelled, newVal.id)
+    return enums.status.cancelled
+  }
 
-  console.log('####################################')
+  // Job failed
+  if (is.failed(newVal) &&
+      !is.failed(oldVal)) {
+    logger(`Event: failed [${newVal.id}]`)
+    q.emit(enums.status.failed, newVal.id)
+    return enums.status.failed
+  }
+
+  // Job terminated
+  if (is.terminated(newVal) &&
+      !is.terminated(oldVal)) {
+    logger(`Event: terminated [${newVal.id}]`)
+    q.emit(enums.status.terminated, newVal.id)
+    return enums.status.terminated
+  }
+
+  // Job progress
+  if (is.job(newVal) &&
+      is.job(oldVal) &&
+      newVal.progress !== oldVal.progress) {
+    logger(`Event: progress [${newVal.progress}]`)
+    q.emit(enums.status.progress, newVal.progress)
+    return enums.status.progress
+  }
+
+  // Job log
+  if (is.active(newVal) &&
+      is.active(oldVal) &&
+      is.array(newVal.log) &&
+      is.array(oldVal.log) &&
+      newVal.log.length !== oldVal.log.length) {
+    logger(`Event: log`, newVal.log)
+    q.emit(enums.status.log, newVal.id)
+    return enums.status.log
+  }
+
+  console.log('Unknown database change', change)
 }

@@ -37,7 +37,8 @@ const enums = module.exports = {
     completed: 'completed',
     cancelled: 'cancelled',
     failed: 'failed',
-    terminated: 'terminated'
+    terminated: 'terminated',
+    log: 'log'
   },
   index: {
     indexActiveDateRetry: 'indexActiveDateRetry',
