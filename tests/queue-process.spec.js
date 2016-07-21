@@ -149,7 +149,7 @@ module.exports = function () {
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
-        q.concurrency = 1
+        q._concurrency = 1
         return queueProcess.addHandler(q, testHandler)
       }).delay(jobDelay / 2).then(() => {
         t.equal(q._running, 0, 'Queue not processing jobs')
@@ -161,13 +161,13 @@ module.exports = function () {
           t.equal(err.message, enums.message.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
       }).delay(jobDelay / 2).then(() => {
-        t.equal(q._running, q.concurrency, 'Queue is processing only one job')
-        q.concurrency = 3
+        t.equal(q._running, q._concurrency, 'Queue is processing only one job')
+        q._concurrency = 3
         return q.pause()
       }).then(() => {
         return q.resume()
       }).delay(jobDelay / 2).then(() => {
-        t.equal(q._running, q.concurrency, 'Queue is processing max concurrent jobs')
+        t.equal(q._running, q._concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
         t.equal(completedEventCounter, noOfJobsToCreate, `Queue has completed ${completedEventCounter} jobs`)
         t.ok(q.idle, 'Queue is idle')
@@ -175,7 +175,7 @@ module.exports = function () {
         // ---------- Processing Restart on Job Add Test ----------
         t.comment('queue-process: Process Restart on Job Add')
         jobs = q.createJob(testData, noOfJobsToCreate)
-        q.concurrency = 10
+        q._concurrency = 10
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)

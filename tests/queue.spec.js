@@ -17,21 +17,29 @@ module.exports = function () {
       t.plan(600)
 
       let q = new Queue()
-
-      // ---------- Constructor Tests ----------
-      t.comment('queue: Constructor')
-      t.ok(q, 'Queue created with default options')
-      t.equal(q.name, enums.options.name, 'Default queue name valid')
-      t.equal(q.host, enums.options.host, 'Default host name is valid')
-      t.equal(q.port, enums.options.port, 'Default port is valid')
-      t.equal(q.db, enums.options.db, 'Default db name is valid')
-      t.equal(q.running, 0, 'Running jobs is zero')
-      t.ok(q.master, 'Queue is master queue')
-      t.ok(q.idle, 'Queue is idle')
-      t.ok(is.object(q.connection), 'Queue connection valid')
-      t.ok(q.changeFeed, 'Queue change feed is enabled')
-      console.log(q)
       q.ready.then((ready) => {
+        t.ok(ready, 'Queue is ready')
+
+        // ---------- Constructor Tests ----------
+        t.comment('queue: Constructor')
+        t.ok(q, 'Queue created with default options')
+        t.equal(q.name, enums.options.name, 'Default queue name valid')
+        t.equal(q.host, enums.options.host, 'Default host name is valid')
+        t.equal(q.port, enums.options.port, 'Default port is valid')
+        t.equal(q.db, enums.options.db, 'Default db name is valid')
+        t.ok(q.master, 'Queue is master queue')
+        t.equal(q.masterInterval, enums.options.masterInterval, 'Queue masterInterval is valid')
+        t.notOk(q.paused, 'Queue is not paused')
+        t.equal(q.running, 0, 'Running jobs is zero')
+        t.ok(q.changeFeed, 'Queue change feed is enabled')
+        t.ok(q.idle, 'Queue is idle')
+        t.ok(is.function(q.connection), 'Queue connection valid')
+        t.ok(is.object(q.jobOptions), 'Queue jobOptions is an object')
+        t.equal(q.jobOptions.priority, enums.priorityFromValue(40), 'Default job priority is normal')
+        t.equal(q.jobOptions.timeout, enums.options.timeout, 'Default job timeout is valid')
+        t.equal(q.jobOptions.retryMax, enums.options.retryMax, 'Default job retryMax is valid')
+        t.equal(q.jobOptions.retryDelay, enums.options.retryDelay, 'Default job retryDelay is valid')
+        console.log(q)
 
       })
 

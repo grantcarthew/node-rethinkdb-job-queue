@@ -16,7 +16,7 @@ module.exports = function () {
 
       // ---------- Creating Priority Test Jobs ----------
       const q = testQueue()
-      q.concurrency = 1
+      q._concurrency = 1
       let activeCount = 0
       function activeEventHandler (jobId) {
         activeCount++
@@ -173,7 +173,7 @@ module.exports = function () {
         return q.addJob(moreJobs)
       }).then((moreSavedJobs) => {
         t.equal(moreSavedJobs.length, 7, 'Jobs saved successfully')
-        q.concurrency = 3
+        q._concurrency = 3
         q._running = 4
 
         // ---------- Testing Concurrency and Running ----------

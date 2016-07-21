@@ -38,7 +38,7 @@ class Queue extends EventEmitter {
     this._running = 0
     this._changeFeed = options.changeFeed == null
       ? true : options.changeFeed
-    this.concurrency = options.concurrency > 1 ? options.concurrency : 1
+    this._concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.removeFinishedJobs = options.removeFinishedJobs == null
       ? 180 : options.removeFinishedJobs
     this.handler = false
@@ -157,6 +157,19 @@ class Queue extends EventEmitter {
     })
   }
 
+  get concurrency () {
+    logger('get concurrency')
+    return this._concurrency
+  }
+
+  set concurrency (value) {
+    if (!is.integer(value) || value < 1) {
+      this.emit(enums.status.error, new Error(enums.message.concurrencyInvalid))
+      return
+    }
+    this._concurrency = value
+  }
+
   get running () {
     logger(`get running`)
     return this._running
@@ -166,6 +179,11 @@ class Queue extends EventEmitter {
     logger(`get master`)
     return this._master
   }
+
+    get masterInterval () {
+      logger('get masterInterval')
+      return this._masterInterval
+    }
 
   review () {
     logger('review')

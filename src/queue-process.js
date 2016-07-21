@@ -61,7 +61,7 @@ const jobTick = function jobTick (q) {
     logger(`Running: [${q._running}]`)
     q._getNextJobActive = false
     q._getNextJobCalled = false
-    if (q._running < q.concurrency && runAgain) {
+    if (q._running < q._concurrency && runAgain) {
       // q._running has been decremented whilst talking to the database.
       setImmediate(jobTick, q)
       return
@@ -119,7 +119,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 module.exports.restart = function queueProcessRestart (q) {
   logger('restart', `Running: [${q._running}]`)
   if (!q.handler) { return }
-  if (q._running < q.concurrency) {
+  if (q._running < q._concurrency) {
     setImmediate(jobTick, q)
   }
 }

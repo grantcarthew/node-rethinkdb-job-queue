@@ -8,6 +8,11 @@ module.exports.object = function isObject (value) {
   return Object.prototype.toString.call(value) === '[object Object]'
 }
 
+module.exports.function = function isFunction (value) {
+  logger(`isFunction`, value)
+  return Object.prototype.toString.call(value) === '[object Function]'
+}
+
 const isNumber = module.exports.number = function isNumber (value) {
   logger(`isNumber`, value)
   return Object.prototype.toString.call(value) === '[object Number]'
