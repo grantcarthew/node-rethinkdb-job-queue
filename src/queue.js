@@ -24,10 +24,10 @@ class Queue extends EventEmitter {
     logger('Queue Constructor', options)
 
     options = options || {}
-    this.name = options.name || enums.options.name
-    this.host = options.host || enums.options.host
-    this.port = options.port || enums.options.port
-    this.db = options.db || enums.options.db
+    this._name = options.name || enums.options.name
+    this._host = options.host || enums.options.host
+    this._port = options.port || enums.options.port
+    this._db = options.db || enums.options.db
     this._master = options.master == null ? true
       : options.master
     this._masterInterval = options.masterInterval ||
@@ -43,7 +43,7 @@ class Queue extends EventEmitter {
     this._removeFinishedJobs = options.removeFinishedJobs == null
       ? enums.options.removeFinishedJobs : options.removeFinishedJobs
     this._handler = false
-    this.id = [
+    this._id = [
       require('os').hostname(),
       this.db,
       this.name,
@@ -52,59 +52,35 @@ class Queue extends EventEmitter {
     queueDb.attach(this)
   }
 
-  pause () {
-    logger(`pause`)
-    return new Promise((resolve, reject) => {
-      this._paused = true
-      if (this._running < 1) { return resolve(true) }
-      const q = this
-      let intId = setInterval(function pausing () {
-        logger(`Pausing, waiting on running jobs: [${q._running}]`)
-        if (q._running < 1) {
-          clearInterval(intId)
-          resolve(true)
-        }
-      }, 400)
-    }).then(() => {
-      logger(`Event: paused [${this.id}]`)
-      this.emit(enums.status.paused, this.id)
-    })
-  }
-
-  get paused () {
-    logger(`get paused`)
-    return this._paused
-  }
-
-  resume () {
-    logger(`resume`)
-    return this.ready.then(() => {
-      this._paused = false
-      queueProcess.restart(this)
-      logger(`Event: resumed [${this.id}]`)
-      this.emit(enums.status.resumed, this.id)
-      return true
-    })
-  }
-
-  get connection () {
-    logger('get connection')
-    return this.r
-  }
-
-  get changeFeed () {
-    logger('get changeFeed')
-    return this._changeFeed
-  }
-
-  get jobOptions () {
-    logger('get jobOptions')
-    return this._jobOptions
-  }
+  get paused () { return this._paused }
+  get connection () { return this.r }
+  get name () { return this._name }
+  get id () { return this._id }
+  get host () { return this._host }
+  get port () { return this._port }
+  get db () { return this._db }
+  get changeFeed () { return this._changeFeed }
+  get jobOptions () { return this._jobOptions }
+  get removeFinishedJobs () { return this._removeFinishedJobs }
+  get running () { return this._running }
+  get master () { return this._master }
+  get masterInterval () { return this._masterInterval }
+  get concurrency () { return this._concurrency }
+  get idle () { return this._running < 1 }
 
   set jobOptions (options) {
     logger('set jobOptions', options)
     this._jobOptions = jobOptions(options)
+  }
+
+  set concurrency (value) {
+    if (!is.integer(value) || value < 1) {
+      this.emit(enums.status.error,
+        new Error(enums.message.concurrencyInvalid),
+        value)
+      return
+    }
+    this._concurrency = value
   }
 
   createJob (data, options = this._jobOptions, quantity = 1) {
@@ -144,11 +120,6 @@ class Queue extends EventEmitter {
     })
   }
 
-  get removeFinishedJobs () {
-    logger('get removeFinishedJobs')
-    return this._removeFinishedJobs
-  }
-
   removeJob (job) {
     logger('removeJob', job)
     return this.ready.then(() => {
@@ -163,36 +134,6 @@ class Queue extends EventEmitter {
     })
   }
 
-  get concurrency () {
-    logger('get concurrency')
-    return this._concurrency
-  }
-
-  set concurrency (value) {
-    if (!is.integer(value) || value < 1) {
-      this.emit(enums.status.error,
-        new Error(enums.message.concurrencyInvalid),
-        value)
-      return
-    }
-    this._concurrency = value
-  }
-
-  get running () {
-    logger(`get running`)
-    return this._running
-  }
-
-  get master () {
-    logger(`get master`)
-    return this._master
-  }
-
-    get masterInterval () {
-      logger('get masterInterval')
-      return this._masterInterval
-    }
-
   review () {
     logger('review')
     return this.ready.then(() => {
@@ -200,15 +141,40 @@ class Queue extends EventEmitter {
     })
   }
 
-  get idle () {
-    logger(`get idle`)
-    return this._running < 1
-  }
-
   summary () {
     logger('summary')
     return this.ready.then(() => {
       return queueSummary(this)
+    })
+  }
+
+  pause () {
+    logger(`pause`)
+    return new Promise((resolve, reject) => {
+      this._paused = true
+      if (this._running < 1) { return resolve(true) }
+      const q = this
+      let intId = setInterval(function pausing () {
+        logger(`Pausing, waiting on running jobs: [${q._running}]`)
+        if (q._running < 1) {
+          clearInterval(intId)
+          resolve(true)
+        }
+      }, 400)
+    }).then(() => {
+      logger(`Event: paused [${this.id}]`)
+      this.emit(enums.status.paused, this.id)
+    })
+  }
+
+  resume () {
+    logger(`resume`)
+    return this.ready.then(() => {
+      this._paused = false
+      queueProcess.restart(this)
+      logger(`Event: resumed [${this.id}]`)
+      this.emit(enums.status.resumed, this.id)
+      return true
     })
   }
 
