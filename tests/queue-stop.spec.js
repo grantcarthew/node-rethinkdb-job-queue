@@ -55,7 +55,7 @@ module.exports = function () {
       }).then((ready) => {
         t.ok(ready >= 0, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
-        t.ok(q._changeFeed.connection.open, 'Change feed is connected')
+        t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         addEventHandlers()
 
@@ -66,7 +66,7 @@ module.exports = function () {
       }).then((stopped) => {
         t.ok(stopped, 'Queue stopped with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
-        t.notOk(q._changeFeed, 'Change feed is disconnected')
+        t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
         t.notOk(this.ready, 'Queue is not ready')
 
@@ -78,14 +78,14 @@ module.exports = function () {
         return q.resume()
       }).then(() => {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
-        t.ok(q._changeFeed.connection.open, 'Change feed is connected')
+        t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         simulateJobProcessing()
         return queueStop(q, false)
       }).then((stopped2) => {
         t.ok(stopped2, 'Queue stopped without pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
-        t.notOk(q._changeFeed, 'Change feed is disconnected')
+        t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
         return q.ready
       }).then((ready) => {
@@ -99,7 +99,7 @@ module.exports = function () {
         return q.resume()
       }).then(() => {
         t.ok(dbReview.isEnabled(), 'Review is enabled')
-        t.ok(q._changeFeed.connection.open, 'Change feed is connected')
+        t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
 
         // ---------- Clean Up ----------

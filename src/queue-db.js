@@ -15,15 +15,15 @@ module.exports.attach = function dbAttach (q) {
     silent: true
   })
   q.ready = dbAssert(q).then(() => {
-    if (q._changeFeedEnabled) {
+    if (q._changeFeed) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
-        q._changeFeed = changeFeed
-        q._changeFeed.each((err, change) => {
+        q._changeFeedCursor = changeFeed
+        q._changeFeedCursor.each((err, change) => {
           return queueChange(q, err, change)
         })
       })
     }
-    q._changeFeed = false
+    q._changeFeedCursor = false
     return null
   }).then(() => {
     if (q._master) {
@@ -42,9 +42,9 @@ module.exports.attach = function dbAttach (q) {
 module.exports.detach = function dbDetach (q, drainPool) {
   logger('detach')
   return Promise.resolve().then(() => {
-    if (q._changeFeed) {
-      let feed = q._changeFeed
-      q._changeFeed = false
+    if (q._changeFeedCursor) {
+      let feed = q._changeFeedCursor
+      q._changeFeedCursor = false
       logger('closing changeFeed')
       return feed.close()
     }

@@ -32,7 +32,7 @@ module.exports = function () {
       t.ok(q.changeFeed, 'Queue change feed is enabled')
       console.log(q)
       q.ready.then((ready) => {
-        console.dir(q._changeFeed)
+
       })
 
       // q.on('ready', () => {

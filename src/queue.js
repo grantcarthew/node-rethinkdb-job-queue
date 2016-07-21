@@ -33,10 +33,10 @@ class Queue extends EventEmitter {
     this._masterInterval = options.masterInterval ||
       enums.options.masterInterval
     this._jobOptions = jobOptions()
-    this._changeFeed = false
+    this._changeFeedCursor = false
     this._paused = false
     this._running = 0
-    this._changeFeedEnabled = options.changeFeed == null
+    this._changeFeed = options.changeFeed == null
       ? true : options.changeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.removeFinishedJobs = options.removeFinishedJobs == null
@@ -93,7 +93,7 @@ class Queue extends EventEmitter {
 
   get changeFeed () {
     logger('get changeFeed')
-    return this._changeFeedEnabled
+    return this._changeFeed
   }
 
   get jobOptions () {
