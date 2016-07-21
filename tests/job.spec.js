@@ -115,7 +115,7 @@ module.exports = function () {
 
         // ---------- New Job From Data ----------
         t.comment('job: New Job from Data')
-        return new Job(q, null, jobCopy)
+        return new Job(q, jobCopy)
       }).then((newJobFromData) => {
         t.equal(newJobFromData.id, savedJob.id, 'New job from data created successfully')
         t.deepEqual(newJobFromData.q, savedJob.q, 'New job from data queue valid')

@@ -88,13 +88,13 @@ module.exports = function () {
 
         // ---------- Create Job Tests ----------
         t.comment('queue: Create Job')
-        let job = q.createJob()
+        let job = q.createJob(testData)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, enums.priorityFromValue(40), 'Queue created job with default priority')
         t.equal(job.timeout, enums.options.timeout, 'Queue created job with default timeout')
         t.equal(job.retryMax, enums.options.retryMax, 'Queue created job with default retryMax')
         t.equal(job.retryDelay, enums.options.retryDelay, 'Queue created job with default retryDelay')
-        job = q.createJob(customJobOptions)
+        job = q.createJob(testData, customJobOptions)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')

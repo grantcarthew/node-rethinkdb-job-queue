@@ -17,7 +17,7 @@ module.exports = function () {
       let addedCount = 0
       function addedEventHandler (jobId) {
         addedCount++
-        t.ok(is.uuid(jobId), `Event: Job Added [${addedCount}] [${jobId.id}]`)
+        t.ok(is.uuid(jobId), `Event: Job Added [${addedCount}] [${jobId}]`)
       }
       q.on(enums.status.added, addedEventHandler)
 

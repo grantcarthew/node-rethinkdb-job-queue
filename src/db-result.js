@@ -38,8 +38,8 @@ function getJobsData (dbResult) {
 module.exports.toJob = function toJob (q, dbResult) {
   logger('toJob:', dbResult)
   return getJobsData(dbResult).then((jobsData) => {
-    return jobsData.map((data) => {
-      return q.createJob(null, data)
+    return jobsData.map((jobData) => {
+      return q.createJob(jobData)
     })
   })
 }

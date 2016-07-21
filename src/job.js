@@ -16,11 +16,11 @@ class Job {
     logger('options', options)
     this.q = q
 
-    // If creating a job from the database, pass the job data as the options.
-    // Eg. new Job(queue, null, data)
-    if (is.job(options)) {
+    // If creating a job from the database, pass the job as data.
+    // Eg. new Job(queue, jobFromDb)
+    if (is.job(data)) {
       logger('Creating job from database object')
-      Object.assign(this, options)
+      Object.assign(this, data)
       this.priority = enums.priorityFromValue(this.priority)
     } else {
       logger('Creating new job from defaults and options')
