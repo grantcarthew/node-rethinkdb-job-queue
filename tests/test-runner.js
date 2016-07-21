@@ -6,6 +6,7 @@ const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
 const dbAssert = require('./db-assert.spec')
 const enums = require('./enums.spec')
+const is = require('./is.spec')
 const jobOptions = require('./job-options.spec')
 const jobParse = require('./job-parse.spec')
 const job = require('./job.spec')
@@ -38,6 +39,7 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return Promise.all([
     enums(),
+    is(),
     jobOptions(),
     jobParse(),
     job(),

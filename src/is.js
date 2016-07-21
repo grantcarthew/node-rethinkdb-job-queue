@@ -40,7 +40,7 @@ const isUuid = module.exports.uuid = function isUuid (value) {
 
 const isNan = module.exports.nan = function isNan (value) {
   logger(`isNan`, value)
-  return !isNumber(value) || value !== value
+  return Number.isNaN(value)
 }
 
 module.exports.integer = function isInteger (value) {
