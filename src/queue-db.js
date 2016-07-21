@@ -8,14 +8,14 @@ const queueChange = require('./queue-change')
 
 module.exports.attach = function dbAttach (q) {
   logger('attach')
-  q.r = rethinkdbdash({
+  q._r = rethinkdbdash({
     host: q.host,
     port: q.port,
     db: q.db,
     silent: true
   })
   q.ready = dbAssert(q).then(() => {
-    if (q._changeFeed) {
+    if (q.changeFeed) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
         q._changeFeedCursor = changeFeed
         q._changeFeedCursor.each((err, change) => {
@@ -26,7 +26,7 @@ module.exports.attach = function dbAttach (q) {
     q._changeFeedCursor = false
     return null
   }).then(() => {
-    if (q._master) {
+    if (q.master) {
       logger('Queue is a master')
       return dbReview.enable(q)
     }
@@ -50,7 +50,7 @@ module.exports.detach = function dbDetach (q, drainPool) {
     }
     return null
   }).then(() => {
-    if (q._master) {
+    if (q.master) {
       logger('disabling dbReview')
       return dbReview.disable(q)
     }

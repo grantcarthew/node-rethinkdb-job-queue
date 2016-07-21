@@ -52,7 +52,7 @@ module.exports = function failed (err, job, data) {
       job.q.emit(enums.status.terminated, jobIds[0])
     }
     if (!isRetry &&
-        is.true(job.q._removeFinishedJobs)) {
+        is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
         return jobIds
       })

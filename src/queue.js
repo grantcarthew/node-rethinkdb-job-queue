@@ -28,6 +28,7 @@ class Queue extends EventEmitter {
     this._host = options.host || enums.options.host
     this._port = options.port || enums.options.port
     this._db = options.db || enums.options.db
+    this._r = false
     this._master = options.master == null ? true
       : options.master
     this._masterInterval = options.masterInterval ||
@@ -57,6 +58,7 @@ class Queue extends EventEmitter {
   get host () { return this._host }
   get port () { return this._port }
   get db () { return this._db }
+  get r () { return this._r }
   get connection () { return this.r }
   get changeFeed () { return this._changeFeed }
   get master () { return this._master }
@@ -83,11 +85,11 @@ class Queue extends EventEmitter {
     this._concurrency = value
   }
 
-  createJob (data, options = this._jobOptions, quantity = 1) {
+  createJob (data, options = this.jobOptions, quantity = 1) {
     logger('createJob', data, options, quantity)
     if (is.integer(options)) {
       quantity = options
-      options = this._jobOptions
+      options = this.jobOptions
     }
     if (quantity > 1) {
       const jobs = []

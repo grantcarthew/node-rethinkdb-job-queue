@@ -60,13 +60,13 @@ function updateFailedJobs (q) {
 function removeFinishedJobs (q) {
   logger('removeFinishedJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
-  if (q._removeFinishedJobs < 1 || q._removeFinishedJobs === false) { return }
+  if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
 
   return q.r.db(q.db).table(q.name)
   .orderBy({index: enums.index.indexFinishedDateFinished})
   .filter(
     q.r.row('dateFinished').add(
-      q.r.expr(q._removeFinishedJobs).mul(86400)
+      q.r.expr(q.removeFinishedJobs).mul(86400)
     ).lt(q.r.now())
   ).delete()
   .run()
@@ -92,7 +92,7 @@ function runReviewTasks (q) {
 module.exports.enable = function enable (q) {
   logger('enable')
   if (!dbReviewIntervalId) {
-    const interval = q._masterInterval * 1000
+    const interval = q.masterInterval * 1000
     dbReviewIntervalId = setInterval(() => {
       return runReviewTasks(q)
     }, interval)
