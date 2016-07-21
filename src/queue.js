@@ -24,18 +24,19 @@ class Queue extends EventEmitter {
     logger('Queue Constructor', options)
 
     options = options || {}
-    this.name = options.name || 'rjqJobList'
-    this.host = options.host || 'localhost'
-    this.port = options.port || 28015
-    this.db = options.db || 'rjqJobQueue'
+    this.name = options.name || enums.options.name
+    this.host = options.host || enums.options.host
+    this.port = options.port || enums.options.port
+    this.db = options.db || enums.options.db
     this._master = options.master == null ? true
       : options.master
-    this._masterInterval = options.masterInterval || 310
+    this._masterInterval = options.masterInterval ||
+      enums.options.masterInterval
     this._jobOptions = jobOptions()
     this._changeFeed = false
     this._paused = false
     this._running = 0
-    this.changeFeed = options.changeFeed == null
+    this._changeFeedEnabled = options.changeFeed == null
       ? true : options.changeFeed
     this.concurrency = options.concurrency > 1 ? options.concurrency : 1
     this.removeFinishedJobs = options.removeFinishedJobs == null
@@ -90,6 +91,11 @@ class Queue extends EventEmitter {
     return this.r
   }
 
+  get changeFeed () {
+    logger('get changeFeed')
+    return this._changeFeedEnabled
+  }
+
   get jobOptions () {
     logger('get jobOptions')
     return this._jobOptions
@@ -123,6 +129,13 @@ class Queue extends EventEmitter {
     })
   }
 
+  getJob (jobId) {
+    logger('getJob', jobId)
+    return this.ready.then(() => {
+      return queueGetJob(this, jobId)
+    })
+  }
+
   cancelJob (job, reason) {
     logger('cancelJob', job, reason)
     return this.ready.then(() => {
@@ -134,13 +147,6 @@ class Queue extends EventEmitter {
     logger('removeJob', job)
     return this.ready.then(() => {
       return queueRemoveJob(this, job)
-    })
-  }
-
-  getJob (jobId) {
-    logger('getJob', jobId)
-    return this.ready.then(() => {
-      return queueGetJob(this, jobId)
     })
   }
 

@@ -1,17 +1,12 @@
 const logger = require('./logger')(module)
-const defaultOptions = {
-  priority: 'normal',
-  timeout: 300,
-  retryMax: 3,
-  retryDelay: 600
-}
+const enums = require('./enums')
 
 module.exports = function jobOptions (options = {}) {
   logger('jobOptions', options)
   return {
-    priority: options.priority || defaultOptions.priority,
-    timeout: options.timeout || defaultOptions.timeout,
-    retryMax: options.retryMax || defaultOptions.retryMax,
-    retryDelay: options.retryDelay || defaultOptions.retryDelay
+    priority: options.priority || enums.priorityFromValue(40),
+    timeout: options.timeout || enums.options.timeout,
+    retryMax: options.retryMax || enums.options.retryMax,
+    retryDelay: options.retryDelay || enums.options.retryDelay
   }
 }

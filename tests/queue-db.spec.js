@@ -38,7 +38,7 @@ module.exports = function () {
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         q._master = true
-        q.changeFeed = true
+        q._changeFeedEnabled = true
         return dbReview.enable(q)
       }).then((ready) => {
         t.ok(ready >= 0, 'Queue in a ready state')
@@ -71,7 +71,7 @@ module.exports = function () {
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
         q._master = false
-        q.changeFeed = true
+        q._changeFeedEnabled = true
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')
@@ -90,7 +90,7 @@ module.exports = function () {
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
         q._master = true
-        q.changeFeed = false
+        q._changeFeedEnabled = false
 
         // ---------- Attach with master NOT change feed ----------
         t.comment('queue-db: Attach with Master NOT Change Feed')
@@ -109,7 +109,7 @@ module.exports = function () {
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
         q._master = false
-        q.changeFeed = false
+        q._changeFeedEnabled = false
 
         // ---------- Attach without change feed or master ----------
         t.comment('queue-db: Attach without Change Feed or Master')
@@ -128,7 +128,7 @@ module.exports = function () {
         t.notOk(q._changeFeed, 'Change feed is disconnected')
         t.notOk(this.ready, 'Queue is not ready')
         q._master = true
-        q.changeFeed = true
+        q._changeFeedEnabled = true
 
         // ---------- Attach with change feed and master ----------
         t.comment('queue-db: Attach with Change Feed and Master')
@@ -154,7 +154,7 @@ module.exports = function () {
         return queueDb.detach(q, true)
       }).then(() => {
         q._master = false
-        q.changeFeed = true
+        q._changeFeedEnabled = true
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')

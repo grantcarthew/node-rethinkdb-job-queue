@@ -40,6 +40,17 @@ const enums = module.exports = {
     terminated: 'terminated',
     log: 'log'
   },
+  options: {
+    name: 'rjqJobList',
+    host: 'localhost',
+    port: 28015,
+    db: 'rjqJobQueue',
+    masterInterval: 300,
+    timeout: 300,
+    retryMax: 3,
+    retryDelay: 600
+
+  },
   index: {
     indexActiveDateRetry: 'indexActiveDateRetry',
     indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',

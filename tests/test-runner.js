@@ -13,6 +13,7 @@ const job = require('./job.spec')
 const jobProgress = require('./job-progress.spec')
 const jobAddLog = require('./job-add-log.spec')
 const dbResult = require('./db-result.spec')
+const queue = require('./queue.spec')
 const queueAddJob = require('./queue-add-job.spec')
 const queueCancelJob = require('./queue-cancel-job.spec')
 const queueRemoveJob = require('./queue-remove-job.spec')
@@ -52,6 +53,8 @@ return dbAssertDatabase().then(() => {
     jobCompleted(),
     jobFailed()
   ])
+}).then(() => {
+  return null //queue()
 }).then(() => {
   return dbReview()
 }).then(() => {

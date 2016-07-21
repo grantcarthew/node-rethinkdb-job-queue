@@ -15,7 +15,7 @@ module.exports.attach = function dbAttach (q) {
     silent: true
   })
   q.ready = dbAssert(q).then(() => {
-    if (q.changeFeed) {
+    if (q._changeFeedEnabled) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
         q._changeFeed = changeFeed
         q._changeFeed.each((err, change) => {

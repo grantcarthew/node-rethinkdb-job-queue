@@ -1,10 +1,10 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
+const enums = require('../src/enums')
 const is = require('../src/is')
 const testError = require('./test-error')
 const testQueue = require('./test-queue')
-const enums = require('../src/enums')
 const testData = require('./test-options').testData
 
 module.exports = function () {
