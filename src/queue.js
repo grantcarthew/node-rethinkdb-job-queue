@@ -40,8 +40,8 @@ class Queue extends EventEmitter {
       ? true : options.changeFeed
     this._concurrency = options.concurrency > 1
       ? options.concurrency : enums.options.concurrency
-    this.removeFinishedJobs = options.removeFinishedJobs == null
-      ? 180 : options.removeFinishedJobs
+    this._removeFinishedJobs = options.removeFinishedJobs == null
+      ? enums.options.removeFinishedJobs : options.removeFinishedJobs
     this._handler = false
     this.id = [
       require('os').hostname(),
@@ -142,6 +142,11 @@ class Queue extends EventEmitter {
     return this.ready.then(() => {
       return queueCancelJob(this, job, reason)
     })
+  }
+
+  get removeFinishedJobs () {
+    logger('get removeFinishedJobs')
+    return this._removeFinishedJobs
   }
 
   removeJob (job) {

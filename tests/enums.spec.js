@@ -16,7 +16,7 @@ module.exports = function () {
       t.equal(enums.priorityFromValue(1), 'retry', 'Priority from value 1 returns retry')
       t.equal(Object.keys(enums.priority).length, 7, 'Enums priority has has correct number of keys')
       t.equal(Object.keys(enums.status).length, 22, 'Enums status has correct number of keys')
-      t.equal(Object.keys(enums.options).length, 9, 'Enums options has correct number of keys')
+      t.equal(Object.keys(enums.options).length, 10, 'Enums options has correct number of keys')
       t.equal(Object.keys(enums.index).length, 3, 'Enums index has has correct number of keys')
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has has correct number of keys')
       t.equal(Object.keys(enums.message).length, 13, 'Enums message has has correct number of keys')

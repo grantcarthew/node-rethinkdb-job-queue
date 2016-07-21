@@ -36,7 +36,7 @@ module.exports = function cancel (q, job, reason) {
       logger(`Event: cancelled [${jobId}]`)
       q.emit(enums.status.cancelled, jobId)
     })
-    if (is.true(q.removeFinishedJobs)) {
+    if (is.true(q._removeFinishedJobs)) {
       return q.removeJob(jobIds).then((deleteResult) => {
         // TODO: do something with deleteResult????
         return jobIds

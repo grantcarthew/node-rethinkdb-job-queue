@@ -73,7 +73,7 @@ module.exports = function () {
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        q.removeFinishedJobs = true
+        q._removeFinishedJobs = true
         return jobCompleted(savedJob[0], testData)
       }).then((removedIds) => {
         t.equal(removedIds.length, 1, 'Job removed successfully')
@@ -84,7 +84,7 @@ module.exports = function () {
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
         removeEventHandlers()
-        q.removeFinishedJobs = 180
+        q._removeFinishedJobs = 180
         resolve()
       }).catch(err => testError(err, module, t))
     })

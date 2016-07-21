@@ -33,7 +33,7 @@ module.exports = function completed (job, data) {
   }).then((jobIds) => {
     logger(`Event: completed [${jobIds[0]}]`)
     job.q.emit(enums.status.completed, jobIds[0])
-    if (is.true(job.q.removeFinishedJobs)) {
+    if (is.true(job.q._removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
         return jobIds
       })

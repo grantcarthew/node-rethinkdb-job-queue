@@ -60,13 +60,13 @@ function updateFailedJobs (q) {
 function removeFinishedJobs (q) {
   logger('removeFinishedJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
-  if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
+  if (q._removeFinishedJobs < 1 || q._removeFinishedJobs === false) { return }
 
   return q.r.db(q.db).table(q.name)
   .orderBy({index: enums.index.indexFinishedDateFinished})
   .filter(
     q.r.row('dateFinished').add(
-      q.r.expr(q.removeFinishedJobs).mul(86400)
+      q.r.expr(q._removeFinishedJobs).mul(86400)
     ).lt(q.r.now())
   ).delete()
   .run()

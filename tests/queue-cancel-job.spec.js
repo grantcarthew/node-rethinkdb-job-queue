@@ -78,7 +78,7 @@ module.exports = function () {
         // ---------- Cancel Multiple Jobs with Remove Tests ----------
         t.comment('queue-cancel-job: Cancel Multiple Jobs with Remove')
         jobs = q.createJob(testData, jobsToCreate)
-        q.removeFinishedJobs = true
+        q._removeFinishedJobs = true
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, jobsToCreate, 'Jobs saved successfully')
@@ -96,7 +96,7 @@ module.exports = function () {
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
         removeEventHandlers()
-        q.removeFinishedJobs = 180
+        q._removeFinishedJobs = 180
         resolve()
       }).catch(err => testError(err, module, t))
     })
