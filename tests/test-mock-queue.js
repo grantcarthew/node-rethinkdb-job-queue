@@ -5,7 +5,7 @@ let mockQueue
 module.exports = function () {
   if (!mockQueue) {
     mockQueue = {
-      r: rethinkdbdash(testOptions.connectionOptions),
+      r: rethinkdbdash(testOptions.connection),
       db: testOptions.dbName,
       name: testOptions.queueName,
       id: 'mock:queue:id'

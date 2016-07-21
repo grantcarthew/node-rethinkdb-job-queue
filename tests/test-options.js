@@ -9,7 +9,8 @@ const connection = module.exports.connection = function () {
   return {
     host: dbHost,
     port: dbPort,
-    db: dbName
+    db: dbName,
+    silent: true
   }
 }
 
