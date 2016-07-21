@@ -8,19 +8,19 @@ const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 
 const jobRun = function jobRun (job) {
-  logger('jobRun', `Running: [${job.q._running}]`)
+  logger('jobRun', `Running: [${job.q.running}]`)
   let handled = false
   let jobTimeoutId
   let finalPromise
 
   function nextHandler (err, data) {
-    logger('nextHandler', `Running: [${job.q._running}]`)
+    logger('nextHandler', `Running: [${job.q.running}]`)
     logger('Job data', data)
     logger('Error', err)
     logger('handled', handled)
     // Ignore mulpiple calls to next()
     if (handled) {
-      return Promise.resolve(job.q._running)
+      return Promise.resolve(job.q.running)
     }
     handled = true
     clearTimeout(jobTimeoutId)
@@ -35,7 +35,7 @@ const jobRun = function jobRun (job) {
     return finalPromise.then((finalResult) => {
       job.q._running--
       setImmediate(jobTick, job.q)
-      return job.q._running
+      return job.q.running
     })
   }
 
@@ -51,17 +51,17 @@ const jobRun = function jobRun (job) {
 }
 
 const jobTick = function jobTick (q) {
-  logger('jobTick', `Running: [${q._running}]`)
+  logger('jobTick', `Running: [${q.running}]`)
   if (q._getNextJobActive) { q._getNextJobCalled = true }
   if (q.paused || q._getNextJobActive) { return }
 
   function getNextJobCleanup (runAgain) {
     logger(`getNextJobCleanup`)
     logger(`runAgain: [${runAgain}]`)
-    logger(`Running: [${q._running}]`)
+    logger(`Running: [${q.running}]`)
     q._getNextJobActive = false
     q._getNextJobCalled = false
-    if (q._running < q._concurrency && runAgain) {
+    if (q.running < q.concurrency && runAgain) {
       // q._running has been decremented whilst talking to the database.
       setImmediate(jobTick, q)
       return
@@ -117,9 +117,9 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 }
 
 module.exports.restart = function queueProcessRestart (q) {
-  logger('restart', `Running: [${q._running}]`)
+  logger('restart', `Running: [${q.running}]`)
   if (!q._handler) { return }
-  if (q._running < q._concurrency) {
+  if (q.running < q.concurrency) {
     setImmediate(jobTick, q)
   }
 }

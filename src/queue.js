@@ -154,11 +154,11 @@ class Queue extends EventEmitter {
     logger(`pause`)
     return new Promise((resolve, reject) => {
       this._paused = true
-      if (this._running < 1) { return resolve(true) }
+      if (this.running < 1) { return resolve(true) }
       const q = this
       let intId = setInterval(function pausing () {
-        logger(`Pausing, waiting on running jobs: [${q._running}]`)
-        if (q._running < 1) {
+        logger(`Pausing, waiting on running jobs: [${q.running}]`)
+        if (q.running < 1) {
           clearInterval(intId)
           resolve(true)
         }
