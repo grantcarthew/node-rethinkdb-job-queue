@@ -52,20 +52,20 @@ class Queue extends EventEmitter {
     queueDb.attach(this)
   }
 
-  get paused () { return this._paused }
-  get connection () { return this.r }
   get name () { return this._name }
   get id () { return this._id }
   get host () { return this._host }
   get port () { return this._port }
   get db () { return this._db }
+  get connection () { return this.r }
   get changeFeed () { return this._changeFeed }
+  get master () { return this._master }
+  get masterInterval () { return this._masterInterval }
   get jobOptions () { return this._jobOptions }
   get removeFinishedJobs () { return this._removeFinishedJobs }
   get running () { return this._running }
-  get master () { return this._master }
-  get masterInterval () { return this._masterInterval }
   get concurrency () { return this._concurrency }
+  get paused () { return this._paused }
   get idle () { return this._running < 1 }
 
   set jobOptions (options) {
