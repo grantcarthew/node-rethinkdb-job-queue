@@ -19,6 +19,7 @@ module.exports = function () {
 
       let q = new Queue()
 
+      let job
       let customJobOptions = {
         priority: 'high',
         timeout: 200,
@@ -88,7 +89,7 @@ module.exports = function () {
 
         // ---------- Create Job Tests ----------
         t.comment('queue: Create Job')
-        let job = q.createJob(testData)
+        job = q.createJob(testData)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, enums.priorityFromValue(40), 'Queue created job with default priority')
         t.equal(job.timeout, enums.options.timeout, 'Queue created job with default timeout')
@@ -100,8 +101,25 @@ module.exports = function () {
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')
         t.equal(job.retryMax, customJobOptions.retryMax, 'Queue created job with custom retryMax')
         t.equal(job.retryDelay, customJobOptions.retryDelay, 'Queue created job with custom retryDelay')
-        console.dir(job)
 
+        // ---------- Create Job Tests ----------
+        t.comment('queue: Add Job')
+        job = q.createJob(testData)
+        return q.addJob(job)
+      }).then((savedJobs) => {
+        t.ok(is.array(savedJobs), 'Add job returns an array')
+        t.ok(is.job(savedJobs[0]), 'Job saved successfully')
+        t.equal(savedJobs[0].id, job.id, 'Job id is valid')
+        t.equal(savedJobs[0].status, enums.status.added, 'Job status is valid')
+
+        // ---------- Create Job Tests ----------
+        t.comment('queue: Get Job')
+        return q.getJob(savedJobs[0].id)
+      }).then((savedJobs2) => {
+        t.ok(is.array(savedJobs2), 'Get job returns an array')
+        t.ok(is.job(savedJobs2[0]), 'Job retrieved successfully')
+        t.equal(savedJobs2[0].id, job.id, 'Job id is valid')
+        t.equal(savedJobs2[0].status, enums.status.added, 'Job status is valid')
 
         removeEventHandlers()
       }).catch(err => testError(err, module, t))
