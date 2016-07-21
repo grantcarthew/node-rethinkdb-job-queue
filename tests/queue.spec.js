@@ -32,6 +32,7 @@ module.exports = function () {
         t.notOk(q.paused, 'Queue is not paused')
         t.equal(q.running, 0, 'Running jobs is zero')
         t.ok(q.changeFeed, 'Queue change feed is enabled')
+        t.equal(q.concurrency, enums.options.concurrency, 'Default concurrency is valid')
         t.ok(q.idle, 'Queue is idle')
         t.ok(is.function(q.connection), 'Queue connection valid')
         t.ok(is.object(q.jobOptions), 'Queue jobOptions is an object')

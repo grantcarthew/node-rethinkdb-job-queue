@@ -38,10 +38,11 @@ class Queue extends EventEmitter {
     this._running = 0
     this._changeFeed = options.changeFeed == null
       ? true : options.changeFeed
-    this._concurrency = options.concurrency > 1 ? options.concurrency : 1
+    this._concurrency = options.concurrency > 1
+      ? options.concurrency : enums.options.concurrency
     this.removeFinishedJobs = options.removeFinishedJobs == null
       ? 180 : options.removeFinishedJobs
-    this.handler = false
+    this._handler = false
     this.id = [
       require('os').hostname(),
       this.db,
@@ -164,7 +165,9 @@ class Queue extends EventEmitter {
 
   set concurrency (value) {
     if (!is.integer(value) || value < 1) {
-      this.emit(enums.status.error, new Error(enums.message.concurrencyInvalid))
+      this.emit(enums.status.error,
+        new Error(enums.message.concurrencyInvalid),
+        value)
       return
     }
     this._concurrency = value

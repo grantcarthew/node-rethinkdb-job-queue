@@ -47,7 +47,7 @@ const jobRun = function jobRun (job) {
   logger(`Event: processing [${job.id}]`)
   job.q.emit(enums.status.processing, job.id)
   logger('calling handler function')
-  job.q.handler(job, nextHandler)
+  job.q._handler(job, nextHandler)
 }
 
 const jobTick = function jobTick (q) {
@@ -101,11 +101,11 @@ const jobTick = function jobTick (q) {
 module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   logger('addHandler')
 
-  if (q.handler) {
+  if (q._handler) {
     return Promise.reject(new Error(enums.message.processTwice))
   }
 
-  q.handler = handler
+  q._handler = handler
   q._running = 0
   return Promise.resolve().then(() => {
     if (q._master) { return null }
@@ -118,7 +118,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 
 module.exports.restart = function queueProcessRestart (q) {
   logger('restart', `Running: [${q._running}]`)
-  if (!q.handler) { return }
+  if (!q._handler) { return }
   if (q._running < q._concurrency) {
     setImmediate(jobTick, q)
   }

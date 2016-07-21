@@ -48,8 +48,8 @@ const enums = module.exports = {
     masterInterval: 300,
     timeout: 300,
     retryMax: 3,
-    retryDelay: 600
-
+    retryDelay: 600,
+    concurrency: 1
   },
   index: {
     indexActiveDateRetry: 'indexActiveDateRetry',
