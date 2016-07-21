@@ -13,6 +13,11 @@ module.exports.function = function isFunction (value) {
   return Object.prototype.toString.call(value) === '[object Function]'
 }
 
+module.exports.string = function isString (value) {
+  logger(`isString`, value)
+  return Object.prototype.toString.call(value) === '[object String]'
+}
+
 const isNumber = module.exports.number = function isNumber (value) {
   logger(`isNumber`, value)
   return Object.prototype.toString.call(value) === '[object Number]'

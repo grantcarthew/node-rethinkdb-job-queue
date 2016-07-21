@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const uuid = require('node-uuid')
 const moment = require('moment')
 const enums = require('./enums')
+const is = require('./is')
 const jobOptions = require('./job-options')
 const jobProgress = require('./job-progress')
 const jobAddLog = require('./job-add-log')
@@ -17,12 +18,16 @@ class Job {
 
     // If creating a job from the database, pass the job data as the options.
     // Eg. new Job(queue, null, data)
-    if (options && options.id) {
+    if (is.job(options)) {
       logger('Creating job from database object')
       Object.assign(this, options)
       this.priority = enums.priorityFromValue(this.priority)
     } else {
       logger('Creating new job from defaults and options')
+
+      if (data == null) {
+        throw new Error(enums.message.jobDataInvalid)
+      }
       if (!options) {
         options = jobOptions()
       } else {

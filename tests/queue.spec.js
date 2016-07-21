@@ -9,6 +9,7 @@ const connectionOptionsOnly = testOptions.connection()
 const queueDefaultOptions = testOptions.queueDefault()
 const customjobOptions = testOptions.jobOptionsHigh()
 const testData = require('./test-options').testData
+const jobOptions = require('../src/job-options')
 const Queue = require('../src/queue')
 
 module.exports = function () {
@@ -17,33 +18,93 @@ module.exports = function () {
       t.plan(600)
 
       let q = new Queue()
+
+      let customJobOptions = {
+        priority: 'high',
+        timeout: 200,
+        retryMax: 5,
+        retryDelay: 400
+      }
+
+
+      // ---------- Event Handler Setup ----------
+      let testEvents = false
+      function errorEventHandler (err) {
+        if (testEvents) {
+          t.ok(is.string(err.message), `Event: error [${err.message}]`)
+        }
+      }
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.error, errorEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.error, errorEventHandler)
+      }
+
       q.ready.then((ready) => {
+        addEventHandlers()
         t.ok(ready, 'Queue is ready')
 
-        // ---------- Constructor Tests ----------
-        t.comment('queue: Constructor')
+        // ---------- Constructor with Default Options Tests ----------
+        t.comment('queue: Constructor with Default Options')
         t.ok(q, 'Queue created with default options')
         t.equal(q.name, enums.options.name, 'Default queue name valid')
+        t.ok(is.string(q.id), 'Queue id is valid')
         t.equal(q.host, enums.options.host, 'Default host name is valid')
         t.equal(q.port, enums.options.port, 'Default port is valid')
         t.equal(q.db, enums.options.db, 'Default db name is valid')
+        t.ok(is.function(q.r), 'Queue r valid')
+        t.ok(is.function(q.connection), 'Queue connection valid')
+        t.ok(q.changeFeed, 'Queue change feed is enabled')
         t.ok(q.master, 'Queue is master queue')
         t.equal(q.masterInterval, enums.options.masterInterval, 'Queue masterInterval is valid')
-        t.notOk(q.paused, 'Queue is not paused')
-        t.equal(q.running, 0, 'Running jobs is zero')
-        t.ok(q.changeFeed, 'Queue change feed is enabled')
-        t.equal(q.concurrency, enums.options.concurrency, 'Default concurrency is valid')
-        t.equal(q.removeFinishedJobs, enums.options.removeFinishedJobs, 'Default removeFinishedJobs is valid')
-        t.ok(q.idle, 'Queue is idle')
-        t.ok(is.function(q.connection), 'Queue connection valid')
         t.ok(is.object(q.jobOptions), 'Queue jobOptions is an object')
         t.equal(q.jobOptions.priority, enums.priorityFromValue(40), 'Default job priority is normal')
         t.equal(q.jobOptions.timeout, enums.options.timeout, 'Default job timeout is valid')
         t.equal(q.jobOptions.retryMax, enums.options.retryMax, 'Default job retryMax is valid')
         t.equal(q.jobOptions.retryDelay, enums.options.retryDelay, 'Default job retryDelay is valid')
-        console.log(q)
+        t.equal(q.removeFinishedJobs, enums.options.removeFinishedJobs, 'Default removeFinishedJobs is valid')
+        t.equal(q.running, 0, 'Running jobs is zero')
+        t.equal(q.concurrency, enums.options.concurrency, 'Default concurrency is valid')
+        t.notOk(q.paused, 'Queue is not paused')
+        t.ok(q.idle, 'Queue is idle')
 
-      })
+        // ---------- Set Properties Tests ----------
+        t.comment('queue: Set Properties')
+        q.jobOptions = customJobOptions
+        t.deepEqual(q.jobOptions, customJobOptions, 'Job options set successfully')
+        q.jobOptions = null
+        t.deepEqual(q.jobOptions, jobOptions(), 'Job options restored to default on invalid value')
+        q.concurrency = 100
+        t.equal(q.concurrency, 100, 'Queue concurrency set with valid value successfully')
+        q.concurrency = -50
+        t.equal(q.concurrency, 100, 'Queue concurrency unchanged with invalid value')
+        q.concurrency = 1.5
+        t.equal(q.concurrency, 100, 'Queue concurrency unchanged with invalid value')
+        q.concurrency = 'string'
+        t.equal(q.concurrency, 100, 'Queue concurrency unchanged with invalid value')
+
+        // ---------- Create Job Tests ----------
+        t.comment('queue: Create Job')
+        let job = q.createJob()
+        t.ok(is.job(job), 'Queue createJob created a job object')
+        t.equal(job.priority, enums.priorityFromValue(40), 'Queue created job with default priority')
+        t.equal(job.timeout, enums.options.timeout, 'Queue created job with default timeout')
+        t.equal(job.retryMax, enums.options.retryMax, 'Queue created job with default retryMax')
+        t.equal(job.retryDelay, enums.options.retryDelay, 'Queue created job with default retryDelay')
+        job = q.createJob(customJobOptions)
+        t.ok(is.job(job), 'Queue createJob created a job object')
+        t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')
+        t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')
+        t.equal(job.retryMax, customJobOptions.retryMax, 'Queue created job with custom retryMax')
+        t.equal(job.retryDelay, customJobOptions.retryDelay, 'Queue created job with custom retryDelay')
+        console.dir(job)
+
+
+        removeEventHandlers()
+      }).catch(err => testError(err, module, t))
 
       // q.on('ready', () => {
       //   t.pass('Event: Queue ready')

@@ -19,7 +19,7 @@ module.exports = function () {
       t.equal(Object.keys(enums.options).length, 10, 'Enums options has correct number of keys')
       t.equal(Object.keys(enums.index).length, 3, 'Enums index has has correct number of keys')
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has has correct number of keys')
-      t.equal(Object.keys(enums.message).length, 13, 'Enums message has has correct number of keys')
+      t.equal(Object.keys(enums.message).length, 14, 'Enums message has has correct number of keys')
     } catch (err) {
       testError(err, module, t)
     }

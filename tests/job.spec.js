@@ -11,7 +11,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(71)
+      t.plan(72)
 
       const q = testQueue()
 
@@ -51,9 +51,12 @@ module.exports = function () {
 
       // ---------- New Job Tests ----------
       t.comment('job: New Job')
+      t.throws(() => {
+        savedJob = new Job(q, null)
+      }, 'Creating a job with null data throws an exception')
       t.doesNotThrow(() => {
-        savedJob = new Job(q, null, null)
-      }, 'Creating a job with null options dose not cause an exception')
+        savedJob = new Job(q, {}, null)
+      }, 'Creating a job with null options dose not throw an exception')
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(is.uuid(newJob.id), 'New job has valid id')

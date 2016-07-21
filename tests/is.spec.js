@@ -6,7 +6,7 @@ const enums = require('../src/enums')
 
 module.exports = function () {
   test('is', (t) => {
-    t.plan(49)
+    t.plan(51)
 
     const job = {
       id: uuid.v4(),
@@ -20,6 +20,8 @@ module.exports = function () {
     t.notOk(is.object(''), 'Is object false with string')
     t.ok(is.function(function () {}), 'Is function true with function')
     t.notOk(is.function({}), 'Is function false with object')
+    t.ok(is.string(''), 'Is string true with string')
+    t.notOk(is.string({}), 'Is string false with object')
     t.ok(is.number(1.1), 'Is number true with decimal')
     t.ok(is.number(1), 'Is number true with integer')
     t.notOk(is.number({}), 'Is number false with object')
