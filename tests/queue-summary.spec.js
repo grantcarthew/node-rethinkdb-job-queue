@@ -12,7 +12,7 @@ const testData = require('./test-options').testData
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-summary', (t) => {
-      t.plan(9)
+      t.plan(10)
 
       const q = testQueue()
       const jobs = q.createJob(testData, 7)
@@ -37,6 +37,7 @@ module.exports = function () {
         t.equal(summary.timeout, 1, 'Queue status summary includes timeout')
         t.equal(summary.failed, 1, 'Queue status summary includes failed')
         t.equal(summary.terminated, 1, 'Queue status summary includes terminated')
+        t.equal(summary.total, 7, 'Queue status summary includes total')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

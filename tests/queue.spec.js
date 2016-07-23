@@ -192,6 +192,7 @@ module.exports = function () {
         t.equal(summary.cancelled, 0, 'Summary cancelled is valid')
         t.equal(summary.failed, 0, 'Summary failed is valid')
         t.equal(summary.terminated, 0, 'Summary terminated is valid')
+        t.equal(summary.total, 2, 'Summary total is valid')
 
         // ---------- Reset Tests ----------
         t.comment('queue: Reset')
@@ -202,15 +203,15 @@ module.exports = function () {
         return q.summary()
       }).then((summary2) => {
         t.ok(is.object(summary2), 'Queue summary returns an object')
-        const summaryTotal = 0 +
-          summary2.added +
-          summary2.active +
-          summary2.completed +
-          summary2.cancelled +
-          summary2.failed +
-          summary2.terminated
-        t.equal(summaryTotal, 0, 'Summary total is zero')
+        t.equal(summary2.total, 0, 'Summary total is zero')
 
+
+        // ---------- Stop Tests ----------
+        t.comment('queue: Stop')
+        return q.stop()
+      }).then((stopped) => {
+        t.ok(stopped, 'Queue stop returns true')
+        
 
         removeEventHandlers()
       }).catch(err => testError(err, module, t))

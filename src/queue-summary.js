@@ -17,6 +17,9 @@ module.exports = function summary (q) {
     for (let stat of reduction) {
       summary[stat.group.status] = stat.reduction
     }
+    summary.total = Object.keys(summary).reduce((runningTotal, key) => {
+      return runningTotal + summary[key]
+    }, 0)
     logger('summary', summary)
     return summary
   })
