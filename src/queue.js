@@ -166,6 +166,7 @@ class Queue extends EventEmitter {
     }).then(() => {
       logger(`Event: paused [${this.id}]`)
       this.emit(enums.status.paused, this.id)
+      return true
     })
   }
 

@@ -27,7 +27,6 @@ module.exports = function () {
         retryDelay: 400
       }
 
-
       // ---------- Event Handler Setup ----------
       let testEvents = false
       function errorEventHandler (err) {
@@ -44,7 +43,7 @@ module.exports = function () {
         q.removeListener(enums.status.error, errorEventHandler)
       }
 
-      q.ready.then((ready) => {
+      q.reset().then((ready) => {
         addEventHandlers()
         t.ok(ready, 'Queue is ready')
 
@@ -112,7 +111,7 @@ module.exports = function () {
         t.equal(savedJobs[0].id, job.id, 'Job id is valid')
         t.equal(savedJobs[0].status, enums.status.added, 'Job status is valid')
 
-        // ---------- Create Job Tests ----------
+        // ---------- Get Job Tests ----------
         t.comment('queue: Get Job')
         return q.getJob(savedJobs[0].id)
       }).then((savedJobs2) => {
@@ -121,74 +120,100 @@ module.exports = function () {
         t.equal(savedJobs2[0].id, job.id, 'Job id is valid')
         t.equal(savedJobs2[0].status, enums.status.added, 'Job status is valid')
 
+        // ---------- Cancel Job Tests ----------
+        t.comment('queue: Cancel Job')
+        return q.cancelJob(savedJobs2[0].id)
+      }).then((cancelledJobs) => {
+        t.ok(is.array(cancelledJobs), 'Cancel job returns an array')
+        t.ok(is.uuid(cancelledJobs[0]), 'Cancel job returns ids')
+        return q.getJob(cancelledJobs[0])
+      }).then((cancelledJobs2) => {
+        t.ok(is.array(cancelledJobs2), 'Get job returns an array')
+        t.equal(cancelledJobs2[0].status, enums.status.cancelled, 'Cancelled job status is cancelled')
+
+        // ---------- Remove Job Tests ----------
+        t.comment('queue: Remove Job')
+        return q.removeJob(cancelledJobs2[0].id)
+      }).then((removedCount) => {
+        t.ok(is.integer(removedCount), 'Remove job returns an integer')
+        t.equal(removedCount, 1, 'Removed count is valid')
+        return q.getJob(job.id)
+      }).then((noJobs) => {
+        t.ok(is.array(noJobs), 'Get job returns an array')
+        t.equal(noJobs.length, 0, 'Removed job is not in the database')
+
+        // ---------- Process Job Tests ----------
+        t.comment('queue: Process Job')
+        return q.process((job, next) => {
+          next(null, `Job completed [${job.id}]`)
+        })
+      }).then(() => {
+        job = q.createJob(testData)
+        return q.addJob(job)
+      }).delay(200).then((addedJob) => {
+        return q.getJob(addedJob[0].id)
+      }).then((finishedJobs) => {
+        t.ok(is.array(finishedJobs), 'Job is in queue')
+        t.equal(finishedJobs[0].status, enums.status.completed, 'Job is completed')
+
+        // ---------- Pause Tests ----------
+        t.comment('queue: Pause')
+        return q.pause()
+      }).then((isPaused) => {
+        t.ok(isPaused, 'Queue pause returns true')
+        t.ok(q.paused, 'Queue is paused')
+        job = q.createJob(testData)
+        return q.addJob(job)
+      }).delay(200).then((addedJob) => {
+        return q.getJob(addedJob[0].id)
+      }).then((addedJobs) => {
+        t.ok(is.array(addedJobs), 'Job is in queue')
+        t.equal(addedJobs[0].status, enums.status.added, 'Job has not been processed')
+
+        // ---------- Resume Tests ----------
+        t.comment('queue: Resume')
+        return q.resume()
+      }).delay(200).then((isResumed) => {
+        t.ok(isResumed, 'Queue resume returns true')
+        t.notOk(q.paused, 'Queue is not paused')
+        return q.getJob(job.id)
+      }).then((finishedJobs2) => {
+        t.ok(is.array(finishedJobs2), 'Job is in queue')
+        t.equal(finishedJobs2[0].status, enums.status.completed, 'Job is completed')
+
+        // ---------- Summary Tests ----------
+        t.comment('queue: Summary')
+        return q.summary()
+      }).then((summary) => {
+        t.ok(is.object(summary), 'Queue summary returns an object')
+        t.equal(summary.added, 0, 'Summary added is valid')
+        t.equal(summary.active, 0, 'Summary active is valid')
+        t.equal(summary.completed, 2, 'Summary completed is valid')
+        t.equal(summary.cancelled, 0, 'Summary cancelled is valid')
+        t.equal(summary.failed, 0, 'Summary failed is valid')
+        t.equal(summary.terminated, 0, 'Summary terminated is valid')
+
+        // ---------- Reset Tests ----------
+        t.comment('queue: Reset')
+        return q.reset()
+      }).then((totalReset) => {
+        t.ok(is.integer(totalReset), 'Queue reset returns integer')
+        t.equal(totalReset, 2, 'Reset return value is valid')
+        return q.summary()
+      }).then((summary2) => {
+        t.ok(is.object(summary2), 'Queue summary returns an object')
+        const summaryTotal = 0 +
+          summary2.added +
+          summary2.active +
+          summary2.completed +
+          summary2.cancelled +
+          summary2.failed +
+          summary2.terminated
+        t.equal(summaryTotal, 0, 'Summary total is zero')
+
+
         removeEventHandlers()
       }).catch(err => testError(err, module, t))
-
-      // q.on('ready', () => {
-      //   t.pass('Event: Queue ready')
-      // })
-      // q.on('added', (job) => {
-      //   t.pass('Queue added event called')
-      // })
-      // q.on('processing', (processingValue) => {
-      //   t.pass('Queue processing event called')
-      // })
-      // q.on('progress', (progressValue) => {
-      //   t.pass('Queue progress event called')
-      // })
-      // q.on('idle', (jobId) => {
-      //   t.pass('Queue idle event called')
-      // })
-      // q.on('success', (jobId) => {
-      //   t.pass('Queue success event called')
-      // })
-      // q.on('failed', (jobId) => {
-      //   t.pass('Queue failure event called')
-      // })
-      // // q.on('retry', (jobId) => {
-      // //   t.pass('Queue retry event called')
-      // // })
-      // q.on('job failed', (jobId) => {
-      //   console.log('job failed: ' + jobId)
-      //   t.pass('Queue idle event called')
-      // })
-      //
-      //
-      // q.process((job, next) => {
-      //   console.log('~~~~~~~~~~ process ~~~~~~~~~~')
-      //   console.log(job.id)
-      //   setTimeout(() => {
-      //     console.log('~~~~~~~~~~ process finished ~~~~~~~~~~')
-      //     next(null, 'Job Completed')
-      //   }, 3000)
-      // })
-      //
-      // let jobs = []
-      // // console.dir(JSON.parse(JSON.stringify(q)))
-      // // let ej = q.createJob()
-      // // ej.id = 'ba3002c6-193f-4957-bc13-a4c3871629d7'
-      // // // jobs.push(ej)
-      // // for (let i = 0; i < 4; i++) {
-      //   jobs.push(q.createJob({foo: 1}))
-      // // }
-      //
-      // q.addJob(jobs).then((result) => {
-      //   console.log('~~~~~~~~~~ addJob result ~~~~~~~~~~')
-      //   console.dir(JSON.parse(JSON.stringify(result)))
-      // }).then(() => {
-      //   return q.summary()
-      // }).then((d) => {
-      //   console.log('~~~~~~~~~~ summary ~~~~~~~~~~')
-      //   console.dir(d)
-      // }).then(() => {
-      //   return q.drop(4000)
-      // }).then((removeResult) => {
-      //   console.log('~~~~~~~~~~ removeResult ~~~~~~~~~~')
-      //   console.dir(removeResult)
-      // }).catch(err => testError(err, module, t))
-      //
-      // q.jobOptions = customjobOptions
-      // t.deepEqual(q.jobOptions, customjobOptions, 'Set default job options')
     })
   })
 }
