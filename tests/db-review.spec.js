@@ -17,13 +17,14 @@ module.exports = function () {
     test('db-review', (t) => {
       t.plan(56)
 
+      let q = testQueue()
+      let reviewCount = 0
+      q._masterInterval = 1
+
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
       }
 
-      let q = testQueue()
-      let reviewCount = 0
-      q._masterInterval = 1
       function reviewEventHandler (reviewResult) {
         reviewCount++
         t.pass(`Event: Database review [Review Count: ${reviewCount}]`)

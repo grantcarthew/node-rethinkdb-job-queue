@@ -46,7 +46,6 @@ module.exports.detach = function dbDetach (q, drainPool) {
       let feed = q._changeFeedCursor
       q._changeFeedCursor = false
       logger('closing changeFeed')
-      change the change feed value???
       return feed.close()
     }
     return null

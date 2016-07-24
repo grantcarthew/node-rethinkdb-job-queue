@@ -10,6 +10,7 @@ const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
 
 module.exports = function () {
+  console.log('module start')
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
       t.plan(48)
@@ -94,6 +95,7 @@ module.exports = function () {
       let job = q.createJob(testData)
       let processDelay = 500
 
+      console.log('before reset')
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.pause()

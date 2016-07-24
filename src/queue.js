@@ -9,6 +9,7 @@ const queueDb = require('./queue-db')
 const queueProcess = require('./queue-process')
 const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
+const queueInterruption = require('./queue-interruption')
 const queueCancelJob = require('./queue-cancel-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueReset = require('./queue-reset')
@@ -152,32 +153,15 @@ class Queue extends EventEmitter {
 
   pause () {
     logger(`pause`)
-    return new Promise((resolve, reject) => {
-      this._paused = true
-      if (this.running < 1) { return resolve(true) }
-      const q = this
-      let intId = setInterval(function pausing () {
-        logger(`Pausing, waiting on running jobs: [${q.running}]`)
-        if (q.running < 1) {
-          clearInterval(intId)
-          resolve(true)
-        }
-      }, 400)
-    }).then(() => {
-      logger(`Event: paused [${this.id}]`)
-      this.emit(enums.status.paused, this.id)
-      return true
+    return this.ready.then(() => {
+      return queueInterruption.pause(this)
     })
   }
 
   resume () {
     logger(`resume`)
     return this.ready.then(() => {
-      this._paused = false
-      queueProcess.restart(this)
-      logger(`Event: resumed [${this.id}]`)
-      this.emit(enums.status.resumed, this.id)
-      return true
+      return queueInterruption.resume(this)
     })
   }
 

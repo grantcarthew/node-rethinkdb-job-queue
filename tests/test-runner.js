@@ -22,6 +22,7 @@ const queueGetNextJob = require('./queue-get-next-job.spec')
 const queueReset = require('./queue-reset.spec')
 const queueDb = require('./queue-db.spec')
 const queueProcess = require('./queue-process.spec')
+const queueInterruption = require('./queue-interruption.spec')
 const queueStop = require('./queue-stop.spec')
 const queueDrop = require('./queue-drop.spec')
 const queueChange = require('./queue-change.spec')
@@ -53,6 +54,8 @@ return dbAssertDatabase().then(() => {
     jobCompleted(),
     jobFailed()
   ])
+}).then(() => {
+  return queueInterruption()
 }).then(() => {
   return null //queue()
 }).then(() => {

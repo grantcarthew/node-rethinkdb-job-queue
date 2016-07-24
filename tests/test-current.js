@@ -16,6 +16,7 @@ const queueAddJob = require('./queue-add-job.spec')
 const queueRemoveJob = require('./queue-remove-job.spec')
 const queueGetJob = require('./queue-get-job.spec')
 const queueGetNextJob = require('./queue-get-next-job.spec')
+const queueInterruption = require('./queue-interruption.spec')
 const queueReset = require('./queue-reset.spec')
 const queueDb = require('./queue-db.spec')
 const queueStop = require('./queue-stop.spec')
@@ -31,7 +32,7 @@ const is = require('./is.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queue()
+  return queueInterruption()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()

@@ -1,5 +1,7 @@
 # WORKLOG
 
+Move pause to its own module.
+
 Need tests for the following;
 
 queue

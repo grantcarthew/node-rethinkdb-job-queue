@@ -184,7 +184,7 @@ module.exports = function () {
         t.ok(q.idle, 'Queue is idle')
         return q.pause()
       }).then(() => {
-
+        //
         // ---------- Processing Restart Test ----------
         t.comment('queue-process: Process Restart')
         jobs = q.createJob(testData, noOfJobsToCreate)
