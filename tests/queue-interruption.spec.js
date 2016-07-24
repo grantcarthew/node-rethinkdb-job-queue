@@ -41,7 +41,7 @@ module.exports = function () {
         q.removeListener(enums.status.resumed, resumedEventHandler)
       }
 
-      q.ready.then((ready) => {
+      return q.ready.then((ready) => {
         addEventHandlers()
         t.ok(ready, 'Queue is ready')
 
@@ -64,9 +64,8 @@ module.exports = function () {
       }).then((resumed) => {
         t.ok(resumed, 'Interruption resume returns true')
         t.notOk(q.paused, 'Queue is not paused')
-      }).delay(200).then(() => {
         removeEventHandlers()
-        resolve()
+        resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

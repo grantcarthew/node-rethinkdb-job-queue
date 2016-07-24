@@ -14,7 +14,7 @@ module.exports.attach = function dbAttach (q) {
     db: q.db,
     silent: true
   })
-  q.ready = dbAssert(q).then(() => {
+  q._ready = dbAssert(q).then(() => {
     if (q.changeFeed) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
         q._changeFeedCursor = changeFeed
@@ -36,7 +36,7 @@ module.exports.attach = function dbAttach (q) {
     q.emit(enums.status.ready, q.id)
     return true
   })
-  return q.ready
+  return q._ready
 }
 
 module.exports.detach = function dbDetach (q, drainPool) {
@@ -57,7 +57,7 @@ module.exports.detach = function dbDetach (q, drainPool) {
     return null
   }).then(() => {
     if (drainPool) {
-      q.ready = false
+      q._ready = Promise.resolve(false)
       logger('draining connection pool')
       return q.r.getPoolMaster().drain()
     }

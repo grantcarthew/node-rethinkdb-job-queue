@@ -59,7 +59,7 @@ module.exports = function () {
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
 
-        // ---------- Drop Queue Gracefully ----------
+        // ---------- Drop Queue Test ----------
         t.comment('queue-drop: Drop Queue')
         addEventHandlers()
         simulateJobProcessing()

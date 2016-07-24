@@ -151,6 +151,11 @@ class Queue extends EventEmitter {
     })
   }
 
+  ready () {
+    logger('ready')
+    return this._ready
+  }
+
   pause () {
     logger(`pause`)
     return this.ready.then(() => {
