@@ -32,7 +32,7 @@ const is = require('./is.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queueDb()
+  return queue()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
   testMockQueue().r.getPoolMaster().drain()

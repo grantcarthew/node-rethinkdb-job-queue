@@ -15,7 +15,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(600)
+      t.plan(102)
 
       let q = new Queue()
 
@@ -29,23 +29,111 @@ module.exports = function () {
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
+      function readyEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: ready [${qId}]`)
+        }
+      }
+      function addedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: added [${jobId}]`)
+        }
+      }
+      function processingEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: processing [${jobId}]`)
+        }
+      }
+      function pausedEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: paused [${qId}]`)
+        }
+      }
+      function resumedEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: resumed [${qId}]`)
+        }
+      }
+      function removedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: removed [${jobId}]`)
+        }
+      }
+      function idleEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: idle [${qId}]`)
+        }
+      }
+      function resetEventHandler (total) {
+        if (testEvents) {
+          t.ok(is.integer(total), `Event: reset [${total}]`)
+        }
+      }
       function errorEventHandler (err) {
         if (testEvents) {
           t.ok(is.string(err.message), `Event: error [${err.message}]`)
         }
       }
+      function detachedEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: detached [${qId}]`)
+        }
+      }
+      function stoppingEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: stopping [${qId}]`)
+        }
+      }
+      function stoppedEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: stopped [${qId}]`)
+        }
+      }
+      function droppedEventHandler (qId) {
+        if (testEvents) {
+          t.ok(is.string(qId), `Event: dropped[${qId}]`)
+        }
+      }
+
       function addEventHandlers () {
         testEvents = true
+        q.on(enums.status.ready, readyEventHandler)
+        q.on(enums.status.added, addedEventHandler)
+        q.on(enums.status.processing, processingEventHandler)
+        q.on(enums.status.paused, pausedEventHandler)
+        q.on(enums.status.resumed, resumedEventHandler)
+        q.on(enums.status.removed, removedEventHandler)
+        q.on(enums.status.idle, idleEventHandler)
+        q.on(enums.status.reset, resetEventHandler)
         q.on(enums.status.error, errorEventHandler)
+        q.on(enums.status.detached, detachedEventHandler)
+        q.on(enums.status.stopping, stoppingEventHandler)
+        q.on(enums.status.stopped, stoppedEventHandler)
+        q.on(enums.status.dropped, droppedEventHandler)
       }
       function removeEventHandlers () {
         testEvents = false
+        q.removeListener(enums.status.ready, readyEventHandler)
+        q.removeListener(enums.status.added, addedEventHandler)
+        q.removeListener(enums.status.processing, processingEventHandler)
+        q.removeListener(enums.status.paused, pausedEventHandler)
+        q.removeListener(enums.status.resumed, resumedEventHandler)
+        q.removeListener(enums.status.removed, removedEventHandler)
+        q.removeListener(enums.status.idle, idleEventHandler)
+        q.removeListener(enums.status.reset, resetEventHandler)
         q.removeListener(enums.status.error, errorEventHandler)
+        q.removeListener(enums.status.detached, detachedEventHandler)
+        q.removeListener(enums.status.stopping, stoppingEventHandler)
+        q.removeListener(enums.status.stopped, stoppedEventHandler)
+        q.removeListener(enums.status.dropped, droppedEventHandler)
       }
 
-      q.reset().then((ready) => {
-        addEventHandlers()
-        t.ok(ready, 'Queue is ready')
+      addEventHandlers()
+      return q.ready().then((ready) => {
+        t.ok(ready, 'Queue ready returns true')
+        return q.reset()
+      }).then((totalRemoved) => {
+        t.ok(is.integer(totalRemoved), 'Queue has been reset')
 
         // ---------- Constructor with Default Options Tests ----------
         t.comment('queue: Constructor with Default Options')
@@ -205,15 +293,32 @@ module.exports = function () {
         t.ok(is.object(summary2), 'Queue summary returns an object')
         t.equal(summary2.total, 0, 'Summary total is zero')
 
-
         // ---------- Stop Tests ----------
         t.comment('queue: Stop')
         return q.stop()
       }).then((stopped) => {
         t.ok(stopped, 'Queue stop returns true')
-        
+        return q.ready()
+      }).then((ready) => {
+        t.ok(is.false(ready), 'Queue ready returns false')
+        removeEventHandlers()
+
+        // ---------- Drop Tests ----------
+        t.comment('queue: Drop')
+        q = new Queue()
+        testEvents = true
+        q.on(enums.status.dropped, droppedEventHandler)
+        return q.drop()
+      }).then((dropped) => {
+        t.ok(dropped, 'Queue drop returns true')
+        return q.ready()
+      }).then((ready) => {
+        testEvents = false
+        q.removeListener(enums.status.dropped, droppedEventHandler)
+        t.ok(is.false(ready), 'Queue ready returns false')
 
         removeEventHandlers()
+        resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

@@ -57,7 +57,7 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return queueInterruption()
 }).then(() => {
-  return null //queue()
+  return queue()
 }).then(() => {
   return dbReview()
 }).then(() => {
