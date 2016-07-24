@@ -24,7 +24,7 @@ module.exports.pause = function interruptionPause (q) {
 
 module.exports.resume = function interruptionResume (q) {
   logger(`resume`)
-  return q.ready.then(() => {
+  return Promise.resolve().then(() => {
     q._paused = false
     queueProcess.restart(q)
     logger(`Event: resumed [${q.id}]`)

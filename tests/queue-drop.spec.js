@@ -12,7 +12,7 @@ const queueDrop = require('../src/queue-drop')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-drop', (t) => {
-      t.plan(10)
+      t.plan(11)
 
       const mockQueue = testMockQueue()
       let q = testQueue()
@@ -66,12 +66,15 @@ module.exports = function () {
         return queueDrop(q)
       }).then((removeResult) => {
         t.ok(removeResult, 'Queue dropped')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue ready returns false')
         return mockQueue.r.db(mockQueue.db).tableList()
       }).then((tableList) => {
         t.notOk(tableList.includes(mockQueue.name), 'Table dropped from database')
         removeEventHandlers()
         q = testQueue(testOptionsDefault)
-        return q.ready
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         return resolve()

@@ -104,49 +104,49 @@ class Queue extends EventEmitter {
 
   addJob (job) {
     logger('addJob', job)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueAddJob(this, job)
     })
   }
 
   getJob (jobId) {
     logger('getJob', jobId)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueGetJob(this, jobId)
     })
   }
 
   cancelJob (job, reason) {
     logger('cancelJob', job, reason)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueCancelJob(this, job, reason)
     })
   }
 
   removeJob (job) {
     logger('removeJob', job)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueRemoveJob(this, job)
     })
   }
 
   process (handler) {
     logger('process', handler)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueProcess.addHandler(this, handler)
     })
   }
 
   review () {
     logger('review')
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return dbReview.runOnce(this)
     })
   }
 
   summary () {
     logger('summary')
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueSummary(this)
     })
   }
@@ -158,21 +158,21 @@ class Queue extends EventEmitter {
 
   pause () {
     logger(`pause`)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueInterruption.pause(this)
     })
   }
 
   resume () {
     logger(`resume`)
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueInterruption.resume(this)
     })
   }
 
   reset () {
     logger('reset')
-    return this.ready.then(() => {
+    return this.ready().then(() => {
       return queueReset(this)
     })
   }

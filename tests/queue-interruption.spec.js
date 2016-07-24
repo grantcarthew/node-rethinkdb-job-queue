@@ -41,7 +41,7 @@ module.exports = function () {
         q.removeListener(enums.status.resumed, resumedEventHandler)
       }
 
-      return q.ready.then((ready) => {
+      return q.ready().then((ready) => {
         addEventHandlers()
         t.ok(ready, 'Queue is ready')
 

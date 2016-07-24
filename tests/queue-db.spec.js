@@ -39,24 +39,8 @@ module.exports = function () {
         t.ok(is.integer(resetResult), 'Queue reset')
         q._master = true
         q._changeFeed = true
-        return dbReview.enable(q)
-      }).then((ready) => {
-        t.ok(ready >= 0, 'Queue in a ready state')
-        t.ok(dbReview.isEnabled(), 'Review is enabled')
-        t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
-
-        // ---------- Detach with Drain ----------
-        t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
-      }).then(() => {
-        t.pass('Pass: Queue detached with pool drain')
-        t.notOk(dbReview.isEnabled(), 'Review is disabled')
-        t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
-        t.notOk(this.ready, 'Queue is not ready')
-
-        // ---------- Attach with change feed and master ----------
-        t.comment('queue-db: Attach with Change Feed and Master')
-        return queueDb.attach(q)
+        dbReview.enable(q)
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
@@ -69,13 +53,38 @@ module.exports = function () {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
-        t.notOk(this.ready, 'Queue is not ready')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue is not ready')
+
+        // ---------- Attach with change feed and master ----------
+        t.comment('queue-db: Attach with Change Feed and Master')
+        return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
+      }).then((ready) => {
+        t.ok(ready, 'Queue in a ready state')
+        t.ok(dbReview.isEnabled(), 'Review is enabled')
+        t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
+
+        // ---------- Detach with Drain ----------
+        t.comment('queue-db: Detach with Drain')
+        return queueDb.detach(q, true)
+      }).then(() => {
+        t.pass('Pass: Queue detached with pool drain')
+        t.notOk(dbReview.isEnabled(), 'Review is disabled')
+        t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue is not ready')
         q._master = false
         q._changeFeed = true
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
@@ -88,13 +97,17 @@ module.exports = function () {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
-        t.notOk(this.ready, 'Queue is not ready')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue is not ready')
         q._master = true
         q._changeFeed = false
 
         // ---------- Attach with master NOT change feed ----------
         t.comment('queue-db: Attach with Master NOT Change Feed')
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
@@ -107,13 +120,17 @@ module.exports = function () {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
-        t.notOk(this.ready, 'Queue is not ready')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue is not ready')
         q._master = false
         q._changeFeed = false
 
         // ---------- Attach without change feed or master ----------
         t.comment('queue-db: Attach without Change Feed or Master')
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
@@ -126,13 +143,17 @@ module.exports = function () {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
-        t.notOk(this.ready, 'Queue is not ready')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue is not ready')
         q._master = true
         q._changeFeed = true
 
         // ---------- Attach with change feed and master ----------
         t.comment('queue-db: Attach with Change Feed and Master')
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
@@ -159,6 +180,8 @@ module.exports = function () {
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.notOk(dbReview.isEnabled(), 'Review is disabled')

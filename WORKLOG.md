@@ -1,6 +1,6 @@
 # WORKLOG
 
-Move pause to its own module.
+Test return value from ready()
 
 Need tests for the following;
 

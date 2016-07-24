@@ -85,6 +85,7 @@ const enums = module.exports = {
     idInvalid: 'The job id is invalid',
     reviewOptionInvalid: 'The queue.review option is invalid',
     dbError: 'RethinkDB returned an error',
-    concurrencyInvalid: 'Invalid concurrency value'
+    concurrencyInvalid: 'Invalid concurrency value',
+    detached: 'Queue has been detached from the database'
   }
 }

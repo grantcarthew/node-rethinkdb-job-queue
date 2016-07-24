@@ -51,9 +51,10 @@ module.exports = function () {
         t.ok(is.integer(resetResult), 'Queue reset')
         q._running = 1
         q._master = true
-        return dbReview.enable(q)
+        dbReview.enable(q)
+        return q.ready()
       }).then((ready) => {
-        t.ok(ready >= 0, 'Queue in a ready state')
+        t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
@@ -68,11 +69,15 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
-        t.notOk(this.ready, 'Queue is not ready')
+        return q.ready()
+      }).then((ready) => {
+        t.notOk(ready, 'Queue ready returns false')
 
         // ---------- Stop without Drain ----------
         t.comment('queue-stop: Stop without Drain')
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         return q.resume()
@@ -87,13 +92,15 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
-        return q.ready
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue is still ready')
         // detaching with drain or node will not exit gracefully
         return queueDb.detach(q, true)
       }).then(() => {
         return queueDb.attach(q)
+      }).then(() => {
+        return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         return q.resume()
