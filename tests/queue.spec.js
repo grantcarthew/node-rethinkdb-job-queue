@@ -15,9 +15,10 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(102)
+      t.plan(111)
 
-      let q = new Queue()
+      let q = new Queue(testOptions.queueNameOnly())
+      let q2
 
       let job
       let customJobOptions = {
@@ -25,6 +26,11 @@ module.exports = function () {
         timeout: 200,
         retryMax: 5,
         retryDelay: 400
+      }
+      function processHandler (job, next) {
+        setTimeout(function finishJob () {
+          next(null, `Job completed [${job.id}]`)
+        }, 100)
       }
 
       // ---------- Event Handler Setup ----------
@@ -138,11 +144,11 @@ module.exports = function () {
         // ---------- Constructor with Default Options Tests ----------
         t.comment('queue: Constructor with Default Options')
         t.ok(q, 'Queue created with default options')
-        t.equal(q.name, enums.options.name, 'Default queue name valid')
+        t.equal(q.name, testOptions.queueName, 'Default queue name valid')
         t.ok(is.string(q.id), 'Queue id is valid')
         t.equal(q.host, enums.options.host, 'Default host name is valid')
         t.equal(q.port, enums.options.port, 'Default port is valid')
-        t.equal(q.db, enums.options.db, 'Default db name is valid')
+        t.equal(q.db, testOptions.dbName, 'Default db name is valid')
         t.ok(is.function(q.r), 'Queue r valid')
         t.ok(is.function(q.connection), 'Queue connection valid')
         t.ok(q.changeFeed, 'Queue change feed is enabled')
@@ -232,13 +238,11 @@ module.exports = function () {
 
         // ---------- Process Job Tests ----------
         t.comment('queue: Process Job')
-        return q.process((job, next) => {
-          next(null, `Job completed [${job.id}]`)
-        })
+        return q.process(processHandler)
       }).then(() => {
         job = q.createJob(testData)
         return q.addJob(job)
-      }).delay(200).then((addedJob) => {
+      }).delay(400).then((addedJob) => {
         return q.getJob(addedJob[0].id)
       }).then((finishedJobs) => {
         t.ok(is.array(finishedJobs), 'Job is in queue')
@@ -305,7 +309,7 @@ module.exports = function () {
 
         // ---------- Drop Tests ----------
         t.comment('queue: Drop')
-        q = new Queue()
+        q = new Queue(testOptions.queueNameOnly())
         testEvents = true
         q.on(enums.status.dropped, droppedEventHandler)
         return q.drop()
@@ -317,7 +321,31 @@ module.exports = function () {
         q.removeListener(enums.status.dropped, droppedEventHandler)
         t.ok(is.false(ready), 'Queue ready returns false')
 
+        // ---------- Multi Queue Tests ----------
+        t.comment('queue: Multi-Queue')
+        q = new Queue(testOptions.queueNameOnly())
+        return q.ready()
+      }).then((ready) => {
+        t.ok(ready, `First queue ready [${q.id}]`)
+        addEventHandlers()
+        q2 = new Queue(testOptions.queueNameOnly())
+        return q2.ready()
+      }).then((ready2) => {
+        t.ok(ready2, `Second queue ready [${q2.id}]`)
+        q.process(processHandler)
+        job = q2.createJob(testData)
+        return q2.addJob(job)
+      }).then((jobOnQ2) => {
+        t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue two')
+      }).delay(400).then(() => {
+        return q.getJob(job.id)
+      }).then((jobCheck) => {
+        t.ok(is.array(jobCheck), 'Job is in queue')
+        t.equal(jobCheck[0].status, enums.status.completed, 'Job is completed')
+
         removeEventHandlers()
+        return q2.stop()
+      }).then((jobCheck) => {
         resolve(t.end())
       }).catch(err => testError(err, module, t))
     })

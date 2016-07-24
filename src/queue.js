@@ -1,5 +1,6 @@
 const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
+const uuid = require('node-uuid')
 const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
@@ -49,7 +50,8 @@ class Queue extends EventEmitter {
       require('os').hostname(),
       this.db,
       this.name,
-      process.pid
+      process.pid,
+      uuid.v4()
     ].join(':')
     queueDb.attach(this)
   }
