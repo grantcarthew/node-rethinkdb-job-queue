@@ -1,13 +1,9 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
 const enums = require('../src/enums')
 const is = require('../src/is')
 const testError = require('./test-error')
 const testOptions = require('./test-options')
-const connectionOptionsOnly = testOptions.connection()
-const queueDefaultOptions = testOptions.queueDefault()
-const customjobOptions = testOptions.jobOptionsHigh()
 const testData = require('./test-options').testData
 const jobOptions = require('../src/job-options')
 const Queue = require('../src/queue')
@@ -15,7 +11,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(111)
+      t.plan(107)
 
       let q = new Queue(testOptions.queueNameOnly())
       let q2
@@ -68,6 +64,7 @@ module.exports = function () {
       function idleEventHandler (qId) {
         if (testEvents) {
           t.ok(is.string(qId), `Event: idle [${qId}]`)
+          q.removeListener(enums.status.idle, idleEventHandler)
         }
       }
       function resetEventHandler (total) {
@@ -134,12 +131,12 @@ module.exports = function () {
         q.removeListener(enums.status.dropped, droppedEventHandler)
       }
 
-      addEventHandlers()
       return q.ready().then((ready) => {
         t.ok(ready, 'Queue ready returns true')
         return q.reset()
       }).then((totalRemoved) => {
         t.ok(is.integer(totalRemoved), 'Queue has been reset')
+        addEventHandlers()
 
         // ---------- Constructor with Default Options Tests ----------
         t.comment('queue: Constructor with Default Options')
@@ -337,15 +334,15 @@ module.exports = function () {
         return q2.addJob(job)
       }).then((jobOnQ2) => {
         t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue two')
-      }).delay(400).then(() => {
+      }).then(() => {
         return q.getJob(job.id)
       }).then((jobCheck) => {
         t.ok(is.array(jobCheck), 'Job is in queue')
         t.equal(jobCheck[0].status, enums.status.completed, 'Job is completed')
 
         removeEventHandlers()
-        return q2.stop()
-      }).then((jobCheck) => {
+        return Promise.all([q.stop(), q2.stop()])
+      }).then(() => {
         resolve(t.end())
       }).catch(err => testError(err, module, t))
     })

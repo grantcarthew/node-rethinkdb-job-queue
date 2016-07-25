@@ -15,8 +15,9 @@ const queueProcess = require('./queue-process')
 // terminated
 // removed
 
-module.exports = function queueChange (q, err, change) {
+module.exports = function queueChange (q, err, change = {}) {
   logger('queueChange')
+
   const newVal = change.new_val
   const oldVal = change.old_val
   let queueId = false
