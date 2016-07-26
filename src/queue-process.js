@@ -92,8 +92,7 @@ const jobTick = function jobTick (q) {
   }).catch((err) => {
     logger('queueGetNextJob Error:', err)
     getNextJobCleanup(q._getNextJobCalled)
-    logger(`Event: error [${err.message}]`, err)
-    q.emit(enums.status.error, err.message)
+    q.emit(enums.status.error, err)
     return Promise.reject(err)
   })
 }

@@ -56,6 +56,10 @@ class Job {
     logger(`setProgress [${percent}]`)
     return this.q.ready().then(() => {
       return jobProgress(this, percent)
+    }).catch((err) => {
+      logger('setProgress Error:', err)
+      this.q.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -83,6 +87,10 @@ class Job {
     logger('addLog', log)
     return this.q.ready().then(() => {
       return jobAddLog(this, log)
+    }).catch((err) => {
+      logger('addLog Error:', err)
+      this.q.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 }

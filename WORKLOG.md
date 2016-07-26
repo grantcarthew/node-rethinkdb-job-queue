@@ -1,7 +1,5 @@
 # WORKLOG
 
-add more error events?
-
 ## Final Checks
 
 -   Name all functions

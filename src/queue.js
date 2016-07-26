@@ -108,6 +108,10 @@ class Queue extends EventEmitter {
     logger('addJob', job)
     return this.ready().then(() => {
       return queueAddJob(this, job)
+    }).catch((err) => {
+      logger('addJob Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -115,6 +119,10 @@ class Queue extends EventEmitter {
     logger('getJob', jobId)
     return this.ready().then(() => {
       return queueGetJob(this, jobId)
+    }).catch((err) => {
+      logger('getJob Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -122,6 +130,10 @@ class Queue extends EventEmitter {
     logger('cancelJob', job, reason)
     return this.ready().then(() => {
       return queueCancelJob(this, job, reason)
+    }).catch((err) => {
+      logger('cancelJob Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -129,6 +141,10 @@ class Queue extends EventEmitter {
     logger('removeJob', job)
     return this.ready().then(() => {
       return queueRemoveJob(this, job)
+    }).catch((err) => {
+      logger('removeJob Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -136,6 +152,10 @@ class Queue extends EventEmitter {
     logger('process', handler)
     return this.ready().then(() => {
       return queueProcess.addHandler(this, handler)
+    }).catch((err) => {
+      logger('process Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -143,6 +163,10 @@ class Queue extends EventEmitter {
     logger('review')
     return this.ready().then(() => {
       return dbReview.runOnce(this)
+    }).catch((err) => {
+      logger('review Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -150,6 +174,10 @@ class Queue extends EventEmitter {
     logger('summary')
     return this.ready().then(() => {
       return queueSummary(this)
+    }).catch((err) => {
+      logger('summary Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -162,6 +190,10 @@ class Queue extends EventEmitter {
     logger(`pause`)
     return this.ready().then(() => {
       return queueInterruption.pause(this)
+    }).catch((err) => {
+      logger('pause Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -169,6 +201,10 @@ class Queue extends EventEmitter {
     logger(`resume`)
     return this.ready().then(() => {
       return queueInterruption.resume(this)
+    }).catch((err) => {
+      logger('resume Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
@@ -176,17 +212,29 @@ class Queue extends EventEmitter {
     logger('reset')
     return this.ready().then(() => {
       return queueReset(this)
+    }).catch((err) => {
+      logger('reset Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
   stop () {
     logger('stop')
-    return queueStop(this)
+    return queueStop(this).catch((err) => {
+      logger('stop Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
+    })
   }
 
   drop () {
     logger('drop')
-    return queueDrop(this)
+    return queueDrop(this).catch((err) => {
+      logger('drop Error:', err)
+      this.emit(enums.status.error, err)
+      return Promise.reject(err)
+    })
   }
 }
 
