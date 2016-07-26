@@ -1,50 +1,34 @@
 # Introduction
 
-`rethinkdb-job-queue` is a persistent job or task queue backed by RethinkDB.
+`rethinkdb-job-queue` is a persistent job or task queue backed by [RethinkDB][rethinkdb-url].
+It has been build as an alternative to using a [REDIS][redis-url] backed job queue such as [Kue][kue-url], [Bull][bull-url], or [Bee-Queue][bee-queue-url].
 
 [![bitHound Overall Score][bithound-overall-image]][bithound-overall-url]
 [![bitHound Dependencies][bithound-dep-image]][bithound-dep-url]
 [![Build Status][travisci-image]][travisci-url]
 [![js-standard-style][js-standard-image]][js-standard-url]
 
-[![Thinker][thinker-image]][rethinkdb-job-queue-url]
+[![Thinker][thinker-image]][rjq-github-url]
 
 [![NPM][nodei-npm-image]][nodei-npm-url]
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
-## Topics
+## Documentation
 
--   [Quick Start](#quick-start)
+__Warning:__ This is early days for `rethinkdb-job-queue`. The API will change and documentation is sparse. That said, there are over 1100 integration tests and it is fully functional.
 
--   [Rationale](#rationale)
-
--   [Function](#function)
-
--   [Performance](#performance)
-
--   [Requirements](#requirements)
-
--   [Installation](#installation)
-
--   [API](#api)
-
-    -   [queue](#queue)
-    -   [create](#create)
-
--   [Plans](#plans)
-
--   [Testing](#testing)
-
--   [Contributing](#contributing)
-
--   [History](#history)
-
--   [Credits](#credits)
-
--   [License](#license)
+For full documentation of the `rethinkdb-job-queue` package, please see the [wiki][rjq-wiki-url]
 
 ## Quick Start
+
+### Installation
+
+```sh
+npm install rethinkdb-job-queue --save
+```
+
+### E-Mail Job Example
 
 ```js
 
@@ -69,10 +53,17 @@ const jobDefaults = {
 }
 q.jobOptions = jobDefaults
 
+// The createJob method will only create the job locally.
+// It will need to be added to the queue.
 const job = q.createJob('batman@batcave.com')
 
 q.process((job, next) => {
   // Send email using job.data as the destination address
+  someEmailPackage.send(job.data).then((result) => {
+    next(null, sendResult)
+  }).catch((err) => {
+    next(err)
+  })
 })
 
 return q.addJob(job).then((savedJobs) => {
@@ -83,33 +74,6 @@ return q.addJob(job).then((savedJobs) => {
 
 ```
 
-
-
-## Rationale
-
-TODO
-
-## Function
-
-TODO
-
-## Requirements
-
-TODO
-
-## Installation
-
-```sh
-npm install rethinkdb-job-queue --save
-```
-
-
-TODO
-
-## Testing
-
-TODO
-
 ## Contributing
 
 1.  Fork it!
@@ -118,17 +82,16 @@ TODO
 4.  Push to the branch: `git push origin my-new-feature`
 5.  Submit a pull request :D
 
-## History
-
-TODO
-
 ## Credits
 
-Thanks to the following marvelous people for their hard work:
+Thanks to the following marvelous packages and people for their hard work:
+
 -   The [RethinkDB][rethinkdb-url] team for the great database.
+-   The RethinkDB driver [rethinkdbdash][rethinkdbdash-url] by [Michel][neumino-url]
+-   The Promise library [Bluebird][bluebird-url] by [Petka Antonov][petka-url].
+-   The date management library [moment][moment-url].
+-   The UUID package [node-uuid][uuid-url] by [Robert Kieffer][broofa-url].
 
-
-TODO
 
 This list could go on...
 
@@ -136,12 +99,21 @@ This list could go on...
 
 MIT
 
+[redis-url]: http://redis.io/
+[kue-url]: http://automattic.github.io/kue/
+[bull-url]: https://github.com/OptimalBits/bull
+[bee-queue-url]: https://github.com/LewisJEllis/bee-queue
 [rethinkdb-url]: http://www.rethinkdb.com/
-[rethinkdb-job-queue]: https://github.com/grantcarthew/node-rethinkdb-job-queue
-[thinker-image]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/thinkerjoblist.svg
+[rethinkdbdash-url]: https://github.com/neumino/rethinkdbdash
+[neumino-url]: https://github.com/neumino
+[rjq-github-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue
+[rjq-wiki-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki
+[thinker-image]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/thinkerjoblist.png
 [bluebird-url]: https://github.com/petkaantonov/bluebird
-[bluebird-speed-url]: http://programmers.stackexchange.com/questions/278778/why-are-native-es6-promises-slower-and-more-memory-intensive-than-bluebird
 [petka-url]: https://github.com/petkaantonov
+[moment-url]: http://momentjs.com/
+[uuid-url]: https://github.com/broofa/node-uuid
+[broofa-url]: https://github.com/broofa
 [bithound-overall-image]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue/badges/score.svg
 [bithound-overall-url]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue
 [bithound-dep-image]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue/badges/dependencies.svg
@@ -154,4 +126,3 @@ MIT
 [nodei-npm-url]: https://nodei.co/npm/rethinkdb-job-queue/
 [travisci-image]: https://travis-ci.org/grantcarthew/node-rethinkdb-job-queue.svg?branch=master
 [travisci-url]: https://travis-ci.org/grantcarthew/node-rethinkdb-job-queue
-[tape-url]: https://www.npmjs.com/package/tape
