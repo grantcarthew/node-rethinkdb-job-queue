@@ -1,6 +1,4 @@
 const Promise = require('bluebird')
-const testQueue = require('./test-queue')
-const testMockQueue = require('./test-mock-queue')
 const dbAssertDatabase = require('./db-assert-database.spec')
 const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
@@ -32,9 +30,5 @@ const is = require('./is.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queue()
-}).then(() => {
-  // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
-  testMockQueue().r.getPoolMaster().drain()
-  return testQueue().stop()
+  return queueSummary()
 })

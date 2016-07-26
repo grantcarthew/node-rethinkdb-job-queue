@@ -2,7 +2,8 @@ const test = require('tape')
 const Promise = require('bluebird')
 const enums = require('../src/enums')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 const proxyquire = require('proxyquire')
 const processStub = {}
 const queueInterruption = proxyquire('../src/queue-interruption',
@@ -13,7 +14,7 @@ module.exports = function () {
     test('queue-interruption', (t) => {
       t.plan(9)
 
-      const q = testQueue()
+      const q = new Queue(testOptions.queueDefault())
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
       }
@@ -65,6 +66,7 @@ module.exports = function () {
         t.ok(resumed, 'Interruption resume returns true')
         t.notOk(q.paused, 'Queue is not paused')
         removeEventHandlers()
+        q.stop()
         resolve(t.end())
       }).catch(err => testError(err, module, t))
     })

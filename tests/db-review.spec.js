@@ -2,11 +2,12 @@ const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const moment = require('moment')
 const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 const proxyquire = require('proxyquire')
 const processStub = {}
 const dbReview = proxyquire('../src/db-review',
@@ -17,7 +18,7 @@ module.exports = function () {
     test('db-review', (t) => {
       t.plan(56)
 
-      let q = testQueue()
+      const q = new Queue(testOptions.queueDefault())
       let reviewCount = 0
       q._masterInterval = 1
 
@@ -44,6 +45,7 @@ module.exports = function () {
           // Test completes here!
           return q.reset().then((resetResult) => {
             t.ok(resetResult >= 0, 'Queue reset')
+            q.stop()
             resolve()
             return true
           })

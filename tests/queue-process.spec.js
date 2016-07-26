@@ -4,11 +4,11 @@ const moment = require('moment')
 const is = require('../src/is')
 const enums = require('../src/enums')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const testOptions = require('./test-options')
 const testData = require('./test-options').testData
 const queueProcess = require('../src/queue-process')
 const dbReview = require('../src/db-review')
+const Queue = require('../src/queue')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
@@ -16,7 +16,7 @@ module.exports = function () {
       t.plan(186)
 
       // ---------- Test Setup ----------
-      const q = testQueue(testOptions.queueMaster())
+      const q = new Queue(testOptions.queueMaster())
       dbReview.disable(q)
 
       let jobs
@@ -239,6 +239,7 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
+        q.stop()
         resolve()
       }).catch(err => testError(err, module, t))
     })

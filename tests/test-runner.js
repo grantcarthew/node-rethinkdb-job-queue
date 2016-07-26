@@ -1,6 +1,6 @@
 const Promise = require('bluebird')
-const testQueue = require('./test-queue')
-const testMockQueue = require('./test-mock-queue')
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 const dbAssertDatabase = require('./db-assert-database.spec')
 const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
@@ -80,7 +80,7 @@ return dbAssertDatabase().then(() => {
   return queueDrop()
 }).then(() => {
   // Note: must drain the rethinkdbdash pool or node will not exit gracefully.
-  testMockQueue().r.getPoolMaster().drain()
   // TODO: Change below to drop and re-run tests before publishing
-  return testQueue().stop()
+  const q = new Queue(testOptions.queueDefault())
+  return q.stop()
 })

@@ -3,17 +3,18 @@ const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const enums = require('../src/enums')
 const queueCancelJob = require('../src/queue-cancel-job')
 const testData = require('./test-options').testData
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-cancel-job', (t) => {
       t.plan(40)
 
-      const q = testQueue()
+      const q = new Queue(testOptions.queueDefault())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
@@ -96,7 +97,7 @@ module.exports = function () {
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
         removeEventHandlers()
-        q._removeFinishedJobs = 180
+        q.stop()
         resolve()
       }).catch(err => testError(err, module, t))
     })

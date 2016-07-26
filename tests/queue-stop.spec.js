@@ -1,20 +1,20 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
 const is = require('../src/is')
 const enums = require('../src/enums')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const queueStop = require('../src/queue-stop')
 const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-stop', (t) => {
       t.plan(31)
 
-      const q = testQueue()
+      const q = new Queue(testOptions.queueDefault())
 
       let testEvents = false
       function stoppingEventHandler (qid) {
@@ -111,6 +111,7 @@ module.exports = function () {
 
         // ---------- Clean Up ----------
         removeEventHandlers()
+        q.stop()
         return resolve()
       }).catch(err => testError(err, module, t))
     })

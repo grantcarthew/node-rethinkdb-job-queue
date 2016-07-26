@@ -1,19 +1,19 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
 const is = require('../src/is')
 const enums = require('../src/enums')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const queueReset = require('../src/queue-reset')
 const testData = require('./test-options').testData
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-reset', (t) => {
       t.plan(7)
 
-      const q = testQueue()
+      const q = new Queue(testOptions.queueDefault())
       const jobs = [
         q.createJob(testData),
         q.createJob(testData),
@@ -28,6 +28,7 @@ module.exports = function () {
         return q.summary().then((afterSummary) => {
           t.equal(afterSummary.added, 0, 'Status summary contains no added jobs')
           q.removeListener(enums.status.reset, resetEventHandler)
+          q.stop()
           resolve()
         }).catch(err => testError(err, module, t))
       }

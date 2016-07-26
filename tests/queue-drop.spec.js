@@ -1,21 +1,25 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
 const is = require('../src/is')
 const enums = require('../src/enums')
 const testError = require('./test-error')
-const testMockQueue = require('./test-mock-queue')
-const testQueue = require('./test-queue')
-const testOptionsDefault = require('./test-options').queueDefault()
 const queueDrop = require('../src/queue-drop')
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
+const rethinkdbdash = require('rethinkdbdash')
+const mockQueue = {
+  r: rethinkdbdash(testOptions.connection),
+  db: testOptions.dbName,
+  name: testOptions.queueName,
+  id: 'mock:queue:id'
+}
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-drop', (t) => {
-      t.plan(11)
+      t.plan(10)
 
-      const mockQueue = testMockQueue()
-      let q = testQueue()
+      let q = new Queue(testOptions.queueDefault())
 
       let testEvents = false
       function stoppingEventHandler (qid) {
@@ -72,11 +76,9 @@ module.exports = function () {
         return mockQueue.r.db(mockQueue.db).tableList()
       }).then((tableList) => {
         t.notOk(tableList.includes(mockQueue.name), 'Table dropped from database')
+
         removeEventHandlers()
-        q = testQueue(testOptionsDefault)
-        return q.ready()
-      }).then((ready) => {
-        t.ok(ready, 'Queue in a ready state')
+        mockQueue.r.getPoolMaster().drain()
         return resolve()
       }).catch(err => testError(err, module, t))
     })

@@ -3,17 +3,18 @@ const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const enums = require('../src/enums')
 const jobAddLog = require('../src/job-add-log')
 const testData = require('./test-options').testData
+const Queue = require('../src/queue')
+const testOptions = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log', (t) => {
       t.plan(24)
 
-      const q = testQueue()
+      const q = new Queue(testOptions.queueDefault())
       let job = q.createJob(testData)
       let testLog
       let extra = 'extra data'
@@ -80,6 +81,7 @@ module.exports = function () {
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
         removeEventHandlers()
+        q.stop()
         resolve()
       }).catch(err => testError(err, module, t))
     })
