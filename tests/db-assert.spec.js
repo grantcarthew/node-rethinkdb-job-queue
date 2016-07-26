@@ -4,14 +4,15 @@ const testError = require('./test-error')
 const dbAssert = require('../src/db-assert')
 const testOptions = require('./test-options')
 const rethinkdbdash = require('rethinkdbdash')
-const q = {
-  r: rethinkdbdash(testOptions.connection),
-  db: testOptions.dbName,
-  name: testOptions.queueName,
-  id: 'mock:queue:id'
-}
 
 module.exports = function () {
+  const q = {
+    r: rethinkdbdash(testOptions.connection()),
+    db: testOptions.dbName,
+    name: testOptions.queueName,
+    id: 'mock:queue:id'
+  }
+
   return new Promise((resolve, reject) => {
     test('db-assert', (t) => {
       t.plan(1)

@@ -7,14 +7,15 @@ const queueDrop = require('../src/queue-drop')
 const Queue = require('../src/queue')
 const testOptions = require('./test-options')
 const rethinkdbdash = require('rethinkdbdash')
-const mockQueue = {
-  r: rethinkdbdash(testOptions.connection),
-  db: testOptions.dbName,
-  name: testOptions.queueName,
-  id: 'mock:queue:id'
-}
 
 module.exports = function () {
+  const mockQueue = {
+    r: rethinkdbdash(testOptions.connection()),
+    db: testOptions.dbName,
+    name: testOptions.queueName,
+    id: 'mock:queue:id'
+  }
+
   return new Promise((resolve, reject) => {
     test('queue-drop', (t) => {
       t.plan(10)
