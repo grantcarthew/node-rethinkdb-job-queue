@@ -29,7 +29,7 @@ module.exports = function () {
           t.equal(afterSummary.added, 0, 'Status summary contains no added jobs')
           q.removeListener(enums.status.reset, resetEventHandler)
           q.stop()
-          resolve()
+          return resolve(t.end())
         }).catch(err => testError(err, module, t))
       }
       q.on(enums.status.reset, resetEventHandler)

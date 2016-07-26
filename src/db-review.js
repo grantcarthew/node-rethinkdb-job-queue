@@ -10,48 +10,49 @@ let dbReviewIntervalId = false
 function updateFailedJobs (q) {
   logger('updateFailedJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
 
-  return q.r.db(q.db).table(q.name)
-  .orderBy({index: enums.index.indexActiveDateRetry})
-  .filter(
-    q.r.row('dateRetry').lt(q.r.now())
-  ).update({
-    status: q.r.branch(
-      q.r.row('retryCount').lt(q.r.row('retryMax')),
-      enums.status.failed,
-      enums.status.terminated
-    ),
-    priority: q.r.branch(
-      q.r.row('retryCount').lt(q.r.row('retryMax')),
-      enums.priority.retry,
-      q.r.row('priority')
-    ),
-    dateFinished: q.r.now(),
-    retryCount: q.r.branch(
-      q.r.row('retryCount').lt(q.r.row('retryMax')),
-      q.r.row('retryCount').add(1),
-      q.r.row('retryCount')
-    ),
-    log: q.r.row('log').append({
-      date: q.r.now(),
-      queueId: q.id,
-      type: q.r.branch(
-        q.r.row('retryCount').lt(q.r.row('retryMax')),
-        enums.log.warning,
-        enums.log.error
-      ),
+  return Promise.resolve().then(() => {
+    return q.r.db(q.db).table(q.name)
+    .orderBy({index: enums.index.indexActiveDateRetry})
+    .filter(
+      q.r.row('dateRetry').lt(q.r.now())
+    ).update({
       status: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
         enums.status.failed,
         enums.status.terminated
       ),
-      retryCount: q.r.row('retryCount'),
-      message: `Master: ${enums.message.failed}`,
-      dateRetry: q.r.row('dateRetry')
-    }),
-    queueId: q.id
-  })
-  .run()
-  .then((updateResult) => {
+      priority: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        enums.priority.retry,
+        q.r.row('priority')
+      ),
+      dateFinished: q.r.now(),
+      retryCount: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        q.r.row('retryCount').add(1),
+        q.r.row('retryCount')
+      ),
+      log: q.r.row('log').append({
+        date: q.r.now(),
+        queueId: q.id,
+        type: q.r.branch(
+          q.r.row('retryCount').lt(q.r.row('retryMax')),
+          enums.log.warning,
+          enums.log.error
+        ),
+        status: q.r.branch(
+          q.r.row('retryCount').lt(q.r.row('retryMax')),
+          enums.status.failed,
+          enums.status.terminated
+        ),
+        retryCount: q.r.row('retryCount'),
+        message: `Master: ${enums.message.failed}`,
+        dateRetry: q.r.row('dateRetry')
+      }),
+      queueId: q.id
+    })
+    .run()
+  }).then((updateResult) => {
     logger(`updateResult`, updateResult)
     return dbResult.status(updateResult, enums.dbResult.replaced)
   })
@@ -62,15 +63,16 @@ function removeFinishedJobs (q) {
 
   if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
 
-  return q.r.db(q.db).table(q.name)
-  .orderBy({index: enums.index.indexFinishedDateFinished})
-  .filter(
-    q.r.row('dateFinished').add(
-      q.r.expr(q.removeFinishedJobs).mul(86400)
-    ).lt(q.r.now())
-  ).delete()
-  .run()
-  .then((deleteResult) => {
+  return Promise.resolve().then(() => {
+    return q.r.db(q.db).table(q.name)
+    .orderBy({index: enums.index.indexFinishedDateFinished})
+    .filter(
+      q.r.row('dateFinished').add(
+        q.r.expr(q.removeFinishedJobs).mul(86400)
+      ).lt(q.r.now())
+    ).delete()
+    .run()
+  }).then((deleteResult) => {
     logger(`deleteResult`, deleteResult)
     return dbResult.status(deleteResult, enums.dbResult.deleted)
   })

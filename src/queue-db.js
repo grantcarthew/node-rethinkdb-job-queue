@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
-const rethinkdbdash = require('rethinkdbdash')
 const Promise = require('bluebird')
+const rethinkdbdash = require('rethinkdbdash')
 const enums = require('./enums')
 const dbAssert = require('./db-assert')
 const dbReview = require('./db-review')

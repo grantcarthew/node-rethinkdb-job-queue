@@ -187,7 +187,7 @@ module.exports = function () {
         t.notOk(dbReview.isEnabled(), 'Review is disabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         q.stop()
-        return resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

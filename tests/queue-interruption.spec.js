@@ -67,7 +67,7 @@ module.exports = function () {
         t.notOk(q.paused, 'Queue is not paused')
         removeEventHandlers()
         q.stop()
-        resolve(t.end())
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

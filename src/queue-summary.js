@@ -1,11 +1,14 @@
 const logger = require('./logger')(module)
+const Promise = require('bluebird')
 
 module.exports = function summary (q) {
   logger('summary')
-  return q.r.db(q.db).table(q.name)
-  .group((job) => {
-    return job.pluck('status')
-  }).count().then((reduction) => {
+  return Promise.resolve().then(() => {
+    return q.r.db(q.db).table(q.name)
+    .group((job) => {
+      return job.pluck('status')
+    }).count()
+  }).then((reduction) => {
     const summary = {
       added: 0,
       active: 0,

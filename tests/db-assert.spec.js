@@ -19,7 +19,7 @@ module.exports = function () {
       return dbAssert(q).then((dbResult) => {
         t.ok(dbResult, 'All database resources asserted')
         q.r.getPoolMaster().drain()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

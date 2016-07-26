@@ -46,7 +46,7 @@ module.exports = function () {
           return q.reset().then((resetResult) => {
             t.ok(resetResult >= 0, 'Queue reset')
             q.stop()
-            resolve()
+            return resolve(t.end())
             return true
           })
         }

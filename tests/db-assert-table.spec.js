@@ -19,7 +19,7 @@ module.exports = function () {
       return dbAssertTable(q).then((assertDbTable) => {
         t.ok(assertDbTable, 'Table asserted')
         q.r.getPoolMaster().drain()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

@@ -41,7 +41,7 @@ module.exports = function () {
         // ---------- First Test ----------
 
         removeEventHandlers()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

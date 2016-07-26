@@ -13,13 +13,13 @@ const q = {
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-index', (t) => {
+    test('db-assert-index', (t) => {
       t.plan(1)
 
       return dbAssertIndex(q).then((assertIndexResult) => {
         t.ok(assertIndexResult, 'Indexes asserted')
         q.r.getPoolMaster().drain()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

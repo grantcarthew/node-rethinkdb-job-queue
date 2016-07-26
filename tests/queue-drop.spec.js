@@ -79,7 +79,7 @@ module.exports = function () {
 
         removeEventHandlers()
         mockQueue.r.getPoolMaster().drain()
-        return resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

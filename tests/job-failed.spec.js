@@ -172,7 +172,7 @@ module.exports = function () {
         t.ok(resetResult >= 0, 'Queue reset')
         removeEventHandlers()
         q.stop()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

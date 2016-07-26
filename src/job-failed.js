@@ -1,4 +1,5 @@
 const logger = require('./logger')(module)
+const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('./is')
 const enums = require('./enums')
@@ -29,18 +30,19 @@ module.exports = function failed (err, job, data) {
   log.data = data
   log.retryCount = job.retryCount
 
-  return job.q.r.db(job.q.db).table(job.q.name)
-  .get(job.id)
-  .update({
-    status: job.status,
-    retryCount: job.retryCount,
-    progress: job.progress,
-    dateFinished: job.dateFinished,
-    log: job.q.r.row('log').append(log),
-    queueId: job.q.id
-  }, {returnChanges: true})
-  .run()
-  .then((updateResult) => {
+  return Promise.resolve().then(() => {
+    return job.q.r.db(job.q.db).table(job.q.name)
+    .get(job.id)
+    .update({
+      status: job.status,
+      retryCount: job.retryCount,
+      progress: job.progress,
+      dateFinished: job.dateFinished,
+      log: job.q.r.row('log').append(log),
+      queueId: job.q.id
+    }, {returnChanges: true})
+    .run()
+  }).then((updateResult) => {
     logger(`updateResult`, updateResult)
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {

@@ -153,7 +153,7 @@ module.exports = function () {
         return removeEventHandlers()
       }).then(() => {
         q.stop()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

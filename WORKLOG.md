@@ -1,9 +1,6 @@
 # WORKLOG
 
-Add t.end() to tests.
 Change review event to reviewed
-Finish queue tests, not closing
-Add test queue to each test.
 
 Refactor tests for event pattern.
 

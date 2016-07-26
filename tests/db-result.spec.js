@@ -108,7 +108,7 @@ module.exports = function () {
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
         q.stop()
-        resolve()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

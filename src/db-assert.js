@@ -6,9 +6,7 @@ const dbAssertIndex = require('./db-assert-index')
 
 module.exports = function dbAssert (q) {
   logger('dbAssert')
-  return Promise.resolve().then(() => {
-    return dbAssertDatabase(q)
-  }).then(() => {
+  return dbAssertDatabase(q).then(() => {
     return dbAssertTable(q)
   }).then(() => {
     return dbAssertIndex(q)

@@ -1,11 +1,17 @@
 const logger = require('./logger')(module)
+const Promise = require('bluebird')
 const enums = require('./enums')
 
 function createIndexActiveDateRetry (q) {
   logger('createIndexActiveDateRetry')
   let indexName = enums.index.indexActiveDateRetry
-  return q.r.db(q.db).table(q.name).indexList()
-  .contains(indexName).run().then((exists) => {
+  return Promise.resolve().then(() => {
+    return q.r.db(q.db)
+      .table(q.name)
+      .indexList()
+      .contains(indexName)
+      .run()
+  }).then((exists) => {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
@@ -20,8 +26,13 @@ function createIndexActiveDateRetry (q) {
 function createIndexInactivePriorityDateCreated (q) {
   logger('createIndexInactivePriorityDateCreated')
   let indexName = enums.index.indexInactivePriorityDateCreated
-  return q.r.db(q.db).table(q.name).indexList()
-  .contains(indexName).run().then((exists) => {
+  return Promise.resolve().then(() => {
+    return q.r.db(q.db)
+      .table(q.name)
+      .indexList()
+      .contains(indexName)
+      .run()
+  }).then((exists) => {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
@@ -46,8 +57,13 @@ function createIndexInactivePriorityDateCreated (q) {
 function createIndexFinishedDateFinished (q) {
   logger('createIndexFinishedDateFinished')
   const indexName = enums.index.indexFinishedDateFinished
-  return q.r.db(q.db).table(q.name).indexList()
-  .contains(indexName).run().then((exists) => {
+  return Promise.resolve().then(() => {
+    return q.r.db(q.db)
+      .table(q.name)
+      .indexList()
+      .contains(indexName)
+      .run()
+  }).then((exists) => {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(

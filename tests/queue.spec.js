@@ -334,7 +334,7 @@ module.exports = function () {
         return q2.addJob(job)
       }).then((jobOnQ2) => {
         t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue')
-      }).delay(400).then(() => {
+      }).delay(1000).then(() => {
         return q.getJob(job.id)
       }).then((jobCheck) => {
         t.ok(is.array(jobCheck), 'Job is in queue')
@@ -343,7 +343,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         q2.stop()
-        resolve(t.end())
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })
