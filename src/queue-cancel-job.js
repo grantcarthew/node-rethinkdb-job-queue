@@ -6,8 +6,8 @@ const enums = require('./enums')
 const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 
-module.exports = function cancel (q, job, reason) {
-  logger('cancel', job, reason)
+module.exports = function cancelJob (q, job, reason) {
+  logger('cancelJob', job, reason)
 
   return Promise.resolve().then(() => {
     return jobParse.id(job)
@@ -38,7 +38,7 @@ module.exports = function cancel (q, job, reason) {
     })
     if (is.true(q.removeFinishedJobs)) {
       return q.removeJob(jobIds).then((deleteResult) => {
-        // TODO: do something with deleteResult????
+        logger(`Removed finished jobs on cancel [${deleteResult}]`)
         return jobIds
       })
     } else {

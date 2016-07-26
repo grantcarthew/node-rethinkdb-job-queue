@@ -48,7 +48,7 @@ module.exports = function queueChange (q, err, change = {}) {
       !is.job(oldVal)) {
     logger(`Event: added [${newVal.id}]`)
     q.emit(enums.status.added, newVal.id)
-    setTimeout(function () {
+    setTimeout(function randomRestart () {
       queueProcess.restart(q)
     }, Math.floor(Math.random() * 1000))
     return enums.status.added
@@ -122,6 +122,5 @@ module.exports = function queueChange (q, err, change = {}) {
     return enums.status.log
   }
 
-  // TODO: change this to logger
-  console.log('Unknown database change', change)
+  logger('Unknown database change', change)
 }
