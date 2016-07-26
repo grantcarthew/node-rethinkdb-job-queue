@@ -9,8 +9,6 @@
 
 [![Thinker][thinker-image]][rethinkdb-job-queue-url]
 
-# Do Not Use - Under Heavy Development
-
 [![NPM][nodei-npm-image]][nodei-npm-url]
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
@@ -48,7 +46,44 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 ## Quick Start
 
-TODO
+```js
+
+const Queue = require('rethinkdb-job-queue')
+const options = {
+  db: 'JobQueue', // The name of the database in RethinkDB
+  name: 'RegistrationEmailJobs', // The name of the table in the database
+  host: 'localhost',
+  port: 28015,
+  master: true, // Enable database review
+  masterInterval: 300, // Database review period in seconds
+  changeFeed: true, // Enables events from the database table
+  concurrency: 100,
+  removeFinishedJobs: 30, // true, false, or number of days.
+}
+const q = new Queue(options)
+const jobDefaults = {
+  priority: 'normal',
+  timeout: 300,
+  retryMax: 3, // Four attempts, first then three retries
+  retryDelay: 600 // Time in seconds to delay retries
+}
+q.jobOptions = jobDefaults
+
+const job = q.createJob('batman@batcave.com')
+
+q.process((job, next) => {
+  // Send email using job.data as the destination address
+})
+
+return q.addJob(job).then((savedJobs) => {
+  // savedJobs is an array of the jobs added with updated properties
+}).catch((err) => {
+  console.error(err)
+})
+
+```
+
+
 
 ## Rationale
 
