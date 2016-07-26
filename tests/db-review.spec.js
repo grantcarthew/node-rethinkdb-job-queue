@@ -26,12 +26,12 @@ module.exports = function () {
         t.ok(q.id, 'Queue process restart called')
       }
 
-      function reviewEventHandler (reviewResult) {
+      function reviewedEventHandler (reviewResult) {
         reviewCount++
-        t.pass(`Event: Database review [Review Count: ${reviewCount}]`)
-        t.ok(is.object(reviewResult), 'Review event returns an Object')
-        t.ok(is.integer(reviewResult.reviewed), 'Review event returns reviewed as integer')
-        t.ok(is.integer(reviewResult.removed), 'Review event returns removed as integer')
+        t.pass(`Event: reviewed [Review Count: ${reviewCount}]`)
+        t.ok(is.object(reviewResult), 'reviewed event returns an Object')
+        t.ok(is.integer(reviewResult.reviewed), 'reviewed event returns reviewed as integer')
+        t.ok(is.integer(reviewResult.removed), 'reviewed event returns removed as integer')
         if (reviewCount > 2) {
           t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
 
@@ -41,7 +41,7 @@ module.exports = function () {
           t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
           q._masterInterval = 300
           t.pass('Review timer completed twice')
-          q.removeListener(enums.status.review, reviewEventHandler)
+          q.removeListener(enums.status.reviewed, reviewedEventHandler)
           // Test completes here!
           return q.reset().then((resetResult) => {
             t.ok(resetResult >= 0, 'Queue reset')
@@ -51,7 +51,7 @@ module.exports = function () {
           })
         }
       }
-      q.on(enums.status.review, reviewEventHandler)
+      q.on(enums.status.reviewed, reviewedEventHandler)
 
       let retryCount0Job = q.createJob(testData)
       retryCount0Job.status = enums.status.active

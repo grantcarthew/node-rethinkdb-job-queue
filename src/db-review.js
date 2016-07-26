@@ -84,8 +84,8 @@ function runReviewTasks (q) {
     reviewed: updateFailedJobs(q),
     removed: removeFinishedJobs(q)
   }).then((runReviewTasksResult) => {
-    logger(`Event: review`, runReviewTasksResult)
-    q.emit(enums.status.review, runReviewTasksResult)
+    logger(`Event: reviewed`, runReviewTasksResult)
+    q.emit(enums.status.reviewed, runReviewTasksResult)
     queueProcess.restart(q)
     return runReviewTasksResult
   })

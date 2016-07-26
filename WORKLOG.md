@@ -1,7 +1,7 @@
 # WORKLOG
 
 Change review event to reviewed
-
+Try different queue names for all tests?
 Refactor tests for event pattern.
 
 Need tests for the following;

@@ -31,9 +31,9 @@ module.exports = function () {
           t.pass(`Queue ready [${qid}]`)
         }
       }
-      function reviewEventHandler (replaceCount) {
+      function reviewedEventHandler (replaceCount) {
         if (testEvents) {
-          t.pass(`Event: Review Replaced [${replaceCount}]`)
+          t.pass(`Event: reviewed [${replaceCount}]`)
         }
       }
       function pausedEventHandler (qid) {
@@ -85,7 +85,7 @@ module.exports = function () {
       function addEventHandlers () {
         testEvents = true
         q.on(enums.status.ready, readyEventHandler)
-        q.on(enums.status.review, reviewEventHandler)
+        q.on(enums.status.reviewed, reviewedEventHandler)
         q.on(enums.status.paused, pausedEventHandler)
         q.on(enums.status.resumed, resumedEventHandler)
         q.on(enums.status.processing, processingEventHandler)
@@ -98,7 +98,7 @@ module.exports = function () {
       function removeEventHandlers () {
         testEvents = false
         q.removeListener(enums.status.ready, readyEventHandler)
-        q.removeListener(enums.status.review, reviewEventHandler)
+        q.removeListener(enums.status.reviewed, reviewedEventHandler)
         q.removeListener(enums.status.paused, pausedEventHandler)
         q.removeListener(enums.status.resumed, resumedEventHandler)
         q.removeListener(enums.status.processing, processingEventHandler)
