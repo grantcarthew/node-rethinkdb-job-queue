@@ -333,16 +333,16 @@ module.exports = function () {
         job = q2.createJob(testData)
         return q2.addJob(job)
       }).then((jobOnQ2) => {
-        t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue two')
-      }).then(() => {
+        t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue')
+      }).delay(400).then(() => {
         return q.getJob(job.id)
       }).then((jobCheck) => {
         t.ok(is.array(jobCheck), 'Job is in queue')
         t.equal(jobCheck[0].status, enums.status.completed, 'Job is completed')
 
         removeEventHandlers()
-        return Promise.all([q.stop(), q2.stop()])
-      }).then(() => {
+        q.stop()
+        q2.stop()
         resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
