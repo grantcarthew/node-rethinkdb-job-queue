@@ -14,7 +14,7 @@ module.exports = function () {
     test('job-completed', (t) => {
       t.plan(23)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       let job = q.createJob(testData)
 
       // ---------- Event Handler Setup ----------

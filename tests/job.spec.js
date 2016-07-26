@@ -14,7 +14,7 @@ module.exports = function () {
     test('job', (t) => {
       t.plan(72)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
 
       const newJob = new Job(q, testData)
       let savedJob

@@ -13,25 +13,25 @@ module.exports = function () {
     test('job-progress', (t) => {
       t.plan(23)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       const job = q.createJob(testData)
       job.timeout = 300
       job.retryDelay = 600
       job.retryCount = 0
 
       let testEvents = false
-      function progress (jobId, percent) {
+      function progressEventHandler (jobId, percent) {
         if (testEvents) {
           t.equal(jobId, job.id, `Event: Job progress [${percent}]`)
         }
       }
       function addEventHandlers () {
         testEvents = true
-        q.on(enums.status.progress, progress)
+        q.on(enums.status.progress, progressEventHandler)
       }
       function removeEventHandlers () {
         testEvents = false
-        q.removeListener(enums.status.progress, progress)
+        q.removeListener(enums.status.progress, progressEventHandler)
       }
 
       let tempDateRetry = job.dateRetry

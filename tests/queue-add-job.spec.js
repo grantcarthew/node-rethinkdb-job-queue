@@ -14,7 +14,7 @@ module.exports = function () {
     test('queue-add-job', (t) => {
       t.plan(30)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       let addedCount = 0
       function addedEventHandler (jobId) {
         addedCount++

@@ -12,7 +12,7 @@ module.exports = function () {
     test('queue-change', (t) => {
       t.plan(48)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
 
       function addedEventHandler (jobId) {
         if (testEvents) {

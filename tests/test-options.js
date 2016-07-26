@@ -1,7 +1,7 @@
 const dbHost = module.exports.dbHost = 'localhost'
 const dbPort = module.exports.dbPort = 28015
 const dbName = module.exports.dbName = 'rjqJobQueueTests'
-const queueName = module.exports.queueName = 'rjqJobQueueTestsJobList'
+const queueName = module.exports.queueName = 'rjqJobQueueTestJobs'
 
 module.exports.testData = 'The quick brown fox jumped over the lazy dog'
 
@@ -13,8 +13,7 @@ const connection = module.exports.connection = function () {
     silent: true
   }
 }
-
-module.exports.queueDefault = function () {
+module.exports.default = function () {
   const opts = {
     name: queueName,
     concurrency: 3,
@@ -22,7 +21,7 @@ module.exports.queueDefault = function () {
   }
   return Object.assign(opts, connection())
 }
-module.exports.queueMaster = function () {
+module.exports.master = function () {
   const opts = {
     name: queueName,
     concurrency: 3,
@@ -30,14 +29,6 @@ module.exports.queueMaster = function () {
     masterInterval: 5
   }
   return Object.assign(opts, connection())
-}
-module.exports.jobOptionsHigh = function () {
-  return {
-    priority: 'highest',
-    timeout: 4,
-    retryMax: 2,
-    retryDelay: 20
-  }
 }
 module.exports.queueNameOnly = function () {
   const opts = {

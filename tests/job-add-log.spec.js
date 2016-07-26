@@ -14,7 +14,7 @@ module.exports = function () {
     test('job-add-log', (t) => {
       t.plan(24)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       let job = q.createJob(testData)
       let testLog
       let extra = 'extra data'

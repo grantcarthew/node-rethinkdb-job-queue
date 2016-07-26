@@ -4,15 +4,16 @@ const moment = require('moment')
 const enums = require('../src/enums')
 const is = require('../src/is')
 const testError = require('./test-error')
-const testQueue = require('./test-queue')
 const testData = require('./test-options').testData
+const testOptions = require('./test-options')
+const Queue = require('../src/queue')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('XXXXXXXX', (t) => {
       t.plan(2)
 
-      const q = testQueue()
+      const q = new Queue(testOptions.default())
       const job = q.createJob(testData)
 
       // ---------- Event Handler Setup ----------
@@ -41,6 +42,7 @@ module.exports = function () {
         // ---------- First Test ----------
 
         removeEventHandlers()
+        q.stop()
         return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })

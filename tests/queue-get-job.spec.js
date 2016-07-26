@@ -13,7 +13,7 @@ module.exports = function () {
     test('queue-get-job', (t) => {
       t.plan(13)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       const job1 = q.createJob(testData)
       const job2 = q.createJob(testData)
       const job3 = q.createJob(testData)

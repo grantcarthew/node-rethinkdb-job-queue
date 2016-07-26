@@ -13,7 +13,7 @@ module.exports = function () {
     test('queue-remove-job', (t) => {
       t.plan(24)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       let jobs = q.createJob(testData, 3)
 
       let testEvents = false

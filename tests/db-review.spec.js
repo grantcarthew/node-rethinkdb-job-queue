@@ -18,7 +18,7 @@ module.exports = function () {
     test('db-review', (t) => {
       t.plan(56)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       let reviewCount = 0
       q._masterInterval = 1
 
@@ -47,7 +47,6 @@ module.exports = function () {
             t.ok(resetResult >= 0, 'Queue reset')
             q.stop()
             return resolve(t.end())
-            return true
           })
         }
       }

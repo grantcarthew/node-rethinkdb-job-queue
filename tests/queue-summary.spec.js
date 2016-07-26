@@ -14,7 +14,7 @@ module.exports = function () {
     test('queue-summary', (t) => {
       t.plan(9)
 
-      const q = new Queue(testOptions.queueDefault())
+      const q = new Queue(testOptions.default())
       const jobs = q.createJob(testData, 7)
       jobs[0].status = enums.status.added
       jobs[1].status = enums.status.active
