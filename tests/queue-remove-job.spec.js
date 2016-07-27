@@ -14,7 +14,7 @@ module.exports = function () {
       t.plan(24)
 
       const q = new Queue(testOptions.default())
-      let jobs = q.createJob(testData, 3)
+      let jobs = q.createJob(3).map(j => j.setPayload(testData))
 
       let testEvents = false
       function removedEventHandler (jobId) {
@@ -46,7 +46,7 @@ module.exports = function () {
         return q.getJob(jobs.map(j => j.id))
       }).then((getResult) => {
         t.equal(getResult.length, 0, 'Jobs no longer in database')
-        let jobs = q.createJob(testData, 3)
+        let jobs = q.createJob(3).map(j => j.setPayload(testData))
         return q.addJob(jobs)
       }).then((savedAgain) => {
         t.equal(savedAgain.length, 3, 'Jobs saved successfully (again)')
@@ -59,7 +59,7 @@ module.exports = function () {
         return q.getJob(jobs.map(j => j.id))
       }).then((getResult2) => {
         t.equal(getResult2.length, 0, 'Jobs no longer in database')
-        jobs = q.createJob(testData)
+        jobs = q.createJob().setPayload(testData)
         return q.addJob(jobs)
       }).then((saveSingle) => {
         t.equal(saveSingle.length, 1, 'Single job saved successfully')
@@ -72,7 +72,7 @@ module.exports = function () {
         return q.getJob(jobs.id)
       }).then((getResult3) => {
         t.equal(getResult3.length, 0, 'Single job no longer in database')
-        jobs = q.createJob(testData)
+        jobs = q.createJob().setPayload(testData)
         return q.addJob(jobs)
       }).then((saveSingle2) => {
         t.equal(saveSingle2.length, 1, 'Single job saved successfully (again)')

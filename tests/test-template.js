@@ -1,8 +1,8 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
+// const moment = require('moment')
 const enums = require('../src/enums')
-const is = require('../src/is')
+// const is = require('../src/is')
 const testError = require('./test-error')
 const testData = require('./test-options').testData
 const testOptions = require('./test-options')
@@ -14,7 +14,7 @@ module.exports = function () {
       t.plan(2)
 
       const q = new Queue(testOptions.default())
-      const job = q.createJob(testData)
+      const job = q.createJob().setPayload(testData)
 
       // ---------- Event Handler Setup ----------
       let testEvents = false

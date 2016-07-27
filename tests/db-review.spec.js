@@ -52,34 +52,34 @@ module.exports = function () {
       }
       q.on(enums.status.reviewed, reviewedEventHandler)
 
-      let retryCount0Job = q.createJob(testData)
+      let retryCount0Job = q.createJob().setPayload(testData)
       retryCount0Job.status = enums.status.active
       retryCount0Job.dateStarted = moment().add(-400, 'seconds').toDate()
       retryCount0Job.retryCount = 0
       retryCount0Job.retryMax = 1
 
-      let retryCount1Job = q.createJob(testData)
+      let retryCount1Job = q.createJob().setPayload(testData)
       retryCount1Job.status = enums.status.active
       retryCount1Job.dateStarted = moment().add(-400, 'seconds').toDate()
       retryCount1Job.retryCount = 1
       retryCount1Job.retryMax = 1
 
-      let completedJobPre = q.createJob(testData)
+      let completedJobPre = q.createJob().setPayload(testData)
       completedJobPre.status = enums.status.completed
       completedJobPre.dateStarted = moment().add(-179, 'days').toDate()
       completedJobPre.dateFinished = moment().add(-179, 'days').toDate()
 
-      let completedJobPost = q.createJob(testData)
+      let completedJobPost = q.createJob().setPayload(testData)
       completedJobPost.status = enums.status.completed
       completedJobPost.dateStarted = moment().add(-181, 'days').toDate()
       completedJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
-      let cancelledJobPost = q.createJob(testData)
+      let cancelledJobPost = q.createJob().setPayload(testData)
       cancelledJobPost.status = enums.status.terminated
       cancelledJobPost.dateStarted = moment().add(-181, 'days').toDate()
       cancelledJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
-      let terminatedJobPost = q.createJob(testData)
+      let terminatedJobPost = q.createJob().setPayload(testData)
       terminatedJobPost.status = enums.status.terminated
       terminatedJobPost.dateStarted = moment().add(-181, 'days').toDate()
       terminatedJobPost.dateFinished = moment().add(-181, 'days').toDate()

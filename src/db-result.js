@@ -47,8 +47,8 @@ module.exports.toJob = function toJob (q, dbResult) {
 module.exports.toIds = function toIds (dbResult) {
   logger('toIds', dbResult)
   return getJobsData(dbResult).then((jobsData) => {
-    return jobsData.map((data) => {
-      return data.id
+    return jobsData.map((jobData) => {
+      return jobData.id
     })
   })
 }

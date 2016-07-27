@@ -12,11 +12,11 @@ const testOptions = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(72)
+      t.plan(70)
 
       const q = new Queue(testOptions.default())
 
-      const newJob = new Job(q, testData)
+      const newJob = new Job(q).setPayload(testData)
       let savedJob
 
       // ---------- Event Handler Setup ----------
@@ -52,16 +52,10 @@ module.exports = function () {
 
       // ---------- New Job Tests ----------
       t.comment('job: New Job')
-      t.throws(() => {
-        savedJob = new Job(q, null)
-      }, 'Creating a job with null data throws an exception')
-      t.doesNotThrow(() => {
-        savedJob = new Job(q, {}, null)
-      }, 'Creating a job with null options dose not throw an exception')
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(is.uuid(newJob.id), 'New job has valid id')
-      t.equal(newJob.data, testData, 'New job data is valid')
+      t.equal(newJob.payload, testData, 'New job payload is valid')
       t.equal(newJob.priority, 'normal', 'New job priority is normal')
       t.equal(newJob.status, 'created', 'New job status is created')
       t.equal(newJob.timeout, 300, 'New job timeout is 300')
@@ -79,7 +73,7 @@ module.exports = function () {
       const cleanJob = newJob.getCleanCopy()
       t.equal(Object.keys(cleanJob).length, 13, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
-      t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
+      t.equal(cleanJob.payload, newJob.payload, 'Clean job payload is valid')
       t.equal(cleanJob.priority, enums.priority[newJob.priority], 'Clean job priority is valid')
       t.equal(cleanJob.timeout, newJob.timeout, 'Clean job timeoue is valid')
       t.equal(cleanJob.retryDelay, newJob.retryDelay, 'Clean job retryDelay is valid')
@@ -120,7 +114,7 @@ module.exports = function () {
       }).then((newJobFromData) => {
         t.equal(newJobFromData.id, savedJob.id, 'New job from data created successfully')
         t.deepEqual(newJobFromData.q, savedJob.q, 'New job from data queue valid')
-        t.equal(newJobFromData.data, savedJob.data, 'New job from data job data is valid')
+        t.equal(newJobFromData.payload, savedJob.payload, 'New job from data job payload is valid')
         t.equal(newJobFromData.priority, savedJob.priority, 'New job from data priority is valid')
         t.equal(newJobFromData.timeout, savedJob.timeout, 'New job from data timeout is valid')
         t.equal(newJobFromData.retryDelay, savedJob.retryDelay, 'New job from data retryDelay is valid')

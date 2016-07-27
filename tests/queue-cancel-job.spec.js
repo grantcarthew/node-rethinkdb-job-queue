@@ -40,7 +40,7 @@ module.exports = function () {
       }
 
       const jobsToCreate = 5
-      let jobs = q.createJob(testData, jobsToCreate)
+      let jobs = q.createJob(jobsToCreate).map(j => j.setPayload(testData))
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(jobs)
@@ -53,7 +53,7 @@ module.exports = function () {
         return queueCancelJob(q, savedJobs, testData)
       }).then((cancelResult) => {
         t.equal(cancelResult.length, jobsToCreate, 'Job cancelled successfully')
-        jobs = q.createJob(testData)
+        jobs = q.createJob().setPayload(testData)
         return q.addJob(jobs)
       }).then((singleJob) => {
         t.equal(singleJob[0].id, jobs.id, 'Jobs saved successfully')
@@ -78,7 +78,7 @@ module.exports = function () {
 
         // ---------- Cancel Multiple Jobs with Remove Tests ----------
         t.comment('queue-cancel-job: Cancel Multiple Jobs with Remove')
-        jobs = q.createJob(testData, jobsToCreate)
+        jobs = q.createJob(jobsToCreate).map(j => j.setPayload(testData))
         q._removeFinishedJobs = true
         return q.addJob(jobs)
       }).then((savedJobs) => {

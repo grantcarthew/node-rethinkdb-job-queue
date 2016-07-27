@@ -9,25 +9,21 @@ const jobAddLog = require('./job-add-log')
 
 class Job {
 
-  constructor (q, data, options) {
+  constructor (q, options) {
     logger('constructor')
     logger('queue id', q.id)
-    logger('data', data)
     logger('options', options)
     this.q = q
 
-    // If creating a job from the database, pass the job as data.
+    // If creating a job from the database, pass the job as options.
     // Eg. new Job(queue, jobFromDb)
-    if (is.job(data)) {
+    if (is.job(options)) {
       logger('Creating job from database object')
-      Object.assign(this, data)
+      Object.assign(this, options)
       this.priority = enums.priorityFromValue(this.priority)
     } else {
       logger('Creating new job from defaults and options')
 
-      if (data == null) {
-        throw new Error(enums.message.jobDataInvalid)
-      }
       if (!options) {
         options = jobOptions()
       } else {
@@ -35,7 +31,6 @@ class Job {
       }
       const now = moment().toDate()
       this.id = uuid.v4()
-      this.data = data || {}
       this.priority = options.priority
       this.timeout = options.timeout
       this.retryDelay = options.retryDelay
@@ -50,6 +45,11 @@ class Job {
       this.dateFinished
       this.queueId = q.id
     }
+  }
+
+  setPayload (data) {
+    this.payload = data
+    return this
   }
 
   setProgress (percent) {

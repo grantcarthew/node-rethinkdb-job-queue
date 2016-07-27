@@ -137,7 +137,7 @@ module.exports = function () {
       }
 
       // ---------- Test Setup ----------
-      jobs = q.createJob(testData, noOfJobsToCreate)
+      jobs = q.createJob(noOfJobsToCreate).map(j => j.setPayload(testData))
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.pause()
@@ -174,7 +174,7 @@ module.exports = function () {
 
         // ---------- Processing Restart on Job Add Test ----------
         t.comment('queue-process: Process Restart on Job Add')
-        jobs = q.createJob(testData, noOfJobsToCreate)
+        jobs = q.createJob(noOfJobsToCreate).map(j => j.setPayload(testData))
         q._concurrency = 10
         return q.addJob(jobs)
       }).then((savedJobs) => {
@@ -187,7 +187,7 @@ module.exports = function () {
         //
         // ---------- Processing Restart Test ----------
         t.comment('queue-process: Process Restart')
-        jobs = q.createJob(testData, noOfJobsToCreate)
+        jobs = q.createJob(noOfJobsToCreate).map(j => j.setPayload(testData))
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
@@ -201,7 +201,7 @@ module.exports = function () {
 
         // ---------- Processing with Job Timeout Test ----------
         t.comment('queue-process: Processing with Job Timeout')
-        jobs = q.createJob(testData)
+        jobs = q.createJob().setPayload(testData)
         jobs.timeout = 1
         jobs.retryDelay = 2
         jobDelay = 1500
@@ -218,7 +218,7 @@ module.exports = function () {
         testTimes = false
         t.equal(tryCount, 4, 'Job failed and retried correctly')
       }).then(() => {
-        jobs = q.createJob(testData)
+        jobs = q.createJob().setPayload(testData)
 
         // ---------- Processing with Cancel Test ----------
         t.comment('queue-process: Processing with Cancel')

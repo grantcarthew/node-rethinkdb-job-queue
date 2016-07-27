@@ -13,9 +13,9 @@ module.exports = function () {
       t.plan(28)
 
       const q = new Queue(testOptions.default())
-      const job1 = q.createJob(testData)
-      const job2 = q.createJob(testData)
-      const job3 = q.createJob(testData)
+      const job1 = q.createJob().setPayload(testData)
+      const job2 = q.createJob().setPayload(testData)
+      const job3 = q.createJob().setPayload(testData)
       const mockArray = [
         job1.getCleanCopy(),
         job2.getCleanCopy(),

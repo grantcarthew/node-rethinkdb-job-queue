@@ -1,5 +1,4 @@
 const logger = require('./logger')(module)
-const Promise = require('bluebird')
 const dbAssertDatabase = require('./db-assert-database')
 const dbAssertTable = require('./db-assert-table')
 const dbAssertIndex = require('./db-assert-index')

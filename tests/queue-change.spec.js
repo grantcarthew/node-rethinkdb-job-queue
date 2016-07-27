@@ -89,7 +89,7 @@ module.exports = function () {
         return q.resume()
       }
 
-      let job = q.createJob(testData)
+      let job = q.createJob().setPayload(testData)
       let processDelay = 500
 
       return q.reset().then((resetResult) => {
@@ -120,7 +120,7 @@ module.exports = function () {
         // t.ok(q.paused, 'Queue paused')
         return q.removeJob(job.id)
       }).delay(processDelay).then(() => {
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
         job.timeout = processDelay / 2000
         job.retryDelay = 0
         job.retryMax = 1
@@ -136,7 +136,7 @@ module.exports = function () {
       }).delay(processDelay * 2).then(() => {
         return q.pause()
       }).delay(processDelay).then(() => {
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
 
         // ---------- Test log and cancelled ----------
         t.comment('queue-change: log and cancelled change events')

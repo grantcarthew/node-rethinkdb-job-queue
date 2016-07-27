@@ -15,7 +15,7 @@ module.exports = function () {
       t.plan(9)
 
       const q = new Queue(testOptions.default())
-      const jobs = q.createJob(testData, 7)
+      const jobs = q.createJob(7).map(j => j.setPayload(testData))
       jobs[0].status = enums.status.added
       jobs[1].status = enums.status.active
       jobs[2].status = enums.status.completed

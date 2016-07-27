@@ -1,5 +1,8 @@
 # WORKLOG
 
+Need to remove data from job tests
+change data to payload in get-next-job.spec
+
 ## Final Checks
 
 -   Name all functions

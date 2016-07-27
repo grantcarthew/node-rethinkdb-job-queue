@@ -1,11 +1,11 @@
 {
-  "name": "rethinkdb-jobqueue",
+  "name": "rethinkdb-job-queue",
   "version": "0.0.1",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grantcarthew/node-rethinkdb-jobqueue.git"
+    "url": "git+https://github.com/grantcarthew/node-rethinkdb-job-queue.git"
   },
   "keywords": [
     "job",
@@ -24,9 +24,9 @@
   "author": "Grant Carthew",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/grantcarthew/node-rethinkdb-jobqueue/issues"
+    "url": "https://github.com/grantcarthew/node-rethinkdb-job-queue/issues"
   },
-  "homepage": "https://github.com/grantcarthew/node-rethinkdb-jobqueue#readme",
+  "homepage": "https://github.com/grantcarthew/node-rethinkdb-job-queue",
   "scripts": {
     "prepublish": "npm run build",
     "clean": "rm -Rf dist",

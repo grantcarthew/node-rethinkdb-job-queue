@@ -15,7 +15,7 @@ module.exports = function () {
       t.plan(23)
 
       const q = new Queue(testOptions.default())
-      let job = q.createJob(testData)
+      let job = q.createJob().setPayload(testData)
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
@@ -70,7 +70,7 @@ module.exports = function () {
 
         // ---------- Job Completed with Remove Test ----------
         t.comment('job-completed: Job Completed with Remove')
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')

@@ -22,10 +22,10 @@ module.exports = function () {
       }
       q.on(enums.status.added, addedEventHandler)
 
-      const job = q.createJob(testData)
+      const job = q.createJob().setPayload(testData)
       const jobs = [
-        q.createJob(testData),
-        q.createJob(testData)
+        q.createJob().setPayload(testData),
+        q.createJob().setPayload(testData)
       ]
 
       return q.reset().then((resetResult) => {

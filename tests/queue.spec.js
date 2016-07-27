@@ -179,13 +179,13 @@ module.exports = function () {
 
         // ---------- Create Job Tests ----------
         t.comment('queue: Create Job')
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, enums.priorityFromValue(40), 'Queue created job with default priority')
         t.equal(job.timeout, enums.options.timeout, 'Queue created job with default timeout')
         t.equal(job.retryMax, enums.options.retryMax, 'Queue created job with default retryMax')
         t.equal(job.retryDelay, enums.options.retryDelay, 'Queue created job with default retryDelay')
-        job = q.createJob(testData, customJobOptions)
+        job = q.createJob(customJobOptions).setPayload(testData)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')
@@ -194,7 +194,7 @@ module.exports = function () {
 
         // ---------- Create Job Tests ----------
         t.comment('queue: Add Job')
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
         return q.addJob(job)
       }).then((savedJobs) => {
         t.ok(is.array(savedJobs), 'Add job returns an array')
@@ -237,7 +237,7 @@ module.exports = function () {
         t.comment('queue: Process Job')
         return q.process(processHandler)
       }).then(() => {
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
         return q.addJob(job)
       }).delay(400).then((addedJob) => {
         return q.getJob(addedJob[0].id)
@@ -251,7 +251,7 @@ module.exports = function () {
       }).then((isPaused) => {
         t.ok(isPaused, 'Queue pause returns true')
         t.ok(q.paused, 'Queue is paused')
-        job = q.createJob(testData)
+        job = q.createJob().setPayload(testData)
         return q.addJob(job)
       }).delay(200).then((addedJob) => {
         return q.getJob(addedJob[0].id)
@@ -330,7 +330,7 @@ module.exports = function () {
       }).then((ready2) => {
         t.ok(ready2, `Second queue ready [${q2.id}]`)
         q.process(processHandler)
-        job = q2.createJob(testData)
+        job = q2.createJob().setPayload(testData)
         return q2.addJob(job)
       }).then((jobOnQ2) => {
         t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue')

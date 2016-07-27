@@ -1,5 +1,4 @@
 const logger = require('./logger')(module)
-const Promise = require('bluebird')
 const enums = require('./enums')
 const queueDb = require('./queue-db')
 

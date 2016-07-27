@@ -1,1 +1,1 @@
-module.exports = require('./src/queue')
+module.exports = require('./dist/queue')
