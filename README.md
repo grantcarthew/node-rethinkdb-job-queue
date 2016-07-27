@@ -53,13 +53,16 @@ const jobDefaults = {
 }
 q.jobOptions = jobDefaults
 
+const job = q.createJob().setPayload('batman@batcave.com')
 // The createJob method will only create the job locally.
 // It will need to be added to the queue.
-const job = q.createJob().setPayload('batman@batcave.com')
+// You can decorate the job with any data to be saved for processing
+// job.payload will be 'batman@batcave.com'
+// Add more properties eg. job.subject = 'Registration'
 
 q.process((job, next) => {
-  // Send email using job.data as the destination address
-  someEmailPackage.send(job.data).then((result) => {
+  // Send email using job.payload as the destination address
+  someEmailPackage.send(job.payload).then((result) => {
     next(null, sendResult)
   }).catch((err) => {
     next(err)
