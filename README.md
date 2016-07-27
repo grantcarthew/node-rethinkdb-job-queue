@@ -1,7 +1,7 @@
 # Introduction
 
 `rethinkdb-job-queue` is a persistent job or task queue backed by [RethinkDB][rethinkdb-url].
-It has been build as an alternative to using a [REDIS][redis-url] backed job queue such as [Kue][kue-url], [Bull][bull-url], or [Bee-Queue][bee-queue-url].
+It has been build as an alternative to using a [Redis][redis-url] backed job queue such as [Kue][kue-url], [Bull][bull-url], or [Bee-Queue][bee-queue-url].
 
 [![bitHound Overall Score][bithound-overall-image]][bithound-overall-url]
 [![bitHound Dependencies][bithound-dep-image]][bithound-dep-url]
