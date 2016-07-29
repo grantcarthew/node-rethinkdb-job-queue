@@ -5,7 +5,7 @@ It has been build as an alternative to using a [Redis][redis-url] backed job que
 
 [![bitHound Overall Score][bithound-overall-image]][bithound-overall-url]
 [![bitHound Dependencies][bithound-dep-image]][bithound-dep-url]
-[![Build Status][travisci-image]][travisci-url]
+[![bitHound Dependencies][bithound-code-image]][bithound-code-url]
 [![js-standard-style][js-standard-image]][js-standard-url]
 
 [![Thinker][thinker-image]][rjq-github-url]
@@ -33,6 +33,8 @@ npm install rethinkdb-job-queue --save
 ```js
 
 const Queue = require('rethinkdb-job-queue')
+
+// Queue options have defaults and are not required
 const options = {
   db: 'JobQueue', // The name of the database in RethinkDB
   name: 'RegistrationEmailJobs', // The name of the table in the database
@@ -44,7 +46,11 @@ const options = {
   concurrency: 100,
   removeFinishedJobs: 30, // true, false, or number of days.
 }
+
+// This is the main queue instantiation call
 const q = new Queue(options)
+
+// Customizing the default job options for new jobs
 const jobDefaults = {
   priority: 'normal',
   timeout: 300,
@@ -95,7 +101,6 @@ Thanks to the following marvelous packages and people for their hard work:
 -   The date management library [moment][moment-url].
 -   The UUID package [node-uuid][uuid-url] by [Robert Kieffer][broofa-url].
 
-
 This list could go on...
 
 ## License
@@ -127,5 +132,3 @@ MIT
 [js-standard-url]: http://standardjs.com/
 [nodei-npm-image]: https://nodei.co/npm/rethinkdb-job-queue.png?downloads=true&downloadRank=true&stars=true
 [nodei-npm-url]: https://nodei.co/npm/rethinkdb-job-queue/
-[travisci-image]: https://travis-ci.org/grantcarthew/node-rethinkdb-job-queue.svg?branch=master
-[travisci-url]: https://travis-ci.org/grantcarthew/node-rethinkdb-job-queue

@@ -25,8 +25,7 @@ const jobRun = function jobRun (job) {
     handled = true
     clearTimeout(jobTimeoutId)
     if (err && err.cancelJob) {
-      const reason = err.cancelReason ? err.cancelReason : enums.message.cancel
-      finalPromise = queueCancelJob(job.q, job, reason)
+      finalPromise = queueCancelJob(job.q, job, err.cancelJob)
     } else if (err) {
       finalPromise = jobFailed(err, job, data)
     } else {
@@ -107,11 +106,11 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q._handler = handler
   q._running = 0
   return Promise.resolve().then(() => {
-    if (q.master) { return null }
+    if (q.master) { return true }
     return dbReview.runOnce(q)
   }).then(() => {
     setImmediate(jobTick, q)
-    return null
+    return true
   })
 }
 
