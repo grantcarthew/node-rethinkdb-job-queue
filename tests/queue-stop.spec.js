@@ -50,7 +50,7 @@ module.exports = function () {
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         q._running = 1
-        q._master = true
+        q._masterInterval = 300
         dbReview.enable(q)
         return q.ready()
       }).then((ready) => {

@@ -16,7 +16,7 @@ module.exports = function () {
       t.plan(186)
 
       // ---------- Test Setup ----------
-      const q = new Queue(testOptions.master())
+      const q = new Queue(testOptions.master(5))
       dbReview.disable(q)
 
       let jobs

@@ -40,7 +40,6 @@ const options = {
   name: 'RegistrationEmailJobs', // The name of the table in the database
   host: 'localhost',
   port: 28015,
-  master: true, // Enable database review
   masterInterval: 300, // Database review period in seconds
   changeFeed: true, // Enables events from the database table
   concurrency: 100,
@@ -69,7 +68,7 @@ const job = q.createJob().setPayload('batman@batcave.com')
 q.process((job, next) => {
   // Send email using job.payload as the destination address
   someEmailPackage.send(job.payload).then((result) => {
-    next(null, sendResult)
+    next(null, result)
   }).catch((err) => {
     next(err)
   })

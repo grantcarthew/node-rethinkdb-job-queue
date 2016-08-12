@@ -8,7 +8,7 @@ const queueAddJob = require('../src/queue-add-job')
 const testData = require('./test-options').testData
 const Queue = require('../src/queue')
 const testOptions = require('./test-options')
-const proxyquire = require('proxyquire')
+const proxyquire = require('proxyquire').noCallThru()
 const processStub = {}
 const dbReview = proxyquire('../src/db-review',
   { './queue-process': processStub })
@@ -16,41 +16,36 @@ const dbReview = proxyquire('../src/db-review',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(56)
+      t.plan(54)
 
-      const q = new Queue(testOptions.default())
-      let reviewCount = 0
-      q._masterInterval = 1
-
+      let processRestart = 0
       processStub.restart = function (q) {
-        t.ok(q.id, 'Queue process restart called')
+        processRestart++
+        t.ok(q.id, `Queue process restart called [${processRestart} of 2]`)
       }
 
+      const q = new Queue(testOptions.master(1))
+      let reviewCount = 0
+
+      // ---------- Event Handler Setup ----------
+      let testEvents = false
       function reviewedEventHandler (reviewResult) {
         reviewCount++
-        t.pass(`Event: reviewed [Review Count: ${reviewCount}]`)
-        t.ok(is.object(reviewResult), 'reviewed event returns an Object')
-        t.ok(is.integer(reviewResult.reviewed), 'reviewed event returns reviewed as integer')
-        t.ok(is.integer(reviewResult.removed), 'reviewed event returns removed as integer')
-        if (reviewCount > 2) {
-          t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
-
-          //  ---------- disable Tests ----------
-          t.comment('db-review: disable')
-          dbReview.disable(q)
-          t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
-          q._masterInterval = 300
-          t.pass('Review timer completed twice')
-          q.removeListener(enums.status.reviewed, reviewedEventHandler)
-          // Test completes here!
-          return q.reset().then((resetResult) => {
-            t.ok(resetResult >= 0, 'Queue reset')
-            q.stop()
-            return resolve(t.end())
-          })
+        if (testEvents) {
+          t.pass(`Event: reviewed [Review Count: ${reviewCount}]`)
+          t.ok(is.object(reviewResult), 'reviewed event returns an Object')
+          t.ok(is.integer(reviewResult.reviewed), 'reviewed event returns reviewed as integer')
+          t.ok(is.integer(reviewResult.removed), 'reviewed event returns removed as integer')
         }
       }
-      q.on(enums.status.reviewed, reviewedEventHandler)
+      function addEventHandlers () {
+        testEvents = true
+        q.on(enums.status.reviewed, reviewedEventHandler)
+      }
+      function removeEventHandlers () {
+        testEvents = false
+        q.removeListener(enums.status.reviewed, reviewedEventHandler)
+      }
 
       let retryCount0Job = q.createJob().setPayload(testData)
       retryCount0Job.status = enums.status.active
@@ -105,7 +100,8 @@ module.exports = function () {
         t.equal(savedJobs[4].id, cancelledJobPost.id, 'Cancelled job post-remove date saved successfully')
         t.equal(savedJobs[5].id, terminatedJobPost.id, 'Terminated job post-remove date saved successfully')
       }).then(() => {
-        //
+        addEventHandlers()
+
         //  ---------- runOnce Tests ----------
         t.comment('db-review: runOnce')
         return dbReview.runOnce(q)
@@ -155,6 +151,20 @@ module.exports = function () {
         //  ---------- enable Tests ----------
         t.comment('db-review: enable')
         return dbReview.enable(q)
+      }).delay(1500).then(() => {
+        t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
+
+        //  ---------- disable Tests ----------
+        t.comment('db-review: disable')
+        dbReview.disable(q)
+        t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
+
+        removeEventHandlers()
+        return q.reset()
+      }).then((resetResult) => {
+        t.ok(resetResult >= 0, 'Queue reset')
+        q.stop()
+        return resolve(t.end())
       }).catch(err => testError(err, module, t))
     })
   })

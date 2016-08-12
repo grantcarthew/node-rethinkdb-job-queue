@@ -45,7 +45,7 @@ const enums = module.exports = {
     host: 'localhost',
     port: 28015,
     db: 'rjqJobQueue',
-    masterInterval: 300,
+    masterInterval: 310,
     timeout: 300,
     retryMax: 3,
     retryDelay: 600,

@@ -17,16 +17,15 @@ module.exports.default = function () {
   const opts = {
     name: queueName,
     concurrency: 3,
-    master: false
+    masterInterval: false
   }
   return Object.assign(opts, connection())
 }
-module.exports.master = function () {
+module.exports.master = function (interval = 5) {
   const opts = {
     name: queueName,
     concurrency: 3,
-    master: true,
-    masterInterval: 5
+    masterInterval: interval
   }
   return Object.assign(opts, connection())
 }

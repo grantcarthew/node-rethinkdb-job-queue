@@ -37,7 +37,7 @@ module.exports = function () {
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q._master = true
+        q._masterInterval = 300
         q._changeFeed = true
         dbReview.enable(q)
         return q.ready()
@@ -77,7 +77,7 @@ module.exports = function () {
         return q.ready()
       }).then((ready) => {
         t.notOk(ready, 'Queue is not ready')
-        q._master = false
+        q._masterInterval = false
         q._changeFeed = true
 
         // ---------- Attach with change feed NOT master ----------
@@ -100,7 +100,7 @@ module.exports = function () {
         return q.ready()
       }).then((ready) => {
         t.notOk(ready, 'Queue is not ready')
-        q._master = true
+        q._masterInterval = 300
         q._changeFeed = false
 
         // ---------- Attach with master NOT change feed ----------
@@ -123,7 +123,7 @@ module.exports = function () {
         return q.ready()
       }).then((ready) => {
         t.notOk(ready, 'Queue is not ready')
-        q._master = false
+        q._masterInterval = false
         q._changeFeed = false
 
         // ---------- Attach without change feed or master ----------
@@ -146,7 +146,7 @@ module.exports = function () {
         return q.ready()
       }).then((ready) => {
         t.notOk(ready, 'Queue is not ready')
-        q._master = true
+        q._masterInterval = 300
         q._changeFeed = true
 
         // ---------- Attach with change feed and master ----------
@@ -174,7 +174,7 @@ module.exports = function () {
         t.comment('queue-db: Detach with Drain')
         return queueDb.detach(q, true)
       }).then(() => {
-        q._master = false
+        q._masterInterval = false
         q._changeFeed = true
 
         // ---------- Attach with change feed NOT master ----------

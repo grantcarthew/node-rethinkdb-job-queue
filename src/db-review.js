@@ -92,7 +92,7 @@ function runReviewTasks (q) {
 }
 
 module.exports.enable = function enable (q) {
-  logger('enable')
+  logger('enable', q.masterInterval)
   if (!dbReviewIntervalId) {
     const interval = q.masterInterval * 1000
     dbReviewIntervalId = setInterval(() => {
@@ -103,7 +103,7 @@ module.exports.enable = function enable (q) {
 }
 
 module.exports.disable = function disable (q) {
-  logger('disable')
+  logger('disable', dbReviewIntervalId)
   if (dbReviewIntervalId) {
     clearInterval(dbReviewIntervalId)
     dbReviewIntervalId = false
@@ -117,6 +117,6 @@ module.exports.runOnce = function run (q) {
 }
 
 module.exports.isEnabled = function reviewIsEnabled () {
-  logger('isEnabled')
+  logger('isEnabled', dbReviewIntervalId)
   return !!dbReviewIntervalId
 }

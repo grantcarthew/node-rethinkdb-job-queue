@@ -31,8 +31,6 @@ class Queue extends EventEmitter {
     this._port = options.port || enums.options.port
     this._db = options.db || enums.options.db
     this._r = false
-    this._master = options.master == null ? true
-      : options.master
     this._masterInterval = options.masterInterval ||
       enums.options.masterInterval
     this._jobOptions = jobOptions()
@@ -64,7 +62,7 @@ class Queue extends EventEmitter {
   get r () { return this._r }
   get connection () { return this.r }
   get changeFeed () { return this._changeFeed }
-  get master () { return this._master }
+  get master () { return this._masterInterval > 0 }
   get masterInterval () { return this._masterInterval }
   get jobOptions () { return this._jobOptions }
   get removeFinishedJobs () { return this._removeFinishedJobs }
