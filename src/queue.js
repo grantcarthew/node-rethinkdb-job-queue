@@ -113,10 +113,10 @@ class Queue extends EventEmitter {
     })
   }
 
-  getJob (jobId) {
-    logger('getJob', jobId)
+  getJob (jobOrId) {
+    logger('getJob', jobOrId)
     return this.ready().then(() => {
-      return queueGetJob(this, jobId)
+      return queueGetJob(this, jobOrId)
     }).catch((err) => {
       logger('getJob Error:', err)
       this.emit(enums.status.error, err)
@@ -124,10 +124,10 @@ class Queue extends EventEmitter {
     })
   }
 
-  cancelJob (job, reason) {
-    logger('cancelJob', job, reason)
+  cancelJob (jobOrId, reason) {
+    logger('cancelJob', jobOrId, reason)
     return this.ready().then(() => {
-      return queueCancelJob(this, job, reason)
+      return queueCancelJob(this, jobOrId, reason)
     }).catch((err) => {
       logger('cancelJob Error:', err)
       this.emit(enums.status.error, err)
@@ -135,10 +135,10 @@ class Queue extends EventEmitter {
     })
   }
 
-  removeJob (job) {
-    logger('removeJob', job)
+  removeJob (jobOrId) {
+    logger('removeJob', jobOrId)
     return this.ready().then(() => {
-      return queueRemoveJob(this, job)
+      return queueRemoveJob(this, jobOrId)
     }).catch((err) => {
       logger('removeJob Error:', err)
       this.emit(enums.status.error, err)

@@ -4,11 +4,11 @@ const enums = require('./enums')
 const jobParse = require('./job-parse')
 const dbResult = require('./db-result')
 
-module.exports = function removeJob (q, job) {
-  logger('removeJob: ' + job)
+module.exports = function removeJob (q, jobOrId) {
+  logger('removeJob: ' + jobOrId)
 
   return Promise.resolve().then(() => {
-    return jobParse.id(job)
+    return jobParse.id(jobOrId)
   }).then((jobIds) => {
     return Promise.props({
       jobIds,

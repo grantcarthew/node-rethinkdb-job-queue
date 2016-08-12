@@ -28,16 +28,68 @@ For full documentation of the `rethinkdb-job-queue` package, please see the [wik
 npm install rethinkdb-job-queue --save
 ```
 
-### E-Mail Job Example
+### Simple Example
 
 ```js
 
+const Queue = require('rethinkdb-job-queue')
+const options = {
+  db: 'JobQueue', // The name of the database in RethinkDB
+  name: 'Mathematics' // The name of the table in the database
+}
+
+const q = new Queue(options)
+
+const job = q.createJob()
+job.numerator = 123
+job.denominator = 456
+
+q.process((job, next) => {
+    try {
+      let result = job.numerator / job.denominator
+      next(null, result)
+    } catch (err) {
+      console.error(err)
+      next(err)
+    }
+})
+
+return q.addJob(job).catch((err) => {
+  console.error(err)
+})
+
+```
+
+### E-Mail Job Example using [nodemailer][nodemailer-url]
+
+```js
+
+// The following is not related to rethinkdb-job-queue
+// nodemailer configuration
+const nodemailer = require('nodemailer')
+const transporter = nodemailer.createTransport({
+  service: 'Mailgun',
+  auth: {
+    user: 'postmaster@your-domain-here.com',
+    pass: 'your-api-key-here'
+  }
+})
+
+// Setup e-mail data with unicode symbols
+var mailOptions = {
+  from: '"Registration" <support@superheros.com>', // Sender address
+  subject: 'Registration', // Subject line
+  text: 'Click here to complete your registration', // Plaintext body
+  html: '<b>Click here to complete your registration</b>' // HTML body
+}
+
+// rethinkdb-job-queue configuration
 const Queue = require('rethinkdb-job-queue')
 
 // Queue options have defaults and are not required
 const options = {
   db: 'JobQueue', // The name of the database in RethinkDB
-  name: 'RegistrationEmailJobs', // The name of the table in the database
+  name: 'RegistrationEmail', // The name of the table in the database
   host: 'localhost',
   port: 28015,
   masterInterval: 300, // Database review period in seconds
@@ -67,8 +119,10 @@ const job = q.createJob().setPayload('batman@batcave.com')
 
 q.process((job, next) => {
   // Send email using job.payload as the destination address
-  someEmailPackage.send(job.payload).then((result) => {
-    next(null, result)
+  mailOptions.to = job.payload
+  transporter.sendMail(mailOptions).then((info) => {
+    console.dir(info)
+    next(null, info)
   }).catch((err) => {
     next(err)
   })
@@ -116,6 +170,7 @@ MIT
 [rjq-github-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue
 [rjq-wiki-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki
 [thinker-image]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/thinkerjoblist.png
+[nodemailer-url]: https://www.npmjs.com/package/nodemailer
 [bluebird-url]: https://github.com/petkaantonov/bluebird
 [petka-url]: https://github.com/petkaantonov
 [moment-url]: http://momentjs.com/

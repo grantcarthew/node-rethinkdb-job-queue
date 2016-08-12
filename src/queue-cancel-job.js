@@ -6,11 +6,11 @@ const enums = require('./enums')
 const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 
-module.exports = function cancelJob (q, job, reason) {
-  logger('cancelJob', job, reason)
+module.exports = function cancelJob (q, jobOrId, reason) {
+  logger('cancelJob', jobOrId, reason)
 
   return Promise.resolve().then(() => {
-    return jobParse.id(job)
+    return jobParse.id(jobOrId)
   }).then((ids) => {
     return q.r.db(q.db).table(q.name)
     .getAll(...ids)
