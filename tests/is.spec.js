@@ -62,7 +62,7 @@ module.exports = function () {
     job.dateCreated = {}
     t.notOk(is.job(job), 'Is job false with invalid dateCreated')
     job.dateCreated = moment().toDate()
-    job.priority = 1
+    job.priority = 40
     t.ok(is.job(job), 'Is job true with priority a number')
     job.priority = enums.priority.normal
     job.status = 'not a real status'

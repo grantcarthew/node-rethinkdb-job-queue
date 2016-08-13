@@ -21,11 +21,6 @@ function updateFailedJobs (q) {
         enums.status.failed,
         enums.status.terminated
       ),
-      priority: q.r.branch(
-        q.r.row('retryCount').lt(q.r.row('retryMax')),
-        enums.priority.retry,
-        q.r.row('priority')
-      ),
       dateFinished: q.r.now(),
       retryCount: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),

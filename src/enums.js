@@ -10,9 +10,8 @@ const enums = module.exports = {
     low: 50,
     normal: 40,
     medium: 30,
-    high: 20,
-    highest: 10,
-    retry: 1 // Used for retries after a job has timed out or failed.
+    high: 20, // Used for retries after a job has timed out or failed.
+    highest: 10
   },
   status: {
     // ---------- Queue Status Values ----------

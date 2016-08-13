@@ -111,7 +111,7 @@ module.exports = function () {
         return q.getJob(retryCount0Job.id)
       }).then((reviewedRetryCount0Job) => {
         t.equal(reviewedRetryCount0Job[0].status, enums.status.failed, 'Reviewed job 1 is failed status')
-        t.equal(reviewedRetryCount0Job[0].priority, 'retry', 'Reviewed job 1 is retry priority')
+        t.equal(reviewedRetryCount0Job[0].priority, 'normal', 'Reviewed job 1 is normal priority')
         t.ok(moment.isDate(reviewedRetryCount0Job[0].dateFinished), 'Reviewed job 1 dateFinished is a date')
         t.equal(reviewedRetryCount0Job[0].retryCount, 1, 'Reviewed job 1 retryCount is 1')
         t.ok(moment.isDate(reviewedRetryCount0Job[0].log[1].date), 'Log date is a date')

@@ -1,6 +1,10 @@
 # WORKLOG
 
-Update events in tests to support x of y.
+Check for invalid priority values for job options.
+
+## Update events in tests to support x of y
+
+*   queue-process.spec Done!
 
 ## Notes for documentation
 

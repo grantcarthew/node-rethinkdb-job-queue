@@ -13,7 +13,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(186)
+      t.plan(195)
 
       // ---------- Test Setup ----------
       const q = new Queue(testOptions.master(5))
@@ -21,70 +21,89 @@ module.exports = function () {
 
       let jobs
       let jobDelay = 200
-      let completedEventCounter = 0
       const noOfJobsToCreate = 10
       const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
 
       let testEvents = false
-      function readyEventHandler (qid) {
-        if (testEvents) {
-          t.pass(`Queue ready [${qid}]`)
-        }
-      }
+      let reviewedEventCount = 0
+      const reviewedEventTotal = 6
       function reviewedEventHandler (replaceCount) {
         if (testEvents) {
-          t.pass(`Event: reviewed [${replaceCount}]`)
+          reviewedEventCount++
+          t.pass(`Event: reviewed [${reviewedEventCount} of ${reviewedEventTotal}] [${replaceCount}]`)
         }
       }
+      let pausedEventCount = 0
+      const pausedEventTotal = 2
       function pausedEventHandler (qid) {
         if (testEvents) {
-          t.pass(`Event: Queue paused [${qid}]`)
+          pausedEventCount++
+          t.pass(`Event: paused [${pausedEventCount} of ${pausedEventTotal}] [${qid}]`)
         }
       }
+      let resumedEventCount = 0
+      const resumedEventTotal = 3
       function resumedEventHandler (qid) {
         if (testEvents) {
-          t.pass(`Event: Queue resumed [${qid}]`)
+          resumedEventCount++
+          t.pass(`Event: resumed [${resumedEventCount} of ${resumedEventTotal}] [${qid}]`)
         }
       }
+      let processingEventCount = 0
+      const processingEventTotal = 35
       function processingEventHandler (jobId) {
         if (testEvents) {
+          processingEventCount++
           t.ok(is.uuid(jobId),
-            `Event: Queue processing [${jobId}]`)
+            `Event: processing [${processingEventCount} of ${processingEventTotal}] [${jobId}]`)
         }
       }
+      let completedEventCount = 0
+      const completedEventTotal = 30
       function completedEventHandler (jobId) {
         if (testEvents) {
-          completedEventCounter++
+          completedEventCount++
           t.ok(is.uuid(jobId),
-            `Event: Queue completed [${completedEventCounter}] [${jobId}]`)
+            `Event: completed [${completedEventCount} of ${completedEventTotal}] [${jobId}]`)
         }
       }
+      let cancelledEventCount = 0
+      const cancelledEventTotal = 1
       function cancelledEventHandler (jobId) {
         if (testEvents) {
+          cancelledEventCount++
           t.ok(is.uuid(jobId),
-            `Event: Queue cancelled [${jobId}]`)
+            `Event: cancelled [${cancelledEventCount} of ${cancelledEventTotal}] [${jobId}]`)
         }
       }
+      let idleEventCount = 0
+      const idleEventTotal = 10
       function idleEventHandler (qid) {
         if (testEvents) {
-          t.pass(`Event: Queue idle [${qid}]`)
+          idleEventCount++
+          t.pass(`Event: idle [${idleEventCount} of ${idleEventTotal}] [${qid}]`)
         }
       }
+      let failedEventCount = 0
+      const failedEventTotal = 3
       function failedEventHandler (jobId) {
         if (testEvents) {
+          failedEventCount++
           t.ok(is.uuid(jobId),
-            `Event: Queue failed [${jobId}]`)
+            `Event: failed [${failedEventCount} of ${failedEventTotal}] [${jobId}]`)
         }
       }
+      let terminatedEventCount = 0
+      const terminatedEventTotal = 1
       function terminatedEventHandler (jobId) {
         if (testEvents) {
+          terminatedEventCount++
           t.ok(is.uuid(jobId),
-            `Event: Queue terminated [${jobId}]`)
+            `Event: terminated [${terminatedEventCount} of ${terminatedEventTotal}] [${jobId}]`)
         }
       }
       function addEventHandlers () {
         testEvents = true
-        q.on(enums.status.ready, readyEventHandler)
         q.on(enums.status.reviewed, reviewedEventHandler)
         q.on(enums.status.paused, pausedEventHandler)
         q.on(enums.status.resumed, resumedEventHandler)
@@ -97,7 +116,6 @@ module.exports = function () {
       }
       function removeEventHandlers () {
         testEvents = false
-        q.removeListener(enums.status.ready, readyEventHandler)
         q.removeListener(enums.status.reviewed, reviewedEventHandler)
         q.removeListener(enums.status.paused, pausedEventHandler)
         q.removeListener(enums.status.resumed, resumedEventHandler)
@@ -169,7 +187,7 @@ module.exports = function () {
       }).delay(jobDelay / 2).then(() => {
         t.equal(q._running, q._concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
-        t.equal(completedEventCounter, noOfJobsToCreate, `Queue has completed ${completedEventCounter} jobs`)
+        t.equal(completedEventCount, noOfJobsToCreate, `Queue has completed ${completedEventCount} jobs`)
         t.ok(q.idle, 'Queue is idle')
 
         // ---------- Processing Restart on Job Add Test ----------
@@ -180,7 +198,7 @@ module.exports = function () {
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
       }).delay(allJobsDelay).then(() => {
-        t.equal(completedEventCounter, noOfJobsToCreate * 2, `Queue has completed ${completedEventCounter} jobs`)
+        t.equal(completedEventCount, noOfJobsToCreate * 2, `Queue has completed ${completedEventCount} jobs`)
         t.ok(q.idle, 'Queue is idle')
         return q.pause()
       }).then(() => {
@@ -195,7 +213,7 @@ module.exports = function () {
       }).then(() => {
         return queueProcess.restart(q)
       }).delay(allJobsDelay).then(() => {
-        t.equal(completedEventCounter, noOfJobsToCreate * 3, `Queue has completed ${completedEventCounter} jobs`)
+        t.equal(completedEventCount, noOfJobsToCreate * 3, `Queue has completed ${completedEventCount} jobs`)
         t.pass('Restart processing succeeded')
         t.ok(q.idle, 'Queue is idle')
 
@@ -236,6 +254,19 @@ module.exports = function () {
 
         // ---------- Test Cleanup ----------
         removeEventHandlers()
+
+        // ---------- Event Summary ----------
+        t.comment('queue-process: Event Summary')
+        t.equal(reviewedEventCount, reviewedEventTotal, `Total reviewed events: [${reviewedEventTotal}]`)
+        t.equal(pausedEventCount, pausedEventTotal, `Total paused events: [${pausedEventTotal}]`)
+        t.equal(resumedEventCount, resumedEventTotal, `Total resumed events: [${resumedEventTotal}]`)
+        t.equal(processingEventCount, processingEventTotal, `Total processing events: [${processingEventTotal}]`)
+        t.equal(completedEventCount, completedEventTotal, `Total completed events: [${completedEventTotal}]`)
+        t.equal(cancelledEventCount, cancelledEventTotal, `Total cancelled events: [${cancelledEventTotal}]`)
+        t.equal(idleEventCount, idleEventTotal, `Total idle events: [${idleEventTotal}]`)
+        t.equal(failedEventCount, failedEventTotal, `Total failed events: [${failedEventTotal}]`)
+        t.equal(terminatedEventCount, terminatedEventTotal, `Total terminated events: [${terminatedEventTotal}]`)
+
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

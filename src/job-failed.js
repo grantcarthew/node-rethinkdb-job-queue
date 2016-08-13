@@ -14,7 +14,6 @@ module.exports = function failed (err, job, data) {
   if (isRetry) {
     job.status = enums.status.failed
     job.retryCount++
-    job.priority = 1
     logType = enums.log.warning
   } else {
     job.status = enums.status.terminated
