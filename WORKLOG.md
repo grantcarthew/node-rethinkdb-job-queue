@@ -2,6 +2,8 @@
 
 Check for invalid priority values for job options.
 
+Progress updates should update the local object also.
+
 ## Update events in tests to support x of y
 
 *   queue-process.spec Done!
