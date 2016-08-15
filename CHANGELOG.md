@@ -3,6 +3,7 @@
 ## v0.0.4 / 2016-08
 
 *   Removed 'retry' job priority.
+*   Added process timeout extender when progress updated.
 
 ## v0.0.3 / 2016-08-12
 

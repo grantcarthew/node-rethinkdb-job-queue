@@ -13,7 +13,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(195)
+      t.plan(207)
 
       // ---------- Test Setup ----------
       const q = new Queue(testOptions.master(5))
@@ -26,7 +26,7 @@ module.exports = function () {
 
       let testEvents = false
       let reviewedEventCount = 0
-      const reviewedEventTotal = 6
+      const reviewedEventTotal = 7
       function reviewedEventHandler (replaceCount) {
         if (testEvents) {
           reviewedEventCount++
@@ -50,7 +50,7 @@ module.exports = function () {
         }
       }
       let processingEventCount = 0
-      const processingEventTotal = 35
+      const processingEventTotal = 36
       function processingEventHandler (jobId) {
         if (testEvents) {
           processingEventCount++
@@ -58,8 +58,17 @@ module.exports = function () {
             `Event: processing [${processingEventCount} of ${processingEventTotal}] [${jobId}]`)
         }
       }
+      let progressEventCount = 0
+      const progressEventTotal = 1
+      function progressEventHandler (jobId, percent) {
+        if (testEvents) {
+          progressEventCount++
+          t.ok(is.uuid(jobId),
+            `Event: progress ${percent} [${progressEventCount} of ${progressEventTotal}] [${jobId}]`)
+        }
+      }
       let completedEventCount = 0
-      const completedEventTotal = 30
+      const completedEventTotal = 31
       function completedEventHandler (jobId) {
         if (testEvents) {
           completedEventCount++
@@ -77,7 +86,7 @@ module.exports = function () {
         }
       }
       let idleEventCount = 0
-      const idleEventTotal = 10
+      const idleEventTotal = 12
       function idleEventHandler (qid) {
         if (testEvents) {
           idleEventCount++
@@ -108,6 +117,7 @@ module.exports = function () {
         q.on(enums.status.paused, pausedEventHandler)
         q.on(enums.status.resumed, resumedEventHandler)
         q.on(enums.status.processing, processingEventHandler)
+        q.on(enums.status.progress, progressEventHandler)
         q.on(enums.status.completed, completedEventHandler)
         q.on(enums.status.cancelled, cancelledEventHandler)
         q.on(enums.status.idle, idleEventHandler)
@@ -120,6 +130,7 @@ module.exports = function () {
         q.removeListener(enums.status.paused, pausedEventHandler)
         q.removeListener(enums.status.resumed, resumedEventHandler)
         q.removeListener(enums.status.processing, processingEventHandler)
+        q.removeListener(enums.status.processing, progressEventHandler)
         q.removeListener(enums.status.completed, completedEventHandler)
         q.removeListener(enums.status.cancelled, cancelledEventHandler)
         q.removeListener(enums.status.idle, idleEventHandler)
@@ -129,6 +140,7 @@ module.exports = function () {
 
       let testTimes = false
       let tryCount = 0
+      let updateProgress = false
       let testCancel = false
       function testHandler (job, next) {
         if (testTimes) {
@@ -141,10 +153,17 @@ module.exports = function () {
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
         if (testCancel) {
           const cancelErr = new Error(testData)
-          cancelErr.cancelJob = true
-          cancelErr.cancelReason = testData
+          cancelErr.cancelJob = testData
           next(cancelErr)
         } else {
+          if (updateProgress) {
+            setTimeout(function () {
+              return job.setProgress(50).then((result) => {
+                t.ok(result, 'Job progress updated: ' + job.id)
+              })
+            }, jobDelay / 2)
+          }
+
           setTimeout(function () {
             next(null, 'Job Completed: ' + job.id)
             .then((runningJobs) => {
@@ -238,6 +257,25 @@ module.exports = function () {
       }).then(() => {
         jobs = q.createJob().setPayload(testData)
 
+        // ---------- Processing with Job Timeout Extended Test ----------
+        t.comment('queue-process: Processing with Job Timeout Extended')
+        jobs = q.createJob().setPayload(testData)
+        jobs.timeout = 1
+        jobs.retryMax = 0
+        jobDelay = 1500
+        testTimes = true // Enables handler time testing
+        updateProgress = true // Enables the handler job progress updates
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
+      }).delay(5200).then(() => {
+        jobDelay = 200
+        testTimes = false
+        updateProgress = false
+        // t.equal(tryCount, 4, 'Job failed and retried correctly')
+      }).then(() => {
+        jobs = q.createJob().setPayload(testData)
+
         // ---------- Processing with Cancel Test ----------
         t.comment('queue-process: Processing with Cancel')
         testCancel = true
@@ -248,7 +286,7 @@ module.exports = function () {
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job is cancelled')
         return q.summary()
       }).then((queueSummary) => {
-        t.equal(queueSummary.completed, 30, 'Summary 30 jobs completed')
+        t.equal(queueSummary.completed, 31, 'Summary 31 jobs completed')
         t.equal(queueSummary.cancelled, 1, 'Summary 1 job cancelled')
         t.equal(queueSummary.terminated, 1, 'Summary 1 job terminated')
 
@@ -261,6 +299,7 @@ module.exports = function () {
         t.equal(pausedEventCount, pausedEventTotal, `Total paused events: [${pausedEventTotal}]`)
         t.equal(resumedEventCount, resumedEventTotal, `Total resumed events: [${resumedEventTotal}]`)
         t.equal(processingEventCount, processingEventTotal, `Total processing events: [${processingEventTotal}]`)
+        t.equal(progressEventCount, progressEventTotal, `Total progress events: [${progressEventTotal}]`)
         t.equal(completedEventCount, completedEventTotal, `Total completed events: [${completedEventTotal}]`)
         t.equal(cancelledEventCount, cancelledEventTotal, `Total cancelled events: [${cancelledEventTotal}]`)
         t.equal(idleEventCount, idleEventTotal, `Total idle events: [${idleEventTotal}]`)

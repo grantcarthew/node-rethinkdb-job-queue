@@ -7,7 +7,7 @@ const jobCompleted = require('./job-completed')
 const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 
-const jobRun = function jobRun (job) {
+function jobRun (job) {
   logger('jobRun', `Running: [${job.q.running}]`)
   let handled = false
   let jobTimeoutId
@@ -23,6 +23,7 @@ const jobRun = function jobRun (job) {
       return Promise.resolve(job.q.running)
     }
     handled = true
+    job.q.removeListener(enums.status.progress, progressHandler)
     clearTimeout(jobTimeoutId)
     if (err && err.cancelJob) {
       finalPromise = queueCancelJob(job.q, job, err.cancelJob)
@@ -38,11 +39,23 @@ const jobRun = function jobRun (job) {
     })
   }
 
-  const timedOutMessage = `Job timed out (run time > ${job.timeout} sec)`
-  jobTimeoutId = setTimeout(function timeoutHandler () {
-    logger('timeoutHandler called, job timeout value exceeded')
+  function timeoutHandler () {
+    logger('timeoutHandler called, job timeout value exceeded', job.timeout)
+    const timedOutMessage = `Job timed out (run time > ${job.timeout} sec)`
     nextHandler(new Error(timedOutMessage))
-  }, job.timeout * 1000)
+  }
+
+  function progressHandler (jobId, percent) {
+    logger('progressHandler')
+    if (jobId === job.id) {
+      logger('progressHandler, timeout value extended')
+      clearTimeout(jobTimeoutId)
+      jobTimeoutId = setTimeout(timeoutHandler, job.timeout * 1000)
+    }
+  }
+
+  jobTimeoutId = setTimeout(timeoutHandler, job.timeout * 1000)
+  job.q.on(enums.status.progress, progressHandler)
   logger(`Event: processing [${job.id}]`)
   job.q.emit(enums.status.processing, job.id)
   logger('calling handler function')
