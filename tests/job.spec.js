@@ -12,7 +12,7 @@ const testOptions = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(70)
+      t.plan(71)
 
       const q = new Queue(testOptions.default())
 
@@ -70,7 +70,7 @@ module.exports = function () {
 
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
-      const cleanJob = newJob.getCleanCopy()
+      let cleanJob = newJob.getCleanCopy()
       t.equal(Object.keys(cleanJob).length, 13, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
       t.equal(cleanJob.payload, newJob.payload, 'Clean job payload is valid')
@@ -85,6 +85,10 @@ module.exports = function () {
       t.equal(cleanJob.dateRetry, newJob.dateRetry, 'Clean job dateRetry is valid')
       t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
       t.equal(cleanJob.queueId, newJob.queueId, 'Clean job progress is valid')
+
+      cleanJob = newJob.getCleanCopy(true)
+      t.equal(cleanJob.priority, 'normal', 'Clean job priorityAsString priority is normal')
+
 
       // ---------- Create Log Tests ----------
       t.comment('job: Create Log')

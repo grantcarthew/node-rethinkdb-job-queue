@@ -5,7 +5,6 @@ const is = require('../src/is')
 const testError = require('./test-error')
 const testOptions = require('./test-options')
 const testData = require('./test-options').testData
-const jobOptions = require('../src/job-options')
 const Queue = require('../src/queue')
 
 module.exports = function () {
@@ -167,7 +166,7 @@ module.exports = function () {
         q.jobOptions = customJobOptions
         t.deepEqual(q.jobOptions, customJobOptions, 'Job options set successfully')
         q.jobOptions = null
-        t.deepEqual(q.jobOptions, jobOptions(), 'Job options restored to default on invalid value')
+        t.deepEqual(q.jobOptions, customJobOptions, 'Job options restored to default on invalid value')
         q.concurrency = 100
         t.equal(q.concurrency, 100, 'Queue concurrency set with valid value successfully')
         q.concurrency = -50
@@ -181,10 +180,17 @@ module.exports = function () {
         t.comment('queue: Create Job')
         job = q.createJob().setPayload(testData)
         t.ok(is.job(job), 'Queue createJob created a job object')
-        t.equal(job.priority, enums.priorityFromValue(40), 'Queue created job with default priority')
-        t.equal(job.timeout, enums.options.timeout, 'Queue created job with default timeout')
-        t.equal(job.retryMax, enums.options.retryMax, 'Queue created job with default retryMax')
-        t.equal(job.retryDelay, enums.options.retryDelay, 'Queue created job with default retryDelay')
+        t.equal(job.priority, customJobOptions.priority, 'Queue created job with new default priority')
+        t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with new default timeout')
+        t.equal(job.retryMax, customJobOptions.retryMax, 'Queue created job with new default retryMax')
+        t.equal(job.retryDelay, customJobOptions.retryDelay, 'Queue created job with new default retryDelay')
+
+        customJobOptions = {
+          priority: 'low',
+          timeout: 400,
+          retryMax: 2,
+          retryDelay: 900
+        }
         job = q.createJob(customJobOptions).setPayload(testData)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')

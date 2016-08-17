@@ -37,7 +37,7 @@ const enums = module.exports = {
     cancelled: 'cancelled',
     failed: 'failed',
     terminated: 'terminated',
-    log: 'log'
+    log: 'log' // Event only, not a job status
   },
   options: {
     name: 'rjqJobList',
@@ -45,6 +45,7 @@ const enums = module.exports = {
     port: 28015,
     db: 'rjqJobQueue',
     masterInterval: 310,
+    priority: 'normal',
     timeout: 300,
     retryMax: 3,
     retryDelay: 600,

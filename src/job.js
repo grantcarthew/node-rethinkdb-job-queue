@@ -27,7 +27,7 @@ class Job {
       if (!options) {
         options = jobOptions()
       } else {
-        options = jobOptions(options)
+        options = jobOptions(this, options)
       }
       const now = moment().toDate()
       this.id = uuid.v4()
@@ -63,10 +63,12 @@ class Job {
     })
   }
 
-  getCleanCopy () {
+  getCleanCopy (priorityAsString) {
     logger('getCleanCopy')
     const jobCopy = Object.assign({}, this)
-    jobCopy.priority = enums.priority[jobCopy.priority]
+    if (!priorityAsString) {
+      jobCopy.priority = enums.priority[jobCopy.priority]
+    }
     delete jobCopy.q
     return jobCopy
   }

@@ -4,6 +4,8 @@
 
 *   Removed 'retry' job priority.
 *   Added process timeout extender when progress updated.
+*   Added priorityAsString to 'Job.getCleanCopy'.
+*   Fixed job-options so it keeps current if only one supplied.
 
 ## v0.0.3 / 2016-08-12
 

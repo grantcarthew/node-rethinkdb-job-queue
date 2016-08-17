@@ -2,6 +2,12 @@
 
 Check for invalid priority values for job options.
 
+Check for valid port range 1 to 65535.
+
+Checkout the createIndexInactivePriorityDateCreated index added status.
+
+Some way of getting job logs?
+
 ## Update events in tests to support x of y
 
 *   queue-process.spec Done!
