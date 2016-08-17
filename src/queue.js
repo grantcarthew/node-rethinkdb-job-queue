@@ -73,7 +73,7 @@ class Queue extends EventEmitter {
 
   set jobOptions (options) {
     logger('set jobOptions', options)
-    this._jobOptions = jobOptions(this._jobOptions, options)
+    this._jobOptions = jobOptions(options, this._jobOptions)
   }
 
   set concurrency (value) {

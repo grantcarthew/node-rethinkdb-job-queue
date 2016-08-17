@@ -16,7 +16,8 @@ module.exports = function () {
 
       const q = new Queue(testOptions.default())
 
-      const newJob = new Job(q).setPayload(testData)
+      const newJob = new Job(q)
+      newJob.data = testData
       let savedJob
 
       // ---------- Event Handler Setup ----------
@@ -55,7 +56,7 @@ module.exports = function () {
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(is.uuid(newJob.id), 'New job has valid id')
-      t.equal(newJob.payload, testData, 'New job payload is valid')
+      t.equal(newJob.data, testData, 'New job data is valid')
       t.equal(newJob.priority, 'normal', 'New job priority is normal')
       t.equal(newJob.status, 'created', 'New job status is created')
       t.equal(newJob.timeout, 300, 'New job timeout is 300')
@@ -73,7 +74,7 @@ module.exports = function () {
       let cleanJob = newJob.getCleanCopy()
       t.equal(Object.keys(cleanJob).length, 13, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
-      t.equal(cleanJob.payload, newJob.payload, 'Clean job payload is valid')
+      t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
       t.equal(cleanJob.priority, enums.priority[newJob.priority], 'Clean job priority is valid')
       t.equal(cleanJob.timeout, newJob.timeout, 'Clean job timeoue is valid')
       t.equal(cleanJob.retryDelay, newJob.retryDelay, 'Clean job retryDelay is valid')
@@ -88,7 +89,6 @@ module.exports = function () {
 
       cleanJob = newJob.getCleanCopy(true)
       t.equal(cleanJob.priority, 'normal', 'Clean job priorityAsString priority is normal')
-
 
       // ---------- Create Log Tests ----------
       t.comment('job: Create Log')
@@ -118,7 +118,7 @@ module.exports = function () {
       }).then((newJobFromData) => {
         t.equal(newJobFromData.id, savedJob.id, 'New job from data created successfully')
         t.deepEqual(newJobFromData.q, savedJob.q, 'New job from data queue valid')
-        t.equal(newJobFromData.payload, savedJob.payload, 'New job from data job payload is valid')
+        t.equal(newJobFromData.data, savedJob.data, 'New job from data job data is valid')
         t.equal(newJobFromData.priority, savedJob.priority, 'New job from data priority is valid')
         t.equal(newJobFromData.timeout, savedJob.timeout, 'New job from data timeout is valid')
         t.equal(newJobFromData.retryDelay, savedJob.retryDelay, 'New job from data retryDelay is valid')

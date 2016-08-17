@@ -3,7 +3,6 @@ const Promise = require('bluebird')
 const is = require('../src/is')
 const testError = require('./test-error')
 const enums = require('../src/enums')
-const testData = require('./test-options').testData
 const Queue = require('../src/queue')
 const testOptions = require('./test-options')
 
@@ -89,7 +88,7 @@ module.exports = function () {
         return q.resume()
       }
 
-      let job = q.createJob().setPayload(testData)
+      let job = q.createJob()
       let processDelay = 500
 
       return q.reset().then((resetResult) => {
@@ -120,7 +119,7 @@ module.exports = function () {
         // t.ok(q.paused, 'Queue paused')
         return q.removeJob(job.id)
       }).delay(processDelay).then(() => {
-        job = q.createJob().setPayload(testData)
+        job = q.createJob()
         job.timeout = processDelay / 2000
         job.retryDelay = 0
         job.retryMax = 1
@@ -136,7 +135,7 @@ module.exports = function () {
       }).delay(processDelay * 2).then(() => {
         return q.pause()
       }).delay(processDelay).then(() => {
-        job = q.createJob().setPayload(testData)
+        job = q.createJob()
 
         // ---------- Test log and cancelled ----------
         t.comment('queue-change: log and cancelled change events')

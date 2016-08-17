@@ -25,38 +25,38 @@ module.exports = function () {
       }
       q.on(enums.status.active, activeEventHandler)
 
-      const jobLowest = q.createJob({priority: 'lowest'}).setPayload(testData)
+      const jobLowest = q.createJob({priority: 'lowest'})
       jobLowest.status = enums.status.added
       jobLowest.data = 'Lowest'
-      const jobLow = q.createJob({priority: 'low'}).setPayload(testData)
+      const jobLow = q.createJob({priority: 'low'})
       jobLow.status = enums.status.added
       jobLow.data = 'Low'
-      const jobNormal = q.createJob({priority: 'normal'}).setPayload(testData)
+      const jobNormal = q.createJob({priority: 'normal'})
       jobNormal.status = enums.status.added
       jobNormal.data = 'Normal'
-      const jobMedium = q.createJob({priority: 'medium'}).setPayload(testData)
+      const jobMedium = q.createJob({priority: 'medium'})
       jobMedium.status = enums.status.added
       jobMedium.data = 'Medium'
-      const jobHigh = q.createJob({priority: 'high'}).setPayload(testData)
+      const jobHigh = q.createJob({priority: 'high'})
       jobHigh.status = enums.status.added
       jobHigh.data = 'High'
-      const jobHighest = q.createJob({priority: 'highest'}).setPayload(testData)
+      const jobHighest = q.createJob({priority: 'highest'})
       jobHighest.status = enums.status.added
       jobHighest.data = 'Highest'
-      const jobFailed = q.createJob({priority: 'highest'}).setPayload(testData)
+      const jobFailed = q.createJob({priority: 'highest'})
       jobFailed.status = enums.status.failed
       jobFailed.data = 'Failed'
       jobFailed.dateCreated = moment().add(-1, 'seconds').toDate()
-      const jobActive = q.createJob({priority: 'normal'}).setPayload(testData)
+      const jobActive = q.createJob({priority: 'normal'})
       jobActive.status = enums.status.active
       jobActive.data = 'Active'
-      const jobCompleted = q.createJob({priority: 'normal'}).setPayload(testData)
+      const jobCompleted = q.createJob({priority: 'normal'})
       jobCompleted.status = enums.status.completed
       jobCompleted.data = 'Completed'
       const jobCancelled = q.createJob({priority: 'normal'})
       jobCancelled.status = enums.status.cancelled
       jobCancelled.data = 'Cancelled'
-      const jobTerminated = q.createJob({priority: 'normal'}).setPayload(testData)
+      const jobTerminated = q.createJob({priority: 'normal'})
       jobTerminated.status = enums.status.terminated
       jobTerminated.data = 'Terminated'
       let allCreatedJobs = [
@@ -156,7 +156,7 @@ module.exports = function () {
         t.equals(noneLeft.length, 0, 'Skips active, completed, and terminated jobs')
         let moreJobs = []
         for (let i = 0; i < 7; i++) {
-          moreJobs.push(q.createJob().setPayload(testData))
+          moreJobs.push(q.createJob())
         }
         return q.addJob(moreJobs)
       }).then((moreSavedJobs) => {
@@ -205,7 +205,7 @@ module.exports = function () {
 
         // ---------- Testing dateRetry Values ----------
         t.comment('queue-get-next-job: dateRetry Values')
-        retryJobs = q.createJob(2).map(j => j.setPayload(testData))
+        retryJobs = q.createJob(2).map(j => j)
         retryJobs[0].dateRetry = moment().add(100, 'seconds').toDate()
         retryJobs[1].dateRetry = moment().add(-100, 'seconds').toDate()
         return q.addJob(retryJobs)
@@ -218,7 +218,7 @@ module.exports = function () {
 
         // ---------- Testing dateRetry with retryCount ----------
         t.comment('queue-get-next-job: dateRetry with retryCount')
-        retryJobs = q.createJob(4).map(j => j.setPayload(testData))
+        retryJobs = q.createJob(4).map(j => j)
         retryJobs[0].retryCount = 0
         retryJobs[0].dateRetry = moment().add(-100, 'seconds').toDate()
         retryJobs[1].retryCount = 1

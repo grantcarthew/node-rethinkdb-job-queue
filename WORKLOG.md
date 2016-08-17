@@ -26,6 +26,6 @@ Queue.ready() returns false if the queue has been detached from the database.
 
 Reviewed event has an object for args that includes reviewed and removed jobs.
 
-if using createJob(number) will need to map `q.createJob(jobsToCreate).map(j => j.setPayload(testData))`
+if using createJob(number) will need to map `q.createJob(jobsToCreate).map(j => j)`
 
 Write about the different Queue status and Job status values.

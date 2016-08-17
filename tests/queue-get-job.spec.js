@@ -14,9 +14,9 @@ module.exports = function () {
       t.plan(13)
 
       const q = new Queue(testOptions.default())
-      const job1 = q.createJob().setPayload(testData)
-      const job2 = q.createJob().setPayload(testData)
-      const job3 = q.createJob().setPayload(testData)
+      const job1 = q.createJob()
+      const job2 = q.createJob()
+      const job3 = q.createJob()
       const jobs = [
         job1,
         job2,

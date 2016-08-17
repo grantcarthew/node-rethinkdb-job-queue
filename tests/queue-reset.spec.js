@@ -15,9 +15,9 @@ module.exports = function () {
 
       const q = new Queue(testOptions.default())
       const jobs = [
-        q.createJob().setPayload(testData),
-        q.createJob().setPayload(testData),
-        q.createJob().setPayload(testData)
+        q.createJob(),
+        q.createJob(),
+        q.createJob()
       ]
       let eventCount = 0
       function resetEventHandler (total) {

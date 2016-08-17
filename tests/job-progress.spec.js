@@ -14,7 +14,7 @@ module.exports = function () {
       t.plan(23)
 
       const q = new Queue(testOptions.default())
-      const job = q.createJob().setPayload(testData)
+      const job = q.createJob()
       job.timeout = 300
       job.retryDelay = 600
       job.retryCount = 0

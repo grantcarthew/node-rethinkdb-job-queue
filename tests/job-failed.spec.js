@@ -51,7 +51,8 @@ module.exports = function () {
         q.removeListener(enums.status.removed, removedEventHandler)
       }
 
-      let job = q.createJob().setPayload(testData)
+      let job = q.createJob()
+      job.data = testData
       const err = new Error('Test error from job-failed tests')
 
       return q.reset().then((resetResult) => {
@@ -82,7 +83,7 @@ module.exports = function () {
         t.ok(retry1[0].log[1].retryCount = 1, 'Log retryCount is valid')
         t.ok(retry1[0].log[1].message, 'Log message exists')
         t.ok(retry1[0].log[1].duration >= 0, 'Log duration is >= 0')
-        t.equal(retry1[0].log[1].data, job.payload, 'Log data is valid')
+        t.equal(retry1[0].log[1].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed Retry 1 Test ----------
         t.comment('job-failed: First Retry Job Failure')
@@ -104,7 +105,7 @@ module.exports = function () {
         t.ok(retry2[0].log[2].retryCount = 2, 'Log retryCount is valid')
         t.ok(retry2[0].log[2].message, 'Log message exists')
         t.ok(retry2[0].log[2].duration >= 0, 'Log duration is >= 0')
-        t.equal(retry2[0].log[2].data, job.payload, 'Log data is valid')
+        t.equal(retry2[0].log[2].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed Retry 2 Test ----------
         t.comment('job-failed: Second Retry Job Failure')
@@ -127,7 +128,7 @@ module.exports = function () {
         t.ok(retry3[0].log[3].retryCount = 3, 'Log retryCount is valid')
         t.ok(retry3[0].log[3].message, 'Log message exists')
         t.ok(retry3[0].log[3].duration >= 0, 'Log duration is >= 0')
-        t.equal(retry3[0].log[3].data, job.payload, 'Log data is valid')
+        t.equal(retry3[0].log[3].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed Retry 3 Test ----------
         t.comment('job-failed: Third and Final Retry Job Failure')
@@ -150,11 +151,12 @@ module.exports = function () {
         t.ok(failed[0].log[4].retryCount = 3, 'Log retryCount is valid')
         t.ok(failed[0].log[4].message, 'Log message exists')
         t.ok(failed[0].log[4].duration >= 0, 'Log duration is >= 0')
-        t.equal(failed[0].log[4].data, job.payload, 'Log data is valid')
+        t.equal(failed[0].log[4].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed with Remove Finished Jobs Test ----------
         t.comment('job-failed: Job Terminated with Remove Finished Jobs')
-        job = q.createJob().setPayload(testData)
+        job = q.createJob()
+        job.data = testData
         job.retryMax = 0
         q._removeFinishedJobs = true
         return q.addJob(job)

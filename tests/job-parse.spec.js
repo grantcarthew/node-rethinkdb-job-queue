@@ -3,7 +3,6 @@ const is = require('../src/is')
 const jobParse = require('../src/job-parse')
 const Job = require('../src/job')
 const uuid = require('node-uuid')
-const testData = require('./test-options').testData
 
 module.exports = function () {
   test('job-parse', (t) => {
@@ -48,7 +47,7 @@ module.exports = function () {
     // ---------- Parse Single Job ----------
     t.comment('job-parse: Parse Single Job')
     const mockQueue = { id: uuid.v4(), name: 'fake' }
-    let job = new Job(mockQueue).setPayload(testData)
+    let job = new Job(mockQueue)
     t.throws(() => { jobParse.job({}) }, 'Throws error if not a valid job for id')
     t.ok(is.array(jobParse.job()), 'Null or undefined returns an array')
     t.equal(jobParse.job().length, 0, 'Null or undefined returns an empty array')
@@ -59,9 +58,9 @@ module.exports = function () {
     // ---------- Parse Array of Jobs ----------
     t.comment('job-parse: Parse Job Array')
     let jobs = [
-      new Job(mockQueue).setPayload(testData),
-      new Job(mockQueue).setPayload(testData),
-      new Job(mockQueue).setPayload(testData)
+      new Job(mockQueue),
+      new Job(mockQueue),
+      new Job(mockQueue)
     ]
     let jobsResult = jobParse.job(jobs)
     t.ok(is.array(jobsResult), 'Array of jobs returns an array')
@@ -70,43 +69,43 @@ module.exports = function () {
 
     // ---------- Parse Invalid Job ----------
     t.comment('job-parse: Parse Invalid Job')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.id = 'not an id'
     t.throws(() => { jobParse.job(job) }, 'Invalid job id throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.q = null
     t.throws(() => { jobParse.job(job) }, 'Invalid job queue throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.priority = null
     t.throws(() => { jobParse.job(job) }, 'Invalid job priority throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.timeout = -1
     t.throws(() => { jobParse.job(job) }, 'Invalid job timeout throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.retryDelay = -1
     t.throws(() => { jobParse.job(job) }, 'Invalid job retryDelay throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.retryMax = -1
     t.throws(() => { jobParse.job(job) }, 'Invalid job retryMax throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.retryCount = -1
     t.throws(() => { jobParse.job(job) }, 'Invalid job retryCount throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.status = null
     t.throws(() => { jobParse.job(job) }, 'Invalid job status throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.log = {}
     t.throws(() => { jobParse.job(job) }, 'Invalid job log throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.dateCreated = {}
     t.throws(() => { jobParse.job(job) }, 'Invalid job dateCreated throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.dateRetry = {}
     t.throws(() => { jobParse.job(job) }, 'Invalid job dateRetry throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.progress = 101
     t.throws(() => { jobParse.job(job) }, 'Invalid job progress throws an exception')
-    job = new Job(mockQueue).setPayload(testData)
+    job = new Job(mockQueue)
     job.queueId = null
     t.throws(() => { jobParse.job(job) }, 'Invalid job queueId throws an exception')
   })

@@ -15,7 +15,8 @@ module.exports = function () {
       t.plan(24)
 
       const q = new Queue(testOptions.default())
-      let job = q.createJob().setPayload(testData)
+      let job = q.createJob()
+      job.data = testData
       let testLog
       let extra = 'extra data'
 

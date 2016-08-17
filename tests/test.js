@@ -1,7 +1,7 @@
 const Queue = require('../src/queue')
 const q = new Queue()
 
-let job = q.createJob().setPayload('job data goes here')
+let job = q.createJob()
 
 // console.log(job)
 // console.dir(job)

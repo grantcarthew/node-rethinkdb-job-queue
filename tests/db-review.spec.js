@@ -47,34 +47,40 @@ module.exports = function () {
         q.removeListener(enums.status.reviewed, reviewedEventHandler)
       }
 
-      let retryCount0Job = q.createJob().setPayload(testData)
+      let retryCount0Job = q.createJob()
+      retryCount0Job.data = testData
       retryCount0Job.status = enums.status.active
       retryCount0Job.dateStarted = moment().add(-400, 'seconds').toDate()
       retryCount0Job.retryCount = 0
       retryCount0Job.retryMax = 1
 
-      let retryCount1Job = q.createJob().setPayload(testData)
+      let retryCount1Job = q.createJob()
+      retryCount1Job.data = testData
       retryCount1Job.status = enums.status.active
       retryCount1Job.dateStarted = moment().add(-400, 'seconds').toDate()
       retryCount1Job.retryCount = 1
       retryCount1Job.retryMax = 1
 
-      let completedJobPre = q.createJob().setPayload(testData)
+      let completedJobPre = q.createJob()
+      completedJobPre.data = testData
       completedJobPre.status = enums.status.completed
       completedJobPre.dateStarted = moment().add(-179, 'days').toDate()
       completedJobPre.dateFinished = moment().add(-179, 'days').toDate()
 
-      let completedJobPost = q.createJob().setPayload(testData)
+      let completedJobPost = q.createJob()
+      completedJobPost.data = testData
       completedJobPost.status = enums.status.completed
       completedJobPost.dateStarted = moment().add(-181, 'days').toDate()
       completedJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
-      let cancelledJobPost = q.createJob().setPayload(testData)
+      let cancelledJobPost = q.createJob()
+      cancelledJobPost.data = testData
       cancelledJobPost.status = enums.status.terminated
       cancelledJobPost.dateStarted = moment().add(-181, 'days').toDate()
       cancelledJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
-      let terminatedJobPost = q.createJob().setPayload(testData)
+      let terminatedJobPost = q.createJob()
+      terminatedJobPost.data = testData
       terminatedJobPost.status = enums.status.terminated
       terminatedJobPost.dateStarted = moment().add(-181, 'days').toDate()
       terminatedJobPost.dateFinished = moment().add(-181, 'days').toDate()

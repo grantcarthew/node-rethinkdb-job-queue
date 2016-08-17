@@ -14,7 +14,7 @@ module.exports = function () {
       t.plan(2)
 
       const q = new Queue(testOptions.default())
-      const job = q.createJob().setPayload(testData)
+      const job = q.createJob()
 
       // ---------- Event Handler Setup ----------
       let testEvents = false

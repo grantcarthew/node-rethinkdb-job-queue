@@ -27,7 +27,7 @@ class Job {
       if (!options) {
         options = jobOptions()
       } else {
-        options = jobOptions(this, options)
+        options = jobOptions(options, this)
       }
       const now = moment().toDate()
       this.id = uuid.v4()
@@ -45,11 +45,6 @@ class Job {
       this.dateFinished
       this.queueId = q.id
     }
-  }
-
-  setPayload (data) {
-    this.payload = data
-    return this
   }
 
   setProgress (percent) {
