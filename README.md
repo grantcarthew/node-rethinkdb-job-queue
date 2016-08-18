@@ -47,6 +47,7 @@ job.denominator = 456
 q.process((job, next) => {
     try {
       let result = job.numerator / job.denominator
+      // Do something with your result
       next(null, result)
     } catch (err) {
       console.error(err)
@@ -64,13 +65,13 @@ return q.addJob(job).catch((err) => {
 
 ```js
 
-// The following is not related to rethinkdb-job-queue
+// The following is not related to rethinkdb-job-queue.
 // nodemailer configuration
 const nodemailer = require('nodemailer')
 const transporter = nodemailer.createTransport({
   service: 'Mailgun',
   auth: {
-    user: 'postmaster@your-domain-here.com',
+    user: 'postmaster@superheros.com',
     pass: 'your-api-key-here'
   }
 })
@@ -117,7 +118,7 @@ const job = q.createJob()
 job.recipient = 'batman@batcave.com'
 
 q.process((job, next) => {
-  // Send email using job.to as the destination address
+  // Send email using job.recipient as the destination address
   mailOptions.to = job.recipient
   transporter.sendMail(mailOptions).then((info) => {
     console.dir(info)

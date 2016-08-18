@@ -219,7 +219,6 @@ module.exports = function () {
       }).delay(allJobsDelay).then(() => {
         t.equal(completedEventCount, noOfJobsToCreate * 2, `Queue has completed ${completedEventCount} jobs`)
         t.ok(q.idle, 'Queue is idle')
-        console.dir(q.listeners)
         return q.pause()
       }).then(() => {
         //

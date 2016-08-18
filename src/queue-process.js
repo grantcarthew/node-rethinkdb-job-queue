@@ -6,12 +6,43 @@ const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
 const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
+const jobTimeouts = new Map()
+
+function addJobTimeout (job, timeoutHandler) {
+  logger('addJobTimeout')
+  const timeoutValue = job.timeout * 1000
+  let jobTimeout = {
+    timeoutHandler,
+    timeoutValue,
+    timeoutId: setTimeout(timeoutHandler, timeoutValue)
+  }
+  jobTimeouts.set(job.id, jobTimeout)
+}
+
+function removeJobTimeout (jobId) {
+  logger('removeJobTimeout')
+  if (jobTimeouts.has(jobId)) {
+    const jobTimeout = jobTimeouts.get(jobId)
+    clearTimeout(jobTimeout.timeoutId)
+    jobTimeouts.delete(jobId)
+  }
+}
+
+function restartJobTimeout (jobId) {
+  logger('resetJobTimeout')
+  let jobTimeout
+  if (jobTimeouts.has(jobId)) {
+    jobTimeout = jobTimeouts.get(jobId)
+    clearTimeout(jobTimeout.timeoutId)
+    jobTimeout.timeoutId = setTimeout(
+      jobTimeout.timeoutHandler,
+      jobTimeout.timeoutValue)
+  }
+}
 
 function jobRun (job) {
   logger('jobRun', `Running: [${job.q.running}]`)
   let handled = false
-  let jobTimeoutId
-  let finalPromise
 
   function nextHandler (err, data) {
     logger('nextHandler', `Running: [${job.q.running}]`)
@@ -23,8 +54,10 @@ function jobRun (job) {
       return Promise.resolve(job.q.running)
     }
     handled = true
-    job.q.removeListener(enums.status.progress, progressHandler)
-    clearTimeout(jobTimeoutId)
+
+    removeJobTimeout(job.id)
+
+    let finalPromise
     if (err && err.cancelJob) {
       finalPromise = queueCancelJob(job.q, job, err.cancelJob)
     } else if (err) {
@@ -45,17 +78,7 @@ function jobRun (job) {
     nextHandler(new Error(timedOutMessage))
   }
 
-  function progressHandler (jobId, percent) {
-    logger('progressHandler')
-    if (jobId === job.id) {
-      logger('progressHandler, timeout value extended')
-      clearTimeout(jobTimeoutId)
-      jobTimeoutId = setTimeout(timeoutHandler, job.timeout * 1000)
-    }
-  }
-
-  jobTimeoutId = setTimeout(timeoutHandler, job.timeout * 1000)
-  job.q.on(enums.status.progress, progressHandler)
+  addJobTimeout(job, timeoutHandler)
   logger(`Event: processing [${job.id}]`)
   job.q.emit(enums.status.processing, job.id)
   logger('calling handler function')
@@ -118,6 +141,8 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
 
   q._handler = handler
   q._running = 0
+  q.on(enums.status.progress, restartJobTimeout)
+
   return Promise.resolve().then(() => {
     if (q.master) { return true }
     return dbReview.runOnce(q)

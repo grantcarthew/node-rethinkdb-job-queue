@@ -1,12 +1,13 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.0.4 / 2016-08
+## v0.0.4 / 2016-08-18
 
 *   Removed 'retry' job priority.
 *   Added process timeout extender when progress updated.
 *   Added priorityAsString to 'Job.getCleanCopy'.
 *   Fixed job-options so it keeps current if only one supplied.
 *   Removed Job.setPayload.
+*   Switched to using Map() for queue-process job timeouts.
 
 ## v0.0.3 / 2016-08-12
 
