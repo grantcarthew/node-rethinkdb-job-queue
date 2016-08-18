@@ -23,6 +23,6 @@ module.exports = function removeJob (q, jobOrId) {
       logger(`Event: removed [${id}]`)
       q.emit(enums.status.removed, id)
     }
-    return dbResult.status(result.removeResult, enums.dbResult.deleted)
+    return result.jobIds
   })
 }

@@ -14,7 +14,7 @@ module.exports = function () {
       t.plan(24)
 
       const q = new Queue(testOptions.default())
-      let jobs = q.createJob(3).map(j => j)
+      let jobs = q.createJob(3)
 
       let testEvents = false
       function removedEventHandler (jobId) {
@@ -42,7 +42,7 @@ module.exports = function () {
         t.comment('queue-remove-job: Remove by Jobs')
         return queueRemoveJob(q, savedJobs)
       }).then((removeResult) => {
-        t.equal(removeResult, 3, 'Jobs removed successfully')
+        t.equal(removeResult.length, 3, 'Jobs removed successfully')
         return q.getJob(jobs.map(j => j.id))
       }).then((getResult) => {
         t.equal(getResult.length, 0, 'Jobs no longer in database')
@@ -55,7 +55,7 @@ module.exports = function () {
         t.comment('queue-remove-job: Remove by Ids')
         return queueRemoveJob(q, savedAgain.map(j => j.id))
       }).then((removeIdResult) => {
-        t.equal(removeIdResult, 3, 'Jobs removed by id successfully')
+        t.equal(removeIdResult.length, 3, 'Jobs removed by id successfully')
         return q.getJob(jobs.map(j => j.id))
       }).then((getResult2) => {
         t.equal(getResult2.length, 0, 'Jobs no longer in database')
@@ -68,7 +68,7 @@ module.exports = function () {
         t.comment('queue-remove-job: Remove Single Job')
         return queueRemoveJob(q, saveSingle)
       }).then((removeSingleResult) => {
-        t.equal(removeSingleResult, 1, 'Single job removed successfully')
+        t.equal(removeSingleResult.length, 1, 'Single job removed successfully')
         return q.getJob(jobs.id)
       }).then((getResult3) => {
         t.equal(getResult3.length, 0, 'Single job no longer in database')
@@ -81,7 +81,7 @@ module.exports = function () {
         t.comment('queue-remove-job: Remove Single Job by Id')
         return queueRemoveJob(q, saveSingle2[0].id)
       }).then((removeSingleResult2) => {
-        t.equal(removeSingleResult2, 1, 'Single job removed by id successfully')
+        t.equal(removeSingleResult2.length, 1, 'Single job removed by id successfully')
         return q.getJob(jobs.id)
       }).then((getResult4) => {
         t.equal(getResult4.length, 0, 'Single job no longer in database')
@@ -90,7 +90,7 @@ module.exports = function () {
         t.comment('queue-remove-job: Remove Undefined Job')
         return queueRemoveJob(q)
       }).then((undefinedResult) => {
-        t.equal(undefinedResult, 0, 'Remove undefined job returns 0 result')
+        t.equal(undefinedResult.length, 0, 'Remove undefined job returns 0 result')
 
         // ---------- Remove Invalid Job Tests ----------
         t.comment('queue-remove-job: Remove Invalid Job')

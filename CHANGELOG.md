@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.0.5 / 2016-08
+
+*   Changed return values of Queue.removeJob to job ids.
+
 ## v0.0.4 / 2016-08-18
 
 *   Removed 'retry' job priority.

@@ -7,9 +7,9 @@ let job = q.createJob()
 // console.dir(job)
 
 q.addJob(job).then((jobs) => {
-  return q.getJob(job.id)
-}).then((savedJobs) => {
-  console.dir(savedJobs[0].getCleanCopy(true))
+  return q.summary()
+}).then((result) => {
+  console.dir(result)
 
   return q.stop()
 })

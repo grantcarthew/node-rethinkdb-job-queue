@@ -232,8 +232,8 @@ module.exports = function () {
         t.comment('queue: Remove Job')
         return q.removeJob(cancelledJobs2[0].id)
       }).then((removedCount) => {
-        t.ok(is.integer(removedCount), 'Remove job returns an integer')
-        t.equal(removedCount, 1, 'Removed count is valid')
+        t.ok(is.array(removedCount), 'Remove job returns an array')
+        t.equal(removedCount.length, 1, 'Removed count is valid')
         return q.getJob(job.id)
       }).then((noJobs) => {
         t.ok(is.array(noJobs), 'Get job returns an array')
