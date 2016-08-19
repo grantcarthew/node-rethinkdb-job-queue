@@ -10,7 +10,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(107)
+      t.plan(106)
 
       let q = new Queue(testOptions.queueNameOnly())
       let q2
@@ -146,7 +146,6 @@ module.exports = function () {
         t.equal(q.port, enums.options.port, 'Default port is valid')
         t.equal(q.db, testOptions.dbName, 'Default db name is valid')
         t.ok(is.function(q.r), 'Queue r valid')
-        t.ok(is.function(q.connection), 'Queue connection valid')
         t.ok(q.changeFeed, 'Queue change feed is enabled')
         t.ok(q.master, 'Queue is master queue')
         t.equal(q.masterInterval, enums.options.masterInterval, 'Queue masterInterval is valid')

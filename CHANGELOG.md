@@ -3,6 +3,7 @@
 ## v0.0.5 / 2016-08
 
 *   Changed return values of Queue.removeJob to job ids.
+*   Removed the Queue.connection alias property.
 
 ## v0.0.4 / 2016-08-18
 

@@ -60,7 +60,6 @@ class Queue extends EventEmitter {
   get port () { return this._port }
   get db () { return this._db }
   get r () { return this._r }
-  get connection () { return this.r }
   get changeFeed () { return this._changeFeed }
   get master () { return this._masterInterval > 0 }
   get masterInterval () { return this._masterInterval }

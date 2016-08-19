@@ -6,6 +6,10 @@ Check for valid port range 1 to 65535.
 
 Checkout the createIndexInactivePriorityDateCreated index added status.
 
+Ensure Job.addLog adds the log to the local job object.
+
+Does dateFinished get updated when a job is cancelled?
+
 ## Update events in tests to support x of y
 
 *   queue-process.spec Done!
