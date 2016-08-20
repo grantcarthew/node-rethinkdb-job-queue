@@ -4,6 +4,8 @@
 
 *   Changed return values of Queue.removeJob to job ids.
 *   Removed the Queue.connection alias property.
+*   Added the 'pausing' Queue event.
+*   Updated examples to work with the next() Promise.
 
 ## v0.0.4 / 2016-08-18
 

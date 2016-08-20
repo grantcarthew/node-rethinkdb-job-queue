@@ -24,6 +24,8 @@ For full documentation of the `rethinkdb-job-queue` package, please see the [wik
 
 ### Installation
 
+Note: You will need to install [RethinkDB][rethinkdb-url] before you can use `rethinkdb-job-queue`
+
 ```sh
 npm install rethinkdb-job-queue --save
 ```
@@ -48,10 +50,14 @@ q.process((job, next) => {
     try {
       let result = job.numerator / job.denominator
       // Do something with your result
-      next(null, result)
+      return next(null, result).catch((err) => {
+        console.error(err)
+      })
     } catch (err) {
       console.error(err)
-      next(err)
+      return next(err).catch((err) => {
+        console.error(err)
+      })
     }
 })
 
@@ -120,11 +126,17 @@ job.recipient = 'batman@batcave.com'
 q.process((job, next) => {
   // Send email using job.recipient as the destination address
   mailOptions.to = job.recipient
-  transporter.sendMail(mailOptions).then((info) => {
+  return transporter.sendMail(mailOptions).then((info) => {
     console.dir(info)
-    next(null, info)
+    return next(null, info)
   }).catch((err) => {
-    next(err)
+    // This catch if for nodemailer sendMail errors.
+    return next(err).catch((err) => {
+      // This second catch is for the next(err) Promise.
+      // Calling next() updates the job in the database.
+      // This catch allows you to log update errors.
+      console.error(err)
+    })
   })
 })
 

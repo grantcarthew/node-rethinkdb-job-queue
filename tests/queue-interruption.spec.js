@@ -12,7 +12,7 @@ const queueInterruption = proxyquire('../src/queue-interruption',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-interruption', (t) => {
-      t.plan(9)
+      t.plan(10)
 
       const q = new Queue(testOptions.default())
       processStub.restart = function (q) {
@@ -21,6 +21,11 @@ module.exports = function () {
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
+      function pausingEventHandler (qId) {
+        if (testEvents) {
+          t.equal(qId, q.id, `Event: pausing [${qId}]`)
+        }
+      }
       function pausedEventHandler (qId) {
         if (testEvents) {
           t.equal(qId, q.id, `Event: paused [${qId}]`)
@@ -33,11 +38,13 @@ module.exports = function () {
       }
       function addEventHandlers () {
         testEvents = true
+        q.on(enums.status.paused, pausingEventHandler)
         q.on(enums.status.paused, pausedEventHandler)
         q.on(enums.status.resumed, resumedEventHandler)
       }
       function removeEventHandlers () {
         testEvents = false
+        q.removeListener(enums.status.pausing, pausedEventHandler)
         q.removeListener(enums.status.paused, pausedEventHandler)
         q.removeListener(enums.status.resumed, resumedEventHandler)
       }

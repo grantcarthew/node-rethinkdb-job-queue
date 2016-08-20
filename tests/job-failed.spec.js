@@ -12,18 +12,16 @@ const testOptions = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed', (t) => {
-      t.plan(79)
+      t.plan(76)
 
       const q = new Queue(testOptions.default())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
-      function failedEventHandler (jobId, dateRetry) {
+      function failedEventHandler (jobId) {
         if (testEvents) {
           t.equal(jobId, job.id,
             `Event: Job failed [${jobId}]`)
-          t.ok(is.date(dateRetry),
-            `Event: Job failed dateRetry is a date [${dateRetry}]`)
         }
       }
       function terminatedEventHandler (jobId) {

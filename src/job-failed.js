@@ -47,7 +47,7 @@ module.exports = function failed (err, job, data) {
   }).then((jobIds) => {
     if (isRetry) {
       logger(`Event: failed [${jobIds[0]}]`)
-      job.q.emit(enums.status.failed, jobIds[0], job.dateRetry)
+      job.q.emit(enums.status.failed, jobIds[0])
     } else {
       logger(`Event: terminated [${jobIds[0]}]`)
       job.q.emit(enums.status.terminated, jobIds[0])
