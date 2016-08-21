@@ -1,11 +1,12 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.0.5 / 2016-08
+## v0.0.5 / 2016-08-21
 
 *   Changed return values of Queue.removeJob to job ids.
 *   Removed the Queue.connection alias property.
 *   Added the 'pausing' Queue event.
 *   Updated examples to work with the next() Promise.
+*   Fixed a require path in queue-add-job.
 
 ## v0.0.4 / 2016-08-18
 

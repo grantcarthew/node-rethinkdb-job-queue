@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const queueProcess = require('./queue-process')
 const dbResult = require('./db-result')
-const jobParse = require('../src/job-parse')
+const jobParse = require('./job-parse')
 
 // skipStatusCheck is for ease of adding jobs during tests
 module.exports = function queueAddJob (q, job, skipStatusCheck) {
