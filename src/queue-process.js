@@ -44,10 +44,8 @@ function jobRun (job) {
   logger('jobRun', `Running: [${job.q.running}]`)
   let handled = false
 
-  function nextHandler (err, data) {
-    logger('nextHandler', `Running: [${job.q.running}]`)
-    logger('Job data', data)
-    logger('Error', err)
+  function nextHandler (jobResult) {
+    logger('nextHandler', `Running: [${job.q.running}]`, jobResult)
     logger('handled', handled)
     // Ignore mulpiple calls to next()
     if (handled) {
@@ -57,15 +55,21 @@ function jobRun (job) {
 
     removeJobTimeout(job.id)
 
-    let finalPromise
-    if (err && err.cancelJob) {
-      finalPromise = queueCancelJob(job.q, job, err.cancelJob)
-    } else if (err) {
-      finalPromise = jobFailed(err, job, data)
-    } else {
-      finalPromise = jobCompleted(job, data)
-    }
-    return finalPromise.then((finalResult) => {
+    return new Promise((resolve, reject) => {
+      logger('Promise resolving or rejecting jobResult')
+      if (jobResult instanceof Error) { reject(jobResult) }
+      resolve(jobResult)
+    }).then((successResult) => {
+      logger('jobResult resolved successfully')
+      return jobCompleted(job, successResult)
+    }).catch((err) => {
+      logger('jobResult is an error')
+      if (err && err.cancelJob) {
+        return queueCancelJob(job.q, job, err.cancelJob)
+      } else if (err) {
+        return jobFailed(err, job)
+      }
+    }).then((finalResult) => {
       job.q._running--
       setImmediate(jobTick, job.q)
       return job.q.running

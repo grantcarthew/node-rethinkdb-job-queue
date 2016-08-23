@@ -62,7 +62,7 @@ module.exports = function () {
         // ---------- Job Failed Retry 0 Test ----------
         addEventHandlers()
         t.comment('job-failed: Original Job Failure')
-        return jobFailed(err, savedJob[0], testData)
+        return jobFailed(err, savedJob[0])
       }).then((retry1id) => {
         t.equal(retry1id.length, 1, 'Job failed successfully')
         t.equal(retry1id[0], job.id, 'Job failed returned job id')
@@ -80,12 +80,12 @@ module.exports = function () {
         t.equal(retry1[0].log[1].status, enums.status.failed, 'Log status is failed')
         t.ok(retry1[0].log[1].retryCount = 1, 'Log retryCount is valid')
         t.ok(retry1[0].log[1].message, 'Log message exists')
+        t.equal(retry1[0].log[1].message, err.message, 'Log message is valid')
         t.ok(retry1[0].log[1].duration >= 0, 'Log duration is >= 0')
-        t.equal(retry1[0].log[1].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed Retry 1 Test ----------
         t.comment('job-failed: First Retry Job Failure')
-        return jobFailed(err, retry1[0], testData)
+        return jobFailed(err, retry1[0])
       }).then((retry2id) => {
         t.equal(retry2id.length, 1, 'Job failed successfully')
         t.equal(retry2id[0], job.id, 'Job failed returned job id')
@@ -102,12 +102,12 @@ module.exports = function () {
         t.equal(retry2[0].log[2].status, enums.status.failed, 'Log status is failed')
         t.ok(retry2[0].log[2].retryCount = 2, 'Log retryCount is valid')
         t.ok(retry2[0].log[2].message, 'Log message exists')
+        t.equal(retry2[0].log[2].message, err.message, 'Log message is valid')
         t.ok(retry2[0].log[2].duration >= 0, 'Log duration is >= 0')
-        t.equal(retry2[0].log[2].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed Retry 2 Test ----------
         t.comment('job-failed: Second Retry Job Failure')
-        return jobFailed(err, retry2[0], testData)
+        return jobFailed(err, retry2[0])
       }).then((retry3id) => {
         t.equal(retry3id.length, 1, 'Job failed successfully')
         t.equal(retry3id[0], job.id, 'Job failed returned job id')
@@ -125,12 +125,12 @@ module.exports = function () {
         t.equal(retry3[0].log[3].status, enums.status.failed, 'Log status is failed')
         t.ok(retry3[0].log[3].retryCount = 3, 'Log retryCount is valid')
         t.ok(retry3[0].log[3].message, 'Log message exists')
+        t.equal(retry3[0].log[3].message, err.message, 'Log message is valid')
         t.ok(retry3[0].log[3].duration >= 0, 'Log duration is >= 0')
-        t.equal(retry3[0].log[3].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed Retry 3 Test ----------
         t.comment('job-failed: Third and Final Retry Job Failure')
-        return jobFailed(err, retry3[0], testData)
+        return jobFailed(err, retry3[0])
       }).then((failedId) => {
         t.equal(failedId.length, 1, 'Job failed successfully')
         t.equal(failedId[0], job.id, 'Job failed returned job id')
@@ -148,8 +148,8 @@ module.exports = function () {
         t.equal(failed[0].log[4].status, enums.status.terminated, 'Log status is terminated')
         t.ok(failed[0].log[4].retryCount = 3, 'Log retryCount is valid')
         t.ok(failed[0].log[4].message, 'Log message exists')
+        t.equal(failed[0].log[4].message, err.message, 'Log message is valid')
         t.ok(failed[0].log[4].duration >= 0, 'Log duration is >= 0')
-        t.equal(failed[0].log[4].data, job.data, 'Log data is valid')
 
         // ---------- Job Failed with Remove Finished Jobs Test ----------
         t.comment('job-failed: Job Terminated with Remove Finished Jobs')
@@ -160,7 +160,7 @@ module.exports = function () {
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        return jobFailed(err, savedJob[0], testData)
+        return jobFailed(err, savedJob[0])
       }).then((removeResult) => {
         t.equal(removeResult.length, 1, 'Job failed successfully')
         t.equal(removeResult[0], job.id, 'Job failed returned job id')

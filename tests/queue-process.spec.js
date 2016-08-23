@@ -165,7 +165,7 @@ module.exports = function () {
           }
 
           setTimeout(function () {
-            next(null, 'Job Completed: ' + job.id)
+            next('Job Completed: ' + job.id)
             .then((runningJobs) => {
               t.ok(is.integer(runningJobs), `Next call returns running jobs [${runningJobs}]`)
             })

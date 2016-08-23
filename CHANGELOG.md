@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.0.6 / 2016-08
+
+*   Changed the next() function signature.
+
 ## v0.0.5 / 2016-08-21
 
 *   Changed return values of Queue.removeJob to job ids.

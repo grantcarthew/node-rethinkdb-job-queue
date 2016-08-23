@@ -5,7 +5,7 @@ const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function failed (err, job, data) {
+module.exports = function failed (err, job) {
   logger(`failed:  [${job.id}]`)
   logger(`error`, err)
 
@@ -26,7 +26,6 @@ module.exports = function failed (err, job, data) {
   const errMessage = err && err.message ? err.message : err
   const log = job.createLog(errMessage, logType)
   log.duration = duration
-  log.data = data
   log.retryCount = job.retryCount
 
   return Promise.resolve().then(() => {
