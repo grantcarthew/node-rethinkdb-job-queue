@@ -5,7 +5,7 @@ const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function failed (err, job) {
+module.exports = function failed (job, err) {
   logger(`failed:  [${job.id}]`)
   logger(`error`, err)
 

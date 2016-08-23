@@ -67,7 +67,7 @@ function jobRun (job) {
       if (err && err.cancelJob) {
         return queueCancelJob(job.q, job, err.cancelJob)
       } else if (err) {
-        return jobFailed(err, job)
+        return jobFailed(job, err)
       }
     }).then((finalResult) => {
       job.q._running--

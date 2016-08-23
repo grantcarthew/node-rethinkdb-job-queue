@@ -3,6 +3,7 @@
 ## v0.0.7 / 2016-08
 
 *   Fixed next() calls.
+*   Minor refactor.
 
 ## v0.0.6 / 2016-08-23
 

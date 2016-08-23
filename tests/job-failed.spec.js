@@ -62,7 +62,7 @@ module.exports = function () {
         // ---------- Job Failed Retry 0 Test ----------
         addEventHandlers()
         t.comment('job-failed: Original Job Failure')
-        return jobFailed(err, savedJob[0])
+        return jobFailed(savedJob[0], err)
       }).then((retry1id) => {
         t.equal(retry1id.length, 1, 'Job failed successfully')
         t.equal(retry1id[0], job.id, 'Job failed returned job id')
@@ -85,7 +85,7 @@ module.exports = function () {
 
         // ---------- Job Failed Retry 1 Test ----------
         t.comment('job-failed: First Retry Job Failure')
-        return jobFailed(err, retry1[0])
+        return jobFailed(retry1[0], err)
       }).then((retry2id) => {
         t.equal(retry2id.length, 1, 'Job failed successfully')
         t.equal(retry2id[0], job.id, 'Job failed returned job id')
@@ -107,7 +107,7 @@ module.exports = function () {
 
         // ---------- Job Failed Retry 2 Test ----------
         t.comment('job-failed: Second Retry Job Failure')
-        return jobFailed(err, retry2[0])
+        return jobFailed(retry2[0], err)
       }).then((retry3id) => {
         t.equal(retry3id.length, 1, 'Job failed successfully')
         t.equal(retry3id[0], job.id, 'Job failed returned job id')
@@ -130,7 +130,7 @@ module.exports = function () {
 
         // ---------- Job Failed Retry 3 Test ----------
         t.comment('job-failed: Third and Final Retry Job Failure')
-        return jobFailed(err, retry3[0])
+        return jobFailed(retry3[0], err)
       }).then((failedId) => {
         t.equal(failedId.length, 1, 'Job failed successfully')
         t.equal(failedId[0], job.id, 'Job failed returned job id')
@@ -160,7 +160,7 @@ module.exports = function () {
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        return jobFailed(err, savedJob[0])
+        return jobFailed(savedJob[0], err)
       }).then((removeResult) => {
         t.equal(removeResult.length, 1, 'Job failed successfully')
         t.equal(removeResult[0], job.id, 'Job failed returned job id')

@@ -5,8 +5,8 @@ const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function completed (job, data) {
-  logger(`completed:  [${job.id}]`)
+module.exports = function completed (job, result) {
+  logger(`completed:  [${job.id}]`, result)
   job.status = enums.status.completed
   job.dateFinished = moment().toDate()
   job.progress = 100
@@ -15,7 +15,7 @@ module.exports = function completed (job, data) {
 
   const log = job.createLog(enums.message.completed)
   log.duration = duration
-  log.data = data
+  log.data = result
   log.retryCount = job.retryCount
 
   return Promise.resolve().then(() => {
