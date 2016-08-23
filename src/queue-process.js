@@ -73,6 +73,10 @@ function jobRun (job) {
       job.q._running--
       setImmediate(jobTick, job.q)
       return job.q.running
+    }).catch((err) => {
+      logger('next() Promise Error:', err)
+      job.q.emit(enums.status.error, err)
+      return Promise.reject(err)
     })
   }
 
