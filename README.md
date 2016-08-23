@@ -16,9 +16,13 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 ## Documentation
 
-__Warning:__ This is early days for `rethinkdb-job-queue`. The API will change and documentation is sparse. That said, there are over 1100 integration tests and it is fully functional.
+__Warning:__ This is early days for `rethinkdb-job-queue`. The API may change.
 
-For full documentation of the `rethinkdb-job-queue` package, please see the [wiki][rjq-wiki-url]
+__Note:__ Documentation is mostly complete.
+
+There are over 1100 integration tests and it is fully functional.
+
+For full documentation of the `rethinkdb-job-queue` package, [please see the wiki][rjq-wiki-url]
 
 ## Quick Start
 
@@ -50,14 +54,10 @@ q.process((job, next) => {
     try {
       let result = job.numerator / job.denominator
       // Do something with your result
-      return next(null, result).catch((err) => {
-        console.error(err)
-      })
+      return next(result)
     } catch (err) {
       console.error(err)
-      return next(err).catch((err) => {
-        console.error(err)
-      })
+      return next(err)
     }
 })
 
@@ -128,15 +128,10 @@ q.process((job, next) => {
   mailOptions.to = job.recipient
   return transporter.sendMail(mailOptions).then((info) => {
     console.dir(info)
-    return next(null, info)
+    return next(info)
   }).catch((err) => {
     // This catch if for nodemailer sendMail errors.
-    return next(err).catch((err) => {
-      // This second catch is for the next(err) Promise.
-      // Calling next() updates the job in the database.
-      // This catch allows you to log update errors.
-      console.error(err)
-    })
+    return next(err)
   })
 })
 

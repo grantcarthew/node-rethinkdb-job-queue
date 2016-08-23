@@ -1,8 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.0.6 / 2016-08
+## v0.0.6 / 2016-08-23
 
 *   Changed the next() function signature.
+*   Added catch() to next() Promise.
+*   README updated.
 
 ## v0.0.5 / 2016-08-21
 
