@@ -24,7 +24,7 @@ module.exports = function () {
       }
       function processHandler (job, next) {
         setTimeout(function finishJob () {
-          next(null, `Job completed [${job.id}]`)
+          next(`Job completed [${job.id}]`)
         }, 100)
       }
 

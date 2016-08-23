@@ -98,7 +98,7 @@ module.exports = function () {
         q.process((j, next) => {
           setTimeout(function jobProcessing () {
             t.equal(j.id, job.id, `Job Processed [${j.id}]`)
-            next(null, 'queue-change')
+            next('queue-change')
           }, processDelay)
           return j.setProgress(50)
         })

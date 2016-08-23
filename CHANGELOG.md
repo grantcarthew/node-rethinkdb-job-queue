@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.0.7 / 2016-08
+
+*   Fixed next() calls.
+
 ## v0.0.6 / 2016-08-23
 
 *   Changed the next() function signature.
