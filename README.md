@@ -16,13 +16,16 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 ## Documentation
 
-__Warning:__ This is early days for `rethinkdb-job-queue`. The API may change.
+For full documentation [please see the wiki][rjq-wiki-url]
 
-__Note:__ Documentation is mostly complete.
+## Project Status
 
-There are over 1100 integration tests and it is fully functional.
+*   This `rethinkdb-job-queue` module is fully functional.
+*   There are over 1100 integration tests.
+*   This project is complete and needs to be taken out for a spin.
+*   In a few months I will bump the version up to 1.0.0 to support [SemVer](http://semver.org/).
+*   Please provide feedback or raise issues prior to the version bump.
 
-For full documentation of the `rethinkdb-job-queue` package, [please see the wiki][rjq-wiki-url]
 
 ## Quick Start
 

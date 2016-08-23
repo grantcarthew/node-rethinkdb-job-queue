@@ -4,6 +4,7 @@
 
 *   Fixed next() calls.
 *   Minor refactor.
+*   README updated.
 
 ## v0.0.6 / 2016-08-23
 

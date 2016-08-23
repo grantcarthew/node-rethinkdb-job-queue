@@ -9,5 +9,3 @@ Queue option parsing.
 ## Notes for documentation
 
 Add error documentation.
-
-Job parsing errors have a custom property err.dbError.
