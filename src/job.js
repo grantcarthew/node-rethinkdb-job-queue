@@ -1,5 +1,5 @@
 const logger = require('./logger')(module)
-const uuid = require('node-uuid')
+const uuid = require('uuid')
 const moment = require('moment')
 const enums = require('./enums')
 const is = require('./is')

@@ -48,8 +48,8 @@
     "bluebird": "^3.4.1",
     "debug": "^2.2.0",
     "moment": "^2.14.1",
-    "node-uuid": "^1.4.7",
-    "rethinkdbdash": "^2.3.20"
+    "rethinkdbdash": "^2.3.20",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.11.4",
