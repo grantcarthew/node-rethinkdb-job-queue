@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
-const uuid = require('node-uuid')
+const uuid = require('uuid')
 const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
