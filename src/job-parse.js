@@ -41,8 +41,8 @@ module.exports.job = function jobParseJob (job) {
     if (!moment.isDate(j.dateCreated)) {
       detail = 'Job dateCreated: ' + j.dateCreated
     }
-    if (!moment.isDate(j.dateRetry)) {
-      detail = 'Job dateRetry: ' + j.dateRetry
+    if (!moment.isDate(j.dateEnable)) {
+      detail = 'Job dateEnable: ' + j.dateEnable
     }
     if (j.progress < 0 || j.progress > 100) {
       detail = 'Job progress: ' + j.progress

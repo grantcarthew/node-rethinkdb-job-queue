@@ -147,7 +147,7 @@ module.exports = function () {
           const testDate = moment().add(
             1 + job.timeout + (job.retryCount * job.retryDelay),
             'seconds')
-          t.ok(moment(job.dateRetry).isBefore(testDate, 'seconds'), 'Job dateRetry is valid')
+          t.ok(moment(job.dateEnable).isBefore(testDate, 'seconds'), 'Job dateEnable is valid')
           tryCount++
         }
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)

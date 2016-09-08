@@ -2,9 +2,9 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 
-function createIndexActiveDateRetry (q) {
-  logger('createIndexActiveDateRetry')
-  let indexName = enums.index.indexActiveDateRetry
+function createIndexActiveDateEnable (q) {
+  logger('createIndexActiveDateEnable')
+  let indexName = enums.index.indexActiveDateEnable
   return Promise.resolve().then(() => {
     return q.r.db(q.db)
       .table(q.name)
@@ -16,7 +16,7 @@ function createIndexActiveDateRetry (q) {
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq('active'),
-        row('dateRetry'),
+        row('dateEnable'),
         null
       )
     }).run()
@@ -39,13 +39,13 @@ function createIndexInactivePriorityDateCreated (q) {
         row('status').eq('added'),
         [
           row('priority'),
-          row('dateRetry'),
+          row('dateEnable'),
           row('dateCreated')
         ],
         row('status').eq('failed'),
         [
           row('priority'),
-          row('dateRetry'),
+          row('dateEnable'),
           row('dateCreated')
         ],
         null
@@ -82,7 +82,7 @@ function createIndexFinishedDateFinished (q) {
 module.exports = function assertIndex (q) {
   logger('assertIndex')
   return Promise.all([
-    createIndexActiveDateRetry(q),
+    createIndexActiveDateEnable(q),
     createIndexInactivePriorityDateCreated(q),
     createIndexFinishedDateFinished(q)
   ]).then((indexCreateResult) => {

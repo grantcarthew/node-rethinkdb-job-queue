@@ -54,7 +54,7 @@ const enums = module.exports = {
     removeFinishedJobs: 180
   },
   index: {
-    indexActiveDateRetry: 'indexActiveDateRetry',
+    indexActiveDateEnable: 'indexActiveDateEnable',
     indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',
     indexFinishedDateFinished: 'indexFinishedDateFinished'
   },

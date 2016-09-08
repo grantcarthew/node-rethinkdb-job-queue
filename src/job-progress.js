@@ -16,7 +16,7 @@ module.exports = function jobProgress (job, percent) {
     return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
       queueId: job.q.id,
       progress: percent,
-      dateRetry: job.q.r.now()
+      dateEnable: job.q.r.now()
       .add(job.q.r.row('timeout'))
       .add(job.q.r.row('retryDelay').mul(job.q.r.row('retryCount')))
     }).run()

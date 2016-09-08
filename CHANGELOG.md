@@ -3,6 +3,7 @@
 ## v0.0.8 / 2016-09
 
 *   Replaced `node-uuid` dependency with `uuid` package.
+*   Renamed `dateRetry` to `dateEnable`.
 
 ## v0.0.7 / 2016-08-23
 

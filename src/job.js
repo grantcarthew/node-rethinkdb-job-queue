@@ -40,7 +40,7 @@ class Job {
       this.status = enums.status.created
       this.log = []
       this.dateCreated = now
-      this.dateRetry = now
+      this.dateEnable = now
       this.dateStarted
       this.dateFinished
       this.queueId = q.id

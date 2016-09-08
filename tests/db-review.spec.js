@@ -138,7 +138,7 @@ module.exports = function () {
         t.equal(reviewedRetryCount1Job[0].log[1].type, enums.log.error, 'Log type is error')
         t.equal(reviewedRetryCount1Job[0].log[1].status, enums.status.terminated, 'Log status is terminated')
         t.ok(reviewedRetryCount1Job[0].log[1].retryCount >= 0, 'Log retryCount is valid')
-        t.ok(moment.isDate(reviewedRetryCount1Job[0].log[1].dateRetry), 'Log dateRetry is a date')
+        t.ok(moment.isDate(reviewedRetryCount1Job[0].log[1].dateEnable), 'Log dateEnable is a date')
         t.ok(reviewedRetryCount1Job[0].log[1].message, 'Log message is present')
         t.ok(!reviewedRetryCount1Job[0].log[1].data, 'Log data is null')
         return q.getJob(completedJobPre.id)

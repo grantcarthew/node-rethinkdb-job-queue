@@ -12,9 +12,9 @@ function updateFailedJobs (q) {
 
   return Promise.resolve().then(() => {
     return q.r.db(q.db).table(q.name)
-    .orderBy({index: enums.index.indexActiveDateRetry})
+    .orderBy({index: enums.index.indexActiveDateEnable})
     .filter(
-      q.r.row('dateRetry').lt(q.r.now())
+      q.r.row('dateEnable').lt(q.r.now())
     ).update({
       status: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
@@ -42,7 +42,7 @@ function updateFailedJobs (q) {
         ),
         retryCount: q.r.row('retryCount'),
         message: `Master: ${enums.message.failed}`,
-        dateRetry: q.r.row('dateRetry')
+        dateEnable: q.r.row('dateEnable')
       }),
       queueId: q.id
     })

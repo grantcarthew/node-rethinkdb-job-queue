@@ -34,7 +34,7 @@ module.exports = function () {
         q.removeListener(enums.status.progress, progressEventHandler)
       }
 
-      let tempDateRetry = job.dateRetry
+      let tempDateEnable = job.dateEnable
       return q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         addEventHandlers()
@@ -51,9 +51,9 @@ module.exports = function () {
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with a null value')
         t.ok(
-          moment(updatedJob[0].dateRetry).isBetween(moment(tempDateRetry),
+          moment(updatedJob[0].dateEnable).isBetween(moment(tempDateEnable),
             moment().add(updatedJob[0].timeout + 2, 'seconds')),
-          'Job dateRetry updated successfully'
+          'Job dateEnable updated successfully'
         )
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], -10)
@@ -63,9 +63,9 @@ module.exports = function () {
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with negative value')
         t.ok(
-          moment(updatedJob[0].dateRetry).isBetween(moment(tempDateRetry),
+          moment(updatedJob[0].dateEnable).isBetween(moment(tempDateEnable),
             moment().add((updatedJob[0].timeout + 2) + updatedJob[0].retryDelay, 'seconds')),
-          'Job dateRetry updated successfully'
+          'Job dateEnable updated successfully'
         )
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], 1)

@@ -67,7 +67,7 @@ module.exports = function () {
       t.equal(newJob.retryCount, 0, 'New job retryCount is 0')
       t.equal(newJob.log.length, 0, 'New job log is an empty array')
       t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
-      t.ok(moment.isDate(newJob.dateRetry), 'New job dateRetry is a date')
+      t.ok(moment.isDate(newJob.dateEnable), 'New job dateEnable is a date')
 
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
@@ -83,7 +83,7 @@ module.exports = function () {
       t.equal(cleanJob.status, newJob.status, 'Clean job status is valid')
       t.equal(cleanJob.log, newJob.log, 'Clean job log is valid')
       t.equal(cleanJob.dateCreated, newJob.dateCreated, 'Clean job dateCreated is valid')
-      t.equal(cleanJob.dateRetry, newJob.dateRetry, 'Clean job dateRetry is valid')
+      t.equal(cleanJob.dateEnable, newJob.dateEnable, 'Clean job dateEnable is valid')
       t.equal(cleanJob.progress, newJob.progress, 'Clean job progress is valid')
       t.equal(cleanJob.queueId, newJob.queueId, 'Clean job progress is valid')
 
@@ -127,7 +127,7 @@ module.exports = function () {
         t.equal(newJobFromData.status, savedJob.status, 'New job from data status is valid')
         t.equal(newJobFromData.log, savedJob.log, 'Clean job log is valid')
         t.equal(newJobFromData.dateCreated, savedJob.dateCreated, 'Clean job dateCreated is valid')
-        t.equal(newJobFromData.dateRetry, savedJob.dateRetry, 'Clean job dateRetry is valid')
+        t.equal(newJobFromData.dateEnable, savedJob.dateEnable, 'Clean job dateEnable is valid')
         t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
         t.equal(newJobFromData.queueId, q.id, 'New job from data queueId is valid')
 
