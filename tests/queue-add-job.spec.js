@@ -38,7 +38,7 @@ module.exports = function () {
         t.equal(savedJob[0].id, job.id, 'Job 1 saved successfully')
         return q.getJob(job.id)
       }).then((jobsFromDb) => {
-        t.ok(moment.isDate(jobsFromDb[0].log[0].date), 'Log job 1 date is a date')
+        t.ok(is.date(jobsFromDb[0].log[0].date), 'Log job 1 date is a date')
         t.equal(jobsFromDb[0].log[0].queueId, q.id, 'Log job 1 queueId is valid')
         t.equal(jobsFromDb[0].log[0].type, enums.log.information, 'Log job 1 type is information')
         t.equal(jobsFromDb[0].log[0].status, enums.status.added, 'Log job 1 status is added')
@@ -54,7 +54,7 @@ module.exports = function () {
 
         return q.getJob(jobs[0].id)
       }).then((jobsFromDb2) => {
-        t.ok(moment.isDate(jobsFromDb2[0].log[0].date), 'Log job 2 date is a date')
+        t.ok(is.date(jobsFromDb2[0].log[0].date), 'Log job 2 date is a date')
         t.equal(jobsFromDb2[0].log[0].queueId, q.id, 'Log job 2 queueId is valid')
         t.equal(jobsFromDb2[0].log[0].type, enums.log.information, 'Log job 2 type is information')
         t.equal(jobsFromDb2[0].log[0].status, enums.status.added, 'Log job 2 status is added')
@@ -62,7 +62,7 @@ module.exports = function () {
         t.equal(jobsFromDb2[0].log[0].message, enums.message.jobAdded, 'Log job 2 message is valid')
         return q.getJob(jobs[1].id)
       }).then((jobsFromDb3) => {
-        t.ok(moment.isDate(jobsFromDb3[0].log[0].date), 'Log job 3 date is a date')
+        t.ok(is.date(jobsFromDb3[0].log[0].date), 'Log job 3 date is a date')
         t.equal(jobsFromDb3[0].log[0].queueId, q.id, 'Log job 3 queueId is valid')
         t.equal(jobsFromDb3[0].log[0].type, enums.log.information, 'Log job 3 type is information')
         t.equal(jobsFromDb3[0].log[0].status, enums.status.added, 'Log job 3 status is added')

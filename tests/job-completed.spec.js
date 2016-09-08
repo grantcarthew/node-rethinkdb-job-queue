@@ -56,11 +56,11 @@ module.exports = function () {
         return q.getJob(completedIds)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].status, enums.status.completed, 'Job status is completed')
-        t.ok(moment.isDate(updatedJob[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(updatedJob[0].dateFinished), 'Job dateFinished is a date')
         t.equal(updatedJob[0].progress, 100, 'Job progress is 100')
         t.equal(updatedJob[0].queueId, q.id, 'Job queueId is valid')
         t.equal(updatedJob[0].log.length, 2, 'Job log exists')
-        t.ok(moment.isDate(updatedJob[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(updatedJob[0].log[1].date), 'Log date is a date')
         t.equal(updatedJob[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(updatedJob[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(updatedJob[0].log[1].status, enums.status.completed, 'Log status is completed')

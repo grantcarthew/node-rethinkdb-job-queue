@@ -53,7 +53,7 @@ module.exports = function () {
         return q.getJob(job.id)
       }).then((jobWithLog1) => {
         t.equal(jobWithLog1[0].log.length, 2, 'Log 1 exists on retrieved job')
-        t.ok(moment.isDate(jobWithLog1[0].log[1].date), 'Log 1 date is a date')
+        t.ok(is.date(jobWithLog1[0].log[1].date), 'Log 1 date is a date')
         t.equal(jobWithLog1[0].log[1].queueId, q.id, 'Log 1 queueId is valid')
         t.equal(jobWithLog1[0].log[1].type, enums.log.information, 'Log 1 type is information')
         t.equal(jobWithLog1[0].log[1].status, enums.status.added, 'Log 1 status is added')
@@ -70,7 +70,7 @@ module.exports = function () {
         return q.getJob(job.id)
       }).then((jobWithLog2) => {
         t.equal(jobWithLog2[0].log.length, 3, 'Log 2 exists on retrieved job')
-        t.ok(moment.isDate(jobWithLog2[0].log[2].date), 'Log 2 date is a date')
+        t.ok(is.date(jobWithLog2[0].log[2].date), 'Log 2 date is a date')
         t.equal(jobWithLog2[0].log[2].queueId, q.id, 'Log 2 queueId is valid')
         t.equal(jobWithLog2[0].log[2].type, enums.log.information, 'Log 2 type is information')
         t.equal(jobWithLog2[0].log[2].status, enums.status.added, 'Log 2 status is added')

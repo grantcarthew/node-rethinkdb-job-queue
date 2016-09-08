@@ -38,10 +38,10 @@ module.exports.job = function jobParseJob (job) {
     if (j.retryCount < 0) { detail = 'Job retryCount: ' + j.retryCount }
     if (!j.status) { detail = 'Job status missing' }
     if (!is.array(j.log)) { detail = 'Job log: ' + j.log }
-    if (!moment.isDate(j.dateCreated)) {
+    if (!is.date(j.dateCreated)) {
       detail = 'Job dateCreated: ' + j.dateCreated
     }
-    if (!moment.isDate(j.dateEnable)) {
+    if (!is.date(j.dateEnable)) {
       detail = 'Job dateEnable: ' + j.dateEnable
     }
     if (j.progress < 0 || j.progress > 100) {

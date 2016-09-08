@@ -66,8 +66,8 @@ module.exports = function () {
       t.equal(newJob.queueId, q.id, 'New job queueId is valid')
       t.equal(newJob.retryCount, 0, 'New job retryCount is 0')
       t.equal(newJob.log.length, 0, 'New job log is an empty array')
-      t.ok(moment.isDate(newJob.dateCreated), 'New job dateCreated is a date')
-      t.ok(moment.isDate(newJob.dateEnable), 'New job dateEnable is a date')
+      t.ok(is.date(newJob.dateCreated), 'New job dateCreated is a date')
+      t.ok(is.date(newJob.dateEnable), 'New job dateEnable is a date')
 
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
@@ -95,7 +95,7 @@ module.exports = function () {
       let log = newJob.createLog(testData)
       log.data = testData
       t.equal(typeof log, 'object', 'Job createLog returns a log object')
-      t.ok(moment.isDate(log.date), 'Log date is a date')
+      t.ok(is.date(log.date), 'Log date is a date')
       t.equal(log.queueId, q.id, 'Log queueId is valid')
       t.equal(log.type, enums.log.information, 'Log type is information')
       t.equal(log.status, enums.status.created, 'Log status is created')
@@ -140,7 +140,7 @@ module.exports = function () {
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
         t.equal(jobsFromDb[0].log.length, 2, 'Job log exists')
-        t.ok(moment.isDate(jobsFromDb[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(jobsFromDb[0].log[1].date), 'Log date is a date')
         t.equal(jobsFromDb[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(jobsFromDb[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(jobsFromDb[0].log[1].status, enums.status.created, 'Log status is created')

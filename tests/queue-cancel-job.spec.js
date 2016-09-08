@@ -66,10 +66,10 @@ module.exports = function () {
         return q.getJob(cancelledJobId)
       }).then((cancelledJob) => {
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job status is cancelled')
-        t.ok(moment.isDate(cancelledJob[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(cancelledJob[0].dateFinished), 'Job dateFinished is a date')
         t.equal(cancelledJob[0].queueId, q.id, 'Job queueId is valid')
         t.equal(cancelledJob[0].log.length, 2, 'Job log exists')
-        t.ok(moment.isDate(cancelledJob[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(cancelledJob[0].log[1].date), 'Log date is a date')
         t.equal(cancelledJob[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(cancelledJob[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(cancelledJob[0].log[1].status, enums.status.cancelled, 'Log status is cancelled')

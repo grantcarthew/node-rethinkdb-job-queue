@@ -91,7 +91,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((failed) => {
         t.equals(failed[0].id, jobFailed.id, 'Failed status job1 returned first')
-        t.ok(moment.isDate(failed[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(failed[0].log[1].date), 'Log date is a date')
         t.equal(failed[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(failed[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(failed[0].log[1].status, enums.status.active, 'Log status is active')
@@ -100,7 +100,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((highest) => {
         t.equals(highest[0].id, jobHighest.id, 'Highest status job returned third')
-        t.ok(moment.isDate(highest[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(highest[0].log[1].date), 'Log date is a date')
         t.equal(highest[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(highest[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(highest[0].log[1].status, enums.status.active, 'Log status is active')
@@ -109,7 +109,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((high) => {
         t.equals(high[0].id, jobHigh.id, 'High status job returned fourth')
-        t.ok(moment.isDate(high[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(high[0].log[1].date), 'Log date is a date')
         t.equal(high[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(high[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(high[0].log[1].status, enums.status.active, 'Log status is active')
@@ -118,7 +118,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((medium) => {
         t.equals(medium[0].id, jobMedium.id, 'Medium status job returned fifth')
-        t.ok(moment.isDate(medium[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(medium[0].log[1].date), 'Log date is a date')
         t.equal(medium[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(medium[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(medium[0].log[1].status, enums.status.active, 'Log status is active')
@@ -127,7 +127,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((normal) => {
         t.equals(normal[0].id, jobNormal.id, 'Normal status job returned sixth')
-        t.ok(moment.isDate(normal[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(normal[0].log[1].date), 'Log date is a date')
         t.equal(normal[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(normal[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(normal[0].log[1].status, enums.status.active, 'Log status is active')
@@ -136,7 +136,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((low) => {
         t.equals(low[0].id, jobLow.id, 'Low status job returned seventh')
-        t.ok(moment.isDate(low[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(low[0].log[1].date), 'Log date is a date')
         t.equal(low[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(low[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(low[0].log[1].status, enums.status.active, 'Log status is active')
@@ -145,7 +145,7 @@ module.exports = function () {
         return queueGetNextJob(q)
       }).then((lowest) => {
         t.equals(lowest[0].id, jobLowest.id, 'Lowest status job returned last')
-        t.ok(moment.isDate(lowest[0].log[1].date), 'Log date is a date')
+        t.ok(is.date(lowest[0].log[1].date), 'Log date is a date')
         t.equal(lowest[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(lowest[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(lowest[0].log[1].status, enums.status.active, 'Log status is active')
@@ -178,30 +178,30 @@ module.exports = function () {
       }).then((group1) => {
         t.equals(group1.length, 1, 'Returned one job due to concurrency and running')
         t.equals(group1[0].status, enums.status.active, 'Returned job is active status')
-        t.ok(moment.isDate(group1[0].dateStarted), 'Returned job dateStarted is a date')
+        t.ok(is.date(group1[0].dateStarted), 'Returned job dateStarted is a date')
         q._running = 1
         return queueGetNextJob(q)
       }).then((group2) => {
         t.equals(group2.length, 2, 'Returned two jobs due to concurrency and running')
         t.equals(group2[0].status, enums.status.active, 'Returned job 1 is active status')
-        t.ok(moment.isDate(group2[0].dateStarted), 'Returned job 1 dateStarted is a date')
+        t.ok(is.date(group2[0].dateStarted), 'Returned job 1 dateStarted is a date')
         t.equals(group2[0].status, enums.status.active, 'Returned job 2 is active status')
-        t.ok(moment.isDate(group2[1].dateStarted), 'Returned job 2 dateStarted is a date')
+        t.ok(is.date(group2[1].dateStarted), 'Returned job 2 dateStarted is a date')
         q._running = 0
         return queueGetNextJob(q)
       }).then((group3) => {
         t.equals(group3.length, 3, 'Returned three jobs due to concurrency and running')
         t.equals(group3[0].status, enums.status.active, 'Returned job 1 is active status')
-        t.ok(moment.isDate(group3[0].dateStarted), 'Returned job 1 dateStarted is a date')
+        t.ok(is.date(group3[0].dateStarted), 'Returned job 1 dateStarted is a date')
         t.equals(group3[0].status, enums.status.active, 'Returned job 2 is active status')
-        t.ok(moment.isDate(group3[1].dateStarted), 'Returned job 2 dateStarted is a date')
+        t.ok(is.date(group3[1].dateStarted), 'Returned job 2 dateStarted is a date')
         t.equals(group3[0].status, enums.status.active, 'Returned job 3 is active status')
-        t.ok(moment.isDate(group3[2].dateStarted), 'Returned job 3 dateStarted is a date')
+        t.ok(is.date(group3[2].dateStarted), 'Returned job 3 dateStarted is a date')
         return queueGetNextJob(q)
       }).then((group4) => {
         t.equals(group4.length, 1, 'Returned final job')
         t.equals(group4[0].status, enums.status.active, 'Returned job is active status')
-        t.ok(moment.isDate(group4[0].dateStarted), 'Returned job dateStarted is a date')
+        t.ok(is.date(group4[0].dateStarted), 'Returned job dateStarted is a date')
 
         // ---------- Testing dateEnable Values ----------
         t.comment('queue-get-next-job: dateEnable Values')

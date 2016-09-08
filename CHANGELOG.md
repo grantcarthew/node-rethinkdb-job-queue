@@ -4,6 +4,7 @@
 
 *   Replaced `node-uuid` dependency with `uuid` package.
 *   Renamed `dateRetry` to `dateEnable`.
+*   Updated `is.date()` to remove `moment.isDate()`.
 
 ## v0.0.7 / 2016-08-23
 
