@@ -1,5 +1,4 @@
 const logger = require('./logger')(module)
-const moment = require('moment')
 const enums = require('./enums')
 const uuidRegExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
@@ -38,9 +37,10 @@ module.exports.false = function isFalse (value) {
   return isBoolean(value) && value === false
 }
 
-module.exports.date = function isDate (value) {
+const isDate = module.exports.date = function isDate (value) {
   logger(`isDate`, value)
-  return moment.isDate(value)
+  return value instanceof Date ||
+    Object.prototype.toString.call(value) === '[object Date]'
 }
 
 const isUuid = module.exports.uuid = function isUuid (value) {
@@ -69,7 +69,7 @@ const isJob = module.exports.job = function isJob (value) {
   if (!value.id) { return false }
   if (!isUuid(value.id)) { return false }
   if (!value.queueId) { return false }
-  if (!moment.isDate(value.dateCreated)) { return false }
+  if (!isDate(value.dateCreated)) { return false }
   if (!isNumber(value.priority) &&
       !Object.keys(enums.priority).includes(value.priority)) { return false }
   if (!Object.keys(enums.status).includes(value.status)) { return false }
