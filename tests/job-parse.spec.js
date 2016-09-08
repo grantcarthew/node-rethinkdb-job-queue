@@ -2,7 +2,7 @@ const test = require('tape')
 const is = require('../src/is')
 const jobParse = require('../src/job-parse')
 const Job = require('../src/job')
-const uuid = require('node-uuid')
+const uuid = require('uuid')
 
 module.exports = function () {
   test('job-parse', (t) => {

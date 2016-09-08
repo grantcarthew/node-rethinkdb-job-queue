@@ -1,6 +1,6 @@
 const test = require('tape')
 const moment = require('moment')
-const uuid = require('node-uuid')
+const uuid = require('uuid')
 const is = require('../src/is')
 const enums = require('../src/enums')
 

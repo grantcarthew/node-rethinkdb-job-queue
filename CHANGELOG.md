@@ -1,6 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.0.7 / 2016-08
+## v0.0.8 / 2016-09
+
+*   Replaced `node-uuid` dependency with `uuid` package.
+
+## v0.0.7 / 2016-08-23
 
 *   Fixed next() calls.
 *   Minor refactor.
