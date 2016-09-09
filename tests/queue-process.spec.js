@@ -16,8 +16,7 @@ module.exports = function () {
       t.plan(207)
 
       // ---------- Test Setup ----------
-      const q = new Queue(testOptions.master(5))
-      dbReview.disable(q)
+      const q = new Queue(testOptions.default())
 
       let jobs
       let jobDelay = 200
@@ -26,7 +25,7 @@ module.exports = function () {
 
       let testEvents = false
       let reviewedEventCount = 0
-      const reviewedEventTotal = 7
+      const reviewedEventTotal = 2
       function reviewedEventHandler (replaceCount) {
         if (testEvents) {
           reviewedEventCount++
@@ -50,7 +49,7 @@ module.exports = function () {
         }
       }
       let processingEventCount = 0
-      const processingEventTotal = 36
+      const processingEventTotal = 37
       function processingEventHandler (jobId) {
         if (testEvents) {
           processingEventCount++
@@ -68,7 +67,7 @@ module.exports = function () {
         }
       }
       let completedEventCount = 0
-      const completedEventTotal = 31
+      const completedEventTotal = 32
       function completedEventHandler (jobId) {
         if (testEvents) {
           completedEventCount++
@@ -86,7 +85,7 @@ module.exports = function () {
         }
       }
       let idleEventCount = 0
-      const idleEventTotal = 12
+      const idleEventTotal = 11
       function idleEventHandler (qid) {
         if (testEvents) {
           idleEventCount++
@@ -137,6 +136,10 @@ module.exports = function () {
         q.removeListener(enums.status.failed, failedEventHandler)
         q.removeListener(enums.status.terminated, terminatedEventHandler)
       }
+
+      const summaryCompleted = 32
+      const summaryCancelled = 1
+      const summaryTerminated = 1
 
       let testTimes = false
       let tryCount = 0
@@ -247,9 +250,9 @@ module.exports = function () {
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
       }).delay(5200).then(() => {
-        dbReview.runOnce(q)
+        return dbReview.runOnce(q)
       }).delay(5200).then(() => {
-        dbReview.runOnce(q)
+        return dbReview.runOnce(q)
       }).delay(3200).then(() => {
         jobDelay = 200
         testTimes = false
@@ -274,21 +277,44 @@ module.exports = function () {
         updateProgress = false
         // t.equal(tryCount, 4, 'Job failed and retried correctly')
       }).then(() => {
-        jobs = q.createJob()
+        testCancel = true
 
         // ---------- Processing with Cancel Test ----------
         t.comment('queue-process: Processing with Cancel')
-        testCancel = true
+        jobs = q.createJob()
         return q.addJob(jobs)
       }).delay(1000).then(() => {
         return q.getJob(jobs)
       }).then((cancelledJob) => {
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job is cancelled')
+      }).then(() => {
+        testCancel = false
+
+        // ---------- Delayed Job Start Test ----------
+        t.comment('queue-process: Delayed Job Start')
+        jobs = q.createJob()
+        jobs.dateEnable = moment().add(2, 'seconds').toDate()
+        return q.addJob(jobs)
+      }).delay(500).then(() => {
+        return queueProcess.restart(q)
+      }).delay(500).then(() => {
+        return q.getJob(jobs)
+      }).then((delayedJobs) => {
+        t.equal(delayedJobs[0].status, enums.status.added, 'Delayed job has status: added')
+      }).delay(2000).then(() => {
+        return queueProcess.restart(q)
+      }).delay(1000).then(() => {
+        return q.getJob(jobs)
+      }).then((delayedJobs3) => {
+        t.equal(delayedJobs3[0].status, enums.status.completed, 'Delayed job has status: completed')
+
+        // ---------- Queue Summary ----------
+        t.comment('queue-process: Queue Summary')
         return q.summary()
       }).then((queueSummary) => {
-        t.equal(queueSummary.completed, 31, 'Summary 31 jobs completed')
-        t.equal(queueSummary.cancelled, 1, 'Summary 1 job cancelled')
-        t.equal(queueSummary.terminated, 1, 'Summary 1 job terminated')
+        t.equal(queueSummary.completed, summaryCompleted, `Summary ${summaryCompleted} jobs completed`)
+        t.equal(queueSummary.cancelled, summaryCancelled, `Summary ${summaryCancelled} job cancelled`)
+        t.equal(queueSummary.terminated, summaryTerminated, `Summary ${summaryTerminated} job terminated`)
 
         // ---------- Test Cleanup ----------
         removeEventHandlers()

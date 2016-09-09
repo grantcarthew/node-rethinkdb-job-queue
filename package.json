@@ -1,6 +1,6 @@
 {
   "name": "rethinkdb-job-queue",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {

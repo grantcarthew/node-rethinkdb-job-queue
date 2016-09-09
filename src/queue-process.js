@@ -94,7 +94,10 @@ function jobRun (job) {
 }
 
 const jobTick = function jobTick (q) {
-  logger('jobTick', `Running: [${q.running}]`)
+  logger('jobTick')
+  logger(`Running: [${q.running}]`)
+  logger(`_getNextJobActive [${q._getNextJobActive}]`)
+  logger(`_getNextJobCalled [${q._getNextJobCalled}]`)
   if (q._getNextJobActive) { q._getNextJobCalled = true }
   if (q.paused || q._getNextJobActive) { return }
 
