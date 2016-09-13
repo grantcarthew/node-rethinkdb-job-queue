@@ -14,7 +14,7 @@ module.exports = function () {
     test('queue-stop', (t) => {
       t.plan(31)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       let testEvents = false
       function stoppingEventHandler (qid) {

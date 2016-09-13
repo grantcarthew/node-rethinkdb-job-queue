@@ -13,7 +13,7 @@ module.exports = function () {
     test('job-progress', (t) => {
       t.plan(23)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
       const job = q.createJob()
       job.timeout = 300
       job.retryDelay = 600

@@ -16,7 +16,7 @@ module.exports = function () {
       t.plan(207)
 
       // ---------- Test Setup ----------
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       let jobs
       let jobDelay = 200

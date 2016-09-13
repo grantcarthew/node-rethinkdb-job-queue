@@ -14,7 +14,7 @@ module.exports = function () {
     test('queue-cancel-job', (t) => {
       t.plan(40)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false

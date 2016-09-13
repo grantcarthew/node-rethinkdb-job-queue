@@ -14,7 +14,7 @@ module.exports = function () {
     test('job-failed', (t) => {
       t.plan(76)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false

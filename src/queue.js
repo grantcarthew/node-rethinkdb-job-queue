@@ -21,7 +21,7 @@ const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
 
-  constructor (options, cxn) {
+  constructor (cxn, options) {
     super()
     logger('Queue Constructor', options)
 

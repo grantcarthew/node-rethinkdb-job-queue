@@ -67,7 +67,7 @@ const cxnOptions = {
   db: 'JobQueue', // The name of the database in RethinkDB
 }
 
-const q = new Queue(qOptions, cxnOptions)
+const q = new Queue(cxnOptions, qOptions)
 
 const job = q.createJob()
 job.numerator = 123
@@ -134,7 +134,7 @@ const cxnOptions = {
 }
 
 // This is the main queue instantiation call
-const q = new Queue(qOptions, cxnOptions)
+const q = new Queue(cxnOptions, qOptions)
 
 // Customizing the default job options for new jobs
 q.jobOptions = {

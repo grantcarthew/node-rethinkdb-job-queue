@@ -13,7 +13,7 @@ module.exports = function () {
     test('queue-db', (t) => {
       t.plan(70)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       let readyEventCount = 0
       q.on(enums.status.ready, function readyEventHandler (qid) {

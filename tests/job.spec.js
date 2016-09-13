@@ -14,7 +14,7 @@ module.exports = function () {
     test('job', (t) => {
       t.plan(71)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       const newJob = new Job(q)
       newJob.data = tData

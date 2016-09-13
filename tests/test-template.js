@@ -13,7 +13,7 @@ module.exports = function () {
     test('XXXXXXXX', (t) => {
       t.plan(2)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
       const job = q.createJob()
 
       // ---------- Event Handler Setup ----------

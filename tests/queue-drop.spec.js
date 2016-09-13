@@ -20,7 +20,7 @@ module.exports = function () {
     test('queue-drop', (t) => {
       t.plan(10)
 
-      let q = new Queue(tOpts.default(), tOpts.cxn())
+      let q = new Queue(tOpts.cxn(), tOpts.default())
 
       let testEvents = false
       function stoppingEventHandler (qid) {

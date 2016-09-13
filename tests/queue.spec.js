@@ -12,7 +12,7 @@ module.exports = function () {
     test('queue', (t) => {
       t.plan(106)
 
-      let q = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
+      let q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
       let q2
 
       let job
@@ -311,7 +311,7 @@ module.exports = function () {
 
         // ---------- Drop Tests ----------
         t.comment('queue: Drop')
-        q = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
+        q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
         testEvents = true
         q.on(enums.status.dropped, droppedEventHandler)
         return q.drop()
@@ -325,12 +325,12 @@ module.exports = function () {
 
         // ---------- Multi Queue Tests ----------
         t.comment('queue: Multi-Queue')
-        q = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
+        q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
         return q.ready()
       }).then((ready) => {
         t.ok(ready, `First queue ready [${q.id}]`)
         addEventHandlers()
-        q2 = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
+        q2 = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
         return q2.ready()
       }).then((ready2) => {
         t.ok(ready2, `Second queue ready [${q2.id}]`)

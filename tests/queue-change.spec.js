@@ -11,7 +11,7 @@ module.exports = function () {
     test('queue-change', (t) => {
       t.plan(48)
 
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
 
       function addedEventHandler (jobId) {
         if (testEvents) {

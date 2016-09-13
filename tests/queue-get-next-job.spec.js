@@ -16,7 +16,7 @@ module.exports = function () {
       t.plan(105)
 
       // ---------- Creating Priority Test Jobs ----------
-      const q = new Queue(tOpts.default(), tOpts.cxn())
+      const q = new Queue(tOpts.cxn(), tOpts.default())
       q._concurrency = 1
       let activeCount = 0
       function activeEventHandler (jobId) {
