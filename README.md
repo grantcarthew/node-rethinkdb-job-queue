@@ -14,6 +14,22 @@ It has been build as an alternative to using a [Redis][redis-url] backed job que
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
+## Features
+
+*   Uses RethinkDB as the backing database.
+*   Connect to multiple databases.
+*   Create multiple queues.
+*   Supports distributed worker nodes.
+*   Uses the RethinkDB change feed for global queue events.
+*   Run jobs concurrently.
+*   Jobs can be configured for a delayed start.
+*   Jobs can be cancelled.
+*   Jobs can be retried if they fail.
+*   Supports priority jobs.
+*   Supports job progress updates.
+*   Jobs hold a rich history log.
+*   Promise base with minimal callbacks.
+
 ## Documentation
 
 For full documentation [please see the wiki][rjq-wiki-url]
