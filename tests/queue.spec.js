@@ -2,9 +2,9 @@ const test = require('tape')
 const Promise = require('bluebird')
 const enums = require('../src/enums')
 const is = require('../src/is')
-const testError = require('./test-error')
-const testOptions = require('./test-options')
-const testData = require('./test-options').testData
+const tError = require('./test-error')
+const tOpts = require('./test-options')
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 
 module.exports = function () {
@@ -12,7 +12,7 @@ module.exports = function () {
     test('queue', (t) => {
       t.plan(106)
 
-      let q = new Queue(testOptions.queueNameOnly())
+      let q = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
       let q2
 
       let job
@@ -140,11 +140,11 @@ module.exports = function () {
         // ---------- Constructor with Default Options Tests ----------
         t.comment('queue: Constructor with Default Options')
         t.ok(q, 'Queue created with default options')
-        t.equal(q.name, testOptions.queueName, 'Default queue name valid')
+        t.equal(q.name, tOpts.queueName, 'Default queue name valid')
         t.ok(is.string(q.id), 'Queue id is valid')
         t.equal(q.host, enums.options.host, 'Default host name is valid')
         t.equal(q.port, enums.options.port, 'Default port is valid')
-        t.equal(q.db, testOptions.dbName, 'Default db name is valid')
+        t.equal(q.db, tOpts.dbName, 'Default db name is valid')
         t.ok(is.function(q.r), 'Queue r valid')
         t.ok(q.changeFeed, 'Queue change feed is enabled')
         t.ok(q.master, 'Queue is master queue')
@@ -311,7 +311,7 @@ module.exports = function () {
 
         // ---------- Drop Tests ----------
         t.comment('queue: Drop')
-        q = new Queue(testOptions.queueNameOnly())
+        q = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
         testEvents = true
         q.on(enums.status.dropped, droppedEventHandler)
         return q.drop()
@@ -325,12 +325,12 @@ module.exports = function () {
 
         // ---------- Multi Queue Tests ----------
         t.comment('queue: Multi-Queue')
-        q = new Queue(testOptions.queueNameOnly())
+        q = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
         return q.ready()
       }).then((ready) => {
         t.ok(ready, `First queue ready [${q.id}]`)
         addEventHandlers()
-        q2 = new Queue(testOptions.queueNameOnly())
+        q2 = new Queue(tOpts.queueNameOnly(), tOpts.cxn())
         return q2.ready()
       }).then((ready2) => {
         t.ok(ready2, `Second queue ready [${q2.id}]`)
@@ -349,7 +349,7 @@ module.exports = function () {
         q.stop()
         q2.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

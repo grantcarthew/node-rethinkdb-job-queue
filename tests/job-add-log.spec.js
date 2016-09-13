@@ -2,21 +2,21 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobAddLog = require('../src/job-add-log')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log', (t) => {
       t.plan(24)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
       let job = q.createJob()
-      job.data = testData
+      job.data = tData
       let testLog
       let extra = 'extra data'
 
@@ -42,8 +42,8 @@ module.exports = function () {
       }).then((newJob) => {
         job = newJob[0]
         t.equal(job.status, enums.status.added, 'New job added successfully')
-        testLog = job.createLog(testData)
-        testLog.data = testData
+        testLog = job.createLog(tData)
+        testLog.data = tData
 
         // ---------- Add First Log Tests ----------
         t.comment('job-add-log: Add First Log')
@@ -58,8 +58,8 @@ module.exports = function () {
         t.equal(jobWithLog1[0].log[1].type, enums.log.information, 'Log 1 type is information')
         t.equal(jobWithLog1[0].log[1].status, enums.status.added, 'Log 1 status is added')
         t.ok(jobWithLog1[0].log[1].retryCount >= 0, 'Log retryCount is valid')
-        t.equal(jobWithLog1[0].log[1].message, testData, 'Log 1 message is valid')
-        t.equal(jobWithLog1[0].log[1].data, testData, 'Log 1 data is valid')
+        t.equal(jobWithLog1[0].log[1].message, tData, 'Log 1 message is valid')
+        t.equal(jobWithLog1[0].log[1].data, tData, 'Log 1 data is valid')
         testLog.extra = extra
 
         // ---------- Add Second Log Tests ----------
@@ -75,8 +75,8 @@ module.exports = function () {
         t.equal(jobWithLog2[0].log[2].type, enums.log.information, 'Log 2 type is information')
         t.equal(jobWithLog2[0].log[2].status, enums.status.added, 'Log 2 status is added')
         t.ok(jobWithLog2[0].log[2].retryCount >= 0, 'Log retryCount is valid')
-        t.equal(jobWithLog2[0].log[2].message, testData, 'Log 2 message is valid')
-        t.equal(jobWithLog2[0].log[2].data, testData, 'Log 2 data is valid')
+        t.equal(jobWithLog2[0].log[2].message, tData, 'Log 2 message is valid')
+        t.equal(jobWithLog2[0].log[2].data, tData, 'Log 2 data is valid')
         t.equal(jobWithLog2[0].log[2].extra, extra, 'Log 2 extra data is valid')
         return q.reset()
       }).then((resetResult) => {
@@ -84,7 +84,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

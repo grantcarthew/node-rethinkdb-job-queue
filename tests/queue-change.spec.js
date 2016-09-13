@@ -1,17 +1,17 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
       t.plan(48)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       function addedEventHandler (jobId) {
         if (testEvents) {
@@ -153,7 +153,7 @@ module.exports = function () {
       }).then(() => {
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

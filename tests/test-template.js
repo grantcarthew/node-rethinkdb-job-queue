@@ -3,9 +3,9 @@ const Promise = require('bluebird')
 // const moment = require('moment')
 const enums = require('../src/enums')
 // const is = require('../src/is')
-const testError = require('./test-error')
-const testData = require('./test-options').testData
-const testOptions = require('./test-options')
+const tError = require('./test-error')
+const tData = require('./test-options').tData
+const tOpts = require('./test-options')
 const Queue = require('../src/queue')
 
 module.exports = function () {
@@ -13,7 +13,7 @@ module.exports = function () {
     test('XXXXXXXX', (t) => {
       t.plan(2)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
       const job = q.createJob()
 
       // ---------- Event Handler Setup ----------
@@ -44,7 +44,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

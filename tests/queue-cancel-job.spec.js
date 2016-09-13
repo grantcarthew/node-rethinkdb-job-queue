@@ -2,19 +2,19 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const queueCancelJob = require('../src/queue-cancel-job')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-cancel-job', (t) => {
       t.plan(40)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
@@ -50,7 +50,7 @@ module.exports = function () {
         // ---------- Cancel Multiple Jobs Tests ----------
         addEventHandlers()
         t.comment('queue-cancel-job: Cancel Multiple Jobs')
-        return queueCancelJob(q, savedJobs, testData)
+        return queueCancelJob(q, savedJobs, tData)
       }).then((cancelResult) => {
         t.equal(cancelResult.length, jobsToCreate, 'Job cancelled successfully')
         jobs = q.createJob()
@@ -60,7 +60,7 @@ module.exports = function () {
 
         // ---------- Cancel Single Job Tests ----------
         t.comment('queue-cancel-job: Cancel Single Job')
-        return queueCancelJob(q, singleJob[0], testData)
+        return queueCancelJob(q, singleJob[0], tData)
       }).then((cancelledJobId) => {
         t.ok(is.uuid(cancelledJobId[0]), 'Cancel Job returned Id')
         return q.getJob(cancelledJobId)
@@ -74,7 +74,7 @@ module.exports = function () {
         t.equal(cancelledJob[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(cancelledJob[0].log[1].status, enums.status.cancelled, 'Log status is cancelled')
         t.ok(cancelledJob[0].log[1].retryCount >= 0, 'Log retryCount is valid')
-        t.equal(cancelledJob[0].log[1].message, testData, 'Log message is present')
+        t.equal(cancelledJob[0].log[1].message, tData, 'Log message is present')
 
         // ---------- Cancel Multiple Jobs with Remove Tests ----------
         t.comment('queue-cancel-job: Cancel Multiple Jobs with Remove')
@@ -83,7 +83,7 @@ module.exports = function () {
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, jobsToCreate, 'Jobs saved successfully')
-        return queueCancelJob(q, savedJobs, testData)
+        return queueCancelJob(q, savedJobs, tData)
       }).then((cancelResult) => {
         t.equal(cancelResult.length, 5, 'Cancel Job returned valid number of Ids')
         cancelResult.forEach((jobId) => {
@@ -99,7 +99,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

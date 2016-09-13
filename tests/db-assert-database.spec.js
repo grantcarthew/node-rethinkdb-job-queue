@@ -1,15 +1,15 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const dbAssertDatabase = require('../src/db-assert-database')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 const rethinkdbdash = require('rethinkdbdash')
 
 module.exports = function () {
   const q = {
-    r: rethinkdbdash(testOptions.connection()),
-    db: testOptions.dbName,
-    name: testOptions.queueName,
+    r: rethinkdbdash(tOpts.cxn()),
+    db: tOpts.dbName,
+    name: tOpts.queueName,
     id: 'mock:queue:id'
   }
 
@@ -21,7 +21,7 @@ module.exports = function () {
         t.ok(assertDbResult, 'Database asserted')
         q.r.getPoolMaster().drain()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

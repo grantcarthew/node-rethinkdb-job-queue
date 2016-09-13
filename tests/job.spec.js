@@ -2,22 +2,22 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const Job = require('../src/job')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
       t.plan(71)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       const newJob = new Job(q)
-      newJob.data = testData
+      newJob.data = tData
       let savedJob
 
       // ---------- Event Handler Setup ----------
@@ -56,7 +56,7 @@ module.exports = function () {
       t.ok(newJob instanceof Job, 'New job is a Job object')
       t.deepEqual(newJob.q, q, 'New job has a reference to the queue')
       t.ok(is.uuid(newJob.id), 'New job has valid id')
-      t.equal(newJob.data, testData, 'New job data is valid')
+      t.equal(newJob.data, tData, 'New job data is valid')
       t.equal(newJob.priority, 'normal', 'New job priority is normal')
       t.equal(newJob.status, 'created', 'New job status is created')
       t.equal(newJob.timeout, 300, 'New job timeout is 300')
@@ -92,16 +92,16 @@ module.exports = function () {
 
       // ---------- Create Log Tests ----------
       t.comment('job: Create Log')
-      let log = newJob.createLog(testData)
-      log.data = testData
+      let log = newJob.createLog(tData)
+      log.data = tData
       t.equal(typeof log, 'object', 'Job createLog returns a log object')
       t.ok(is.date(log.date), 'Log date is a date')
       t.equal(log.queueId, q.id, 'Log queueId is valid')
       t.equal(log.type, enums.log.information, 'Log type is information')
       t.equal(log.status, enums.status.created, 'Log status is created')
       t.ok(log.retryCount >= 0, 'Log retryCount is valid')
-      t.equal(log.message, testData, 'Log message is valid')
-      t.equal(log.data, testData, 'Log data is valid')
+      t.equal(log.message, tData, 'Log message is valid')
+      t.equal(log.data, tData, 'Log data is valid')
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
@@ -145,8 +145,8 @@ module.exports = function () {
         t.equal(jobsFromDb[0].log[1].type, enums.log.information, 'Log type is information')
         t.equal(jobsFromDb[0].log[1].status, enums.status.created, 'Log status is created')
         t.ok(jobsFromDb[0].log[1].retryCount >= 0, 'Log retryCount is valid')
-        t.equal(jobsFromDb[0].log[1].message, testData, 'Log message is valid')
-        t.equal(jobsFromDb[0].log[1].data, testData, 'Log data is valid')
+        t.equal(jobsFromDb[0].log[1].message, tData, 'Log message is valid')
+        t.equal(jobsFromDb[0].log[1].data, tData, 'Log data is valid')
 
         // ---------- Set Job Progress ----------
         t.comment('job: Set Job Progress')
@@ -165,7 +165,7 @@ module.exports = function () {
         t.ok(resetResult >= 0, 'Queue reset')
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

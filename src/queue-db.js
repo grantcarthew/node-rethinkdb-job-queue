@@ -1,19 +1,17 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const rethinkdbdash = require('rethinkdbdash')
 const enums = require('./enums')
 const dbAssert = require('./db-assert')
 const dbReview = require('./db-review')
 const queueChange = require('./queue-change')
+const dbDriver = require('./db-driver')
 
-module.exports.attach = function dbAttach (q) {
+module.exports.attach = function dbAttach (q, cxn) {
   logger('attach')
-  q._r = rethinkdbdash({
-    host: q.host,
-    port: q.port,
-    db: q.db,
-    silent: true
-  })
+  q._r = dbDriver(cxn)
+  q._host = q.r._poolMaster._options.host
+  q._port = q.r._poolMaster._options.port
+  q._db = q.r._poolMaster._options.db
   q._ready = dbAssert(q).then(() => {
     if (q.changeFeed) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {

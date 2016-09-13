@@ -1,5 +1,5 @@
 const test = require('tape')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 
 module.exports = function () {
@@ -20,7 +20,7 @@ module.exports = function () {
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has has correct number of keys')
       t.equal(Object.keys(enums.message).length, 12, 'Enums message has has correct number of keys')
     } catch (err) {
-      testError(err, module, t)
+      tError(err, module, t)
     }
   })
 }

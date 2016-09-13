@@ -1,5 +1,5 @@
 const test = require('tape')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const jobOptions = require('../src/job-options')
 
 module.exports = function () {
@@ -59,7 +59,7 @@ module.exports = function () {
       t.equal(to.retryMax, 2, 'Job invalid retryMax option is correct')
       t.equal(to.retryDelay, 800, 'Job invalid retryDelay option is correct')
     } catch (err) {
-      testError(err, module, t)
+      tError(err, module, t)
     }
   })
 }

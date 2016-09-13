@@ -2,19 +2,19 @@ const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
 const enums = require('../src/enums')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const queueStop = require('../src/queue-stop')
 const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-stop', (t) => {
       t.plan(31)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       let testEvents = false
       function stoppingEventHandler (qid) {
@@ -75,7 +75,7 @@ module.exports = function () {
 
         // ---------- Stop without Drain ----------
         t.comment('queue-stop: Stop without Drain')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -98,7 +98,7 @@ module.exports = function () {
         // detaching with drain or node will not exit gracefully
         return queueDb.detach(q, true)
       }).then(() => {
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -113,7 +113,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

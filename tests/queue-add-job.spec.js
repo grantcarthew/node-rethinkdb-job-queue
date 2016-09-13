@@ -2,19 +2,19 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-add-job', (t) => {
       t.plan(30)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
       let addedCount = 0
       function addedEventHandler (jobId) {
         addedCount++
@@ -102,7 +102,7 @@ module.exports = function () {
         t.ok(resetResult >= 0, 'Queue reset')
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

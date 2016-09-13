@@ -33,6 +33,8 @@ For full documentation [please see the wiki][rjq-wiki-url]
 
 Note: You will need to install [RethinkDB][rethinkdb-url] before you can use `rethinkdb-job-queue`
 
+After installing [RethinkDB][rethinkdb-url] install the job queue using the following command.
+
 ```sh
 npm install rethinkdb-job-queue --save
 ```
@@ -42,12 +44,14 @@ npm install rethinkdb-job-queue --save
 ```js
 
 const Queue = require('rethinkdb-job-queue')
-const options = {
+const qOptions = {
+  name: 'Mathematics' // The queue and table name
+}
+const cxnOptions = {
   db: 'JobQueue', // The name of the database in RethinkDB
-  name: 'Mathematics' // The name of the table in the database
 }
 
-const q = new Queue(options)
+const q = new Queue(qOptions, cxnOptions)
 
 const job = q.createJob()
 job.numerator = 123
@@ -75,7 +79,7 @@ return q.addJob(job).catch((err) => {
 ```js
 
 // The following is not related to rethinkdb-job-queue.
-// nodemailer configuration
+// This is the nodemailer configuration
 const nodemailer = require('nodemailer')
 const transporter = nodemailer.createTransport({
   service: 'Mailgun',
@@ -97,28 +101,32 @@ var mailOptions = {
 const Queue = require('rethinkdb-job-queue')
 
 // Queue options have defaults and are not required
-const options = {
-  db: 'JobQueue', // The name of the database in RethinkDB
-  name: 'RegistrationEmail', // The name of the table in the database
-  host: 'localhost',
-  port: 28015,
+const qOptions = {
+  name: 'RegistrationEmail', // The queue and table name
   masterInterval: 300, // Database review period in seconds
   changeFeed: true, // Enables events from the database table
   concurrency: 100,
-  removeFinishedJobs: 30, // true, false, or number of days.
+  removeFinishedJobs: 30, // true, false, or number of days
+}
+
+// Connection options have defaults and are not required
+// You can replace these options with a rethinkdbdash driver object
+const cxnOptions = {
+  host: 'localhost',
+  port: 28015,
+  db: 'JobQueue', // The name of the database in RethinkDB
 }
 
 // This is the main queue instantiation call
-const q = new Queue(options)
+const q = new Queue(qOptions, cxnOptions)
 
 // Customizing the default job options for new jobs
-const jobDefaults = {
+q.jobOptions = {
   priority: 'normal',
   timeout: 300,
   retryMax: 3, // Four attempts, first then three retries
   retryDelay: 600 // Time in seconds to delay retries
 }
-q.jobOptions = jobDefaults
 
 const job = q.createJob()
 // The createJob method will only create the job locally.

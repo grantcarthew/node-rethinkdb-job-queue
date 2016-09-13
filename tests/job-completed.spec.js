@@ -2,21 +2,21 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobCompleted = require('../src/job-completed')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-completed', (t) => {
       t.plan(23)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
       let job = q.createJob()
-      job.data = testData
+      job.data = tData
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
@@ -50,7 +50,7 @@ module.exports = function () {
         // ---------- Job Completed Test ----------
         addEventHandlers()
         t.comment('job-completed: Job Completed')
-        return jobCompleted(savedJob[0], testData)
+        return jobCompleted(savedJob[0], tData)
       }).then((completedIds) => {
         t.equal(completedIds.length, 1, 'Job updated successfully')
         return q.getJob(completedIds)
@@ -67,17 +67,17 @@ module.exports = function () {
         t.ok(updatedJob[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.ok(updatedJob[0].log[1].message, 'Log message is present')
         t.ok(updatedJob[0].log[1].duration >= 0, 'Log duration is >= 0')
-        t.equal(updatedJob[0].log[1].data, testData, 'Log data is valid')
+        t.equal(updatedJob[0].log[1].data, tData, 'Log data is valid')
 
         // ---------- Job Completed with Remove Test ----------
         t.comment('job-completed: Job Completed with Remove')
         job = q.createJob()
-        job.data = testData
+        job.data = tData
         return q.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         q._removeFinishedJobs = true
-        return jobCompleted(savedJob[0], testData)
+        return jobCompleted(savedJob[0], tData)
       }).then((removedIds) => {
         t.equal(removedIds.length, 1, 'Job removed successfully')
         return q.getJob(removedIds[0])
@@ -89,7 +89,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

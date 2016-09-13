@@ -1,6 +1,6 @@
 const test = require('tape')
-const testError = require('./test-error')
-const testOptions = require('./test-options')
+const tError = require('./test-error')
+const tOpts = require('./test-options')
 const dbDriver = require('../src/db-driver')
 const rethinkdbdash = require('rethinkdbdash')
 
@@ -17,10 +17,10 @@ module.exports = function () {
 
     try {
       const options = {
-        hostOnly: { host: testOptions.dbHost },
-        portOnly: { port: testOptions.dbPort },
-        dbOnly: { db: testOptions.dbName },
-        full: testOptions.connection()
+        hostOnly: { host: tOpts.dbHost },
+        portOnly: { port: tOpts.dbPort },
+        dbOnly: { db: tOpts.dbName },
+        full: tOpts.cxn()
       }
       options.full.silent = true
 
@@ -28,7 +28,7 @@ module.exports = function () {
       testConnOptions(options.hostObnly)
       testConnOptions(options.portOnly)
       testConnOptions(options.dbOnly)
-      testConnOptions(testOptions.connection())
+      testConnOptions(tOpts.cxn())
 
       const dash = rethinkdbdash(options.full)
       const dashResult = dbDriver(dash)
@@ -37,7 +37,7 @@ module.exports = function () {
 
       t.throws(() => { dbDriver({foo: 'bar'}) }, 'Invalid db driver options throws an error')
     } catch (err) {
-      testError(err, module, t)
+      tError(err, module, t)
     }
   })
 }

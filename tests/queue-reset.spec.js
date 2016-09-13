@@ -2,18 +2,18 @@ const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
 const enums = require('../src/enums')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const queueReset = require('../src/queue-reset')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-reset', (t) => {
       t.plan(7)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
       const jobs = [
         q.createJob(),
         q.createJob(),
@@ -30,7 +30,7 @@ module.exports = function () {
           q.removeListener(enums.status.reset, resetEventHandler)
           q.stop()
           return resolve(t.end())
-        }).catch(err => testError(err, module, t))
+        }).catch(err => tError(err, module, t))
       }
       q.on(enums.status.reset, resetEventHandler)
 
@@ -43,7 +43,7 @@ module.exports = function () {
       }).then((beforeSummary) => {
         t.equal(beforeSummary.added, 3, 'Status summary contains correct value')
         return queueReset(q)
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

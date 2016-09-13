@@ -2,17 +2,17 @@ const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
 const enums = require('../src/enums')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const queueDrop = require('../src/queue-drop')
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 const rethinkdbdash = require('rethinkdbdash')
 
 module.exports = function () {
   const mockQueue = {
-    r: rethinkdbdash(testOptions.connection()),
-    db: testOptions.dbName,
-    name: testOptions.queueName,
+    r: rethinkdbdash(tOpts.cxn()),
+    db: tOpts.dbName,
+    name: tOpts.queueName,
     id: 'mock:queue:id'
   }
 
@@ -20,7 +20,7 @@ module.exports = function () {
     test('queue-drop', (t) => {
       t.plan(10)
 
-      let q = new Queue(testOptions.default())
+      let q = new Queue(tOpts.default(), tOpts.cxn())
 
       let testEvents = false
       function stoppingEventHandler (qid) {
@@ -81,7 +81,7 @@ module.exports = function () {
         removeEventHandlers()
         mockQueue.r.getPoolMaster().drain()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

@@ -1,6 +1,7 @@
 const Promise = require('bluebird')
 const enums = require('./enums.spec')
 const is = require('./is.spec')
+const dbDriver = require('./db-driver.spec')
 const dbAssertDatabase = require('./db-assert-database.spec')
 const dbAssertTable = require('./db-assert-table.spec')
 const dbAssertIndex = require('./db-assert-index.spec')
@@ -38,6 +39,7 @@ return dbAssertDatabase().then(() => {
   return dbAssert()
 }).then(() => {
   return Promise.all([
+    dbDriver(),
     enums(),
     is(),
     jobOptions(),

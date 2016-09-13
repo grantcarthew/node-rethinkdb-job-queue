@@ -21,16 +21,16 @@ const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
 
-  constructor (options) {
+  constructor (options, cxn) {
     super()
     logger('Queue Constructor', options)
 
     options = options || {}
     this._name = options.name || enums.options.name
-    this._host = options.host || enums.options.host
-    this._port = options.port || enums.options.port
-    this._db = options.db || enums.options.db
     this._r = false
+    this._host = '' // Populated by 'queue-db.attach()'
+    this._port = 0 // Populated by 'queue-db.attach()'
+    this._db = '' // Populated by 'queue-db.attach()'
     this._masterInterval = options.masterInterval ||
       enums.options.masterInterval
     this._jobOptions = jobOptions()
@@ -51,7 +51,7 @@ class Queue extends EventEmitter {
       process.pid,
       uuid.v4()
     ].join(':')
-    queueDb.attach(this)
+    queueDb.attach(this, cxn)
   }
 
   get name () { return this._name }

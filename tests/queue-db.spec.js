@@ -2,18 +2,18 @@ const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
 const enums = require('../src/enums')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-db', (t) => {
       t.plan(70)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       let readyEventCount = 0
       q.on(enums.status.ready, function readyEventHandler (qid) {
@@ -59,7 +59,7 @@ module.exports = function () {
 
         // ---------- Attach with change feed and master ----------
         t.comment('queue-db: Attach with Change Feed and Master')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -82,7 +82,7 @@ module.exports = function () {
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -105,7 +105,7 @@ module.exports = function () {
 
         // ---------- Attach with master NOT change feed ----------
         t.comment('queue-db: Attach with Master NOT Change Feed')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -128,7 +128,7 @@ module.exports = function () {
 
         // ---------- Attach without change feed or master ----------
         t.comment('queue-db: Attach without Change Feed or Master')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -151,7 +151,7 @@ module.exports = function () {
 
         // ---------- Attach with change feed and master ----------
         t.comment('queue-db: Attach with Change Feed and Master')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -179,7 +179,7 @@ module.exports = function () {
 
         // ---------- Attach with change feed NOT master ----------
         t.comment('queue-db: Attach with Change Feed NOT Master')
-        return queueDb.attach(q)
+        return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
         return q.ready()
       }).then((ready) => {
@@ -188,7 +188,7 @@ module.exports = function () {
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

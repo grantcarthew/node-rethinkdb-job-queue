@@ -1,13 +1,13 @@
 const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const moment = require('moment')
 const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 const proxyquire = require('proxyquire').noCallThru()
 const processStub = {}
 const dbReview = proxyquire('../src/db-review',
@@ -24,7 +24,7 @@ module.exports = function () {
         t.ok(q.id, `Queue process restart called [${processRestart} of 2]`)
       }
 
-      const q = new Queue(testOptions.master(1))
+      const q = new Queue(tOpts.master(1), tOpts.cxn())
       let reviewCount = 0
 
       // ---------- Event Handler Setup ----------
@@ -48,39 +48,39 @@ module.exports = function () {
       }
 
       let retryCount0Job = q.createJob()
-      retryCount0Job.data = testData
+      retryCount0Job.data = tData
       retryCount0Job.status = enums.status.active
       retryCount0Job.dateStarted = moment().add(-400, 'seconds').toDate()
       retryCount0Job.retryCount = 0
       retryCount0Job.retryMax = 1
 
       let retryCount1Job = q.createJob()
-      retryCount1Job.data = testData
+      retryCount1Job.data = tData
       retryCount1Job.status = enums.status.active
       retryCount1Job.dateStarted = moment().add(-400, 'seconds').toDate()
       retryCount1Job.retryCount = 1
       retryCount1Job.retryMax = 1
 
       let completedJobPre = q.createJob()
-      completedJobPre.data = testData
+      completedJobPre.data = tData
       completedJobPre.status = enums.status.completed
       completedJobPre.dateStarted = moment().add(-179, 'days').toDate()
       completedJobPre.dateFinished = moment().add(-179, 'days').toDate()
 
       let completedJobPost = q.createJob()
-      completedJobPost.data = testData
+      completedJobPost.data = tData
       completedJobPost.status = enums.status.completed
       completedJobPost.dateStarted = moment().add(-181, 'days').toDate()
       completedJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
       let cancelledJobPost = q.createJob()
-      cancelledJobPost.data = testData
+      cancelledJobPost.data = tData
       cancelledJobPost.status = enums.status.terminated
       cancelledJobPost.dateStarted = moment().add(-181, 'days').toDate()
       cancelledJobPost.dateFinished = moment().add(-181, 'days').toDate()
 
       let terminatedJobPost = q.createJob()
-      terminatedJobPost.data = testData
+      terminatedJobPost.data = tData
       terminatedJobPost.status = enums.status.terminated
       terminatedJobPost.dateStarted = moment().add(-181, 'days').toDate()
       terminatedJobPost.dateFinished = moment().add(-181, 'days').toDate()
@@ -171,7 +171,7 @@ module.exports = function () {
         t.ok(resetResult >= 0, 'Queue reset')
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

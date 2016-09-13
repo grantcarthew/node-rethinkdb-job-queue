@@ -2,19 +2,19 @@ const test = require('tape')
 const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
-const testError = require('./test-error')
+const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobFailed = require('../src/job-failed')
-const testData = require('./test-options').testData
+const tData = require('./test-options').tData
 const Queue = require('../src/queue')
-const testOptions = require('./test-options')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed', (t) => {
       t.plan(76)
 
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
@@ -50,7 +50,7 @@ module.exports = function () {
       }
 
       let job = q.createJob()
-      job.data = testData
+      job.data = tData
       const err = new Error('Test error from job-failed tests')
 
       return q.reset().then((resetResult) => {
@@ -154,7 +154,7 @@ module.exports = function () {
         // ---------- Job Failed with Remove Finished Jobs Test ----------
         t.comment('job-failed: Job Terminated with Remove Finished Jobs')
         job = q.createJob()
-        job.data = testData
+        job.data = tData
         job.retryMax = 0
         q._removeFinishedJobs = true
         return q.addJob(job)
@@ -173,7 +173,7 @@ module.exports = function () {
         removeEventHandlers()
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }

@@ -3,9 +3,9 @@ const Promise = require('bluebird')
 const moment = require('moment')
 const is = require('../src/is')
 const enums = require('../src/enums')
-const testError = require('./test-error')
-const testOptions = require('./test-options')
-const testData = require('./test-options').testData
+const tError = require('./test-error')
+const tOpts = require('./test-options')
+const tData = require('./test-options').tData
 const queueProcess = require('../src/queue-process')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
@@ -16,7 +16,7 @@ module.exports = function () {
       t.plan(207)
 
       // ---------- Test Setup ----------
-      const q = new Queue(testOptions.default())
+      const q = new Queue(tOpts.default(), tOpts.cxn())
 
       let jobs
       let jobDelay = 200
@@ -155,8 +155,8 @@ module.exports = function () {
         }
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
         if (testCancel) {
-          const cancelErr = new Error(testData)
-          cancelErr.cancelJob = testData
+          const cancelErr = new Error(tData)
+          cancelErr.cancelJob = tData
           next(cancelErr)
         } else {
           if (updateProgress) {
@@ -337,7 +337,7 @@ module.exports = function () {
         t.ok(resetResult >= 0, 'Queue reset')
         q.stop()
         return resolve(t.end())
-      }).catch(err => testError(err, module, t))
+      }).catch(err => tError(err, module, t))
     })
   })
 }
