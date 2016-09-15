@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('./datetime')
 const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
@@ -16,9 +16,9 @@ module.exports = function cancelJob (q, jobOrId, reason) {
     .getAll(...ids)
     .update({
       status: enums.status.cancelled,
-      dateFinished: moment().toDate(),
+      dateFinished: new Date(),
       log: q.r.row('log').append({
-        date: moment().toDate(),
+        date: new Date(),
         queueId: q.id,
         type: enums.log.information,
         status: enums.status.cancelled,

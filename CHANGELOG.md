@@ -6,6 +6,8 @@
 *   Changed 'Queue()' constructor API to add connection options.
 *   Standardized time related options to milliseconds.
 *   Added 'datetime' module to add and format dates.
+*   Updated 'is' module to include dateBefore, dateAfter, dateBetween.
+*   Removed the 'moment' library.
 
 ## v0.0.8 / 2016-09-09
 

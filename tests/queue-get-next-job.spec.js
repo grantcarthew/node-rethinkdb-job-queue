@@ -1,12 +1,11 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('../src/datetime')
 const is = require('../src/is')
 const enums = require('../src/enums')
 const tError = require('./test-error')
 const queueAddJob = require('../src/queue-add-job')
 const queueGetNextJob = require('../src/queue-get-next-job')
-const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
@@ -46,7 +45,7 @@ module.exports = function () {
       const jobFailed = q.createJob({priority: 'highest'})
       jobFailed.status = enums.status.failed
       jobFailed.data = 'Failed'
-      jobFailed.dateCreated = moment().add(-1, 'seconds').toDate()
+      jobFailed.dateCreated = datetime.add.sec(new Date(), -1)
       const jobActive = q.createJob({priority: 'normal'})
       jobActive.status = enums.status.active
       jobActive.data = 'Active'
@@ -206,8 +205,8 @@ module.exports = function () {
         // ---------- Testing dateEnable Values ----------
         t.comment('queue-get-next-job: dateEnable Values')
         retryJobs = q.createJob(2).map(j => j)
-        retryJobs[0].dateEnable = moment().add(100, 'seconds').toDate()
-        retryJobs[1].dateEnable = moment().add(-100, 'seconds').toDate()
+        retryJobs[0].dateEnable = datetime.add.sec(new Date(), 100)
+        retryJobs[1].dateEnable = datetime.add.sec(new Date(), -100)
         return q.addJob(retryJobs)
       }).then((retrySavedJobs) => {
         t.equal(retrySavedJobs.length, 2, 'Jobs saved successfully')
@@ -220,28 +219,29 @@ module.exports = function () {
         t.comment('queue-get-next-job: dateEnable with retryCount')
         retryJobs = q.createJob(4).map(j => j)
         retryJobs[0].retryCount = 0
-        retryJobs[0].dateEnable = moment().add(-100, 'seconds').toDate()
+        retryJobs[0].dateEnable = datetime.add.sec(new Date(), -100)
         retryJobs[1].retryCount = 1
-        retryJobs[1].dateEnable = moment().add(-200, 'seconds').toDate()
+        retryJobs[1].dateEnable = datetime.add.sec(new Date(), -200)
         retryJobs[2].retryCount = 2
-        retryJobs[2].dateEnable = moment().add(-300, 'seconds').toDate()
+        retryJobs[2].dateEnable = datetime.add.sec(new Date(), -300)
         retryJobs[3].retryCount = 3
-        retryJobs[3].dateEnable = moment().add(-400, 'seconds').toDate()
+        retryJobs[3].dateEnable = datetime.add.sec(new Date(), -400)
         return q.addJob(retryJobs)
       }).then((retrySavedJobs) => {
         t.equal(retrySavedJobs.length, 4, 'Jobs saved successfully')
         return queueGetNextJob(q)
       }).then((retryGet2) => {
         retryGet2.sort((a, b) => {
-          if (moment(a.dateEnable).isSameOrBefore(b.dateEnable)) return -1
+          if (is.dateBefore(a.dateEnable, b.dateEnable) ||
+              a.dateEnable === b.dateEnable) { return -1 }
           return 1
         })
         t.equal(retryGet2.length, 3, 'Jobs retrieved successfully')
         let ids = retryGet2.map(j => j.id)
         t.ok(!ids.includes(retryJobs[0].id), 'Retrieved in dateEnable order successfully')
-        t.ok(moment().isBefore(retryGet2[0].dateEnable), 'dateEnable for first job is valid')
-        t.ok(moment(retryGet2[0].dateEnable).isBefore(retryGet2[1].dateEnable), 'dateEnable for second job is valid')
-        t.ok(moment(retryGet2[1].dateEnable).isBefore(retryGet2[2].dateEnable), 'dateEnable for third job is valid')
+        t.ok(is.dateBefore(new Date(), retryGet2[0].dateEnable), 'dateEnable for first job is valid')
+        t.ok(is.dateBefore(retryGet2[0].dateEnable, retryGet2[1].dateEnable), 'dateEnable for second job is valid')
+        t.ok(is.dateBefore(retryGet2[1].dateEnable, retryGet2[2].dateEnable), 'dateEnable for third job is valid')
         return queueGetNextJob(q)
       }).then((retryGet3) => {
         t.equal(retryGet3.length, 1, 'Last job retrieved successfully')

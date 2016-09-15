@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('./datetime')
 const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
@@ -18,9 +18,9 @@ module.exports = function failed (job, err) {
   } else {
     job.status = enums.status.terminated
   }
-  job.dateFinished = moment().toDate()
+  job.dateFinished = new Date()
   job.progress = 0
-  let duration = moment(job.dateFinished).diff(moment(job.dateStarted))
+  let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
   const errMessage = err && err.message ? err.message : err

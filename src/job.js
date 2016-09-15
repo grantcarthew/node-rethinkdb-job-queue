@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
 const uuid = require('uuid')
-const moment = require('moment')
+const datetime = require('./datetime')
 const enums = require('./enums')
 const is = require('./is')
 const jobOptions = require('./job-options')
@@ -29,7 +29,7 @@ class Job {
       } else {
         options = jobOptions(options, this)
       }
-      const now = moment().toDate()
+      const now = new Date()
       this.id = uuid.v4()
       this.priority = options.priority
       this.timeout = options.timeout
@@ -71,7 +71,7 @@ class Job {
   createLog (message, type = enums.log.information, status = this.status) {
     logger(`createLog [${message}] [${type}] [${status}]`)
     return {
-      date: moment().toDate(),
+      date: new Date(),
       queueId: this.q.id,
       type: type,
       status: status,

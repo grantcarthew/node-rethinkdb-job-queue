@@ -2,7 +2,7 @@ const test = require('tape')
 const Promise = require('bluebird')
 const is = require('../src/is')
 const tError = require('./test-error')
-const moment = require('moment')
+const datetime = require('../src/datetime')
 const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
 const tData = require('./test-options').tData
@@ -50,40 +50,40 @@ module.exports = function () {
       let retryCount0Job = q.createJob()
       retryCount0Job.data = tData
       retryCount0Job.status = enums.status.active
-      retryCount0Job.dateStarted = moment().add(-400, 'seconds').toDate()
+      retryCount0Job.dateStarted = datetime.add.sec(new Date(), -400)
       retryCount0Job.retryCount = 0
       retryCount0Job.retryMax = 1
 
       let retryCount1Job = q.createJob()
       retryCount1Job.data = tData
       retryCount1Job.status = enums.status.active
-      retryCount1Job.dateStarted = moment().add(-400, 'seconds').toDate()
+      retryCount1Job.dateStarted = datetime.add.sec(new Date(), -400)
       retryCount1Job.retryCount = 1
       retryCount1Job.retryMax = 1
 
       let completedJobPre = q.createJob()
       completedJobPre.data = tData
       completedJobPre.status = enums.status.completed
-      completedJobPre.dateStarted = moment().add(-179, 'days').toDate()
-      completedJobPre.dateFinished = moment().add(-179, 'days').toDate()
+      completedJobPre.dateStarted = datetime.add.days(new Date(), -179)
+      completedJobPre.dateFinished = datetime.add.days(new Date(), -179)
 
       let completedJobPost = q.createJob()
       completedJobPost.data = tData
       completedJobPost.status = enums.status.completed
-      completedJobPost.dateStarted = moment().add(-181, 'days').toDate()
-      completedJobPost.dateFinished = moment().add(-181, 'days').toDate()
+      completedJobPost.dateStarted = datetime.add.days(new Date(), -181)
+      completedJobPost.dateFinished = datetime.add.days(new Date(), -181)
 
       let cancelledJobPost = q.createJob()
       cancelledJobPost.data = tData
       cancelledJobPost.status = enums.status.terminated
-      cancelledJobPost.dateStarted = moment().add(-181, 'days').toDate()
-      cancelledJobPost.dateFinished = moment().add(-181, 'days').toDate()
+      cancelledJobPost.dateStarted = datetime.add.days(new Date(), -181)
+      cancelledJobPost.dateFinished = datetime.add.days(new Date(), -181)
 
       let terminatedJobPost = q.createJob()
       terminatedJobPost.data = tData
       terminatedJobPost.status = enums.status.terminated
-      terminatedJobPost.dateStarted = moment().add(-181, 'days').toDate()
-      terminatedJobPost.dateFinished = moment().add(-181, 'days').toDate()
+      terminatedJobPost.dateStarted = datetime.add.days(new Date(), -181)
+      terminatedJobPost.dateFinished = datetime.add.days(new Date(), -181)
 
       let jobs = [
         retryCount0Job,

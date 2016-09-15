@@ -1,6 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('../src/datetime')
 const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')

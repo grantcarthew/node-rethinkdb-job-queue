@@ -1,21 +1,34 @@
+// const logger = require('./logger')(module)
+// Logging has been removed due to circular dependencies.
+function isDate (value) {
+  // logger(`isDate`, value)
+  return value instanceof Date ||
+    Object.prototype.toString.call(value) === '[object Date]'
+}
+
 
 function addMilliseconds (dateObject, ms) {
+  dateObject = isDate(dateObject) ? dateObject : new Date(dateObject)
   return new Date(dateObject.getTime() + ms)
 }
 
 function addSeconds (dateObject, sec) {
+  dateObject = isDate(dateObject) ? dateObject : new Date(dateObject)
   return addMilliseconds(dateObject, sec * 1000)
 }
 
 function addMinutes (dateObject, min) {
+  dateObject = isDate(dateObject) ? dateObject : new Date(dateObject)
   return addMilliseconds(dateObject, min * 60000)
 }
 
 function addHours (dateObject, hours) {
+  dateObject = isDate(dateObject) ? dateObject : new Date(dateObject)
   return addMilliseconds(dateObject, hours * 3600000)
 }
 
 function addDays (dateObject, days) {
+  dateObject = isDate(dateObject) ? dateObject : new Date(dateObject)
   return addMilliseconds(dateObject, days * 86400000)
 }
 

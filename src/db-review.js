@@ -1,6 +1,6 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('./datetime')
 const dbResult = require('./db-result')
 const queueProcess = require('./queue-process')
 const enums = require('./enums')
@@ -8,7 +8,7 @@ const enums = require('./enums')
 let dbReviewIntervalId = false
 
 function updateFailedJobs (q) {
-  logger('updateFailedJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+  logger('updateFailedJobs: ' + datetime.format(new Date()))
 
   return Promise.resolve().then(() => {
     return q.r.db(q.db).table(q.name)
@@ -54,7 +54,7 @@ function updateFailedJobs (q) {
 }
 
 function removeFinishedJobs (q) {
-  logger('removeFinishedJobs: ' + moment().format('YYYY-MM-DD HH:mm:ss.SSS'))
+  logger('removeFinishedJobs: ' + datetime.format(new Date()))
 
   if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
 

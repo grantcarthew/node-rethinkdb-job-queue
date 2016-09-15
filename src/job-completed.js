@@ -1,6 +1,5 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const moment = require('moment')
 const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')
@@ -8,9 +7,9 @@ const dbResult = require('./db-result')
 module.exports = function completed (job, result) {
   logger(`completed:  [${job.id}]`, result)
   job.status = enums.status.completed
-  job.dateFinished = moment().toDate()
+  job.dateFinished = new Date()
   job.progress = 100
-  let duration = moment(job.dateFinished).diff(moment(job.dateStarted))
+  let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
   const log = job.createLog(enums.message.completed)

@@ -1,10 +1,10 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('../src/datetime')
+const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobProgress = require('../src/job-progress')
-const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
@@ -51,8 +51,9 @@ module.exports = function () {
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with a null value')
         t.ok(
-          moment(updatedJob[0].dateEnable).isBetween(moment(tempDateEnable),
-            moment().add(updatedJob[0].timeout + 2000, 'milliseconds')),
+          is.dateBetween(updatedJob[0].dateEnable,
+            tempDateEnable,
+            datetime.add.ms(new Date(), updatedJob[0].timeout + 2000)),
           'Job dateEnable updated successfully'
         )
         updatedJob[0].status = enums.status.active
@@ -63,8 +64,9 @@ module.exports = function () {
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with negative value')
         t.ok(
-          moment(updatedJob[0].dateEnable).isBetween(moment(tempDateEnable),
-            moment().add((updatedJob[0].timeout + 2000) + updatedJob[0].retryDelay, 'milliseconds')),
+          is.dateBetween(updatedJob[0].dateEnable,
+            tempDateEnable,
+            datetime.add.ms(new Date(), updatedJob[0].timeout + 2000 + updatedJob[0].retryDelay)),
           'Job dateEnable updated successfully'
         )
         updatedJob[0].status = enums.status.active

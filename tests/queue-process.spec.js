@@ -1,6 +1,6 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const moment = require('moment')
+const datetime = require('../src/datetime')
 const is = require('../src/is')
 const enums = require('../src/enums')
 const tError = require('./test-error')
@@ -147,10 +147,9 @@ module.exports = function () {
       let testCancel = false
       function testHandler (job, next) {
         if (testTimes) {
-          const testDate = moment().add(
-            1000 + job.timeout + (job.retryCount * job.retryDelay),
-            'milliseconds')
-          t.ok(moment(job.dateEnable).isBefore(testDate), 'Job dateEnable is valid')
+          const testDate = datetime.add.ms(new Date(),
+            1000 + job.timeout + (job.retryCount * job.retryDelay))
+          t.ok(is.dateBefore(job.dateEnable, testDate), 'Job dateEnable is valid')
           tryCount++
         }
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
@@ -293,7 +292,7 @@ module.exports = function () {
         // ---------- Delayed Job Start Test ----------
         t.comment('queue-process: Delayed Job Start')
         jobs = q.createJob()
-        jobs.dateEnable = moment().add(2, 'seconds').toDate()
+        jobs.dateEnable = datetime.add.sec(new Date(), 2)
         return q.addJob(jobs)
       }).delay(500).then(() => {
         return queueProcess.restart(q)

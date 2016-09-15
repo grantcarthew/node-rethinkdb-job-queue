@@ -51,18 +51,34 @@ function isDate (value) {
 }
 module.exports.date = isDate
 
+function ensureDate (value) {
+  logger(`ensureDate`, value)
+  return isDate(value) ? value : new Date(value)
+}
+
 function isDateBefore (testDate, refDate) {
+  logger('isDateBefore', testDate, refDate)
+  testDate = ensureDate(testDate)
+  refDate = ensureDate(refDate)
   return refDate.valueOf() > testDate.valueOf()
 }
 module.exports.dateBefore = isDateBefore
 
 function isDateAfter (testDate, refDate) {
+  logger('isDateAfter', testDate, refDate)
+  testDate = ensureDate(testDate)
+  refDate = ensureDate(refDate)
   return refDate.valueOf() < testDate.valueOf()
 }
 module.exports.dateAfter = isDateAfter
 
-function isDateBetween (testDate, startDate, finishDate) {
-  return isDateAfter(testDate, startDate) && isDateBefore(testDate, finishDate)
+function isDateBetween (testDate, aDate, bDate) {
+  logger('isDateBetween', testDate, aDate, bDate)
+  aDate = ensureDate(aDate)
+  bDate = ensureDate(bDate)
+  const earlyDate = aDate > bDate ? bDate : aDate
+  const laterDate = aDate > bDate ? aDate : bDate
+  return isDateAfter(testDate, earlyDate) && isDateBefore(testDate, laterDate)
 }
 module.exports.dateBetween = isDateBetween
 
@@ -105,27 +121,33 @@ function isJob (value) {
 module.exports.job = isJob
 
 function isStatus (job, status) {
+  logger('isStatus', job, status)
   if (!isJob(job)) { return false }
   if (job.status === status) { return true }
   return false
 }
 
 module.exports.active = function isActive (job) {
+  logger('isActive', job)
   return isStatus(job, enums.status.active)
 }
 
 module.exports.completed = function isCompleted (job) {
+  logger('isCompleted', job)
   return isStatus(job, enums.status.completed)
 }
 
 module.exports.cancelled = function isCancelled (job) {
+  logger('isCancelled', job)
   return isStatus(job, enums.status.cancelled)
 }
 
 module.exports.failed = function isFailed (job) {
+  logger('isFailed', job)
   return isStatus(job, enums.status.failed)
 }
 
 module.exports.terminated = function isTerminated (job) {
+  logger('isTerminated', job)
   return isStatus(job, enums.status.terminated)
 }

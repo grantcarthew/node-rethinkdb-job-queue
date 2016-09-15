@@ -185,7 +185,6 @@ Thanks to the following marvelous packages and people for their hard work:
 -   The [RethinkDB][rethinkdb-url] team for the great database.
 -   The RethinkDB driver [rethinkdbdash][rethinkdbdash-url] by [Michel][neumino-url]
 -   The Promise library [Bluebird][bluebird-url] by [Petka Antonov][petka-url].
--   The date management library [moment][moment-url].
 -   The [uuid][uuid-url] package.
 
 This list could go on...
@@ -207,7 +206,6 @@ MIT
 [nodemailer-url]: https://www.npmjs.com/package/nodemailer
 [bluebird-url]: https://github.com/petkaantonov/bluebird
 [petka-url]: https://github.com/petkaantonov
-[moment-url]: http://momentjs.com/
 [uuid-url]: https://www.npmjs.com/package/uuid
 [bithound-overall-image]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue/badges/score.svg
 [bithound-overall-url]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue
