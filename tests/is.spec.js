@@ -1,17 +1,20 @@
 const test = require('tape')
-const moment = require('moment')
 const uuid = require('uuid')
 const is = require('../src/is')
 const enums = require('../src/enums')
 
 module.exports = function () {
   test('is', (t) => {
-    t.plan(51)
+    t.plan(57)
 
+    const ms = 5000
+    const tDate = new Date()
+    const earlyDate = new Date(tDate.getTime() - ms)
+    const laterDate = new Date(tDate.getTime() + ms)
     const job = {
       id: uuid.v4(),
       queueId: 'queue id string',
-      dateCreated: moment().toDate(),
+      dateCreated: new Date(),
       priority: enums.priority.normal,
       status: enums.status.created
     }
@@ -35,7 +38,6 @@ module.exports = function () {
     t.notOk(is.false(true), 'Is false false with true')
     t.notOk(is.false(0), 'Is false false with integer 0')
     t.ok(is.date(new Date()), 'Is date true with new Date()')
-    t.notOk(is.date(moment()), 'Is date false with moment()')
     t.notOk(is.date({}), 'Is date false with object')
     t.ok(is.uuid(uuid.v4()), 'Is uuid true with uuid')
     t.notOk(is.uuid('1234'), 'Is uuid false with string of numbers')
@@ -61,7 +63,7 @@ module.exports = function () {
     job.queueId = '1234'
     job.dateCreated = {}
     t.notOk(is.job(job), 'Is job false with invalid dateCreated')
-    job.dateCreated = moment().toDate()
+    job.dateCreated = new Date()
     job.priority = 40
     t.ok(is.job(job), 'Is job true with priority a number')
     job.priority = enums.priority.normal
@@ -83,5 +85,12 @@ module.exports = function () {
     t.notOk(is.terminated(job), 'Is terminated false with invalid status')
     job.status = enums.status.terminated
     t.ok(is.terminated(job), 'Is terminated true with terminated status')
+    t.notOk(is.dateBefore(tDate, earlyDate), 'Is dateBefore false when after')
+    t.ok(is.dateBefore(tDate, laterDate), 'Is dateBefore true when before')
+    t.notOk(is.dateAfter(tDate, laterDate), 'Is dateAfter false when before')
+    t.ok(is.dateAfter(tDate, earlyDate), 'Is dateAfter true when after')
+    t.notOk(is.dateBetween(earlyDate, tDate, laterDate), 'Is dateBetween false when before dates')
+    t.notOk(is.dateBetween(laterDate, earlyDate, tDate), 'Is dateBetween false when after dates')
+    t.ok(is.dateBetween(tDate, earlyDate, laterDate), 'Is dateBetween true when between dates')
   })
 }

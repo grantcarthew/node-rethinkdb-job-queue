@@ -2,68 +2,95 @@ const logger = require('./logger')(module)
 const enums = require('./enums')
 const uuidRegExp = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
-module.exports.object = function isObject (value) {
+function isObject (value) {
   logger(`isObject`, value)
   return Object.prototype.toString.call(value) === '[object Object]'
 }
+module.exports.object = isObject
 
-module.exports.function = function isFunction (value) {
+function isFunction (value) {
   logger(`isFunction`, value)
   return Object.prototype.toString.call(value) === '[object Function]'
 }
+module.exports.function = isFunction
 
-module.exports.string = function isString (value) {
+function isString (value) {
   logger(`isString`, value)
   return Object.prototype.toString.call(value) === '[object String]'
 }
+module.exports.string = isString
 
-const isNumber = module.exports.number = function isNumber (value) {
+function isNumber (value) {
   logger(`isNumber`, value)
   return Object.prototype.toString.call(value) === '[object Number]'
 }
+module.exports.number = isNumber
 
-const isBoolean = module.exports.boolean = function isBoolean (value) {
+function isBoolean (value) {
   logger(`isBoolean`, value)
   return Object.prototype.toString.call(value) === '[object Boolean]'
 }
+module.exports.boolean = isBoolean
 
-module.exports.true = function isTrue (value) {
+function isTrue (value) {
   logger(`isTrue`, value)
   return isBoolean(value) && value === true
 }
+module.exports.true = isTrue
 
-module.exports.false = function isFalse (value) {
+function isFalse (value) {
   logger(`isFalse`, value)
   return isBoolean(value) && value === false
 }
+module.exports.false = isFalse
 
-const isDate = module.exports.date = function isDate (value) {
+function isDate (value) {
   logger(`isDate`, value)
   return value instanceof Date ||
     Object.prototype.toString.call(value) === '[object Date]'
 }
+module.exports.date = isDate
 
-const isUuid = module.exports.uuid = function isUuid (value) {
+function isDateBefore (testDate, refDate) {
+  return refDate.valueOf() > testDate.valueOf()
+}
+module.exports.dateBefore = isDateBefore
+
+function isDateAfter (testDate, refDate) {
+  return refDate.valueOf() < testDate.valueOf()
+}
+module.exports.dateAfter = isDateAfter
+
+function isDateBetween (testDate, startDate, finishDate) {
+  return isDateAfter(testDate, startDate) && isDateBefore(testDate, finishDate)
+}
+module.exports.dateBetween = isDateBetween
+
+function isUuid (value) {
   logger(`isUuid`, value)
   return uuidRegExp.test(value)
 }
+module.exports.uuid = isUuid
 
-const isNan = module.exports.nan = function isNan (value) {
+function isNan (value) {
   logger(`isNan`, value)
   return Number.isNaN(value)
 }
+module.exports.nan = isNan
 
-module.exports.integer = function isInteger (value) {
+function isInteger (value) {
   logger(`isInteger`, value)
   return isNumber(value) && !isNan(value) && value % 1 === 0
 }
+module.exports.integer = isInteger
 
-module.exports.array = function isArray (value) {
+function isArray (value) {
   logger(`isArray`, value)
   return Array.isArray(value)
 }
+module.exports.array = isArray
 
-const isJob = module.exports.job = function isJob (value) {
+function isJob (value) {
   logger(`isJob`, value)
   if (!value) { return false }
   if (!value.id) { return false }
@@ -75,6 +102,7 @@ const isJob = module.exports.job = function isJob (value) {
   if (!Object.keys(enums.status).includes(value.status)) { return false }
   return true
 }
+module.exports.job = isJob
 
 function isStatus (job, status) {
   if (!isJob(job)) { return false }
