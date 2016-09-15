@@ -1,6 +1,6 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.1.0 / 2016-09
+## v0.1.0 / 2016-09-16
 
 *   Added 'db-driver' module for connection testing.
 *   Changed 'Queue()' constructor API to add connection options.

@@ -1,6 +1,6 @@
 {
   "name": "rethinkdb-job-queue",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {
@@ -47,7 +47,7 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "debug": "^2.2.0",
-    "rethinkdbdash": "^2.3.21",
+    "rethinkdbdash": "^2.3.23",
     "uuid": "^2.0.2"
   },
   "devDependencies": {

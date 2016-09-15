@@ -28,7 +28,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   Supports priority jobs.
 *   Supports job progress updates.
 *   Jobs hold a rich history log.
-*   Promise base with minimal callbacks.
+*   Promise based with minimal callbacks.
 
 ## Documentation
 
@@ -119,10 +119,10 @@ const Queue = require('rethinkdb-job-queue')
 // Queue options have defaults and are not required
 const qOptions = {
   name: 'RegistrationEmail', // The queue and table name
-  masterInterval: 300, // Database review period in seconds
+  masterInterval: 310000, // Database review period in milliseconds
   changeFeed: true, // Enables events from the database table
   concurrency: 100,
-  removeFinishedJobs: 30, // true, false, or number of days
+  removeFinishedJobs: 2592000000, // true, false, or number of milliseconds
 }
 
 // Connection options have defaults and are not required
@@ -139,9 +139,9 @@ const q = new Queue(cxnOptions, qOptions)
 // Customizing the default job options for new jobs
 q.jobOptions = {
   priority: 'normal',
-  timeout: 300,
+  timeout: 300000,
   retryMax: 3, // Four attempts, first then three retries
-  retryDelay: 600 // Time in seconds to delay retries
+  retryDelay: 600000 // Time in milliseconds to delay retries
 }
 
 const job = q.createJob()
