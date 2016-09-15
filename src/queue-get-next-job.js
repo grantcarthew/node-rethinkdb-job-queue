@@ -21,8 +21,8 @@ module.exports = function queueGetNextJob (q) {
         status: enums.status.active,
         dateStarted: q.r.now(),
         dateEnable: q.r.now()
-        .add(q.r.row('timeout'))
-        .add(q.r.row('retryDelay').mul(q.r.row('retryCount'))),
+        .add(q.r.row('timeout').div(1000))
+        .add(q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))),
         queueId: q.id,
         log: q.r.row('log').append({
           date: q.r.now(),

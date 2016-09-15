@@ -19,7 +19,7 @@ module.exports.default = function () {
     masterInterval: false
   }
 }
-module.exports.master = function (interval = 5) {
+module.exports.master = function (interval = 5000) {
   return {
     name: queueName,
     concurrency: 3,

@@ -63,7 +63,7 @@ function removeFinishedJobs (q) {
     .orderBy({index: enums.index.indexFinishedDateFinished})
     .filter(
       q.r.row('dateFinished').add(
-        q.r.expr(q.removeFinishedJobs).mul(86400)
+        q.r.expr(q.removeFinishedJobs).div(1000)
       ).lt(q.r.now())
     ).delete()
     .run()
@@ -89,7 +89,7 @@ function runReviewTasks (q) {
 module.exports.enable = function enable (q) {
   logger('enable', q.masterInterval)
   if (!dbReviewIntervalId) {
-    const interval = q.masterInterval * 1000
+    const interval = q.masterInterval
     dbReviewIntervalId = setInterval(() => {
       return runReviewTasks(q)
     }, interval)

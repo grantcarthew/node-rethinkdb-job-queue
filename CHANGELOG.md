@@ -1,5 +1,11 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.1.0 / 2016-09
+
+*   Added 'db-driver' module for connection testing.
+*   Changed 'Queue()' constructor API to add connection options.
+*   Standardized time related options to milliseconds.
+
 ## v0.0.8 / 2016-09-09
 
 *   Replaced `node-uuid` dependency with `uuid` package.

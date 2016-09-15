@@ -10,7 +10,7 @@ const jobTimeouts = new Map()
 
 function addJobTimeout (job, timeoutHandler) {
   logger('addJobTimeout')
-  const timeoutValue = job.timeout * 1000
+  const timeoutValue = job.timeout
   let jobTimeout = {
     timeoutHandler,
     timeoutValue,

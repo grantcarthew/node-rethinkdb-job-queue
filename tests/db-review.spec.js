@@ -24,7 +24,7 @@ module.exports = function () {
         t.ok(q.id, `Queue process restart called [${processRestart} of 2]`)
       }
 
-      const q = new Queue(tOpts.cxn(), tOpts.master(1))
+      const q = new Queue(tOpts.cxn(), tOpts.master(1000))
       let reviewCount = 0
 
       // ---------- Event Handler Setup ----------

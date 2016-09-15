@@ -17,8 +17,8 @@ module.exports = function jobProgress (job, percent) {
       queueId: job.q.id,
       progress: percent,
       dateEnable: job.q.r.now()
-      .add(job.q.r.row('timeout'))
-      .add(job.q.r.row('retryDelay').mul(job.q.r.row('retryCount')))
+      .add(job.q.r.row('timeout').div(1000))
+      .add(job.q.r.row('retryDelay').div(1000).mul(job.q.r.row('retryCount')))
     }).run()
   }).then((updateResult) => {
     logger(`Event: progress [${job.id}] [${percent}]`)

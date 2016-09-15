@@ -45,13 +45,13 @@ const enums = module.exports = {
     host: 'localhost',
     port: 28015,
     db: 'rjqJobQueue',
-    masterInterval: 310,
+    masterInterval: 310000, // 5 minutes and 10 seconds
     priority: 'normal',
-    timeout: 300,
+    timeout: 300000, // 5 minutes
     retryMax: 3,
-    retryDelay: 600,
+    retryDelay: 600000, // 10 minutes
     concurrency: 1,
-    removeFinishedJobs: 180
+    removeFinishedJobs: 15552000000 // 180 days
   },
   index: {
     indexActiveDateEnable: 'indexActiveDateEnable',

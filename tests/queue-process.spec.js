@@ -148,9 +148,9 @@ module.exports = function () {
       function testHandler (job, next) {
         if (testTimes) {
           const testDate = moment().add(
-            1 + job.timeout + (job.retryCount * job.retryDelay),
-            'seconds')
-          t.ok(moment(job.dateEnable).isBefore(testDate, 'seconds'), 'Job dateEnable is valid')
+            1000 + job.timeout + (job.retryCount * job.retryDelay),
+            'milliseconds')
+          t.ok(moment(job.dateEnable).isBefore(testDate), 'Job dateEnable is valid')
           tryCount++
         }
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
@@ -242,8 +242,8 @@ module.exports = function () {
         // ---------- Processing with Job Timeout Test ----------
         t.comment('queue-process: Processing with Job Timeout')
         jobs = q.createJob()
-        jobs.timeout = 1
-        jobs.retryDelay = 2
+        jobs.timeout = 1000
+        jobs.retryDelay = 2000
         jobDelay = 1500
         testTimes = true // Enables handler time testing
         return q.addJob(jobs)
@@ -263,7 +263,7 @@ module.exports = function () {
         // ---------- Processing with Job Timeout Extended Test ----------
         t.comment('queue-process: Processing with Job Timeout Extended')
         jobs = q.createJob()
-        jobs.timeout = 1
+        jobs.timeout = 1000
         jobs.retryMax = 0
         jobDelay = 1500
         testTimes = true // Enables handler time testing

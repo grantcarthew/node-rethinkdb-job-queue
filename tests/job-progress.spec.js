@@ -15,8 +15,8 @@ module.exports = function () {
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const job = q.createJob()
-      job.timeout = 300
-      job.retryDelay = 600
+      job.timeout = enums.options.timeout
+      job.retryDelay = enums.options.retryDelay
       job.retryCount = 0
 
       let testEvents = false
@@ -52,7 +52,7 @@ module.exports = function () {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with a null value')
         t.ok(
           moment(updatedJob[0].dateEnable).isBetween(moment(tempDateEnable),
-            moment().add(updatedJob[0].timeout + 2, 'seconds')),
+            moment().add(updatedJob[0].timeout + 2000, 'milliseconds')),
           'Job dateEnable updated successfully'
         )
         updatedJob[0].status = enums.status.active
@@ -64,7 +64,7 @@ module.exports = function () {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with negative value')
         t.ok(
           moment(updatedJob[0].dateEnable).isBetween(moment(tempDateEnable),
-            moment().add((updatedJob[0].timeout + 2) + updatedJob[0].retryDelay, 'seconds')),
+            moment().add((updatedJob[0].timeout + 2000) + updatedJob[0].retryDelay, 'milliseconds')),
           'Job dateEnable updated successfully'
         )
         updatedJob[0].status = enums.status.active
