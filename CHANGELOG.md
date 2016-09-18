@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.1.1 / 2016-09
+
+*   Added the 'job-update' module.
+*   Added 'job.update()' method.
+
 ## v0.1.0 / 2016-09-16
 
 *   Added 'db-driver' module for connection testing.

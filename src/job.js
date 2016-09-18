@@ -5,6 +5,7 @@ const enums = require('./enums')
 const is = require('./is')
 const jobOptions = require('./job-options')
 const jobProgress = require('./job-progress')
+const jobUpdate = require('./job-update')
 const jobAddLog = require('./job-add-log')
 
 class Job {
@@ -53,6 +54,17 @@ class Job {
       return jobProgress(this, percent)
     }).catch((err) => {
       logger('setProgress Error:', err)
+      this.q.emit(enums.status.error, err)
+      return Promise.reject(err)
+    })
+  }
+
+  update (message) {
+    logger(`update [${message}]`)
+    return this.q.ready().then(() => {
+      return jobUpdate(this, message)
+    }).catch((err) => {
+      logger('update Error:', err)
       this.q.emit(enums.status.error, err)
       return Promise.reject(err)
     })
