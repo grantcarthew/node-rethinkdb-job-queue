@@ -38,7 +38,8 @@ const enums = module.exports = {
     cancelled: 'cancelled',
     failed: 'failed',
     terminated: 'terminated',
-    log: 'log' // Event only, not a job status
+    log: 'log', // Event only, not a job status
+    updated: 'updated' // Event only, not a job status
   },
   options: {
     name: 'rjqJobList',

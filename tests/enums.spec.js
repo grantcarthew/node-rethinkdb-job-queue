@@ -14,7 +14,7 @@ module.exports = function () {
       t.equal(enums.priorityFromValue(20), 'high', 'Priority from value 20 returns high')
       t.equal(enums.priorityFromValue(10), 'highest', 'Priority from value 10 returns highest')
       t.equal(Object.keys(enums.priority).length, 6, 'Enums priority has has correct number of keys')
-      t.equal(Object.keys(enums.status).length, 23, 'Enums status has correct number of keys')
+      t.equal(Object.keys(enums.status).length, 24, 'Enums status has correct number of keys')
       t.equal(Object.keys(enums.options).length, 11, 'Enums options has correct number of keys')
       t.equal(Object.keys(enums.index).length, 3, 'Enums index has has correct number of keys')
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has has correct number of keys')
