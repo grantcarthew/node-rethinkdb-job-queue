@@ -285,8 +285,6 @@ module.exports = function () {
       }).delay(1000).then(() => {
         return q.getJob(jobs)
       }).then((cancelledJob) => {
-        console.dir(cancelledJob[0])
-        console.dir(cancelledJob[0].log)
         t.equal(cancelledJob[0].status, enums.status.cancelled, 'Job is cancelled')
       }).then(() => {
         testCancel = false
