@@ -15,7 +15,7 @@ function createIndexActiveDateEnable (q) {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
-        row('status').eq('active'),
+        row('status').eq(enums.status.active),
         row('dateEnable'),
         null
       )
@@ -36,13 +36,13 @@ function createIndexInactivePriorityDateCreated (q) {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
-        row('status').eq('added'),
+        row('status').eq(enums.status.added),
         [
           row('priority'),
           row('dateEnable'),
           row('dateCreated')
         ],
-        row('status').eq('failed'),
+        row('status').eq(enums.status.failed),
         [
           row('priority'),
           row('dateEnable'),
@@ -67,11 +67,11 @@ function createIndexFinishedDateFinished (q) {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
-        row('status').eq('completed'),
+        row('status').eq(enums.status.completed),
         row('dateFinished'),
-        row('status').eq('cancelled'),
+        row('status').eq(enums.status.cancelled),
         row('dateFinished'),
-        row('status').eq('terminated'),
+        row('status').eq(enums.status.terminated),
         row('dateFinished'),
         null
       )
