@@ -2,12 +2,12 @@ const test = require('tape')
 const Promise = require('bluebird')
 const tError = require('./test-error')
 const dbAssert = require('../src/db-assert')
+const dbDriver = require('../src/db-driver')
 const tOpts = require('./test-options')
-const rethinkdbdash = require('rethinkdbdash')
 
 module.exports = function () {
   const q = {
-    r: rethinkdbdash(tOpts.cxn()),
+    r: dbDriver(tOpts.cxn()),
     db: tOpts.dbName,
     name: tOpts.queueName,
     id: 'mock:queue:id'
