@@ -14,11 +14,11 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
     if (!skipStatusCheck && oneJob.status !== enums.status.created) {
       return Promise.reject(new Error(enums.message.jobAlreadyAdded))
     }
-    if (!skipStatusCheck) { oneJob.status = enums.status.added }
+    if (!skipStatusCheck) { oneJob.status = enums.status.waiting }
     const log = oneJob.createLog(
       enums.message.jobAdded,
       enums.log.information,
-      enums.status.added)
+      enums.status.waiting)
     oneJob.log.push(log)
     return oneJob.getCleanCopy()
   }).then((cleanJobs) => {

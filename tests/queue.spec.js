@@ -205,7 +205,7 @@ module.exports = function () {
         t.ok(is.array(savedJobs), 'Add job returns an array')
         t.ok(is.job(savedJobs[0]), 'Job saved successfully')
         t.equal(savedJobs[0].id, job.id, 'Job id is valid')
-        t.equal(savedJobs[0].status, enums.status.added, 'Job status is valid')
+        t.equal(savedJobs[0].status, enums.status.waiting, 'Job status is valid')
 
         // ---------- Get Job Tests ----------
         t.comment('queue: Get Job')
@@ -214,7 +214,7 @@ module.exports = function () {
         t.ok(is.array(savedJobs2), 'Get job returns an array')
         t.ok(is.job(savedJobs2[0]), 'Job retrieved successfully')
         t.equal(savedJobs2[0].id, job.id, 'Job id is valid')
-        t.equal(savedJobs2[0].status, enums.status.added, 'Job status is valid')
+        t.equal(savedJobs2[0].status, enums.status.waiting, 'Job status is valid')
 
         // ---------- Cancel Job Tests ----------
         t.comment('queue: Cancel Job')
@@ -262,7 +262,7 @@ module.exports = function () {
         return q.getJob(addedJob[0].id)
       }).then((addedJobs) => {
         t.ok(is.array(addedJobs), 'Job is in queue')
-        t.equal(addedJobs[0].status, enums.status.added, 'Job has not been processed')
+        t.equal(addedJobs[0].status, enums.status.waiting, 'Job has not been processed')
 
         // ---------- Resume Tests ----------
         t.comment('queue: Resume')
@@ -280,7 +280,7 @@ module.exports = function () {
         return q.summary()
       }).then((summary) => {
         t.ok(is.object(summary), 'Queue summary returns an object')
-        t.equal(summary.added, 0, 'Summary added is valid')
+        t.equal(summary.waiting, 0, 'Summary waiting is valid')
         t.equal(summary.active, 0, 'Summary active is valid')
         t.equal(summary.completed, 2, 'Summary completed is valid')
         t.equal(summary.cancelled, 0, 'Summary cancelled is valid')

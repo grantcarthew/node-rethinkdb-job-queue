@@ -26,7 +26,7 @@ module.exports = function () {
         if (eventCount < 2) { return }
         t.equal(total, 3, 'Queue reset removed valid number of jobs')
         return q.summary().then((afterSummary) => {
-          t.equal(afterSummary.added, 0, 'Status summary contains no added jobs')
+          t.equal(afterSummary.waiting, 0, 'Status summary contains no added jobs')
           q.removeListener(enums.status.reset, resetEventHandler)
           q.stop()
           return resolve(t.end())
@@ -41,7 +41,7 @@ module.exports = function () {
         t.equal(savedJobs.length, 3, 'Jobs saved successfully')
         return q.summary()
       }).then((beforeSummary) => {
-        t.equal(beforeSummary.added, 3, 'Status summary contains correct value')
+        t.equal(beforeSummary.waiting, 3, 'Status summary contains correct value')
         return queueReset(q)
       }).catch(err => tError(err, module, t))
     })

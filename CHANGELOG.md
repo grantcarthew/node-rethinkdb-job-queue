@@ -1,9 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.1.1 / 2016-09
+## v0.1.1 / 2016-09-19
 
 *   Added the 'job-update' module.
 *   Added 'job.update()' method.
+*   Changed 'added' job status to 'waiting'.
 
 ## v0.1.0 / 2016-09-16
 

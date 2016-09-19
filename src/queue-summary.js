@@ -10,7 +10,7 @@ module.exports = function summary (q) {
     }).count()
   }).then((reduction) => {
     const summary = {
-      added: 0,
+      waiting: 0,
       active: 0,
       completed: 0,
       cancelled: 0,

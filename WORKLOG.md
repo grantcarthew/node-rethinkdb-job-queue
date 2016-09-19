@@ -7,5 +7,3 @@ Queue option parsing.
 *   queue-process.spec Done!
 
 ## Notes for documentation
-
-Add error documentation.

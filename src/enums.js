@@ -32,7 +32,8 @@ const enums = module.exports = {
     dropped: 'dropped',
     // ---------- Job Status Values ----------
     created: 'created', // Non-event, initial create job status
-    added: 'added',
+    added: 'added', // Event only, not a job status
+    waiting: 'waiting',
     active: 'active',
     completed: 'completed',
     cancelled: 'cancelled',
@@ -80,7 +81,7 @@ const enums = module.exports = {
     failed: 'Job processing failed',
     cancel: 'Job cancelled by Queue process handler',
     jobNotAdded: 'Job not added to the queue',
-    jobAlreadyAdded: 'Job is already added to the queue',
+    jobAlreadyAdded: 'Job is already in the queue',
     jobInvalid: 'Job object is invalid',
     processTwice: 'Cannot call queue process twice',
     idInvalid: 'The job id is invalid',

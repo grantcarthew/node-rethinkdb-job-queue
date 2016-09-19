@@ -16,7 +16,7 @@ module.exports = function () {
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const jobs = q.createJob(7).map(j => j)
-      jobs[0].status = enums.status.added
+      jobs[0].status = enums.status.waiting
       jobs[1].status = enums.status.active
       jobs[2].status = enums.status.completed
       jobs[3].status = enums.status.cancelled
@@ -29,7 +29,7 @@ module.exports = function () {
       }).then(() => {
         return queueSummary(q)
       }).then((summary) => {
-        t.equal(summary.added, 1, 'Queue status summary includes added')
+        t.equal(summary.waiting, 1, 'Queue status summary includes waiting')
         t.equal(summary.active, 1, 'Queue status summary includes active')
         t.equal(summary.completed, 1, 'Queue status summary includes completed')
         t.equal(summary.cancelled, 1, 'Queue status summary includes cancelled')

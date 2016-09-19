@@ -73,6 +73,10 @@ const job = q.createJob()
 job.numerator = 123
 job.denominator = 456
 
+return q.addJob(job).catch((err) => {
+  console.error(err)
+})
+
 q.process((job, next) => {
     try {
       let result = job.numerator / job.denominator
@@ -82,10 +86,6 @@ q.process((job, next) => {
       console.error(err)
       return next(err)
     }
-})
-
-return q.addJob(job).catch((err) => {
-  console.error(err)
 })
 
 ```
@@ -150,6 +150,12 @@ const job = q.createJob()
 // You can decorate the job with any data to be saved for processing
 job.recipient = 'batman@batcave.com'
 
+return q.addJob(job).then((savedJobs) => {
+  // savedJobs is an array of the jobs added with updated properties
+}).catch((err) => {
+  console.error(err)
+})
+
 q.process((job, next) => {
   // Send email using job.recipient as the destination address
   mailOptions.to = job.recipient
@@ -160,12 +166,6 @@ q.process((job, next) => {
     // This catch if for nodemailer sendMail errors.
     return next(err)
   })
-})
-
-return q.addJob(job).then((savedJobs) => {
-  // savedJobs is an array of the jobs added with updated properties
-}).catch((err) => {
-  console.error(err)
 })
 
 ```

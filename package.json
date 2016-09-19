@@ -1,6 +1,6 @@
 {
   "name": "rethinkdb-job-queue",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {
@@ -19,7 +19,10 @@
     "background",
     "long",
     "running",
-    "service"
+    "service",
+    "distributed",
+    "worker",
+    "processing"
   ],
   "author": "Grant Carthew",
   "license": "MIT",

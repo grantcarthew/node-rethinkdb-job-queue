@@ -36,7 +36,7 @@ function createIndexInactivePriorityDateCreated (q) {
     if (exists) { return exists }
     return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
       return q.r.branch(
-        row('status').eq(enums.status.added),
+        row('status').eq(enums.status.waiting),
         [
           row('priority'),
           row('dateEnable'),

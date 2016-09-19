@@ -18,7 +18,7 @@ module.exports = function () {
       let addedCount = 0
       function addedEventHandler (jobId) {
         addedCount++
-        t.ok(is.uuid(jobId), `Event: Job Added [${addedCount}] [${jobId}]`)
+        t.ok(is.uuid(jobId), `Event: added [${addedCount}] [${jobId}]`)
       }
       q.on(enums.status.added, addedEventHandler)
 
@@ -41,7 +41,7 @@ module.exports = function () {
         t.ok(is.date(jobsFromDb[0].log[0].date), 'Log job 1 date is a date')
         t.equal(jobsFromDb[0].log[0].queueId, q.id, 'Log job 1 queueId is valid')
         t.equal(jobsFromDb[0].log[0].type, enums.log.information, 'Log job 1 type is information')
-        t.equal(jobsFromDb[0].log[0].status, enums.status.added, 'Log job 1 status is added')
+        t.equal(jobsFromDb[0].log[0].status, enums.status.waiting, 'Log job 1 status is added')
         t.equal(jobsFromDb[0].retryCount, 0, 'Log job 1 retryCount is valid')
         t.equal(jobsFromDb[0].log[0].message, enums.message.jobAdded, 'Log job 1 message is valid')
 
@@ -57,7 +57,7 @@ module.exports = function () {
         t.ok(is.date(jobsFromDb2[0].log[0].date), 'Log job 2 date is a date')
         t.equal(jobsFromDb2[0].log[0].queueId, q.id, 'Log job 2 queueId is valid')
         t.equal(jobsFromDb2[0].log[0].type, enums.log.information, 'Log job 2 type is information')
-        t.equal(jobsFromDb2[0].log[0].status, enums.status.added, 'Log job 2 status is added')
+        t.equal(jobsFromDb2[0].log[0].status, enums.status.waiting, 'Log job 2 status is added')
         t.equal(jobsFromDb2[0].retryCount, 0, 'Log job 2 retryCount is valid')
         t.equal(jobsFromDb2[0].log[0].message, enums.message.jobAdded, 'Log job 2 message is valid')
         return q.getJob(jobs[1].id)
@@ -65,7 +65,7 @@ module.exports = function () {
         t.ok(is.date(jobsFromDb3[0].log[0].date), 'Log job 3 date is a date')
         t.equal(jobsFromDb3[0].log[0].queueId, q.id, 'Log job 3 queueId is valid')
         t.equal(jobsFromDb3[0].log[0].type, enums.log.information, 'Log job 3 type is information')
-        t.equal(jobsFromDb3[0].log[0].status, enums.status.added, 'Log job 3 status is added')
+        t.equal(jobsFromDb3[0].log[0].status, enums.status.waiting, 'Log job 3 status is added')
         t.equal(jobsFromDb3[0].retryCount, 0, 'Log job 3 retryCount is valid')
         t.equal(jobsFromDb3[0].log[0].message, enums.message.jobAdded, 'Log job 3 message is valid')
       }).then(() => {
@@ -85,7 +85,7 @@ module.exports = function () {
           t.ok(err.message.includes(enums.message.jobInvalid), 'Job invalid returns a rejected promise')
         })
       }).then(() => {
-        job.status = enums.status.added
+        job.status = enums.status.waiting
 
         // ---------- Add Invalid Status Job Tests ----------
         t.comment('queue-add-job: Add Invalid Status Job')

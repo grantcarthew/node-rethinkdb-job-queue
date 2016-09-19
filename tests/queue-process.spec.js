@@ -299,7 +299,7 @@ module.exports = function () {
       }).delay(500).then(() => {
         return q.getJob(jobs)
       }).then((delayedJobs) => {
-        t.equal(delayedJobs[0].status, enums.status.added, 'Delayed job has status: added')
+        t.equal(delayedJobs[0].status, enums.status.waiting, 'Delayed job has status: added')
       }).delay(2000).then(() => {
         return queueProcess.restart(q)
       }).delay(1000).then(() => {
