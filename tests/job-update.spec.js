@@ -53,9 +53,9 @@ module.exports = function () {
         job.newData = tData
         job.dateEnable = tDate
         return jobUpdate(job, tData)
-      }).then((jobId) => {
-        t.equal(jobId, job.id, 'Job updated successfully')
-        return q.getJob(jobId)
+      }).then((updateResult) => {
+        t.ok(updateResult, 'Job updated successfully')
+        return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].status, job.status, 'Updated job status is valid')
         t.equal(updatedJob[0].progress, job.progress, 'Updated job progress is valid')

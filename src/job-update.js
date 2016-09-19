@@ -18,6 +18,6 @@ module.exports = function jobUpdate (job, message) {
     logger(`updateResult`, updateResult)
     logger(`Event: updated [${job.id}]`)
     job.q.emit(enums.status.updated, job.id)
-    return job.id
+    return true
   })
 }

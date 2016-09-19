@@ -173,7 +173,7 @@ module.exports = function () {
         savedJob.timeout = newTimeout
         return savedJob.update(tData)
       }).then((updateResult) => {
-        t.equal(updateResult, savedJob.id, 'Job setProgress returned true')
+        t.ok(updateResult, 'Job update returned true')
         return q.getJob(savedJob.id)
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
