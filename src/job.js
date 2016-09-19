@@ -1,6 +1,5 @@
 const logger = require('./logger')(module)
 const uuid = require('uuid')
-const datetime = require('./datetime')
 const enums = require('./enums')
 const is = require('./is')
 const jobOptions = require('./job-options')

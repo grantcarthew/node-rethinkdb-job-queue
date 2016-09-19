@@ -1,6 +1,5 @@
 const logger = require('./logger')(module)
 const is = require('./is')
-const datetime = require('./datetime')
 const enums = require('./enums')
 
 module.exports.id = function jobParseId (job) {

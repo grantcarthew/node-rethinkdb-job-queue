@@ -2,7 +2,6 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const jobParse = require('./job-parse')
-const dbResult = require('./db-result')
 
 module.exports = function removeJob (q, jobOrId) {
   logger('removeJob: ' + jobOrId)

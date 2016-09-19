@@ -1,6 +1,5 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
-const datetime = require('./datetime')
 const is = require('./is')
 const enums = require('./enums')
 const dbResult = require('./db-result')

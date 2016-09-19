@@ -4,7 +4,6 @@ const is = require('../src/is')
 const enums = require('../src/enums')
 const tError = require('./test-error')
 const queueRemoveJob = require('../src/queue-remove-job')
-const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 

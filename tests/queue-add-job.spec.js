@@ -1,11 +1,9 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const datetime = require('../src/datetime')
 const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
-const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 

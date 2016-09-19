@@ -4,7 +4,6 @@ const enums = require('../src/enums')
 const is = require('../src/is')
 const tError = require('./test-error')
 const tOpts = require('./test-options')
-const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 
 module.exports = function () {

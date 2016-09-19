@@ -15,6 +15,7 @@ module.exports = function () {
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const job = q.createJob()
+      job.data = tData
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
