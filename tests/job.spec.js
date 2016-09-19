@@ -12,13 +12,14 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(71)
+      t.plan(76)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
       const newJob = new Job(q)
       newJob.data = tData
       let savedJob
+      let newTimeout = 1234
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
@@ -37,17 +38,24 @@ module.exports = function () {
           t.ok(is.uuid(jobId), `Event: progress [${jobId}]`)
         }
       }
+      function updatedEventHandler (jobId) {
+        if (testEvents) {
+          t.ok(is.uuid(jobId), `Event: updated [${jobId}]`)
+        }
+      }
       function addEventHandlers () {
         testEvents = true
         q.on(enums.status.added, addedEventHandler)
         q.on(enums.status.log, logEventHandler)
         q.on(enums.status.progress, progressEventHandler)
+        q.on(enums.status.updated, updatedEventHandler)
       }
       function removeEventHandlers () {
         testEvents = false
         q.removeListener(enums.status.added, addedEventHandler)
         q.removeListener(enums.status.log, logEventHandler)
         q.removeListener(enums.status.progress, progressEventHandler)
+        q.removeListener(enums.status.updated, updatedEventHandler)
       }
       addEventHandlers()
 
@@ -158,6 +166,19 @@ module.exports = function () {
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
         t.equal(jobsFromDb[0].progress, 50, 'Job progress valid')
+
+        // ---------- Update Job ----------
+        t.comment('job: Update Job')
+        savedJob.newData = tData
+        savedJob.timeout = newTimeout
+        return savedJob.update(tData)
+      }).then((updateResult) => {
+        t.equal(updateResult, savedJob.id, 'Job setProgress returned true')
+        return q.getJob(savedJob.id)
+      }).then((jobsFromDb) => {
+        t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
+        t.equal(jobsFromDb[0].newData, tData, 'Job new data valid')
+        t.equal(jobsFromDb[0].timeout, newTimeout, 'Job new timeout valid')
 
         removeEventHandlers()
         return q.reset()
