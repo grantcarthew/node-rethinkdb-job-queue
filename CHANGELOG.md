@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.1.2 / 2016-09-20
+
+*   Documentation updated.
+*   Tests updated.
+
 ## v0.1.1 / 2016-09-19
 
 *   Added the 'job-update' module.

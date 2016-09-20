@@ -17,9 +17,9 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 ## Features
 
 *   Powered by [RethinkDB][rethinkdb-url]
-*   Connect to [multiple databases][queue-constructor-url]
-*   Create [multiple queues][queue-constructor-url]
-*   Distributed worker nodes
+*   Connect to [multiple databases][queue-connection-url]
+*   Create [multiple queues][queue-connection-url]
+*   [Distributed worker nodes (PubSub)][queue-pubsub-url]
 *   Global [queue events][queue-events-url]
 *   Run [concurrent jobs][queue-concurrency-url]
 *   Promise based with minimal callbacks
@@ -35,9 +35,10 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
    *   Rich [history log][job-log-url]
 * Over 1100 [integration tests][testing-url]
 
-[queue-constructor-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Constructor
+[queue-connection-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Connection
 [queue-events-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Events
 [queue-concurrency-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Options#queue-concurrency-option
+[queue-pubsub-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-PubSub
 [job-priority-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-priority-option
 [job-progress-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setProgress
 [job-delayed-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Delayed-Job
