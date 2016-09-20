@@ -7,6 +7,7 @@ It has been build as an alternative to using a [Redis][redis-url] backed job que
 [![bitHound Dependencies][bithound-dep-image]][bithound-dep-url]
 [![bitHound Dependencies][bithound-code-image]][bithound-code-url]
 [![js-standard-style][js-standard-image]][js-standard-url]
+[![NSP Status][nsp-image]][nsp-url]
 
 [![Thinker][thinker-image]][rjq-github-url]
 
@@ -237,5 +238,7 @@ MIT
 [bithound-code-url]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue
 [js-standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [js-standard-url]: http://standardjs.com/
+[nsp-image]: https://nodesecurity.io/orgs/openjs/projects/3871d340-0ca9-471c-be9a-39df3871262d/badge
+[nsp-url]: https://nodesecurity.io/orgs/openjs/projects/3871d340-0ca9-471c-be9a-39df3871262d
 [nodei-npm-image]: https://nodei.co/npm/rethinkdb-job-queue.png?downloads=true&downloadRank=true&stars=true
 [nodei-npm-url]: https://nodei.co/npm/rethinkdb-job-queue/
