@@ -198,6 +198,8 @@ return q.addJob(job).then((savedJobs) => {
 4.  Push to the branch: `git push origin my-new-feature`
 5.  Submit a pull request :D
 
+Please see the [debugging](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Debugging) and [testing](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Testing) documents for more detail.
+
 ## Credits
 
 Thanks to the following marvelous packages and people for their hard work:
