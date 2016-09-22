@@ -178,7 +178,7 @@ q.process((job, next) => {
     console.dir(info)
     return next(info)
   }).catch((err) => {
-    // This catch if for nodemailer sendMail errors.
+    // This catch is for nodemailer sendMail errors.
     return next(err)
   })
 })
