@@ -13,10 +13,11 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(207)
+      t.plan(215)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
+      let qGlobalCancel
 
       let jobs
       let jobDelay = 200
@@ -49,7 +50,7 @@ module.exports = function () {
         }
       }
       let processingEventCount = 0
-      const processingEventTotal = 37
+      const processingEventTotal = 38
       function processingEventHandler (jobId) {
         if (testEvents) {
           processingEventCount++
@@ -76,7 +77,7 @@ module.exports = function () {
         }
       }
       let cancelledEventCount = 0
-      const cancelledEventTotal = 1
+      const cancelledEventTotal = 2
       function cancelledEventHandler (jobId) {
         if (testEvents) {
           cancelledEventCount++
@@ -85,7 +86,7 @@ module.exports = function () {
         }
       }
       let idleEventCount = 0
-      const idleEventTotal = 11
+      const idleEventTotal = 12
       function idleEventHandler (qid) {
         if (testEvents) {
           idleEventCount++
@@ -138,20 +139,23 @@ module.exports = function () {
       }
 
       const summaryCompleted = 32
-      const summaryCancelled = 1
+      const summaryCancelled = 2
       const summaryTerminated = 1
 
       let testTimes = false
       let tryCount = 0
       let updateProgress = false
       let testCancel = false
-      function testHandler (job, next) {
+      let jobProcessTimeoutId = false
+
+      function testHandler (job, next, onCancel) {
         if (testTimes) {
           const testDate = datetime.add.ms(new Date(),
             1000 + job.timeout + (job.retryCount * job.retryDelay))
           t.ok(is.dateBefore(job.dateEnable, testDate), 'Job dateEnable is valid')
           tryCount++
         }
+
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
         if (testCancel) {
           const cancelErr = new Error(tData)
@@ -166,12 +170,19 @@ module.exports = function () {
             }, jobDelay / 2)
           }
 
-          setTimeout(function () {
+          jobProcessTimeoutId = setTimeout(function () {
+            jobProcessTimeoutId = false
             next('Job Completed: ' + job.id)
             .then((runningJobs) => {
               t.ok(is.integer(runningJobs), `Next call returns running jobs [${runningJobs}]`)
             })
           }, jobDelay)
+
+          return onCancel(job, () => {
+            clearTimeout(jobProcessTimeoutId)
+            jobProcessTimeoutId = false
+            return
+          })
         }
       }
 
@@ -289,6 +300,27 @@ module.exports = function () {
       }).then(() => {
         testCancel = false
 
+        // ---------- Processing with Global Cancel Test ----------
+        t.comment('queue-process: Processing with Global Cancel')
+        qGlobalCancel = new Queue(tOpts.cxn(), tOpts.default())
+        jobDelay = 10000
+        jobs = q.createJob()
+        return q.addJob(jobs)
+      }).delay(1000).then(() => {
+        return q.getJob(jobs)
+      }).then((globalCancelJobs1) => {
+        t.equal(globalCancelJobs1[0].status, enums.status.active, 'Job status is active')
+        t.ok(jobProcessTimeoutId, 'Job is being processed')
+        return qGlobalCancel.cancelJob(globalCancelJobs1[0])
+      }).delay(1000).then(() => {
+        return q.getJob(jobs)
+      }).then((globalCancelJobs2) => {
+        t.equal(globalCancelJobs2[0].status, enums.status.cancelled, 'Job status is cancelled')
+        t.notOk(jobProcessTimeoutId, 'Job processing has been stopped')
+        jobDelay = 200
+        return qGlobalCancel.stop()
+      }).then(() => {
+        //
         // ---------- Delayed Job Start Test ----------
         t.comment('queue-process: Delayed Job Start')
         jobs = q.createJob()

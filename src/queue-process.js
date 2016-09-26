@@ -1,15 +1,17 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
+const is = require('./is')
 const dbReview = require('./db-review')
 const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
 const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 const jobTimeouts = new Map()
+const jobCancellations = new Map()
 
 function addJobTimeout (job, timeoutHandler) {
-  logger('addJobTimeout')
+  logger('addJobTimeout', job)
   const timeoutValue = job.timeout
   let jobTimeout = {
     timeoutHandler,
@@ -20,7 +22,7 @@ function addJobTimeout (job, timeoutHandler) {
 }
 
 function removeJobTimeout (jobId) {
-  logger('removeJobTimeout')
+  logger('removeJobTimeout', jobId)
   if (jobTimeouts.has(jobId)) {
     const jobTimeout = jobTimeouts.get(jobId)
     clearTimeout(jobTimeout.timeoutId)
@@ -28,8 +30,38 @@ function removeJobTimeout (jobId) {
   }
 }
 
+function addJobCancellation (job, cancellationCallback) {
+  logger('addJobCancellation', job.id)
+  if (is.function(cancellationCallback)) {
+    jobCancellations.set(job.id, cancellationCallback)
+  } else {
+    let err = new Error(enums.message.cancelCallbackInvalid)
+    logger(`Event: error [${err}]`)
+    job.q.emit(enums.status.error, err)
+    throw err
+  }
+}
+
+function removeJobCancellation (jobId) {
+  logger('removeJobCancellation', jobId)
+  jobCancellations.delete(jobId)
+}
+
+function onCancelJob (jobId, q) {
+  logger('onCancelJob', jobId)
+  if (jobCancellations.has(jobId)) {
+    // Calling the user defined cancel function
+    jobCancellations.get(jobId)()
+    removeJobTimeout(jobId)
+    removeJobCancellation(jobId)
+    q._running--
+    setImmediate(jobTick, q)
+    return q.running
+  }
+}
+
 function restartJobTimeout (jobId) {
-  logger('resetJobTimeout')
+  logger('resetJobTimeout', jobId)
   let jobTimeout
   if (jobTimeouts.has(jobId)) {
     jobTimeout = jobTimeouts.get(jobId)
@@ -54,11 +86,12 @@ function jobRun (job) {
     handled = true
 
     removeJobTimeout(job.id)
+    removeJobCancellation(job.id)
 
     return new Promise((resolve, reject) => {
       logger('Promise resolving or rejecting jobResult')
       if (jobResult instanceof Error) { reject(jobResult) }
-      resolve(jobResult)
+      return resolve(jobResult)
     }).then((successResult) => {
       logger('jobResult resolved successfully')
       return jobCompleted(job, successResult)
@@ -90,7 +123,7 @@ function jobRun (job) {
   logger(`Event: processing [${job.id}]`)
   job.q.emit(enums.status.processing, job.id)
   logger('calling handler function')
-  job.q._handler(job, nextHandler)
+  job.q._handler(job, nextHandler, addJobCancellation)
 }
 
 const jobTick = function jobTick (q) {
@@ -153,6 +186,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q._handler = handler
   q._running = 0
   q.on(enums.status.progress, restartJobTimeout)
+  q.on(enums.status.cancelled, (jobId) => onCancelJob(jobId, q))
 
   return Promise.resolve().then(() => {
     if (q.master) { return true }

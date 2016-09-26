@@ -86,6 +86,7 @@ const enums = module.exports = {
     processTwice: 'Cannot call queue process twice',
     idInvalid: 'The job id is invalid',
     dbError: 'RethinkDB returned an error',
-    concurrencyInvalid: 'Invalid concurrency value'
+    concurrencyInvalid: 'Invalid concurrency value',
+    cancelCallbackInvalid: 'The onCancel callback is not a function'
   }
 }
