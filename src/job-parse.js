@@ -2,50 +2,56 @@ const logger = require('./logger')(module)
 const is = require('./is')
 const enums = require('./enums')
 
-function ensureArray (job) {
-  logger('ensureArray', job)
-  if (job == null) { return [] }
-  return is.array(job) ? job : [job]
-}
-
 module.exports.id = function jobParseId (job) {
   logger('jobParseId', job)
-  let jobs = ensureArray(job)
+  if (!job) { return [] }
+  let jobs = is.array(job) ? job : [job]
   let validIds = []
-  for (let tJob of jobs) {
-    if (!is.uuid(tJob) && !is.uuid(tJob.id)) {
+  for (let j of jobs) {
+    if (!is.uuid(j) && !is.uuid(j.id)) {
       throw new Error(enums.message.idInvalid)
     }
-    if (is.uuid(tJob)) {
-      validIds.push(tJob)
+    if (is.uuid(j)) {
+      validIds.push(j)
     }
-    if (is.uuid(tJob.id)) {
-      validIds.push(tJob.id)
+    if (is.uuid(j.id)) {
+      validIds.push(j.id)
     }
   }
   return validIds
 }
 
-function ensureJob (q, job) {
-  if (is.job(job)) { return job }
-  if (is.number(job) ||
-      is.string(job) ||
-      is.boolean(job) ||
-      is.object(job)) {
-    const newJob = q.createJob()
-    newJob.data = job
-    return newJob
-  }
-  throw new Error(enums.message.jobInvalid + ': ' + job)
-}
-
-module.exports.job = function jobParseJob (q, job) {
+module.exports.job = function jobParseJob (job) {
   logger('jobParseJob', job)
-  let jobs = ensureArray(job)
+  if (!job) { return [] }
+  let jobs = is.array(job) ? job : [job]
   let validJobs = []
-  for (let eachJob of jobs) {
-    let tJob = ensureJob(q, eachJob)
-    validJobs.push(tJob)
+  for (let j of jobs) {
+    let detail = false
+    if (!is.uuid(j.id)) { detail = 'Job id: ' + j.id }
+    if (!j.q) { detail = 'Job q missing' }
+    if (!j.priority) { detail = 'Job priority missing' }
+    if (j.timeout < 0) { detail = 'Job timeout: ' + j.timeout }
+    if (j.retryDelay < 0) { detail = 'Job retryDelay: ' + j.retryDelay }
+    if (j.retryMax < 0) { detail = 'Job retryMax: ' + j.retryMax }
+    if (j.retryCount < 0) { detail = 'Job retryCount: ' + j.retryCount }
+    if (!j.status) { detail = 'Job status missing' }
+    if (!is.array(j.log)) { detail = 'Job log: ' + j.log }
+    if (!is.date(j.dateCreated)) {
+      detail = 'Job dateCreated: ' + j.dateCreated
+    }
+    if (!is.date(j.dateEnable)) {
+      detail = 'Job dateEnable: ' + j.dateEnable
+    }
+    if (j.progress < 0 || j.progress > 100) {
+      detail = 'Job progress: ' + j.progress
+    }
+    if (!j.queueId) { detail = 'Job queueId missing' }
+    if (!detail) {
+      validJobs.push(j)
+    } else {
+      throw new Error(enums.message.jobInvalid + ': ' + detail)
+    }
   }
   return validJobs
 }
