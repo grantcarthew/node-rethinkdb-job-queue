@@ -9,7 +9,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(106)
+      t.plan(110)
 
       let q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
       let q2
@@ -199,6 +199,7 @@ module.exports = function () {
         // ---------- Create Job Tests ----------
         t.comment('queue: Add Job')
         job = q.createJob()
+        job.data = tOpts.tData
         return q.addJob(job)
       }).then((savedJobs) => {
         t.ok(is.array(savedJobs), 'Add job returns an array')
@@ -215,9 +216,18 @@ module.exports = function () {
         t.equal(savedJobs2[0].id, job.id, 'Job id is valid')
         t.equal(savedJobs2[0].status, enums.status.waiting, 'Job status is valid')
 
+        // ---------- Find Job Tests ----------
+        t.comment('queue: Find Job')
+        return q.findJob({ data: tOpts.tData })
+      }).then((savedJobs3) => {
+        t.ok(is.array(savedJobs3), 'Find job returns an array')
+        t.ok(is.job(savedJobs3[0]), 'Job retrieved successfully')
+        t.equal(savedJobs3[0].id, job.id, 'Job id is valid')
+        t.equal(savedJobs3[0].status, enums.status.waiting, 'Job status is valid')
+
         // ---------- Cancel Job Tests ----------
         t.comment('queue: Cancel Job')
-        return q.cancelJob(savedJobs2[0].id)
+        return q.cancelJob(savedJobs3[0].id)
       }).then((cancelledJobs) => {
         t.ok(is.array(cancelledJobs), 'Cancel job returns an array')
         t.ok(is.uuid(cancelledJobs[0]), 'Cancel job returns ids')

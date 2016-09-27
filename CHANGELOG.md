@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.2.1 / 2016-09-27
+
+*   Added `Queue.findJob()` method.
+
 ## v0.2.0 / 2016-09-27
 
 *   Extended failed job `dateCreated` value in queue-process tests.

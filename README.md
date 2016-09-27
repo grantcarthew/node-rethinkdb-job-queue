@@ -27,6 +27,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   [Priority processing of jobs][job-priority-url]
 *   [Job progress updates][job-progress-url]
 *   [Delayed job start][job-delayed-url]
+*   [Find jobs in the queue][find-job-url]
 *   [Global job cancellation][job-cancel-url]
 *   [Job timeout][job-timeout-url]
 *   [Retrying failed jobs][job-retry-url]
@@ -44,6 +45,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 [job-priority-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-priority-option
 [job-progress-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setProgress
 [job-delayed-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Delayed-Job
+[find-job-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.findJob
 [job-cancel-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.process#failed-job-with-cancel
 [job-timeout-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-timeout-option
 [job-retry-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Retry
