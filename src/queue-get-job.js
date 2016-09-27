@@ -4,7 +4,7 @@ const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 
 module.exports = function queueGetJob (q, jobOrId) {
-  logger('getJobById: ', jobOrId)
+  logger('queueGetJob: ', jobOrId)
   return Promise.resolve().then(() => {
     return jobParse.id(jobOrId)
   }).then((ids) => {
