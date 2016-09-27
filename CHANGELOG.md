@@ -1,9 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.2.0 / 2016-09
+## v0.2.0 / 2016-09-27
 
 *   Extended failed job `dateCreated` value in queue-process tests.
 *   Added worker stops processing on global `cancelled` event.
+*   Refactored `Queue.process`.
 
 ## v0.1.2 / 2016-09-20
 

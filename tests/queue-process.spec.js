@@ -13,7 +13,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(215)
+      t.plan(216)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -181,6 +181,7 @@ module.exports = function () {
           return onCancel(job, () => {
             clearTimeout(jobProcessTimeoutId)
             jobProcessTimeoutId = false
+            t.pass('onCancel invoked')
             return
           })
         }

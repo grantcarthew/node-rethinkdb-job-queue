@@ -24,17 +24,18 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   Global [queue events][queue-events-url]
 *   Run [concurrent jobs][queue-concurrency-url]
 *   Promise based with minimal callbacks
-*   Jobs support:
-   *   [Priority processing][job-priority-url]
-   *   [Progress updates][job-progress-url]
-   *   [Delayed start][job-delayed-url]
-   *   [Cancelling][job-cancel-url]
-   *   [Timeout][job-timeout-url]
-   *   [Retrying][job-retry-url]
-   *   [Reanimation][job-reanimation-url]
-   *   [Editing][job-editing-url]
-   *   Rich [history log][job-log-url]
-* Over 1100 [integration tests][testing-url]
+*   [Priority processing of jobs][job-priority-url]
+*   [Job progress updates][job-progress-url]
+*   [Delayed job start][job-delayed-url]
+*   [Global job cancellation][job-cancel-url]
+*   [Job timeout][job-timeout-url]
+*   [Retrying failed jobs][job-retry-url]
+*   [Job reanimation][job-reanimation-url]
+*   [Job Editing][job-editing-url]
+*   Rich job [history log][job-log-url]
+*   Over 1200 [integration tests][testing-url]
+
+
 
 [queue-connection-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Connection
 [queue-events-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Events
@@ -58,7 +59,7 @@ For full documentation [please see the wiki][rjq-wiki-url]
 ## Project Status
 
 *   This `rethinkdb-job-queue` module is fully functional.
-*   There are over 1100 integration tests.
+*   There are over 1200 integration tests.
 *   This project is complete and needs to be taken out for a spin.
 *   In a few months I will bump the version up to 1.0.0 to support [SemVer](http://semver.org/).
 *   Please provide feedback or raise issues prior to the version bump.

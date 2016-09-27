@@ -8,7 +8,7 @@ const jobCompleted = require('./job-completed')
 const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 const jobTimeouts = new Map()
-const jobCancellations = new Map()
+const jobOnCancelHandlers = new Map()
 
 function addJobTimeout (job, timeoutHandler) {
   logger('addJobTimeout', job)
@@ -21,19 +21,10 @@ function addJobTimeout (job, timeoutHandler) {
   jobTimeouts.set(job.id, jobTimeout)
 }
 
-function removeJobTimeout (jobId) {
-  logger('removeJobTimeout', jobId)
-  if (jobTimeouts.has(jobId)) {
-    const jobTimeout = jobTimeouts.get(jobId)
-    clearTimeout(jobTimeout.timeoutId)
-    jobTimeouts.delete(jobId)
-  }
-}
-
-function addJobCancellation (job, cancellationCallback) {
+function addOnCancelHandler (job, cancellationCallback) {
   logger('addJobCancellation', job.id)
   if (is.function(cancellationCallback)) {
-    jobCancellations.set(job.id, cancellationCallback)
+    jobOnCancelHandlers.set(job.id, cancellationCallback)
   } else {
     let err = new Error(enums.message.cancelCallbackInvalid)
     logger(`Event: error [${err}]`)
@@ -42,21 +33,25 @@ function addJobCancellation (job, cancellationCallback) {
   }
 }
 
-function removeJobCancellation (jobId) {
-  logger('removeJobCancellation', jobId)
-  jobCancellations.delete(jobId)
+function removeJobTimeoutAndOnCancelHandler (jobId) {
+  logger('removeJobTimeoutAndOnCancelHandler', jobId)
+  if (jobTimeouts.has(jobId)) {
+    const jobTimeout = jobTimeouts.get(jobId)
+    clearTimeout(jobTimeout.timeoutId)
+    jobTimeouts.delete(jobId)
+  }
+  jobOnCancelHandlers.delete(jobId)
 }
 
 function onCancelJob (jobId, q) {
   logger('onCancelJob', jobId)
-  if (jobCancellations.has(jobId)) {
-    // Calling the user defined cancel function
-    jobCancellations.get(jobId)()
-    removeJobTimeout(jobId)
-    removeJobCancellation(jobId)
+  if (jobOnCancelHandlers.has(jobId)) {
+    const onCancelHandler = jobOnCancelHandlers.get(jobId)
+    removeJobTimeoutAndOnCancelHandler(jobId)
     q._running--
+    // Calling the user defined cancel function
+    onCancelHandler()
     setImmediate(jobTick, q)
-    return q.running
   }
 }
 
@@ -85,8 +80,7 @@ function jobRun (job) {
     }
     handled = true
 
-    removeJobTimeout(job.id)
-    removeJobCancellation(job.id)
+    removeJobTimeoutAndOnCancelHandler(job.id)
 
     return new Promise((resolve, reject) => {
       logger('Promise resolving or rejecting jobResult')
@@ -123,7 +117,7 @@ function jobRun (job) {
   logger(`Event: processing [${job.id}]`)
   job.q.emit(enums.status.processing, job.id)
   logger('calling handler function')
-  job.q._handler(job, nextHandler, addJobCancellation)
+  job.q._handler(job, nextHandler, addOnCancelHandler)
 }
 
 const jobTick = function jobTick (q) {
