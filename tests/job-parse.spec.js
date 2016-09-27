@@ -1,13 +1,15 @@
 const test = require('tape')
 const is = require('../src/is')
+const Queue = require('../src/queue')
 const jobParse = require('../src/job-parse')
-const Job = require('../src/job')
 const uuid = require('uuid')
+const tOpts = require('./test-options')
 
 module.exports = function () {
   test('job-parse', (t) => {
-    t.plan(40)
+    t.plan(42)
 
+    const q = new Queue(tOpts.cxn(), tOpts.default())
     const ids = [
       uuid.v4(),
       uuid.v4(),
@@ -46,67 +48,71 @@ module.exports = function () {
 
     // ---------- Parse Single Job ----------
     t.comment('job-parse: Parse Single Job')
-    const mockQueue = { id: uuid.v4(), name: 'fake' }
-    let job = new Job(mockQueue)
-    t.throws(() => { jobParse.job({}) }, 'Throws error if not a valid job for id')
-    t.ok(is.array(jobParse.job()), 'Null or undefined returns an array')
-    t.equal(jobParse.job().length, 0, 'Null or undefined returns an empty array')
-    t.ok(is.array(jobParse.job(job)), 'Single job returns an Array')
-    t.equal(jobParse.job(job).length, 1, 'Single job returns one item in an array')
-    t.ok(is.uuid(jobParse.job(job)[0].id), 'Single job returns one valid job in an Array')
+    let job = q.createJob()
+    t.ok(is.array(jobParse.job(q, {})), 'Object returns an array')
+    t.ok(jobParse.job(q, {}).length === 1, 'Object returns one item in an array')
+    t.ok(is.job(jobParse.job(q, {})[0]), 'Object returns valid job in an array')
+    t.ok(is.array(jobParse.job(q)), 'Null or undefined returns an array')
+    t.equal(jobParse.job(q).length, 0, 'Null or undefined returns an empty array')
+    t.ok(is.array(jobParse.job(q, job)), 'Single job returns an Array')
+    t.equal(jobParse.job(q, job).length, 1, 'Single job returns one item in an array')
+    t.ok(is.uuid(jobParse.job(q, job)[0].id), 'Single job returns one valid job in an Array')
 
     // ---------- Parse Array of Jobs ----------
     t.comment('job-parse: Parse Job Array')
     let jobs = [
-      new Job(mockQueue),
-      new Job(mockQueue),
-      new Job(mockQueue)
+      q.createJob(),
+      q.createJob(),
+      q.createJob()
     ]
-    let jobsResult = jobParse.job(jobs)
+    let jobsResult = jobParse.job(q, jobs)
     t.ok(is.array(jobsResult), 'Array of jobs returns an array')
     t.equal(jobsResult.length, 3, 'Array of jobs returns valid number of items')
     t.ok(is.uuid(jobsResult[0].id), 'Array of jobs returns valid jobs')
 
     // ---------- Parse Invalid Job ----------
     t.comment('job-parse: Parse Invalid Job')
-    job = new Job(mockQueue)
+    job = q.createJob()
     job.id = 'not an id'
-    t.throws(() => { jobParse.job(job) }, 'Invalid job id throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job id returns job with data')
+    job = q.createJob()
     job.q = null
-    t.throws(() => { jobParse.job(job) }, 'Invalid job queue throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job queue returns job with data')
+    job = q.createJob()
     job.priority = null
-    t.throws(() => { jobParse.job(job) }, 'Invalid job priority throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job priority returns job with data')
+    job = q.createJob()
     job.timeout = -1
-    t.throws(() => { jobParse.job(job) }, 'Invalid job timeout throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job timeout returns job with data')
+    job = q.createJob()
     job.retryDelay = -1
-    t.throws(() => { jobParse.job(job) }, 'Invalid job retryDelay throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job retryDelay returns job with data')
+    job = q.createJob()
     job.retryMax = -1
-    t.throws(() => { jobParse.job(job) }, 'Invalid job retryMax throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job retryMax returns job with data')
+    job = q.createJob()
     job.retryCount = -1
-    t.throws(() => { jobParse.job(job) }, 'Invalid job retryCount throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job retryCount returns job with data')
+    job = q.createJob()
     job.status = null
-    t.throws(() => { jobParse.job(job) }, 'Invalid job status throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job status returns job with data')
+    job = q.createJob()
     job.log = {}
-    t.throws(() => { jobParse.job(job) }, 'Invalid job log throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job log returns job with data')
+    job = q.createJob()
     job.dateCreated = {}
-    t.throws(() => { jobParse.job(job) }, 'Invalid job dateCreated throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job dateCreated returns job with data')
+    job = q.createJob()
     job.dateEnable = {}
-    t.throws(() => { jobParse.job(job) }, 'Invalid job dateEnable throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job dateEnable returns job with data')
+    job = q.createJob()
     job.progress = 101
-    t.throws(() => { jobParse.job(job) }, 'Invalid job progress throws an exception')
-    job = new Job(mockQueue)
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job progress returns job with data')
+    job = q.createJob()
     job.queueId = null
-    t.throws(() => { jobParse.job(job) }, 'Invalid job queueId throws an exception')
+    t.ok(is.job(jobParse.job(q, job)[0]), 'Invalid job queueId returns job with data')
+
+    q.stop()
+    t.end()
   })
 }
