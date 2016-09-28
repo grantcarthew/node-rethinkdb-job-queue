@@ -95,6 +95,6 @@ const enums = module.exports = {
     cancelCallbackInvalid: 'The onCancel callback is not a function',
     globalStateError: 'The global state document change feed is invalid',
     noErrorStack: 'The error has no stack detail',
-    noErrorMessage: 'The error has no messag'
+    noErrorMessage: 'The error has no message'
   }
 }
