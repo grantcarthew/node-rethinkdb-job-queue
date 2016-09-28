@@ -6,8 +6,9 @@ const queueProcess = require('./queue-process')
 const queueInterruption = require('./queue-interruption')
 
 // Following is the list of supported change feed events;
+// paused - Global event
+// resumed - Global event
 // added
-// log
 // active
 // progress
 // completed
@@ -15,6 +16,7 @@ const queueInterruption = require('./queue-interruption')
 // failed
 // terminated
 // removed
+// log
 
 module.exports = function queueChange (q, err, change = {}) {
   logger('queueChange', change)
@@ -31,8 +33,7 @@ module.exports = function queueChange (q, err, change = {}) {
   }
 
   // Prevent any change processing if change is caused by this queue
-  if (queueId === q.id &&
-      !q.testing) {
+  if (queueId === q.id) {
     logger('Change feed by self, skipping events')
     return
   }
@@ -84,20 +85,21 @@ module.exports = function queueChange (q, err, change = {}) {
     return enums.status.active
   }
 
+  // Job progress
+  if (is.job(newVal) &&
+      is.job(oldVal) &&
+      newVal.progress !== oldVal.progress) {
+    logger(`Event: progress [${newVal.progress}]`)
+    q.emit(enums.status.progress, newVal.id, newVal.progress)
+    return enums.status.progress
+  }
+
   // Job completed
   if (is.completed(newVal) &&
       !is.completed(oldVal)) {
     logger(`Event: completed [${newVal.id}]`)
     q.emit(enums.status.completed, newVal.id)
     return enums.status.completed
-  }
-
-  // Job removed
-  if (!is.job(newVal) &&
-      is.job(oldVal)) {
-    logger(`Event: removed [${oldVal.id}]`)
-    q.emit(enums.status.removed, oldVal.id)
-    return enums.status.removed
   }
 
   // Job cancelled
@@ -124,13 +126,12 @@ module.exports = function queueChange (q, err, change = {}) {
     return enums.status.terminated
   }
 
-  // Job progress
-  if (is.job(newVal) &&
-      is.job(oldVal) &&
-      newVal.progress !== oldVal.progress) {
-    logger(`Event: progress [${newVal.progress}]`)
-    q.emit(enums.status.progress, newVal.id, newVal.progress)
-    return enums.status.progress
+  // Job removed
+  if (!is.job(newVal) &&
+      is.job(oldVal)) {
+    logger(`Event: removed [${oldVal.id}]`)
+    q.emit(enums.status.removed, oldVal.id)
+    return enums.status.removed
   }
 
   // Job log

@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.3.0 / 2016-09-28
+
+*   Added global queue pause.
+*   Fixed tests for global queue pause.
+
 ## v0.2.1 / 2016-09-27
 
 *   Added `Queue.findJob()` method.

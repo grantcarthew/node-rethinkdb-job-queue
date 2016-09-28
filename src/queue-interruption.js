@@ -18,7 +18,7 @@ module.exports.pause = function interruptionPause (q, source) {
   }).then(() => {
     return new Promise((resolve, reject) => {
       logger(`Event: pausing [${q.id}]`)
-      q.emit(enums.status.pausing, q.id)
+      q.emit(enums.status.pausing, eventGlobal, q.id)
       if (q.running < 1) { return resolve() }
       let intId = setInterval(function pausing () {
         logger(`Pausing, waiting on running jobs: [${q.running}]`)
