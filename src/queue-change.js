@@ -3,6 +3,7 @@ const is = require('./is')
 const util = require('util')
 const enums = require('./enums')
 const queueProcess = require('./queue-process')
+const queueInterruption = require('./queue-interruption')
 
 // Following is the list of supported change feed events;
 // added
@@ -16,13 +17,14 @@ const queueProcess = require('./queue-process')
 // removed
 
 module.exports = function queueChange (q, err, change = {}) {
-  logger('queueChange')
+  logger('queueChange', change)
 
   const newVal = change.new_val
   const oldVal = change.old_val
+
   let queueId = false
-  if (is.job(newVal)) { queueId = newVal.queueId }
-  if (!is.job(newVal) && is.job(oldVal)) { queueId = oldVal.queueId }
+  if (newVal && newVal.queueId) { queueId = newVal.queueId }
+  if (!newVal && oldVal && oldVal.queueId) { queueId = oldVal.queueId }
   if (!queueId) {
     logger(`Change feed and queueId missing`, change)
     return
@@ -37,10 +39,30 @@ module.exports = function queueChange (q, err, change = {}) {
 
   if (err) { throw new Error(err) }
 
-  if (q.testing) {
-    logger('------------- QUEUE CHANGE -------------')
-    logger(util.inspect(change, {colors: true}))
-    logger('----------------------------------------')
+  logger('------------- QUEUE CHANGE -------------')
+  logger(util.inspect(change, {colors: true}))
+  logger(queueId)
+  logger('----------------------------------------')
+
+  // Queue global state change
+  if (!newVal && oldVal && oldVal.id && oldVal.id === enums.state.docId) {
+    // Ignoring state document deletion.
+    return enums.status.active
+  }
+  if (newVal && newVal.id && newVal.id === enums.state.docId) {
+    logger('State document changed')
+    if (newVal && newVal.state) {
+      if (newVal.state === enums.status.paused) {
+        logger('Global queue state paused')
+        return queueInterruption.pause(q, enums.state.global)
+      }
+      if (newVal.state === enums.status.active) {
+        logger('Global queue state active')
+        return queueInterruption.resume(q, enums.state.global)
+      }
+    }
+    q.emit(enums.status.error, new Error(enums.message.globalStateError))
+    return enums.status.error
   }
 
   // Job added

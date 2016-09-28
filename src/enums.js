@@ -5,6 +5,11 @@ const enums = module.exports = {
     logger(`priorityFromValue: [${value}]`)
     return Object.keys(enums.priority).find(key => enums.priority[key] === value)
   },
+  state: {
+    docId: '86f6ff5b-0c4e-46ad-9a5f-e90eb19c9b00',
+    global: 'global',
+    local: 'local'
+  },
   priority: {
     lowest: 60,
     low: 50,
@@ -87,6 +92,7 @@ const enums = module.exports = {
     idInvalid: 'The job id is invalid',
     dbError: 'RethinkDB returned an error',
     concurrencyInvalid: 'Invalid concurrency value',
-    cancelCallbackInvalid: 'The onCancel callback is not a function'
+    cancelCallbackInvalid: 'The onCancel callback is not a function',
+    globalStateError: 'The global state document change feed is invalid'
   }
 }

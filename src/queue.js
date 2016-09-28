@@ -195,10 +195,10 @@ class Queue extends EventEmitter {
     return this._ready
   }
 
-  pause () {
+  pause (global) {
     logger(`pause`)
     return this.ready().then(() => {
-      return queueInterruption.pause(this)
+      return queueInterruption.pause(this, global)
     }).catch((err) => {
       logger('pause Error:', err)
       this.emit(enums.status.error, err)
@@ -206,10 +206,10 @@ class Queue extends EventEmitter {
     })
   }
 
-  resume () {
+  resume (global) {
     logger(`resume`)
     return this.ready().then(() => {
-      return queueInterruption.resume(this)
+      return queueInterruption.resume(this, global)
     }).catch((err) => {
       logger('resume Error:', err)
       this.emit(enums.status.error, err)
