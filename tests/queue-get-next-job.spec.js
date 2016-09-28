@@ -45,6 +45,7 @@ module.exports = function () {
       const jobFailed = q.createJob({priority: 'highest'})
       jobFailed.status = enums.status.failed
       jobFailed.data = 'Failed'
+      jobFailed.dateEnable = datetime.add.sec(new Date(), -100)
       jobFailed.dateCreated = datetime.add.sec(new Date(), -100)
       const jobActive = q.createJob({priority: 'normal'})
       jobActive.status = enums.status.active
