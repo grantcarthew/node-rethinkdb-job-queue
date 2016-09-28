@@ -5,7 +5,6 @@ const queueProcess = require('./queue-process')
 const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 
-// skipStatusCheck is for ease of adding jobs during tests
 module.exports = function queueAddJob (q, job, skipStatusCheck) {
   logger('addJob', job)
   return Promise.resolve().then(() => {

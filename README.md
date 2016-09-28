@@ -34,7 +34,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   [Job reanimation][job-reanimation-url]
 *   [Job Editing][job-editing-url]
 *   Rich job [history log][job-log-url]
-*   Over 1200 [integration tests][testing-url]
+*   Over 1300 [integration tests][testing-url]
 
 
 
@@ -61,7 +61,7 @@ For full documentation [please see the wiki][rjq-wiki-url]
 ## Project Status
 
 *   This `rethinkdb-job-queue` module is fully functional.
-*   There are over 1200 integration tests.
+*   There are over 1300 integration tests.
 *   This project is complete and needs to be taken out for a spin.
 *   In a few months I will bump the version up to 1.0.0 to support [SemVer](http://semver.org/).
 *   Please provide feedback or raise issues prior to the version bump.

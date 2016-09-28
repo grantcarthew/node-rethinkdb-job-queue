@@ -22,10 +22,13 @@ module.exports = function failed (job, err) {
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
-  const errMessage = err && err.message ? err.message : err
-  const log = job.createLog(errMessage, logType)
+  const log = job.createLog(enums.message.failed, logType)
   log.duration = duration
   log.retryCount = job.retryCount
+  log.errorMessage = err && err.message
+    ? err.message : enums.message.noErrorMessage
+  log.errorStack = err && err.stack
+    ? err.stack : enums.message.noErrorStack
 
   return Promise.resolve().then(() => {
     return job.q.r.db(job.q.db).table(job.q.name)

@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed', (t) => {
-      t.plan(76)
+      t.plan(84)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -79,7 +79,9 @@ module.exports = function () {
         t.equal(retry1[0].log[1].status, enums.status.failed, 'Log status is failed')
         t.ok(retry1[0].log[1].retryCount = 1, 'Log retryCount is valid')
         t.ok(retry1[0].log[1].message, 'Log message exists')
-        t.equal(retry1[0].log[1].message, err.message, 'Log message is valid')
+        t.equal(retry1[0].log[1].message, enums.message.failed, 'Log message is valid')
+        t.equal(retry1[0].log[1].errorMessage, err.message, 'Log error message is valid')
+        t.equal(retry1[0].log[1].errorStack, err.stack, 'Log stack is valid')
         t.ok(retry1[0].log[1].duration >= 0, 'Log duration is >= 0')
 
         // ---------- Job Failed Retry 1 Test ----------
@@ -101,7 +103,9 @@ module.exports = function () {
         t.equal(retry2[0].log[2].status, enums.status.failed, 'Log status is failed')
         t.ok(retry2[0].log[2].retryCount = 2, 'Log retryCount is valid')
         t.ok(retry2[0].log[2].message, 'Log message exists')
-        t.equal(retry2[0].log[2].message, err.message, 'Log message is valid')
+        t.equal(retry2[0].log[2].message, enums.message.failed, 'Log message is valid')
+        t.equal(retry2[0].log[2].errorMessage, err.message, 'Log error message is valid')
+        t.equal(retry2[0].log[2].errorStack, err.stack, 'Log stack is valid')
         t.ok(retry2[0].log[2].duration >= 0, 'Log duration is >= 0')
 
         // ---------- Job Failed Retry 2 Test ----------
@@ -124,7 +128,9 @@ module.exports = function () {
         t.equal(retry3[0].log[3].status, enums.status.failed, 'Log status is failed')
         t.ok(retry3[0].log[3].retryCount = 3, 'Log retryCount is valid')
         t.ok(retry3[0].log[3].message, 'Log message exists')
-        t.equal(retry3[0].log[3].message, err.message, 'Log message is valid')
+        t.equal(retry3[0].log[3].message, enums.message.failed, 'Log message is valid')
+        t.equal(retry3[0].log[3].errorMessage, err.message, 'Log error message is valid')
+        t.equal(retry3[0].log[3].errorStack, err.stack, 'Log stack is valid')
         t.ok(retry3[0].log[3].duration >= 0, 'Log duration is >= 0')
 
         // ---------- Job Failed Retry 3 Test ----------
@@ -147,7 +153,9 @@ module.exports = function () {
         t.equal(failed[0].log[4].status, enums.status.terminated, 'Log status is terminated')
         t.ok(failed[0].log[4].retryCount = 3, 'Log retryCount is valid')
         t.ok(failed[0].log[4].message, 'Log message exists')
-        t.equal(failed[0].log[4].message, err.message, 'Log message is valid')
+        t.equal(failed[0].log[4].message, enums.message.failed, 'Log message is valid')
+        t.equal(failed[0].log[4].errorMessage, err.message, 'Log error message is valid')
+        t.equal(failed[0].log[4].errorStack, err.stack, 'Log stack is valid')
         t.ok(failed[0].log[4].duration >= 0, 'Log duration is >= 0')
 
         // ---------- Job Failed with Remove Finished Jobs Test ----------
