@@ -22,13 +22,15 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   Create [multiple queues][queue-connection-url]
 *   [Distributed worker nodes (PubSub)][queue-pubsub-url]
 *   Global [queue events][queue-events-url]
+*   Global [job cancellation][job-cancel-url]
+*   Global [pause queue][queue-pause-url]
 *   Run [concurrent jobs][queue-concurrency-url]
 *   Promise based with minimal callbacks
 *   [Priority processing of jobs][job-priority-url]
 *   [Job progress updates][job-progress-url]
 *   [Delayed job start][job-delayed-url]
 *   [Find jobs in the queue][find-job-url]
-*   [Global job cancellation][job-cancel-url]
+*   [Determine job uniqueness][find-job-url]
 *   [Job timeout][job-timeout-url]
 *   [Retrying failed jobs][job-retry-url]
 *   [Job reanimation][job-reanimation-url]
@@ -47,6 +49,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 [job-delayed-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Delayed-Job
 [find-job-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.findJob
 [job-cancel-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.process#failed-job-with-cancel
+[queue-pause-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.pause
 [job-timeout-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-timeout-option
 [job-retry-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Retry
 [job-reanimation-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Editing#job-reanimation
