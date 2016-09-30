@@ -133,17 +133,6 @@ class Job {
 
   addLog (log) {
     logger('addLog', log)
-    let validLog = log
-    if (!is.log(log)) {
-      if (is.string(log)) {
-        validLog = this.createLog(log)
-      }
-      if (is.object(log)) {
-        validLog = this.createLog()
-        validLog.date = log
-      }
-    }
-
     return this.q.ready().then(() => {
       return jobAddLog(this, log)
     }).catch((err) => {
