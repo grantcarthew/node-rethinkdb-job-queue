@@ -24,39 +24,39 @@ module.exports = function () {
       }
       q.on(enums.status.active, activeEventHandler)
 
-      const jobLowest = q.createJob({priority: 'lowest'})
+      const jobLowest = q.createJob().setPriority('lowest')
       jobLowest.status = enums.status.waiting
       jobLowest.data = 'Lowest'
-      const jobLow = q.createJob({priority: 'low'})
+      const jobLow = q.createJob().setPriority('low')
       jobLow.status = enums.status.waiting
       jobLow.data = 'Low'
-      const jobNormal = q.createJob({priority: 'normal'})
+      const jobNormal = q.createJob().setPriority('normal')
       jobNormal.status = enums.status.waiting
       jobNormal.data = 'Normal'
-      const jobMedium = q.createJob({priority: 'medium'})
+      const jobMedium = q.createJob().setPriority('medium')
       jobMedium.status = enums.status.waiting
       jobMedium.data = 'Medium'
-      const jobHigh = q.createJob({priority: 'high'})
+      const jobHigh = q.createJob().setPriority('high')
       jobHigh.status = enums.status.waiting
       jobHigh.data = 'High'
-      const jobHighest = q.createJob({priority: 'highest'})
+      const jobHighest = q.createJob().setPriority('highest')
       jobHighest.status = enums.status.waiting
       jobHighest.data = 'Highest'
-      const jobFailed = q.createJob({priority: 'highest'})
+      const jobFailed = q.createJob().setPriority('highest')
       jobFailed.status = enums.status.failed
       jobFailed.data = 'Failed'
       jobFailed.dateEnable = datetime.add.sec(new Date(), -100)
       jobFailed.dateCreated = datetime.add.sec(new Date(), -100)
-      const jobActive = q.createJob({priority: 'normal'})
+      const jobActive = q.createJob().setPriority('normal')
       jobActive.status = enums.status.active
       jobActive.data = 'Active'
-      const jobCompleted = q.createJob({priority: 'normal'})
+      const jobCompleted = q.createJob().setPriority('normal')
       jobCompleted.status = enums.status.completed
       jobCompleted.data = 'Completed'
-      const jobCancelled = q.createJob({priority: 'normal'})
+      const jobCancelled = q.createJob().setPriority('normal')
       jobCancelled.status = enums.status.cancelled
       jobCancelled.data = 'Cancelled'
-      const jobTerminated = q.createJob({priority: 'normal'})
+      const jobTerminated = q.createJob().setPriority('normal')
       jobTerminated.status = enums.status.terminated
       jobTerminated.data = 'Terminated'
       let allCreatedJobs = [
@@ -205,9 +205,9 @@ module.exports = function () {
 
         // ---------- Testing dateEnable Values ----------
         t.comment('queue-get-next-job: dateEnable Values')
-        retryJobs = q.createJob(2).map(j => j)
-        retryJobs[0].dateEnable = datetime.add.sec(new Date(), 100)
-        retryJobs[1].dateEnable = datetime.add.sec(new Date(), -100)
+        retryJobs = new Array(2)
+        retryJobs[0] = q.createJob().setDateEnable(datetime.add.sec(new Date(), 100))
+        retryJobs[1] = q.createJob().setDateEnable(datetime.add.sec(new Date(), -100))
         return q.addJob(retryJobs)
       }).then((retrySavedJobs) => {
         t.equal(retrySavedJobs.length, 2, 'Jobs saved successfully')
@@ -218,15 +218,15 @@ module.exports = function () {
 
         // ---------- Testing dateEnable with retryCount ----------
         t.comment('queue-get-next-job: dateEnable with retryCount')
-        retryJobs = q.createJob(4).map(j => j)
+        retryJobs = new Array(4)
+        retryJobs[0] = q.createJob().setDateEnable(datetime.add.sec(new Date(), -100))
         retryJobs[0].retryCount = 0
-        retryJobs[0].dateEnable = datetime.add.sec(new Date(), -100)
+        retryJobs[1] = q.createJob().setDateEnable(datetime.add.sec(new Date(), -200))
         retryJobs[1].retryCount = 1
-        retryJobs[1].dateEnable = datetime.add.sec(new Date(), -200)
+        retryJobs[2] = q.createJob().setDateEnable(datetime.add.sec(new Date(), -300))
         retryJobs[2].retryCount = 2
-        retryJobs[2].dateEnable = datetime.add.sec(new Date(), -300)
+        retryJobs[3] = q.createJob().setDateEnable(datetime.add.sec(new Date(), -400))
         retryJobs[3].retryCount = 3
-        retryJobs[3].dateEnable = datetime.add.sec(new Date(), -400)
         return q.addJob(retryJobs)
       }).then((retrySavedJobs) => {
         t.equal(retrySavedJobs.length, 4, 'Jobs saved successfully')

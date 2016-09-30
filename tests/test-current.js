@@ -16,8 +16,8 @@ const dbAssert = require('./db-assert.spec')
 // const jobCompleted = require('./job-completed.spec')
 // const jobUpdate = require('./job-update.spec')
 // const jobFailed = require('./job-failed.spec')
-const jobAddLog = require('./job-add-log.spec')
-// const queue = require('./queue.spec')
+// const jobAddLog = require('./job-add-log.spec')
+const queue = require('./queue.spec')
 // const queueDb = require('./queue-db.spec')
 // const queueState = require('./queue-state.spec')
 // const queueAddJob = require('./queue-add-job.spec')
@@ -36,5 +36,5 @@ const jobAddLog = require('./job-add-log.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return jobAddLog()
+  return queue()
 })

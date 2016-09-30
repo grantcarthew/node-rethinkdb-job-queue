@@ -13,7 +13,10 @@ module.exports = function () {
       t.plan(24)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
-      let jobs = q.createJob(3)
+      let jobs = []
+      for (let i = 0; i < 3; i++) {
+        jobs.push(q.createJob())
+      }
 
       let testEvents = false
       function removedEventHandler (jobId) {
@@ -45,7 +48,10 @@ module.exports = function () {
         return q.getJob(jobs.map(j => j.id))
       }).then((getResult) => {
         t.equal(getResult.length, 0, 'Jobs no longer in database')
-        let jobs = q.createJob(3).map(j => j)
+        let jobs = []
+        for (let i = 0; i < 3; i++) {
+          jobs.push(q.createJob())
+        }
         return q.addJob(jobs)
       }).then((savedAgain) => {
         t.equal(savedAgain.length, 3, 'Jobs saved successfully (again)')

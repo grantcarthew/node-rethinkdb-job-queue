@@ -5,6 +5,7 @@
 *   Added `is.log` to the `is` module.
 *   Added `Job.setPriority`, `Job.setTimeout`, `Job.setRetryMax`, `Job.setRetryDelay`, `setDateEnable`.
 *   Added string, object, or log arguments to `Job.addLog`.
+*   Changed `Queue.createJob` API to support data.
 
 ## v0.3.0 / 2016-09-28
 

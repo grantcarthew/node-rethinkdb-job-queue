@@ -88,9 +88,11 @@ module.exports = function () {
       let idleEventCount = 0
       const idleEventTotal = 12
       function idleEventHandler (qid) {
-        if (testEvents) {
-          idleEventCount++
-          t.pass(`Event: idle [${idleEventCount} of ${idleEventTotal}] [${qid}]`)
+        if (idleEventCount < 12) {
+          if (testEvents) {
+            idleEventCount++
+            t.pass(`Event: idle [${idleEventCount} of ${idleEventTotal}] [${qid}]`)
+          }
         }
       }
       let failedEventCount = 0
@@ -188,7 +190,10 @@ module.exports = function () {
       }
 
       // ---------- Test Setup ----------
-      jobs = q.createJob(noOfJobsToCreate).map(j => j)
+      jobs = []
+      for (let i = 0; i < noOfJobsToCreate; i++) {
+        jobs.push(q.createJob())
+      }
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.pause()
@@ -225,7 +230,10 @@ module.exports = function () {
 
         // ---------- Processing Restart on Job Add Test ----------
         t.comment('queue-process: Process Restart on Job Add')
-        jobs = q.createJob(noOfJobsToCreate).map(j => j)
+        jobs = []
+        for (let i = 0; i < noOfJobsToCreate; i++) {
+          jobs.push(q.createJob())
+        }
         q._concurrency = 10
         return q.addJob(jobs)
       }).then((savedJobs) => {
@@ -238,7 +246,10 @@ module.exports = function () {
         //
         // ---------- Processing Restart Test ----------
         t.comment('queue-process: Process Restart')
-        jobs = q.createJob(noOfJobsToCreate).map(j => j)
+        jobs = []
+        for (let i = 0; i < noOfJobsToCreate; i++) {
+          jobs.push(q.createJob())
+        }
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)

@@ -146,9 +146,11 @@ module.exports = function () {
       let idleEventCount = 0
       let idleEventTotal = 1
       function idleEventHandler (queueId) {
-        idleEventCount++
-        if (testEvents) {
-          t.ok(is.string(queueId), `Event: idle [${idleEventCount} of ${idleEventTotal}] [${queueId}]`)
+        if (idleEventCount < 1) {
+          idleEventCount++
+          if (testEvents) {
+            t.ok(is.string(queueId), `Event: idle [${idleEventCount} of ${idleEventTotal}] [${queueId}]`)
+          }
         }
       }
       let reviewedEventCount = 0

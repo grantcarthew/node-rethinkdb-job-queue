@@ -9,26 +9,20 @@ const jobAddLog = require('./job-add-log')
 
 class Job {
 
-  constructor (q, options) {
+  constructor (q, jobData) {
     logger('constructor')
     logger('queue id', q.id)
-    logger('options', options)
+    logger('jobData', jobData)
     this.q = q
 
-    // If creating a job from the database, pass the job as options.
-    // Eg. new Job(queue, jobFromDb)
-    if (is.job(options)) {
+    if (is.job(jobData)) {
       logger('Creating job from database object')
-      Object.assign(this, options)
+      Object.assign(this, jobData)
       this.priority = enums.priorityFromValue(this.priority)
     } else {
-      logger('Creating new job from defaults and options')
+      logger('Creating new job from defaults')
 
-      if (!options) {
-        options = jobOptions()
-      } else {
-        options = jobOptions(options, this)
-      }
+      const options = jobOptions()
       const now = new Date()
       this.id = uuid.v4()
       this.priority = options.priority
@@ -44,6 +38,8 @@ class Job {
       this.dateStarted
       this.dateFinished
       this.queueId = q.id
+      // Conflicting job options will be overwritten.
+      Object.assign(this, jobData)
     }
   }
 

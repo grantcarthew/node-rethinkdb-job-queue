@@ -14,7 +14,10 @@ module.exports = function () {
       t.plan(9)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
-      const jobs = q.createJob(7).map(j => j)
+      let jobs = []
+      for (let i = 0; i < 7; i++) {
+        jobs.push(q.createJob())
+      }
       jobs[0].status = enums.status.waiting
       jobs[1].status = enums.status.active
       jobs[2].status = enums.status.completed

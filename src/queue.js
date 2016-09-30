@@ -86,20 +86,10 @@ class Queue extends EventEmitter {
     this._concurrency = value
   }
 
-  createJob (options = this.jobOptions, quantity = 1) {
-    logger('createJob', options, quantity)
-    if (is.integer(options)) {
-      quantity = options
-      options = this.jobOptions
-    }
-    if (quantity > 1) {
-      const jobs = []
-      for (let i = 0; i < quantity; i++) {
-        jobs.push(new Job(this, options))
-      }
-      return jobs
-    }
-    return new Job(this, options)
+  createJob (jobData) {
+    logger('createJob', jobData)
+    jobData = jobData == null ? this.jobOptions : jobData
+    return new Job(this, jobData)
   }
 
   addJob (job) {

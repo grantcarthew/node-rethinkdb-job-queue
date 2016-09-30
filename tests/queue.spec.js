@@ -160,9 +160,11 @@ module.exports = function () {
       let idleEventCount = 0
       let idleEventTotal = 4
       function idleEventHandler (queueId) {
-        idleEventCount++
-        if (testEvents) {
-          t.ok(is.string(queueId), `Event: idle [${idleEventCount} of ${idleEventTotal}] [${queueId}]`)
+        if (idleEventCount < 4) {
+          idleEventCount++
+          if (testEvents) {
+            t.ok(is.string(queueId), `Event: idle [${idleEventCount} of ${idleEventTotal}] [${queueId}]`)
+          }
         }
       }
       let reviewedEventCount = 0
@@ -335,7 +337,7 @@ module.exports = function () {
           retryMax: 2,
           retryDelay: 900
         }
-        job = q.createJob(customJobOptions)
+        job = q.createJob().setPriority('low').setTimeout(400).setRetryMax(2).setRetryDelay(900)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')
