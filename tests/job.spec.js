@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(76)
+      t.plan(92)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -76,6 +76,25 @@ module.exports = function () {
       t.ok(is.date(newJob.dateCreated), 'New job dateCreated is a date')
       t.ok(is.date(newJob.dateEnable), 'New job dateEnable is a date')
 
+      // ---------- Change Options Tests ----------
+      t.comment('job: Change Options')
+      t.throws(() => { newJob.setPriority('not valid') }, 'Job setPriority thows if invalid')
+      newJob.setPriority('highest')
+      t.equal(newJob.priority, 'highest', 'Job setPriority successfully changed value')
+      t.throws(() => { newJob.setTimeout('not valid') }, 'Job setTimeout thows if invalid')
+      newJob.setTimeout(100)
+      t.equal(newJob.timeout, 100, 'Job setTimeout successfully changed value')
+      t.throws(() => { newJob.setRetryMax('not valid') }, 'Job setRetryMax thows if invalid')
+      newJob.setRetryMax(100)
+      t.equal(newJob.retryMax, 100, 'Job setRetryMax successfully changed value')
+      t.throws(() => { newJob.setRetryDelay('not valid') }, 'Job setRetryDelay thows if invalid')
+      newJob.setRetryDelay(100)
+      t.equal(newJob.retryDelay, 100, 'Job setRetryDelay successfully changed value')
+      t.throws(() => { newJob.setDateEnable('not valid') }, 'Job setDateEnable thows if invalid')
+      const testDate = new Date()
+      newJob.setDateEnable(testDate)
+      t.equal(newJob.dateEnable, testDate, 'Job setDateEnable successfully changed value')
+
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
       let cleanJob = newJob.getCleanCopy()
@@ -95,7 +114,7 @@ module.exports = function () {
       t.equal(cleanJob.queueId, newJob.queueId, 'Clean job progress is valid')
 
       cleanJob = newJob.getCleanCopy(true)
-      t.equal(cleanJob.priority, 'normal', 'Clean job priorityAsString priority is normal')
+      t.equal(cleanJob.priority, newJob.priority, 'Clean job priorityAsString priority is normal')
 
       // ---------- Create Log Tests ----------
       t.comment('job: Create Log')
@@ -120,13 +139,13 @@ module.exports = function () {
         jobCopy.priority = 40
 
         // ---------- New Job From Data ----------
-        t.comment('job: New Job from Data')
+        t.comment('job: New Job from Job Data')
         return new Job(q, jobCopy)
       }).then((newJobFromData) => {
         t.equal(newJobFromData.id, savedJob.id, 'New job from data created successfully')
         t.deepEqual(newJobFromData.q, savedJob.q, 'New job from data queue valid')
         t.equal(newJobFromData.data, savedJob.data, 'New job from data job data is valid')
-        t.equal(newJobFromData.priority, savedJob.priority, 'New job from data priority is valid')
+        t.equal(newJobFromData.priority, 'normal', 'New job from data priority is valid')
         t.equal(newJobFromData.timeout, savedJob.timeout, 'New job from data timeout is valid')
         t.equal(newJobFromData.retryDelay, savedJob.retryDelay, 'New job from data retryDelay is valid')
         t.equal(newJobFromData.retryMax, savedJob.retryMax, 'New job from data retryMax is valid')
@@ -137,6 +156,20 @@ module.exports = function () {
         t.equal(newJobFromData.dateEnable, savedJob.dateEnable, 'Clean job dateEnable is valid')
         t.equal(newJobFromData.progress, savedJob.progress, 'New job from data progress is valid')
         t.equal(newJobFromData.queueId, q.id, 'New job from data queueId is valid')
+
+        // ---------- New Jobs with Data and Options ----------
+        t.comment('job: New Job with Data and Options')
+        let custJob = new Job(q, { foo: 'bar' })
+        t.equal(custJob.foo, 'bar', 'New job with object data created successfully')
+        custJob = new Job(q, 'bar')
+        t.equal(custJob.data, 'bar', 'New job with string data created successfully')
+        custJob = new Job(q, 1234)
+        t.equal(custJob.data, 1234, 'New job with number data created successfully')
+        custJob = new Job(q, true)
+        t.ok(is.true(custJob.data), 'New job with boolean data created successfully')
+        custJob = new Job(q, { object: { foo: 'bar' }, priority: 'high' })
+        t.equal(custJob.object.foo, 'bar', 'New job with child object data created successfully')
+        t.equal(custJob.priority, 'high', 'New job with new priority created successfully')
 
         // ---------- Add Job Log ----------
         t.comment('job: Add Job Log')

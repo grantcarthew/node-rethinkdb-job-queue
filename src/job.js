@@ -39,7 +39,11 @@ class Job {
       this.dateFinished
       this.queueId = q.id
       // Conflicting job options will be overwritten.
-      Object.assign(this, jobData)
+      if (is.object(jobData)) {
+        Object.assign(this, jobData)
+      } else {
+        this.data = jobData
+      }
     }
   }
 
@@ -52,7 +56,8 @@ class Job {
   }
 
   setTimeout (newTimeout) {
-    if (is.integer(newTimeout)) {
+    if (is.integer(newTimeout) &&
+        newTimeout >= 0) {
       this.timeout = newTimeout
       return this
     }
@@ -60,7 +65,8 @@ class Job {
   }
 
   setRetryMax (newRetryMax) {
-    if (is.integer(newRetryMax)) {
+    if (is.integer(newRetryMax) &&
+        newRetryMax >= 0) {
       this.retryMax = newRetryMax
       return this
     }
@@ -68,7 +74,8 @@ class Job {
   }
 
   setRetryDelay (newRetryDelay) {
-    if (is.integer(newRetryDelay)) {
+    if (is.integer(newRetryDelay) &&
+        newRetryDelay >= 0) {
       this.retryDelay = newRetryDelay
       return this
     }

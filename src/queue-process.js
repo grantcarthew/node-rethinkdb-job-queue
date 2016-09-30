@@ -182,6 +182,8 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q.on(enums.status.progress, restartJobTimeout)
   q.on(enums.status.cancelled, (jobId) => onCancelJob(jobId, q))
 
+  // Returning a Promise so the jobTick is initiated
+  // after the dbReview process. The Promise can be ignored.
   return Promise.resolve().then(() => {
     if (q.master) { return true }
     return dbReview.runOnce(q)

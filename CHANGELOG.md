@@ -1,11 +1,11 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.4.0 / 2016-09
+## v0.4.0 / 2016-09-30
 
 *   Added `is.log` to the `is` module.
 *   Added `Job.setPriority`, `Job.setTimeout`, `Job.setRetryMax`, `Job.setRetryDelay`, `setDateEnable`.
 *   Added string, object, or log arguments to `Job.addLog`.
-*   Changed `Queue.createJob` API to support data.
+*   Changed `Queue.createJob` API to support data objects, values and options.
 
 ## v0.3.0 / 2016-09-28
 

@@ -15,6 +15,22 @@ It has been built as an alternative to using a [Redis][redis-url] backed job que
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
+## Warning: API change from v0.3.0 to v0.4.0
+
+The `Queue.createJob()` method no longer takes an option object.
+
+Please read the [createJob](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.createJob) document for more detail.
+
+To enable setting custom job options there is now a fluent API containing the following.
+
+*   [Job.setPriority](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setPriority)
+*   [Job.setTimeout](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setTimeout)
+*   [Job.setRetryMax](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setRetryMax)
+*   [Job.setRetryDelay](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setRetryDelay)
+*   [Job.setDateEnable](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setDateEnable)
+
+I am hoping this will be the last major API change before the v1.0.0 bump.
+
 ## Features
 
 *   Powered by [RethinkDB][rethinkdb-url]
