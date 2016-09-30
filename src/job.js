@@ -47,6 +47,46 @@ class Job {
     }
   }
 
+  setPriority (newPriority) {
+    if (Object.keys(enums.priority).includes(newPriority)) {
+      this.priority = newPriority
+      return this
+    }
+    throw new Error(enums.message.priorityInvalid)
+  }
+
+  setTimeout (newTimeout) {
+    if (is.integer(newTimeout)) {
+      this.timeout = newTimeout
+      return this
+    }
+    throw new Error(enums.message.timeoutIvalid)
+  }
+
+  setRetryMax (newRetryMax) {
+    if (is.integer(newRetryMax)) {
+      this.retryMax = newRetryMax
+      return this
+    }
+    throw new Error(enums.message.retryMaxIvalid)
+  }
+
+  setRetryDelay (newRetryDelay) {
+    if (is.integer(newRetryDelay)) {
+      this.retryDelay = newRetryDelay
+      return this
+    }
+    throw new Error(enums.message.retryDelayIvalid)
+  }
+
+  setDateEnable (newDateEnable) {
+    if (is.date(newDateEnable)) {
+      this.dateEnable = newDateEnable
+      return this
+    }
+    throw new Error(enums.message.dateEnableIvalid)
+  }
+
   setProgress (percent) {
     logger(`setProgress [${percent}]`)
     return this.q.ready().then(() => {
@@ -93,6 +133,17 @@ class Job {
 
   addLog (log) {
     logger('addLog', log)
+    let validLog = log
+    if (!is.log(log)) {
+      if (is.string(log)) {
+        validLog = this.createLog(log)
+      }
+      if (is.object(log)) {
+        validLog = this.createLog()
+        validLog.date = log
+      }
+    }
+
     return this.q.ready().then(() => {
       return jobAddLog(this, log)
     }).catch((err) => {

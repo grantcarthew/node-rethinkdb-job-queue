@@ -5,7 +5,7 @@ const enums = require('../src/enums')
 
 module.exports = function () {
   test('is', (t) => {
-    t.plan(57)
+    t.plan(62)
 
     const ms = 5000
     const tDate = new Date()
@@ -17,6 +17,12 @@ module.exports = function () {
       dateCreated: new Date(),
       priority: enums.priority.normal,
       status: enums.status.created
+    }
+    const log = {
+      date: new Date,
+      queueId: 'queue id string',
+      type: 'type string',
+      status: 'status string'
     }
 
     t.ok(is.object({}), 'Is object true with object')
@@ -92,5 +98,17 @@ module.exports = function () {
     t.notOk(is.dateBetween(earlyDate, tDate, laterDate), 'Is dateBetween false when before dates')
     t.notOk(is.dateBetween(laterDate, earlyDate, tDate), 'Is dateBetween false when after dates')
     t.ok(is.dateBetween(tDate, earlyDate, laterDate), 'Is dateBetween true when between dates')
+    t.ok(is.log(log), 'Is log true with mock log')
+    log.date = 'not a date'
+    t.notOk(is.log(log), 'Is log false with invalid date')
+    log.date = new Date()
+    delete log.queueId
+    t.notOk(is.log(log), 'Is log false with no queueId')
+    log.queueId = 'queue id string'
+    delete log.type
+    t.notOk(is.log(log), 'Is log false with no type')
+    log.type = 'type string'
+    delete log.status
+    t.notOk(is.log(log), 'Is log false with no status`')
   })
 }

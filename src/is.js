@@ -106,6 +106,17 @@ function isArray (value) {
 }
 module.exports.array = isArray
 
+function isLog (value) {
+  logger('isLog', value)
+  if (!value) { return false }
+  if (!isDate(value.date)) { return false }
+  if (!isString(value.queueId)) { return false }
+  if (!isString(value.type)) { return false }
+  if (!isString(value.status)) { return false }
+  return true
+}
+module.exports.log = isLog
+
 function isJob (value) {
   logger(`isJob`, value)
   if (!value) { return false }
