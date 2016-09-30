@@ -2,7 +2,6 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const is = require('./is')
-const dbResult = require('./db-result')
 
 module.exports = function addLog (job, log) {
   logger('addLog', log)
@@ -30,6 +29,6 @@ module.exports = function addLog (job, log) {
     job.log.push(validLog)
     logger(`Event: log [${job.id}]`, updateResult)
     job.q.emit(enums.status.log, job.id)
-    return dbResult.status(updateResult, enums.dbResult.replaced)
+    return true
   })
 }
