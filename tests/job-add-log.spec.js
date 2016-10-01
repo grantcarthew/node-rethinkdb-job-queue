@@ -49,7 +49,7 @@ module.exports = function () {
         t.comment('job-add-log: Add First Log')
         return jobAddLog(job, testLog)
       }).then((updateResult1) => {
-        t.equal(updateResult1, 1, 'Log 1 added to job successfully')
+        t.ok(updateResult1, 'Log 1 added to job successfully')
         return q.getJob(job.id)
       }).then((jobWithLog1) => {
         t.equal(jobWithLog1[0].log.length, 2, 'Log 1 exists on retrieved job')
@@ -66,7 +66,7 @@ module.exports = function () {
         t.comment('job-add-log: Add Second Log')
         return jobAddLog(job, testLog)
       }).then((updateResult2) => {
-        t.equal(updateResult2, 1, 'Log 2 added to job successfully')
+        t.ok(updateResult2, 'Log 2 added to job successfully')
         return q.getJob(job.id)
       }).then((jobWithLog2) => {
         t.equal(jobWithLog2[0].log.length, 3, 'Log 2 exists on retrieved job')
@@ -83,7 +83,7 @@ module.exports = function () {
         t.comment('job-add-log: Add String Log')
         return jobAddLog(job, extra)
       }).then((updateResult3) => {
-        t.equal(updateResult3, 1, 'Log 3 added to job successfully')
+        t.ok(updateResult3, 'Log 3 added to job successfully')
         return q.getJob(job.id)
       }).then((jobWithLog3) => {
         t.equal(jobWithLog3[0].log.length, 4, 'Log 3 exists on retrieved job')
@@ -100,7 +100,7 @@ module.exports = function () {
         t.comment('job-add-log: Add Object Log')
         return jobAddLog(job, logObject)
       }).then((updateResult4) => {
-        t.equal(updateResult4, 1, 'Log 4 added to job successfully')
+        t.ok(updateResult4, 'Log 4 added to job successfully')
         return q.getJob(job.id)
       }).then((jobWithLog4) => {
         t.equal(jobWithLog4[0].log.length, 5, 'Log 4 exists on retrieved job')

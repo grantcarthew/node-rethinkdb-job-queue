@@ -175,7 +175,7 @@ module.exports = function () {
         t.comment('job: Add Job Log')
         return savedJob.addLog(log)
       }).then((logAddedResult) => {
-        t.equal(logAddedResult, 1, 'Job log added successfully')
+        t.ok(logAddedResult, 'Job log added successfully')
         return q.getJob(savedJob.id)
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
