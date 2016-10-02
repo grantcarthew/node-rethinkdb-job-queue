@@ -112,9 +112,10 @@ const cxnOptions = {
 
 const q = new Queue(cxnOptions, qOptions)
 
-const job = q.createJob()
-job.numerator = 123
-job.denominator = 456
+const job = q.createJob({
+  numerator: 123,
+  denominator: 456
+})
 
 q.process((job, next) => {
     try {
