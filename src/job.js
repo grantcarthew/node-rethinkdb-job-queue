@@ -39,10 +39,13 @@ class Job {
       this.dateFinished
       this.queueId = q.id
       // Conflicting job options will be overwritten.
-      if (is.object(jobData)) {
-        Object.assign(this, jobData)
-      } else {
+      if (is.function(jobData)) {
+        throw new Error(enums.message.jobDataInvalid)
+      }
+      if (is.array(jobData) || !is.object(jobData)) {
         this.data = jobData
+      } else {
+        Object.assign(this, jobData)
       }
     }
   }

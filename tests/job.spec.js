@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(92)
+      t.plan(94)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -167,9 +167,12 @@ module.exports = function () {
         t.equal(custJob.data, 1234, 'New job with number data created successfully')
         custJob = new Job(q, true)
         t.ok(is.true(custJob.data), 'New job with boolean data created successfully')
+        custJob = new Job(q, [1, 2, 3])
+        t.ok(is.array(custJob.data), 'New job with array data created successfully')
         custJob = new Job(q, { object: { foo: 'bar' }, priority: 'high' })
         t.equal(custJob.object.foo, 'bar', 'New job with child object data created successfully')
         t.equal(custJob.priority, 'high', 'New job with new priority created successfully')
+        t.throws(() => { new Job(q, () => { }) }, 'New job with function throws error')
 
         // ---------- Add Job Log ----------
         t.comment('job: Add Job Log')

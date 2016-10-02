@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.4.1 / 2016-10
+
+*   Improved Job constructor to support arrays.
+
 ## v0.4.0 / 2016-09-30
 
 *   Added `is.log` to the `is` module.

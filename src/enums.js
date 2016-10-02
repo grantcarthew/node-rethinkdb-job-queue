@@ -87,6 +87,7 @@ const enums = module.exports = {
     cancel: 'Job cancelled by Queue process handler',
     jobNotAdded: 'Job not added to the queue',
     jobAlreadyAdded: 'Job is already in the queue',
+    jobDataInvalid: 'Job data can not be a function',
     jobInvalid: 'Job object is invalid',
     processTwice: 'Cannot call queue process twice',
     idInvalid: 'The job id is invalid',
