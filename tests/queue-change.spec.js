@@ -9,7 +9,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
-      t.plan(77)
+      t.plan(78)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -154,11 +154,11 @@ module.exports = function () {
         }
       }
       let reviewedEventCount = 0
-      let reviewedEventTotal = 0
-      function reviewedEventHandler (queueId) {
+      let reviewedEventTotal = 1
+      function reviewedEventHandler (result) {
         reviewedEventCount++
         if (testEvents) {
-          t.ok(is.string(queueId), `Event: reviewed [${reviewedEventCount} of ${reviewedEventTotal}] [${queueId}]`)
+          t.ok(is.object(result), `Event: reviewed [${reviewedEventCount} of ${reviewedEventTotal}]`)
         }
       }
       let resetEventCount = 0
