@@ -13,7 +13,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(216)
+      t.plan(217)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -26,7 +26,7 @@ module.exports = function () {
 
       let testEvents = false
       let reviewedEventCount = 0
-      const reviewedEventTotal = 2
+      const reviewedEventTotal = 3
       function reviewedEventHandler (replaceCount) {
         if (testEvents) {
           reviewedEventCount++
