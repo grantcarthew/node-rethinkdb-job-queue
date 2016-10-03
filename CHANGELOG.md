@@ -1,8 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.4.1 / 2016-10
+## v0.4.1 / 2016-10-03
 
 *   Improved Job constructor to support arrays.
+*   Fixed masterInterval option parsing.
 
 ## v0.4.0 / 2016-09-30
 

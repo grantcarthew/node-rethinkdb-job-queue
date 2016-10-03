@@ -9,7 +9,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(154)
+      t.plan(157)
 
       let q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
       let q2
@@ -279,6 +279,25 @@ module.exports = function () {
 
       return q.ready().then((ready) => {
         t.ok(ready, 'Queue ready returns true')
+
+        // ---------- masterInterval Options Tests ----------
+        t.comment('queue: masterInterval Options')
+        return q.stop()
+      }).then(() => {
+        q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: true }))
+        t.ok(is.true(q.masterInterval), 'True masterInterval is true')
+        return q.stop()
+      }).then(() => {
+        q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: false }))
+        t.ok(is.false(q.masterInterval), 'False masterInterval is false')
+        return q.stop()
+      }).then(() => {
+        q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: 12345 }))
+        t.equal(q.masterInterval, 12345, 'Number masterInterval is number')
+        return q.stop()
+      }).then(() => {
+        q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+
         return q.reset()
       }).then((totalRemoved) => {
         t.ok(is.integer(totalRemoved), 'Queue has been reset')

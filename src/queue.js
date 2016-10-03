@@ -32,8 +32,8 @@ class Queue extends EventEmitter {
     this._host = '' // Populated by 'queue-db.attach()'
     this._port = 0 // Populated by 'queue-db.attach()'
     this._db = '' // Populated by 'queue-db.attach()'
-    this._masterInterval = options.masterInterval ||
-      enums.options.masterInterval
+    this._masterInterval = options.masterInterval == null
+      ? enums.options.masterInterval : options.masterInterval
     this._jobOptions = jobOptions()
     this._changeFeedCursor = false
     this._paused = false
@@ -77,6 +77,7 @@ class Queue extends EventEmitter {
   }
 
   set concurrency (value) {
+    logger('set concurrency', value)
     if (!is.integer(value) || value < 1) {
       this.emit(enums.status.error,
         new Error(enums.message.concurrencyInvalid),
