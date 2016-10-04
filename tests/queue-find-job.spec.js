@@ -11,7 +11,7 @@ const queueFindJob = require('../src/queue-find-job')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-find-job', (t) => {
-      t.plan(11)
+      t.plan(14)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const titleText = 'Find Job Test'
@@ -30,6 +30,14 @@ module.exports = function () {
       }).then((foundJobs1) => {
         t.equal(foundJobs1[0].title, titleText, 'Found job successfully')
         t.equal(foundJobs1[0].data, tData, 'Job data is valid')
+
+        // ---------- Single Raw Find Test ----------
+        t.comment('queue-find-job: Raw Job Find')
+        return queueFindJob(q, { title: titleText }, true)
+      }).then((foundJobs2) => {
+        t.equal(foundJobs2[0].title, titleText, 'Found raw job successfully')
+        t.equal(foundJobs2[0].data, tData, 'Raw job data is valid')
+        t.notOk(foundJobs2[0].q, 'Raw result does not have a q property')
 
         // ---------- Multiple Job Find Test ----------
         t.comment('queue-find-job: Multiple Job Find')
