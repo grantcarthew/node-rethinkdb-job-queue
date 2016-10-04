@@ -51,16 +51,16 @@
     "bluebird": "^3.4.6",
     "debug": "^2.2.0",
     "rethinkdbdash": "^2.3.23",
-    "uuid": "^2.0.2"
+    "uuid": "^2.0.3"
   },
   "devDependencies": {
-    "babel-cli": "^6.14.0",
-    "babel-eslint": "^6.1.2",
-    "babel-preset-es2015": "^6.14.0",
-    "npm-check-updates": "^2.8.0",
+    "babel-cli": "^6.16.0",
+    "babel-eslint": "^7.0.0",
+    "babel-preset-es2015": "^6.16.0",
+    "npm-check-updates": "^2.8.2",
     "proxyquire": "^1.7.10",
-    "standard": "^8.1.0",
+    "standard": "^8.3.0",
     "tap-spec": "^4.1.1",
-    "tape": "^4.6.0"
+    "tape": "^4.6.2"
   }
 }
