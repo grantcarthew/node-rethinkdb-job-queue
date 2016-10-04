@@ -4,6 +4,7 @@ const dbName = module.exports.dbName = 'rjqJobQueueTests'
 const queueName = module.exports.queueName = 'rjqJobQueueTestJobs'
 
 module.exports.tData = 'The quick brown fox jumped over the lazy dog'
+module.exports.lData = { one_key: 'The quick brown fox jumped over the lazy dog', some_other_key: 0.2 }
 
 module.exports.cxn = function () {
   return {
