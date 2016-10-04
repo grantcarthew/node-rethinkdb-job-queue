@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.4.2 / 2016-10-04
+
+*   Added `Queue.findJob` raw option and tests.
+*   `db-review` now changes state document state value to `reviewed`.
+
 ## v0.4.1 / 2016-10-03
 
 *   Improved Job constructor to support arrays.

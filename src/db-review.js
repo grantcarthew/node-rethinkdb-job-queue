@@ -3,6 +3,7 @@ const Promise = require('bluebird')
 const datetime = require('./datetime')
 const dbResult = require('./db-result')
 const queueProcess = require('./queue-process')
+const queueState = require('./queue-state')
 const enums = require('./enums')
 
 let dbReviewIntervalId = false
@@ -82,7 +83,12 @@ function runReviewTasks (q) {
     logger(`Event: reviewed`, runReviewTasksResult)
     q.emit(enums.status.reviewed, runReviewTasksResult)
     queueProcess.restart(q)
-    return runReviewTasksResult
+    return Promise.props({
+      queueStateChange: queueState(q, enums.status.reviewed),
+      reviewResult: runReviewTasksResult
+    })
+  }).then((stateChangeAndReviewResult) => {
+    return stateChangeAndReviewResult.reviewResult
   })
 }
 

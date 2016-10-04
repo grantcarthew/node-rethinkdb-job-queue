@@ -16,7 +16,7 @@ const dbReview = proxyquire('../src/db-review',
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(54)
+      t.plan(55)
 
       let processRestart = 0
       processStub.restart = function (q) {
@@ -159,6 +159,9 @@ module.exports = function () {
         return dbReview.enable(q)
       }).delay(1500).then(() => {
         t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
+        return q.findJob({ state: enums.status.reviewed }, true)
+      }).then((stateDoc) => {
+        t.equal(stateDoc[0].state, enums.status.reviewed, 'State document is at reviewed state')
 
         //  ---------- disable Tests ----------
         t.comment('db-review: disable')

@@ -115,10 +115,10 @@ class Queue extends EventEmitter {
     })
   }
 
-  findJob (predicate) {
+  findJob (predicate, raw) {
     logger('findJob', predicate)
     return this.ready().then(() => {
-      return queueFindJob(this, predicate)
+      return queueFindJob(this, predicate, raw)
     }).catch((err) => {
       logger('findJob Error:', err)
       this.emit(enums.status.error, err)
