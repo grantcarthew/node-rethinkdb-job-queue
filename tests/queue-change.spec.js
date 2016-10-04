@@ -4,19 +4,21 @@ const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')
 const Queue = require('../src/queue')
+const dbReview = require('../src/db-review')
 const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
-      t.plan(78)
+      t.plan(83)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
+      const qPub = new Queue(tOpts.cxn(), tOpts.default())
 
       // ---------- Event Handler Setup ----------
       let testEvents = false
       let readyEventCount = 0
-      let readyEventTotal = 0
+      let readyEventTotal = 1
       function readyEventHandler (queueId) {
         readyEventCount++
         if (testEvents) {
@@ -106,7 +108,7 @@ module.exports = function () {
         }
       }
       let pausingEventCount = 0
-      let pausingEventTotal = 2
+      let pausingEventTotal = 3
       function pausingEventHandler (global, queueId) {
         pausingEventCount++
         if (testEvents) {
@@ -116,7 +118,7 @@ module.exports = function () {
         }
       }
       let pausedEventCount = 0
-      let pausedEventTotal = 2
+      let pausedEventTotal = 3
       function pausedEventHandler (global, queueId) {
         pausedEventCount++
         if (testEvents) {
@@ -162,7 +164,7 @@ module.exports = function () {
         }
       }
       let resetEventCount = 0
-      let resetEventTotal = 1
+      let resetEventTotal = 0
       function resetEventHandler (total) {
         resetEventCount++
         if (testEvents) {
@@ -264,10 +266,12 @@ module.exports = function () {
         return q.resume()
       }
 
-      let job = q.createJob()
+      let job = qPub.createJob()
       let processDelay = 500
 
-      return q.reset().then((resetResult) => {
+      addEventHandlers()
+
+      return qPub.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.pause()
       }).then(() => {
@@ -281,9 +285,8 @@ module.exports = function () {
 
         // ---------- Test added, active, progress completed, removed  ----------
         t.comment('queue-change: added, active, progress, completed, and removed change events')
-        addEventHandlers()
       }).then(() => {
-        return q.addJob(job)
+        return qPub.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return q.resume()
@@ -295,14 +298,22 @@ module.exports = function () {
         // t.ok(q.paused, 'Queue paused')
         return q.removeJob(job.id)
       }).delay(processDelay).then(() => {
-        job = q.createJob()
+        job = qPub.createJob()
         job.timeout = processDelay / 2000
         job.retryDelay = 0
         job.retryMax = 1
 
+
+        return dbReview.runOnce(qPub)
+      }).then(() => {
+        return dbReview.runOnce(qPub)
+      }).then(() => {
+        return dbReview.runOnce(qPub)
+      }).then(() => {
+
         // ---------- Test failed and terminated ----------
         t.comment('queue-change: failed and terminated change events')
-        return q.addJob(job)
+        return qPub.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return q.resume()
@@ -311,24 +322,21 @@ module.exports = function () {
       }).delay(processDelay * 2).then(() => {
         return q.pause()
       }).delay(processDelay).then(() => {
-        job = q.createJob()
+        job = qPub.createJob()
 
         // ---------- Test log and cancelled ----------
         t.comment('queue-change: log and cancelled change events')
-        return q.addJob(job)
+        return qPub.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
         return savedJob[0].addLog(savedJob[0].createLog('test log'))
       }).then(() => {
-        return q.cancelJob(job.id, 'testing')
+        return qPub.cancelJob(job.id, 'testing')
       }).delay(processDelay).then(() => {
-        return q.reset()
-      }).then((resetResult) => {
-        t.ok(resetResult >= 0, 'Queue reset')
         removeEventHandlers()
 
         // ---------- Event summary Test ----------
-        t.comment('queue: Event Summary')
+        t.comment('queue-change: Event Summary')
         t.equal(readyEventCount, readyEventTotal, 'Ready event count valid')
         t.equal(addedEventCount, addedEventTotal, 'Added event count valid')
         t.equal(activeEventCount, activeEventTotal, 'Active event count valid')
@@ -353,7 +361,10 @@ module.exports = function () {
         t.equal(stoppedEventCount, stoppedEventTotal, 'Stopped event count valid')
         t.equal(droppedEventCount, droppedEventTotal, 'Dropped event count valid')
 
+        return q.reset()
+      }).then((resetResult) => {
         q.stop()
+        qPub.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
     })

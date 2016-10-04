@@ -18,6 +18,13 @@ const queueInterruption = require('./queue-interruption')
 // removed
 // log
 
+function restartProcessing (q) {
+  logger('restartProcessing')
+  setTimeout(function randomRestart () {
+    queueProcess.restart(q)
+  }, Math.floor(Math.random() * 1000))
+}
+
 module.exports = function queueChange (q, err, change = {}) {
   logger('queueChange', change)
 
@@ -61,6 +68,13 @@ module.exports = function queueChange (q, err, change = {}) {
         logger('Global queue state active')
         return queueInterruption.resume(q, enums.state.global)
       }
+      if (newVal.state === enums.status.reviewed) {
+        logger('Global queue state reviewed')
+        if (q.running < q.concurrency) {
+          return restartProcessing(q)
+        }
+        return enums.status.reviewed
+      }
     }
     q.emit(enums.status.error, new Error(enums.message.globalStateError))
     return enums.status.error
@@ -71,9 +85,7 @@ module.exports = function queueChange (q, err, change = {}) {
       !is.job(oldVal)) {
     logger(`Event: added [${newVal.id}]`)
     q.emit(enums.status.added, newVal.id)
-    setTimeout(function randomRestart () {
-      queueProcess.restart(q)
-    }, Math.floor(Math.random() * 1000))
+    restartProcessing(q)
     return enums.status.added
   }
 

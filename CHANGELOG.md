@@ -4,6 +4,7 @@
 
 *   Added `Queue.findJob` raw option and tests.
 *   `db-review` now changes state document state value to `reviewed`.
+*   `queue-change` restarts processing on state document `reviewed` state.
 
 ## v0.4.1 / 2016-10-03
 
