@@ -10,7 +10,7 @@ const rethinkdbdash = require('rethinkdbdash')
 
 module.exports = function () {
   const mockQueue = {
-    r: rethinkdbdash(tOpts.cxn()),
+    r: rethinkdbdash(Object.assign(tOpts.cxn(), { silent: true })),
     db: tOpts.dbName,
     name: tOpts.queueName,
     id: 'mock:queue:id'
