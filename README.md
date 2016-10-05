@@ -1,7 +1,7 @@
 # Introduction
 
 `rethinkdb-job-queue` is a persistent job or task queue backed by [RethinkDB][rethinkdb-url].
-It has been built as an alternative to using a [Redis][redis-url] backed job queue such as [Kue][kue-url], [Bull][bull-url], or [Bee-Queue][bee-queue-url].
+It has been built as an alternative to the many queues available on [NPM][npm-search-url].
 
 [![bitHound Overall Score][bithound-overall-image]][bithound-overall-url]
 [![bitHound Dependencies][bithound-dep-image]][bithound-dep-url]
@@ -14,22 +14,6 @@ It has been built as an alternative to using a [Redis][redis-url] backed job que
 [![NPM][nodei-npm-image]][nodei-npm-url]
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
-
-## Warning: API change from v0.3.0 to v0.4.0
-
-The `Queue.createJob()` method no longer takes an option object.
-
-Please read the [createJob](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.createJob) document for more detail.
-
-To enable setting custom job options there is now a fluent API containing the following.
-
-*   [Job.setPriority](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setPriority)
-*   [Job.setTimeout](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setTimeout)
-*   [Job.setRetryMax](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setRetryMax)
-*   [Job.setRetryDelay](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setRetryDelay)
-*   [Job.setDateEnable](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setDateEnable)
-
-I am hoping this will be the last major API change before the v1.0.0 bump.
 
 ## Features
 
@@ -81,7 +65,6 @@ For full documentation [please see the wiki][rjq-wiki-url]
 
 *   This `rethinkdb-job-queue` module is fully functional.
 *   There are over 1300 integration tests.
-*   This project is complete and needs to be taken out for a spin.
 *   In a few months I will bump the version up to 1.0.0 to support [SemVer](http://semver.org/).
 *   Please provide feedback or raise issues prior to the version bump.
 
@@ -239,10 +222,7 @@ This list could go on...
 
 MIT
 
-[redis-url]: http://redis.io/
-[kue-url]: http://automattic.github.io/kue/
-[bull-url]: https://github.com/OptimalBits/bull
-[bee-queue-url]: https://github.com/LewisJEllis/bee-queue
+[npm-search-url]: https://npms.io/search?q=job+queue
 [rethinkdb-url]: http://www.rethinkdb.com/
 [rethinkdbdash-url]: https://github.com/neumino/rethinkdbdash
 [neumino-url]: https://github.com/neumino
