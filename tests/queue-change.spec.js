@@ -10,7 +10,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-change', (t) => {
-      t.plan(83)
+      t.plan(84)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const qPub = new Queue(tOpts.cxn(), tOpts.default())
@@ -156,7 +156,7 @@ module.exports = function () {
         }
       }
       let reviewedEventCount = 0
-      let reviewedEventTotal = 1
+      let reviewedEventTotal = 2
       function reviewedEventHandler (result) {
         reviewedEventCount++
         if (testEvents) {
@@ -295,24 +295,21 @@ module.exports = function () {
       }).delay(processDelay).then(() => {
         return q.pause()
       }).delay(processDelay).then(() => {
-        // t.ok(q.paused, 'Queue paused')
         return q.removeJob(job.id)
       }).delay(processDelay).then(() => {
+        //
+        // ---------- Test global review  ----------
+        t.comment('queue-change: global review')
+        // The following will raise a 'reviewed' event.
+        return dbReview.runOnce(qPub)
+      }).then(() => {
+        //
+        // ---------- Test failed and terminated ----------
+        t.comment('queue-change: failed and terminated change events')
         job = qPub.createJob()
         job.timeout = processDelay / 2000
         job.retryDelay = 0
         job.retryMax = 1
-
-
-        return dbReview.runOnce(qPub)
-      }).then(() => {
-        return dbReview.runOnce(qPub)
-      }).then(() => {
-        return dbReview.runOnce(qPub)
-      }).then(() => {
-
-        // ---------- Test failed and terminated ----------
-        t.comment('queue-change: failed and terminated change events')
         return qPub.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
@@ -363,8 +360,11 @@ module.exports = function () {
 
         return q.reset()
       }).then((resetResult) => {
-        q.stop()
-        qPub.stop()
+        return Promise.all([
+          q.stop(),
+          qPub.stop()
+        ])
+      }).then(() => {
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
     })

@@ -70,6 +70,12 @@ module.exports = function queueChange (q, err, change = {}) {
       }
       if (newVal.state === enums.status.reviewed) {
         logger('Global queue state reviewed')
+        logger(`Event: reviewed [local: false]`)
+        q.emit(enums.status.reviewed, {
+          local: false,
+          reviewed: null,
+          removed: null
+        })
         if (q.running < q.concurrency) {
           return restartProcessing(q)
         }
