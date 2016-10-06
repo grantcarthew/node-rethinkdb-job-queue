@@ -109,7 +109,7 @@ module.exports = function () {
         t.equal(jobWithLog4[0].log[4].type, enums.log.information, 'Log 4 type is information')
         t.equal(jobWithLog4[0].log[4].status, enums.status.waiting, 'Log 4 status is added')
         t.ok(jobWithLog4[0].log[4].retryCount >= 0, 'Log retryCount is valid')
-        t.notEqual(jobWithLog4[0].log[4].message, tData, 'Log 4 message is valid')
+        t.equal(jobWithLog4[0].log[4].message, enums.message.seeLogData, 'Log 4 message is valid')
         t.notEqual(jobWithLog4[0].log[4].detail, tData, 'Log 4 detail is valid')
         t.notEqual(jobWithLog4[0].log[4].extra, extra, 'Log 4 extra is valid')
         t.equal(jobWithLog4[0].log[4].data.foo, 'bar', 'Log 4 data object is valid')

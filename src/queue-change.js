@@ -8,6 +8,7 @@ const queueInterruption = require('./queue-interruption')
 // Following is the list of supported change feed events;
 // paused - Global event
 // resumed - Global event
+// reviewed - Global event
 // added
 // active
 // progress

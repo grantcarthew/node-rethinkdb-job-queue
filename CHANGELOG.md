@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.4.3 / 2016
+
+*   Added default log message when data added. 
+
 ## v0.4.2 / 2016-10-05
 
 *   Added `Queue.findJob` raw option and tests.

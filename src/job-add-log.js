@@ -11,7 +11,7 @@ module.exports = function addLog (job, log) {
       validLog = job.createLog(log)
     }
     if (is.object(log)) {
-      validLog = job.createLog()
+      validLog = job.createLog(enums.message.seeLogData)
       validLog.data = log
     }
   }
