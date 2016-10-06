@@ -286,18 +286,26 @@ module.exports = function () {
       }).then(() => {
         q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: true }))
         t.ok(is.true(q.masterInterval), 'True masterInterval is true')
+        return q.ready()
+      }).then(() => {
         return q.stop()
       }).then(() => {
         q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: false }))
         t.ok(is.false(q.masterInterval), 'False masterInterval is false')
+        return q.ready()
+      }).then(() => {
         return q.stop()
       }).then(() => {
         q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: 12345 }))
         t.equal(q.masterInterval, 12345, 'Number masterInterval is number')
+        return q.ready()
+      }).then(() => {
         return q.stop()
       }).then(() => {
         q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
 
+        return q.ready()
+      }).then(() => {
         return q.reset()
       }).then((totalRemoved) => {
         t.ok(is.integer(totalRemoved), 'Queue has been reset')
@@ -522,7 +530,12 @@ module.exports = function () {
         t.equal(jobCheck[0].status, enums.status.completed, 'Job is completed')
 
         removeEventHandlers()
-
+        return Promise.all([
+          q.stop(),
+          q2.stop()
+        ])
+      }).then(() => {
+        //
         // ---------- Event summary Test ----------
         t.comment('queue: Event Summary')
         t.equal(readyEventCount, readyEventTotal, 'Ready event count valid')
@@ -549,8 +562,6 @@ module.exports = function () {
         t.equal(stoppedEventCount, stoppedEventTotal, 'Stopped event count valid')
         t.equal(droppedEventCount, droppedEventTotal, 'Dropped event count valid')
 
-        q.stop()
-        q2.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
     })

@@ -4,6 +4,7 @@
 
 *   Added default log message when data added.
 *   Fixed multiple Queue Masters in the same Node.js process.
+*   Fixed `queue-summary` query picking up the `State Document`.
 
 ## v0.4.2 / 2016-10-05
 
