@@ -5,6 +5,7 @@ module.exports = function summary (q) {
   logger('summary')
   return Promise.resolve().then(() => {
     return q.r.db(q.db).table(q.name)
+    .hasFields('status')
     .group((job) => {
       return job.pluck('status')
     }).count()
