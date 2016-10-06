@@ -125,16 +125,24 @@ class Job {
     return jobCopy
   }
 
-  createLog (message, type = enums.log.information, status = this.status) {
-    logger(`createLog [${message}] [${type}] [${status}]`)
-    return {
+  createLog (data, type = enums.log.information, status = this.status) {
+    logger(`createLog [${data}] [${type}] [${status}]`)
+    const newLog ={
       date: new Date(),
       queueId: this.q.id,
       type: type,
       status: status,
       retryCount: this.retryCount,
-      message: message
+      message: null
     }
+    if(is.string(data)){
+      newLog.message = data
+    }
+    if(is.object(data)){
+      newLog.data = data
+      newLog.message = enums.message.seeLogData
+    }
+    return newLog
   }
 
   addLog (log) {
