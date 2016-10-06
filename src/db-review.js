@@ -5,8 +5,7 @@ const dbResult = require('./db-result')
 const queueProcess = require('./queue-process')
 const queueState = require('./queue-state')
 const enums = require('./enums')
-
-let dbReviewIntervalId = false
+const dbReviewIntervalList = new Map()
 
 function updateFailedJobs (q) {
   logger('updateFailedJobs: ' + datetime.format(new Date()))
@@ -95,20 +94,20 @@ function runReviewTasks (q) {
 
 module.exports.enable = function enable (q) {
   logger('enable', q.masterInterval)
-  if (!dbReviewIntervalId) {
+  if (!dbReviewIntervalList.has(q.id)) {
     const interval = q.masterInterval
-    dbReviewIntervalId = setInterval(() => {
+    dbReviewIntervalList.set(q.id, setInterval(() => {
       return runReviewTasks(q)
-    }, interval)
+    }, interval))
   }
   return true
 }
 
 module.exports.disable = function disable (q) {
-  logger('disable', dbReviewIntervalId)
-  if (dbReviewIntervalId) {
-    clearInterval(dbReviewIntervalId)
-    dbReviewIntervalId = false
+  logger('disable', q.id)
+  if (dbReviewIntervalList.has(q.id)) {
+    clearInterval(dbReviewIntervalList.get(q.id))
+    dbReviewIntervalList.delete(q.id)
   }
   return true
 }
@@ -118,7 +117,7 @@ module.exports.runOnce = function run (q) {
   return runReviewTasks(q)
 }
 
-module.exports.isEnabled = function reviewIsEnabled () {
-  logger('isEnabled', dbReviewIntervalId)
-  return !!dbReviewIntervalId
+module.exports.isEnabled = function reviewIsEnabled (q) {
+  logger('isEnabled', q.id)
+  return dbReviewIntervalList.has(q.id)
 }

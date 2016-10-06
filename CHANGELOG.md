@@ -2,7 +2,8 @@
 
 ## v0.4.3 / 2016
 
-*   Added default log message when data added. 
+*   Added default log message when data added.
+*   Fixed multiple Queue Masters in the same Node.js process.
 
 ## v0.4.2 / 2016-10-05
 

@@ -55,7 +55,7 @@ module.exports = function () {
         return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
-        t.ok(dbReview.isEnabled(), 'Review is enabled')
+        t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         addEventHandlers()
@@ -66,7 +66,7 @@ module.exports = function () {
         return queueStop(q, true)
       }).then((stopped) => {
         t.ok(stopped, 'Queue stopped with pool drain')
-        t.notOk(dbReview.isEnabled(), 'Review is disabled')
+        t.notOk(dbReview.isEnabled(q), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
         return q.ready()
@@ -82,14 +82,14 @@ module.exports = function () {
         t.ok(ready, 'Queue in a ready state')
         return q.resume()
       }).then(() => {
-        t.ok(dbReview.isEnabled(), 'Review is enabled')
+        t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         simulateJobProcessing()
         return queueStop(q, false)
       }).then((stopped2) => {
         t.ok(stopped2, 'Queue stopped without pool drain')
-        t.notOk(dbReview.isEnabled(), 'Review is disabled')
+        t.notOk(dbReview.isEnabled(q), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
         t.ok(q.paused, 'Queue is paused')
         return q.ready()
@@ -105,7 +105,7 @@ module.exports = function () {
         t.ok(ready, 'Queue in a ready state')
         return q.resume()
       }).then(() => {
-        t.ok(dbReview.isEnabled(), 'Review is enabled')
+        t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
 

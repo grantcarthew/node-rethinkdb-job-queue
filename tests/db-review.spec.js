@@ -158,7 +158,7 @@ module.exports = function () {
         t.comment('db-review: enable')
         return dbReview.enable(q)
       }).delay(1500).then(() => {
-        t.ok(dbReview.isEnabled(), 'Review isEnabled reports true')
+        t.ok(dbReview.isEnabled(q), 'Review isEnabled reports true')
         return q.findJob({ state: enums.status.reviewed }, true)
       }).then((stateDoc) => {
         t.equal(stateDoc[0].state, enums.status.reviewed, 'State document is at reviewed state')
@@ -166,7 +166,7 @@ module.exports = function () {
         //  ---------- disable Tests ----------
         t.comment('db-review: disable')
         dbReview.disable(q)
-        t.notOk(dbReview.isEnabled(), 'Review isEnabled reports false')
+        t.notOk(dbReview.isEnabled(q), 'Review isEnabled reports false')
 
         removeEventHandlers()
         return q.reset()
