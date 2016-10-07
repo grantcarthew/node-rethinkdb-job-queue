@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-failed', (t) => {
-      t.plan(84)
+      t.plan(88)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -72,6 +72,7 @@ module.exports = function () {
         t.equal(retry1[0].progress, 0, 'Job progress is 0')
         t.equal(retry1[0].queueId, q.id, 'Job queueId is valid')
         t.ok(is.date(retry1[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(retry1[0].dateEnable), 'Job dateEnable is a date')
         t.equal(retry1[0].log.length, 2, 'Job has 1 log entry')
         t.ok(is.date(retry1[0].log[1].date), 'Log date is a date')
         t.equal(retry1[0].log[1].queueId, q.id, 'Log queueId is valid')
@@ -96,6 +97,7 @@ module.exports = function () {
         t.equal(retry2[0].progress, 0, 'Job progress is 0')
         t.equal(retry2[0].queueId, q.id, 'Job queueId is valid')
         t.ok(is.date(retry2[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(retry2[0].dateEnable), 'Job dateEnable is a date')
         t.equal(retry2[0].log.length, 3, 'Job has 2 log entries')
         t.ok(is.date(retry2[0].log[2].date), 'Log date is a date')
         t.equal(retry2[0].log[2].queueId, q.id, 'Log queueId is valid')
@@ -121,6 +123,7 @@ module.exports = function () {
         t.equal(retry3[0].progress, 0, 'Job progress is 0')
         t.equal(retry3[0].queueId, q.id, 'Job queueId is valid')
         t.ok(is.date(retry3[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(retry3[0].dateEnable), 'Job dateEnable is a date')
         t.equal(retry3[0].log.length, 4, 'Job has 3 log entries')
         t.ok(is.date(retry3[0].log[3].date), 'Log date is a date')
         t.equal(retry3[0].log[3].queueId, q.id, 'Log queueId is valid')
@@ -146,6 +149,7 @@ module.exports = function () {
         t.equal(failed[0].progress, 0, 'Job progress is 0')
         t.equal(failed[0].queueId, q.id, 'Job queueId is valid')
         t.ok(is.date(failed[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(failed[0].dateEnable), 'Job dateEnable is a date')
         t.equal(failed[0].log.length, 5, 'Job has 4 log entries')
         t.ok(is.date(failed[0].log[4].date), 'Log date is a date')
         t.equal(failed[0].log[4].queueId, q.id, 'Log queueId is valid')

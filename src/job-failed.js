@@ -38,6 +38,8 @@ module.exports = function failed (job, err) {
       retryCount: job.retryCount,
       progress: job.progress,
       dateFinished: job.dateFinished,
+      dateEnable: job.q.r.now()
+        .add(job.q.r.row('retryDelay').div(1000).mul(job.q.r.row('retryCount'))),
       log: job.q.r.row('log').append(log),
       queueId: job.q.id
     }, {returnChanges: true})

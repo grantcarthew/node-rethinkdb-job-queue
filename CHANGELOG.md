@@ -1,5 +1,9 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.4.4 / 2016-10-07
+
+*   Fixed `dateEnable` value when job failed is called.
+
 ## v0.4.3 / 2016-10-07
 
 *   Added default log message when data added.
