@@ -225,7 +225,7 @@ module.exports = function () {
         t.ok(updateResult, 'Job update returned true')
         return q.getJob(savedJob.id)
       }).then((jobsFromDb) => {
-        const lastLogData = jobsFromDb[0].log[jobsFromDb[0].log.length - 1];
+        const lastLogData = jobsFromDb[0].log[jobsFromDb[0].log.length - 1]
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
         t.equal(jobsFromDb[0].timeout, newTimeout, 'Job new timeout valid')
         t.equal(lastLogData.message, enums.message.seeLogData, 'Job log message property valid')

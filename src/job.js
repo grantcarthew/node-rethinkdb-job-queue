@@ -127,7 +127,7 @@ class Job {
 
   createLog (data, type = enums.log.information, status = this.status) {
     logger(`createLog [${data}] [${type}] [${status}]`)
-    const newLog ={
+    const newLog = {
       date: new Date(),
       queueId: this.q.id,
       type: type,
@@ -135,10 +135,10 @@ class Job {
       retryCount: this.retryCount,
       message: null
     }
-    if(is.string(data)){
+    if (is.string(data)) {
       newLog.message = data
     }
-    if(is.object(data)){
+    if (is.object(data)) {
       newLog.data = data
       newLog.message = enums.message.seeLogData
     }

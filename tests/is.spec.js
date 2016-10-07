@@ -19,7 +19,7 @@ module.exports = function () {
       status: enums.status.created
     }
     const log = {
-      date: new Date,
+      date: new Date(),
       queueId: 'queue id string',
       type: 'type string',
       status: 'status string'

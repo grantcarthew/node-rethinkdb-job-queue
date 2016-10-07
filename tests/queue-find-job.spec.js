@@ -1,7 +1,5 @@
 const test = require('tape')
 const Promise = require('bluebird')
-const enums = require('../src/enums')
-const is = require('../src/is')
 const tError = require('./test-error')
 const tData = require('./test-options').tData
 const tOpts = require('./test-options')

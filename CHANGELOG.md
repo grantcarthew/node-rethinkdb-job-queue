@@ -1,10 +1,11 @@
 # `rethinkdb-job-queue` Change log
 
-## v0.4.3 / 2016
+## v0.4.3 / 2016-10-07
 
 *   Added default log message when data added.
 *   Fixed multiple Queue Masters in the same Node.js process.
 *   Fixed `queue-summary` query picking up the `State Document`.
+*   Fixed `Queue.id` to include database name.
 
 ## v0.4.2 / 2016-10-05
 

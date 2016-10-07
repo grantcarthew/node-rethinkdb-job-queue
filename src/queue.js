@@ -1,6 +1,5 @@
 const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
-const uuid = require('uuid')
 const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
@@ -28,10 +27,16 @@ class Queue extends EventEmitter {
 
     options = options || {}
     this._name = options.name || enums.options.name
+
+    // The following properties are Populated
+    // by the queueDb.attach(this, cxn) call below.
     this._r = false
-    this._host = '' // Populated by 'queue-db.attach()'
-    this._port = 0 // Populated by 'queue-db.attach()'
-    this._db = '' // Populated by 'queue-db.attach()'
+    this._host = ''
+    this._port = 0
+    this._db = ''
+    this._id = ''
+    this._ready = false
+
     this._masterInterval = options.masterInterval == null
       ? enums.options.masterInterval : options.masterInterval
     this._jobOptions = jobOptions()
@@ -45,13 +50,6 @@ class Queue extends EventEmitter {
     this._removeFinishedJobs = options.removeFinishedJobs == null
       ? enums.options.removeFinishedJobs : options.removeFinishedJobs
     this._handler = false
-    this._id = [
-      require('os').hostname(),
-      this.db,
-      this.name,
-      process.pid,
-      uuid.v4()
-    ].join(':')
     queueDb.attach(this, cxn)
   }
 

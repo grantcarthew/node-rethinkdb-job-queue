@@ -1,6 +1,8 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
+const uuid = require('uuid')
+const hostname = require('os').hostname()
 const dbAssert = require('./db-assert')
 const dbReview = require('./db-review')
 const queueChange = require('./queue-change')
@@ -12,6 +14,13 @@ module.exports.attach = function dbAttach (q, cxn) {
   q._host = q.r._poolMaster._options.host
   q._port = q.r._poolMaster._options.port
   q._db = q.r._poolMaster._options.db
+  q._id = [
+    hostname,
+    q._db,
+    q.name,
+    process.pid,
+    uuid.v4()
+  ].join(':')
   q._ready = dbAssert(q).then(() => {
     if (q.changeFeed) {
       return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
