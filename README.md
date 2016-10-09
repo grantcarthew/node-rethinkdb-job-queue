@@ -15,6 +15,19 @@ It has been built as an alternative to the many queues available on [NPM][npm-se
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
+## Warning - API Change in v0.5.0
+
+*   `Job.createLog` method has been removed from Job objects.
+*   `Job.addLog` signature change.
+*   `Job.update` signature change.
+
+Non-breaking changes:
+
+*   New dependency no [serialize-error](https://www.npmjs.com/package/serialize-error)
+*   `next(error)` now stringifies the error to `Job.log[].data`. Still adds error message and stack to `Job.log[].errorMessage` and `Job.log[].errorStack`.
+
+See the [documentation][rjq-wiki-url] for more detail.
+
 ## Features
 
 *   Powered by [RethinkDB][rethinkdb-url]

@@ -326,7 +326,7 @@ module.exports = function () {
         return qPub.addJob(job)
       }).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        return savedJob[0].addLog(savedJob[0].createLog('test log'))
+        return savedJob[0].addLog(null, 'test log')
       }).then(() => {
         return qPub.cancelJob(job.id, 'testing')
       }).delay(processDelay).then(() => {

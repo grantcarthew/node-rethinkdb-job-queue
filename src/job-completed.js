@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
+const jobAddLog = require('./job-add-log')
 const dbResult = require('./db-result')
 
 module.exports = function completed (job, result) {
@@ -12,10 +13,8 @@ module.exports = function completed (job, result) {
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
-  const log = job.createLog(enums.message.completed)
+  const log = jobAddLog.createLogObject(job, result, enums.message.completed)
   log.duration = duration
-  log.data = result
-  log.retryCount = job.retryCount
 
   return Promise.resolve().then(() => {
     return job.q.r.db(job.q.db).table(job.q.name)

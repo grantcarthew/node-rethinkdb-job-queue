@@ -104,10 +104,13 @@ class Job {
     })
   }
 
-  update (message) {
+  update (data = {},
+          message = enums.message.seeLogData,
+          type = enums.log.information,
+          status = this.status) {
     logger(`update [${message}]`)
     return this.q.ready().then(() => {
-      return jobUpdate(this, message)
+      return jobUpdate(this, data, message, type, status)
     }).catch((err) => {
       logger('update Error:', err)
       this.q.emit(enums.status.error, err)
@@ -125,30 +128,13 @@ class Job {
     return jobCopy
   }
 
-  createLog (data, type = enums.log.information, status = this.status) {
-    logger(`createLog [${data}] [${type}] [${status}]`)
-    const newLog = {
-      date: new Date(),
-      queueId: this.q.id,
-      type: type,
-      status: status,
-      retryCount: this.retryCount,
-      message: null
-    }
-    if (is.string(data)) {
-      newLog.message = data
-    }
-    if (is.object(data)) {
-      newLog.data = data
-      newLog.message = enums.message.seeLogData
-    }
-    return newLog
-  }
-
-  addLog (log) {
-    logger('addLog', log)
+  addLog (data = {},
+          message = enums.message.seeLogData,
+          type = enums.log.information,
+          status = this.status) {
+    logger('addLog', data, message, type, status)
     return this.q.ready().then(() => {
-      return jobAddLog(this, log)
+      return jobAddLog.commitLog(this, data, message, type, status)
     }).catch((err) => {
       logger('addLog Error:', err)
       this.q.emit(enums.status.error, err)

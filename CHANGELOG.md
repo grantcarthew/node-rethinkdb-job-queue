@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+*   Removed `Job.createLog` method.
+*   Changed `Job.addLog` signature.
+*   Changed `Job.update` signature.
+*   `next(error)` stringifies error to `Job.log[].data`.
+
 ## v0.4.4 / 2016-10-07
 
 *   Fixed `dateEnable` value when job failed is called.

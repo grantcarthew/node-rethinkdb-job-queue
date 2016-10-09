@@ -3,6 +3,7 @@ const Promise = require('bluebird')
 const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')
+const jobAddLog = require('../src/job-add-log')
 const Job = require('../src/job')
 const tData = require('./test-options').tData
 const lData = require('./test-options').lData
@@ -12,7 +13,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(101)
+      t.plan(93)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -66,7 +67,7 @@ module.exports = function () {
       t.ok(is.uuid(newJob.id), 'New job has valid id')
       t.equal(newJob.data, tData, 'New job data is valid')
       t.equal(newJob.priority, 'normal', 'New job priority is normal')
-      t.equal(newJob.status, 'created', 'New job status is created')
+      t.equal(newJob.status, enums.status.created, 'New job status is created')
       t.equal(newJob.timeout, enums.options.timeout, 'New job timeout is valid')
       t.equal(newJob.retryMax, enums.options.retryMax, 'New job retryMax is valid')
       t.equal(newJob.retryDelay, enums.options.retryDelay, 'New job retryDelay is valid')
@@ -117,19 +118,6 @@ module.exports = function () {
       cleanJob = newJob.getCleanCopy(true)
       t.equal(cleanJob.priority, newJob.priority, 'Clean job priorityAsString priority is normal')
 
-      // ---------- Create Log Tests ----------
-      t.comment('job: Create Log')
-      let log = newJob.createLog(tData)
-      log.data = tData
-      t.equal(typeof log, 'object', 'Job createLog returns a log object')
-      t.ok(is.date(log.date), 'Log date is a date')
-      t.equal(log.queueId, q.id, 'Log queueId is valid')
-      t.equal(log.type, enums.log.information, 'Log type is information')
-      t.equal(log.status, enums.status.created, 'Log status is created')
-      t.ok(log.retryCount >= 0, 'Log retryCount is valid')
-      t.equal(log.message, tData, 'Log message is valid')
-      t.equal(log.data, tData, 'Log data is valid')
-
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(newJob)
@@ -177,7 +165,7 @@ module.exports = function () {
 
         // ---------- Add Job Log ----------
         t.comment('job: Add Job Log')
-        return savedJob.addLog(log)
+        return savedJob.addLog(tData, tData)
       }).then((logAddedResult) => {
         t.ok(logAddedResult, 'Job log added successfully')
         return q.getJob(savedJob.id)
@@ -187,7 +175,7 @@ module.exports = function () {
         t.ok(is.date(jobsFromDb[0].log[1].date), 'Log date is a date')
         t.equal(jobsFromDb[0].log[1].queueId, q.id, 'Log queueId is valid')
         t.equal(jobsFromDb[0].log[1].type, enums.log.information, 'Log type is information')
-        t.equal(jobsFromDb[0].log[1].status, enums.status.created, 'Log status is created')
+        t.equal(jobsFromDb[0].log[1].status, enums.status.waiting, 'Log status is valid')
         t.ok(jobsFromDb[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobsFromDb[0].log[1].message, tData, 'Log message is valid')
         t.equal(jobsFromDb[0].log[1].data, tData, 'Log data is valid')

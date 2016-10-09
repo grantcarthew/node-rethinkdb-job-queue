@@ -1,20 +1,34 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
-const is = require('./is')
 
-module.exports = function addLog (job, log) {
-  logger('addLog', log)
-  let validLog = log
-  if (!is.log(log)) {
-    if (is.string(log)) {
-      validLog = job.createLog(log)
-    }
-    if (is.object(log)) {
-      validLog = job.createLog(enums.message.seeLogData)
-      validLog.data = log
-    }
+function createLogObject (job,
+    data = {},
+    message = enums.message.seeLogData,
+    type = enums.log.information,
+    status = job.status) {
+  logger('commitLog', data, message, type, status)
+  return {
+    date: new Date(),
+    queueId: job.q.id,
+    message,
+    data,
+    type,
+    status,
+    retryCount: job.retryCount
   }
+}
+module.exports.createLogObject = createLogObject
+
+module.exports.commitLog = function addLog (job,
+  data = {},
+  message = enums.message.seeLogData,
+  type = enums.log.information,
+  status = job.status) {
+  logger('commitLog', data, message, type, status)
+
+  const newLog = createLogObject(job, data, message, type, status)
+
   if (job.status === enums.status.created) {
     return Promise.reject(new Error(enums.message.jobNotAdded))
   }
@@ -22,11 +36,11 @@ module.exports = function addLog (job, log) {
     return job.q.r.db(job.q.db).table(job.q.name)
     .get(job.id)
     .update({
-      log: job.q.r.row('log').append(validLog),
+      log: job.q.r.row('log').append(newLog),
       queueId: job.q.id
     })
   }).then((updateResult) => {
-    job.log.push(validLog)
+    job.log.push(newLog)
     logger(`Event: log [${job.id}]`, updateResult)
     job.q.emit(enums.status.log, job.id)
     return true

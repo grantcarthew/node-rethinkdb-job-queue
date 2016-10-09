@@ -1,10 +1,14 @@
 # WORKLOG
 
 Queue option parsing.
-Extract Job.createLog to its own module.
 
 ## Update events in tests to support x of y
 
 *   queue-process.spec Done!
 
 ## Notes for documentation
+
+*   removed job.createLog
+*   change signature of job.update
+*   change signature of job.addLog
+*   next(err) now stringifies error to .data

@@ -1,11 +1,16 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
+const jobAddLog = require('./job-add-log')
 
-module.exports = function jobUpdate (job, message) {
+module.exports = function jobUpdate (job,
+    data = {},
+    message = enums.message.seeLogData,
+    type = enums.log.information,
+    status = job.status) {
   logger(`jobUpdate:  [${job.id}]`)
 
-  const log = job.createLog(message)
+  const log = jobAddLog.createLogObject(job, data, message, type, status)
   job.log.push(log)
   const jobCopy = job.getCleanCopy()
 

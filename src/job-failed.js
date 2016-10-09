@@ -2,7 +2,9 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
+const jobAddLog = require('./job-add-log')
 const dbResult = require('./db-result')
+const serializeError = require('serialize-error')
 
 module.exports = function failed (job, err) {
   logger(`failed:  [${job.id}]`)
@@ -22,9 +24,14 @@ module.exports = function failed (job, err) {
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
-  const log = job.createLog(enums.message.failed, logType)
+  const errAsString = serializeError(err)
+
+  const log = jobAddLog.createLogObject(job,
+    errAsString,
+    enums.message.failed,
+    logType,
+    job.status)
   log.duration = duration
-  log.retryCount = job.retryCount
   log.errorMessage = err && err.message
     ? err.message : enums.message.noErrorMessage
   log.errorStack = err && err.stack

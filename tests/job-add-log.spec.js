@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log', (t) => {
-      t.plan(47)
+      t.plan(44)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
@@ -42,12 +42,10 @@ module.exports = function () {
       }).then((newJob) => {
         job = newJob[0]
         t.equal(job.status, enums.status.waiting, 'New job added successfully')
-        testLog = job.createLog(tData)
-        testLog.detail = tData
 
         // ---------- Add First Log Tests ----------
         t.comment('job-add-log: Add First Log')
-        return jobAddLog(job, testLog)
+        return jobAddLog.commitLog(job, tData, tData)
       }).then((updateResult1) => {
         t.ok(updateResult1, 'Log 1 added to job successfully')
         return q.getJob(job.id)
@@ -59,12 +57,11 @@ module.exports = function () {
         t.equal(jobWithLog1[0].log[1].status, enums.status.waiting, 'Log 1 status is added')
         t.ok(jobWithLog1[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog1[0].log[1].message, tData, 'Log 1 message is valid')
-        t.equal(jobWithLog1[0].log[1].detail, tData, 'Log 1 detail is valid')
-        testLog.extra = extra
+        t.equal(jobWithLog1[0].log[1].data, tData, 'Log 1 detail is valid')
 
         // ---------- Add Second Log Tests ----------
         t.comment('job-add-log: Add Second Log')
-        return jobAddLog(job, testLog)
+        return jobAddLog.commitLog(job, tData, tData)
       }).then((updateResult2) => {
         t.ok(updateResult2, 'Log 2 added to job successfully')
         return q.getJob(job.id)
@@ -76,12 +73,11 @@ module.exports = function () {
         t.equal(jobWithLog2[0].log[2].status, enums.status.waiting, 'Log 2 status is added')
         t.ok(jobWithLog2[0].log[2].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog2[0].log[2].message, tData, 'Log 2 message is valid')
-        t.equal(jobWithLog2[0].log[2].detail, tData, 'Log 2 detail is valid')
-        t.equal(jobWithLog2[0].log[2].extra, extra, 'Log 2 extra is valid')
+        t.equal(jobWithLog2[0].log[2].data, tData, 'Log 2 data is valid')
 
         // ---------- Add String Log Tests ----------
         t.comment('job-add-log: Add String Log')
-        return jobAddLog(job, extra)
+        return jobAddLog.commitLog(job, tData, tData)
       }).then((updateResult3) => {
         t.ok(updateResult3, 'Log 3 added to job successfully')
         return q.getJob(job.id)
@@ -92,13 +88,13 @@ module.exports = function () {
         t.equal(jobWithLog3[0].log[3].type, enums.log.information, 'Log 3 type is information')
         t.equal(jobWithLog3[0].log[3].status, enums.status.waiting, 'Log 3 status is added')
         t.ok(jobWithLog3[0].log[3].retryCount >= 0, 'Log retryCount is valid')
-        t.equal(jobWithLog3[0].log[3].message, extra, 'Log 3 message is valid')
+        t.equal(jobWithLog3[0].log[3].message, tData, 'Log 3 message is valid')
         t.notEqual(jobWithLog3[0].log[3].detail, tData, 'Log 3 detail is valid')
         t.notEqual(jobWithLog3[0].log[3].extra, extra, 'Log 3 extra is valid')
 
         // ---------- Add Object Log Tests ----------
         t.comment('job-add-log: Add Object Log')
-        return jobAddLog(job, logObject)
+        return jobAddLog.commitLog(job, logObject)
       }).then((updateResult4) => {
         t.ok(updateResult4, 'Log 4 added to job successfully')
         return q.getJob(job.id)
@@ -110,8 +106,6 @@ module.exports = function () {
         t.equal(jobWithLog4[0].log[4].status, enums.status.waiting, 'Log 4 status is added')
         t.ok(jobWithLog4[0].log[4].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog4[0].log[4].message, enums.message.seeLogData, 'Log 4 message is valid')
-        t.notEqual(jobWithLog4[0].log[4].detail, tData, 'Log 4 detail is valid')
-        t.notEqual(jobWithLog4[0].log[4].extra, extra, 'Log 4 extra is valid')
         t.equal(jobWithLog4[0].log[4].data.foo, 'bar', 'Log 4 data object is valid')
 
         return q.reset()
