@@ -7,8 +7,3 @@ Queue option parsing.
 *   queue-process.spec Done!
 
 ## Notes for documentation
-
-*   removed job.createLog
-*   change signature of job.update
-*   change signature of job.addLog
-*   next(err) now stringifies error to .data

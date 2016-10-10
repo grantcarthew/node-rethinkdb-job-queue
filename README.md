@@ -17,13 +17,15 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 ## Warning - API Change in v0.5.0
 
+Verion 1.0.0 will be soon, however there are breaking changes in v0.5.0:
+
 *   `Job.createLog` method has been removed from Job objects.
 *   `Job.addLog` signature change.
 *   `Job.update` signature change.
 
 Non-breaking changes:
 
-*   New dependency no [serialize-error](https://www.npmjs.com/package/serialize-error)
+*   New dependency on [serialize-error](https://www.npmjs.com/package/serialize-error)
 *   `next(error)` now stringifies the error to `Job.log[].data`. Still adds error message and stack to `Job.log[].errorMessage` and `Job.log[].errorStack`.
 
 See the [documentation][rjq-wiki-url] for more detail.

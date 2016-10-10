@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log', (t) => {
-      t.plan(44)
+      t.plan(43)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
@@ -70,14 +70,14 @@ module.exports = function () {
         t.ok(is.date(jobWithLog2[0].log[2].date), 'Log 2 date is a date')
         t.equal(jobWithLog2[0].log[2].queueId, q.id, 'Log 2 queueId is valid')
         t.equal(jobWithLog2[0].log[2].type, enums.log.information, 'Log 2 type is information')
-        t.equal(jobWithLog2[0].log[2].status, enums.status.waiting, 'Log 2 status is added')
+        t.equal(jobWithLog2[0].log[2].status, enums.status.waiting, 'Log 2 status is waiting')
         t.ok(jobWithLog2[0].log[2].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog2[0].log[2].message, tData, 'Log 2 message is valid')
         t.equal(jobWithLog2[0].log[2].data, tData, 'Log 2 data is valid')
 
-        // ---------- Add String Log Tests ----------
-        t.comment('job-add-log: Add String Log')
-        return jobAddLog.commitLog(job, tData, tData)
+        // ---------- Add Log with Defaults Tests ----------
+        t.comment('job-add-log: Add Log with Defaults')
+        return jobAddLog.commitLog(job)
       }).then((updateResult3) => {
         t.ok(updateResult3, 'Log 3 added to job successfully')
         return q.getJob(job.id)
@@ -86,11 +86,10 @@ module.exports = function () {
         t.ok(is.date(jobWithLog3[0].log[3].date), 'Log 3 date is a date')
         t.equal(jobWithLog3[0].log[3].queueId, q.id, 'Log 3 queueId is valid')
         t.equal(jobWithLog3[0].log[3].type, enums.log.information, 'Log 3 type is information')
-        t.equal(jobWithLog3[0].log[3].status, enums.status.waiting, 'Log 3 status is added')
+        t.equal(jobWithLog3[0].log[3].status, enums.status.waiting, 'Log 3 status is waiting')
         t.ok(jobWithLog3[0].log[3].retryCount >= 0, 'Log retryCount is valid')
-        t.equal(jobWithLog3[0].log[3].message, tData, 'Log 3 message is valid')
-        t.notEqual(jobWithLog3[0].log[3].detail, tData, 'Log 3 detail is valid')
-        t.notEqual(jobWithLog3[0].log[3].extra, extra, 'Log 3 extra is valid')
+        t.equal(jobWithLog3[0].log[3].message, enums.message.seeLogData, 'Log 3 message is valid')
+        t.ok(is.object(jobWithLog3[0].log[3].data), 'Log 3 data is valid')
 
         // ---------- Add Object Log Tests ----------
         t.comment('job-add-log: Add Object Log')

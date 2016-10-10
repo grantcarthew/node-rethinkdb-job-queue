@@ -64,7 +64,7 @@ module.exports = function () {
         t.equal(updatedJob[0].log[1].queueId, q.id, 'Updated log queueId is valid')
         t.equal(updatedJob[0].log[1].type, enums.log.information, 'Updated log type is information')
         t.equal(updatedJob[0].log[1].status, job.status, 'Updated log status is valid')
-        t.equal(updatedJob[0].log[1].message, enums.message.seeLogData, 'Updated log message is present')
+        t.equal(updatedJob[0].log[1].message, enums.message.jobUpdated, 'Updated log message is present')
         t.equal(updatedJob[0].newData, tData, 'New job data is valid')
         t.equal(updatedJob[0].dateEnable.toString(), tDate.toString(), 'New job dateEnable is valid')
 

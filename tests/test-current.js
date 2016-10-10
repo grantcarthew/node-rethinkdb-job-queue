@@ -24,8 +24,8 @@ const dbAssert = require('./db-assert.spec')
 // const queueGetJob = require('./queue-get-job.spec')
 // const queueFindJob = require('./queue-find-job.spec')
 // const queueGetNextJob = require('./queue-get-next-job.spec')
-const queueProcess = require('./queue-process.spec')
-// const queueChange = require('./queue-change.spec')
+// const queueProcess = require('./queue-process.spec')
+const queueChange = require('./queue-change.spec')
 // const queueInterruption = require('./queue-interruption.spec')
 // const queueCancelJob = require('./queue-cancel-job.spec')
 // const queueRemoveJob = require('./queue-remove-job.spec')
@@ -36,5 +36,5 @@ const queueProcess = require('./queue-process.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queueProcess()
+  return queueChange()
 })

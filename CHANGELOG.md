@@ -1,5 +1,13 @@
 # `rethinkdb-job-queue` Change log
 
+## v0.5.1 / 2016-10-11
+
+*   Dependencies updated.
+*   'Job updated' message added.
+*   Updated job-add-log module tests.
+
+## v0.5.0 / 2016-10-10
+
 *   Removed `Job.createLog` method.
 *   Changed `Job.addLog` signature.
 *   Changed `Job.update` signature.
