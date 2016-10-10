@@ -5,7 +5,7 @@ const jobAddLog = require('./job-add-log')
 
 module.exports = function jobUpdate (job,
     data = {},
-    message = enums.message.seeLogData,
+    message = enums.message.jobUpdated,
     type = enums.log.information,
     status = job.status) {
   logger(`jobUpdate:  [${job.id}]`)
