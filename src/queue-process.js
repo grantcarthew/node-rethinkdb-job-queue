@@ -109,7 +109,7 @@ function jobRun (job) {
 
   function timeoutHandler () {
     logger('timeoutHandler called, job timeout value exceeded', job.timeout)
-    const timedOutMessage = `Job timed out (run time > ${job.timeout} sec)`
+    const timedOutMessage = `Job timed out (run time > ${job.timeout} ms)`
     nextHandler(new Error(timedOutMessage))
   }
 
