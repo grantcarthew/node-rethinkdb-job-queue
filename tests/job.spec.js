@@ -3,10 +3,8 @@ const Promise = require('bluebird')
 const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')
-const jobAddLog = require('../src/job-add-log')
 const Job = require('../src/job')
 const tData = require('./test-options').tData
-const lData = require('./test-options').lData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
@@ -20,7 +18,6 @@ module.exports = function () {
       const newJob = new Job(q)
       newJob.data = tData
       let savedJob
-      let newTimeout = 1234
 
       // ---------- Event Handler Setup ----------
       let testEvents = false

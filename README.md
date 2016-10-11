@@ -15,21 +15,6 @@ It has been built as an alternative to the many queues available on [NPM][npm-se
 
 Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
-## Warning - API Change in v0.5.0
-
-Verion 1.0.0 will be soon, however there are breaking changes in v0.5.0:
-
-*   `Job.createLog` method has been removed from Job objects.
-*   `Job.addLog` signature change.
-*   `Job.update` signature change.
-
-Non-breaking changes:
-
-*   New dependency on [serialize-error](https://www.npmjs.com/package/serialize-error)
-*   `next(error)` now stringifies the error to `Job.log[].data`. Still adds error message and stack to `Job.log[].errorMessage` and `Job.log[].errorStack`.
-
-See the [documentation][rjq-wiki-url] for more detail.
-
 ## Features
 
 *   Powered by [RethinkDB][rethinkdb-url]
@@ -52,8 +37,6 @@ See the [documentation][rjq-wiki-url] for more detail.
 *   [Job Editing][job-editing-url]
 *   Rich job [history log][job-log-url]
 *   Over 1300 [integration tests][testing-url]
-
-
 
 [queue-connection-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Connection
 [queue-events-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Events
@@ -80,9 +63,7 @@ For full documentation [please see the wiki][rjq-wiki-url]
 
 *   This `rethinkdb-job-queue` module is fully functional.
 *   There are over 1300 integration tests.
-*   In a few months I will bump the version up to 1.0.0 to support [SemVer](http://semver.org/).
-*   Please provide feedback or raise issues prior to the version bump.
-
+*   Updated to v1.0.0 to support [SemVer](http://semver.org/).
 
 ## Quick Start
 

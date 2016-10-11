@@ -16,8 +16,6 @@ module.exports = function () {
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
       job.detail = tData
-      let testLog
-      let extra = 'extra data'
       let logObject = { foo: 'bar' }
 
       let testEvents = false

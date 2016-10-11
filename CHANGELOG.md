@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+## v1.0.0 / 2016-10-12
+
+*   `Job.update` now adds log entry automatically.
+*   Bump to v1.0.0 to support SemVer.
+
 ## v0.5.1 / 2016-10-11
 
 *   Dependencies updated.
