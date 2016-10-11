@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-update', (t) => {
-      t.plan(19)
+      t.plan(31)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
@@ -51,7 +51,7 @@ module.exports = function () {
         job = savedJobs1[0]
         job.newData = tData
         job.dateEnable = tDate
-        return jobUpdate(job, tData)
+        return jobUpdate(job)
       }).then((updateResult) => {
         t.ok(updateResult, 'Job updated successfully')
         return q.getJob(job.id)
@@ -65,6 +65,18 @@ module.exports = function () {
         t.equal(updatedJob[0].log[1].type, enums.log.information, 'Updated log type is information')
         t.equal(updatedJob[0].log[1].status, job.status, 'Updated log status is valid')
         t.equal(updatedJob[0].log[1].message, enums.message.jobUpdated, 'Updated log message is present')
+        t.equal(updatedJob[0].log[1].data.data, tData, 'Updated log data.data is present')
+        t.ok(is.date(updatedJob[0].log[1].data.dateCreated), 'Updated log data.dateCreated is a date')
+        t.ok(is.date(updatedJob[0].log[1].data.dateEnable), 'Updated log data.dateEnable is a date')
+        t.ok(is.uuid(updatedJob[0].log[1].data.id), 'Updated log data.id is a uuid')
+        t.ok(is.number(updatedJob[0].log[1].data.priority), 'Updated log data.priority is a number')
+        t.ok(is.number(updatedJob[0].log[1].data.progress), 'Updated log data.progress is a number')
+        t.ok(is.string(updatedJob[0].log[1].data.queueId), 'Updated log data.queueId is a string')
+        t.ok(is.number(updatedJob[0].log[1].data.retryCount), 'Updated log data.retryCount is a number')
+        t.ok(is.number(updatedJob[0].log[1].data.retryDelay), 'Updated log data.retryDelay is a number')
+        t.ok(is.number(updatedJob[0].log[1].data.retryMax), 'Updated log data.retryMax is a number')
+        t.ok(is.string(updatedJob[0].log[1].data.status), 'Updated log data.status is a string')
+        t.ok(is.number(updatedJob[0].log[1].data.timeout), 'Updated log data.timeout is a number')
         t.equal(updatedJob[0].newData, tData, 'New job data is valid')
         t.equal(updatedJob[0].dateEnable.toString(), tDate.toString(), 'New job dateEnable is valid')
 

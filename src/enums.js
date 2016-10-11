@@ -86,7 +86,7 @@ const enums = module.exports = {
     failed: 'Job processing failed',
     cancel: 'Job cancelled by Queue process handler',
     seeLogData: 'See the data attached to this log entry',
-    jobUpdated: 'Job updated',
+    jobUpdated: 'Job updated. Old values in log data',
     jobNotAdded: 'Job not added to the queue',
     jobAlreadyAdded: 'Job is already in the queue',
     jobDataInvalid: 'Job data can not be a function',

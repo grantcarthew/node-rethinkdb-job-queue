@@ -104,13 +104,10 @@ class Job {
     })
   }
 
-  update (data = {},
-          message = enums.message.seeLogData,
-          type = enums.log.information,
-          status = this.status) {
-    logger(`update [${message}]`)
+  update () {
+    logger(`update`)
     return this.q.ready().then(() => {
-      return jobUpdate(this, data, message, type, status)
+      return jobUpdate(this)
     }).catch((err) => {
       logger('update Error:', err)
       this.q.emit(enums.status.error, err)
