@@ -13,7 +13,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job', (t) => {
-      t.plan(93)
+      t.plan(81)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -190,35 +190,6 @@ module.exports = function () {
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
         t.equal(jobsFromDb[0].progress, 50, 'Job progress valid')
-
-        // ---------- Update Job ----------
-        t.comment('job: Update Job with string message')
-        savedJob.newData = tData
-        savedJob.timeout = newTimeout
-        return savedJob.update(tData)
-      }).then((updateResult) => {
-        t.ok(updateResult, 'Job update returned true')
-        return q.getJob(savedJob.id)
-      }).then((jobsFromDb) => {
-        t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
-        t.equal(jobsFromDb[0].newData, tData, 'Job new data valid')
-        t.equal(jobsFromDb[0].timeout, newTimeout, 'Job new timeout valid')
-
-        // ---------- Update Job Passing `data` object ----------
-        t.comment('job: Update Job with Object message')
-        savedJob.newData = tData
-        savedJob.timeout = newTimeout
-        return savedJob.update(lData)
-      }).then((updateResult) => {
-        t.ok(updateResult, 'Job update returned true')
-        return q.getJob(savedJob.id)
-      }).then((jobsFromDb) => {
-        const lastLogData = jobsFromDb[0].log[jobsFromDb[0].log.length - 1]
-        t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
-        t.equal(jobsFromDb[0].timeout, newTimeout, 'Job new timeout valid')
-        t.equal(lastLogData.message, enums.message.seeLogData, 'Job log message property valid')
-        t.equal(lastLogData.data.one_key, lData.one_key, 'Job log message property valid')
-        t.equal(lastLogData.data.some_other_key, lData.some_other_key, 'Job log data property valid')
 
         removeEventHandlers()
         return q.reset()
