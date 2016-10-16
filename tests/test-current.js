@@ -8,7 +8,7 @@
 const dbAssert = require('./db-assert.spec')
 // const dbDriver = require('./db-driver.spec')
 // const dbResult = require('./db-result.spec')
-// const dbReview = require('./db-review.spec')
+const dbReview = require('./db-review.spec')
 // const job = require('./job.spec')
 // const jobOptions = require('./job-options.spec')
 // const jobParse = require('./job-parse.spec')
@@ -36,5 +36,5 @@ const queueChange = require('./queue-change.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queueChange()
+  return dbReview()
 })

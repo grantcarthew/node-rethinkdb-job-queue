@@ -4,6 +4,7 @@ const datetime = require('./datetime')
 const dbResult = require('./db-result')
 const queueProcess = require('./queue-process')
 const queueState = require('./queue-state')
+const is = require('./is')
 const enums = require('./enums')
 const dbReviewIntervalList = new Map()
 
@@ -53,20 +54,37 @@ function updateFailedJobs (q) {
   })
 }
 
+function removeFinishedJobsBasedOnTime (q) {
+  logger('removeFinishedJobsBasedOnTime')
+  return q.r.db(q.db).table(q.name)
+  .orderBy({index: enums.index.indexFinishedDateFinished})
+  .filter(
+    q.r.row('dateFinished').add(
+      q.r.expr(q.removeFinishedJobs).div(1000)
+    ).lt(q.r.now())
+  ).delete()
+  .run()
+}
+
+function removeFinishedJobsBasedOnNow (q) {
+  logger('removeFinishedJobsBasedOnNow')
+  return q.r.db(q.db).table(q.name)
+  .orderBy({index: enums.index.indexFinishedDateFinished})
+  .filter(q.r.row('dateFinished').lt(q.r.now()))
+  .delete()
+  .run()
+}
+
 function removeFinishedJobs (q) {
   logger('removeFinishedJobs: ' + datetime.format(new Date()))
 
   if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
 
   return Promise.resolve().then(() => {
-    return q.r.db(q.db).table(q.name)
-    .orderBy({index: enums.index.indexFinishedDateFinished})
-    .filter(
-      q.r.row('dateFinished').add(
-        q.r.expr(q.removeFinishedJobs).div(1000)
-      ).lt(q.r.now())
-    ).delete()
-    .run()
+    if (is.true(q.removeFinishedJobs)) {
+      return removeFinishedJobsBasedOnNow(q)
+    }
+    return removeFinishedJobsBasedOnTime(q)
   }).then((deleteResult) => {
     logger(`deleteResult`, deleteResult)
     return dbResult.status(deleteResult, enums.dbResult.deleted)

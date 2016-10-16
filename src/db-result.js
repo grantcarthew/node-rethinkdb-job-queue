@@ -54,9 +54,8 @@ module.exports.toIds = function toIds (dbResult) {
 }
 
 module.exports.status = function status (dbResult, prop) {
-  logger('status:', dbResult)
-  if (dbResult.errors > 0) {
-    return getResultError(dbResult)
-  }
+  logger('status:', dbResult, prop)
+  if (dbResult.errors > 0) { return getResultError(dbResult) }
+  if (!dbResult[prop]) { dbResult[prop] = 0 }
   return Promise.resolve(dbResult[prop])
 }
