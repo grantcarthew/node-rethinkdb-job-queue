@@ -12,11 +12,12 @@ const proxyquire = require('proxyquire').noCallThru()
 const processStub = {}
 const dbReview = proxyquire('../src/db-review',
   { './queue-process': processStub })
+const eventHandlers = require('./test-event-handlers')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(65)
+      t.plan(85)
 
       let processRestart = 0
       processStub.restart = function (q) {
@@ -28,72 +29,109 @@ module.exports = function () {
       let reviewCount = 0
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      function reviewedEventHandler (reviewResult) {
-        reviewCount++
-        if (testEvents) {
-          t.pass(`Event: reviewed [Review Count: ${reviewCount}]`)
-          t.ok(is.object(reviewResult), 'reviewed event returns an Object')
-          t.ok(is.integer(reviewResult.reviewed), 'reviewed event returns reviewed as integer')
-          t.ok(is.integer(reviewResult.removed), 'reviewed event returns removed as integer')
-        }
+      let state = {
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        idle: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 5,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 4,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        log: 0,
+        updated: 0
       }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.reviewed, reviewedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.reviewed, reviewedEventHandler)
-      }
+      // let testEvents = false
+      // function reviewedEventHandler (reviewResult) {
+      //   reviewCount++
+      //   if (testEvents) {
+      //     t.pass(`Event: reviewed [Review Count: ${reviewCount}]`)
+      //     t.ok(is.object(reviewResult), 'reviewed event returns an Object')
+      //     t.ok(is.integer(reviewResult.reviewed), 'reviewed event returns reviewed as integer')
+      //     t.ok(is.integer(reviewResult.removed), 'reviewed event returns removed as integer')
+      //   }
+      // }
+      // function addEventHandlers () {
+      //   testEvents = true
+      //   q.on(enums.status.reviewed, reviewedEventHandler)
+      // }
+      // function removeEventHandlers () {
+      //   testEvents = false
+      //   q.removeListener(enums.status.reviewed, reviewedEventHandler)
+      // }
 
-      let retryCount0Job
-      let retryCount1Job
-      let completedJobPre
-      let completedJobPost
-      let cancelledJobPost
-      let terminatedJobPost
-      function createTestJobs () {
-        retryCount0Job = q.createJob()
-        retryCount0Job.data = tData
-        retryCount0Job.status = enums.status.active
-        retryCount0Job.dateStarted = datetime.add.sec(new Date(), -400)
-        retryCount0Job.retryCount = 0
-        retryCount0Job.retryMax = 1
-
-        retryCount1Job = q.createJob()
-        retryCount1Job.data = tData
-        retryCount1Job.status = enums.status.active
-        retryCount1Job.dateStarted = datetime.add.sec(new Date(), -400)
-        retryCount1Job.retryCount = 1
-        retryCount1Job.retryMax = 1
-
-        completedJobPre = q.createJob()
-        completedJobPre.data = tData
-        completedJobPre.status = enums.status.completed
-        completedJobPre.dateStarted = datetime.add.days(new Date(), -179)
-        completedJobPre.dateFinished = datetime.add.days(new Date(), -179)
-
-        completedJobPost = q.createJob()
-        completedJobPost.data = tData
-        completedJobPost.status = enums.status.completed
-        completedJobPost.dateStarted = datetime.add.days(new Date(), -181)
-        completedJobPost.dateFinished = datetime.add.days(new Date(), -181)
-
-        cancelledJobPost = q.createJob()
-        cancelledJobPost.data = tData
-        cancelledJobPost.status = enums.status.terminated
-        cancelledJobPost.dateStarted = datetime.add.days(new Date(), -181)
-        cancelledJobPost.dateFinished = datetime.add.days(new Date(), -181)
-
-        terminatedJobPost = q.createJob()
-        terminatedJobPost.data = tData
-        terminatedJobPost.status = enums.status.terminated
-        terminatedJobPost.dateStarted = datetime.add.days(new Date(), -181)
-        terminatedJobPost.dateFinished = datetime.add.days(new Date(), -181)
+      function createRetryCount0Job () {
+        let rc0Job = q.createJob()
+        rc0Job.data = tData
+        rc0Job.status = enums.status.active
+        rc0Job.dateStarted = datetime.add.sec(new Date(), -400)
+        rc0Job.retryCount = 0
+        rc0Job.retryMax = 1
+        return rc0Job
       }
 
-      createTestJobs()
+      function createRetryCount1Job () {
+        let rc1Job = q.createJob()
+        rc1Job.data = tData
+        rc1Job.status = enums.status.active
+        rc1Job.dateStarted = datetime.add.sec(new Date(), -400)
+        rc1Job.retryCount = 1
+        rc1Job.retryMax = 1
+        return rc1Job
+      }
+      function createCompletedJobPre () {
+        let preJob = q.createJob()
+        preJob.data = tData
+        preJob.status = enums.status.completed
+        preJob.dateStarted = datetime.add.days(new Date(), -179)
+        preJob.dateFinished = datetime.add.days(new Date(), -179)
+        return preJob
+      }
+      function createCompletedJobPost () {
+        let postJob = q.createJob()
+        postJob.data = tData
+        postJob.status = enums.status.completed
+        postJob.dateStarted = datetime.add.days(new Date(), -181)
+        postJob.dateFinished = datetime.add.days(new Date(), -181)
+        return postJob
+      }
+      function createCancelledJobPost () {
+        let canJobPost = q.createJob()
+        canJobPost.data = tData
+        canJobPost.status = enums.status.terminated
+        canJobPost.dateStarted = datetime.add.days(new Date(), -181)
+        canJobPost.dateFinished = datetime.add.days(new Date(), -181)
+        return canJobPost
+      }
+      function createTerminatedJobPost () {
+        let termJobPost = q.createJob()
+        termJobPost.data = tData
+        termJobPost.status = enums.status.terminated
+        termJobPost.dateStarted = datetime.add.days(new Date(), -181)
+        termJobPost.dateFinished = datetime.add.days(new Date(), -181)
+        return termJobPost
+      }
+      let retryCount0Job = createRetryCount0Job()
+      let retryCount1Job = createRetryCount1Job()
+      let completedJobPre = createCompletedJobPre()
+      let completedJobPost = createCompletedJobPost()
+      let cancelledJobPost = createCancelledJobPost()
+      let terminatedJobPost = createTerminatedJobPost()
 
       return q.reset().then((removed) => {
         t.ok(is.integer(removed), 'Queue reset')
@@ -114,7 +152,8 @@ module.exports = function () {
         t.equal(savedJobs[4].id, cancelledJobPost.id, 'Cancelled job post-remove date saved successfully')
         t.equal(savedJobs[5].id, terminatedJobPost.id, 'Terminated job post-remove date saved successfully')
       }).then(() => {
-        addEventHandlers()
+        // addEventHandlers()
+        eventHandlers.add(t, q, state)
 
         //  ---------- runOnce Tests ----------
         t.comment('db-review: runOnce')
@@ -164,7 +203,10 @@ module.exports = function () {
 
         //  ---------- removeFinishedJobs Tests ----------
         t.comment('db-review: removeFinishedJobs')
-        createTestJobs()
+        completedJobPre = createCompletedJobPre()
+        completedJobPost = createCompletedJobPost()
+        cancelledJobPost = createCancelledJobPost()
+        terminatedJobPost = createTerminatedJobPost()
 
         return queueAddJob(q, [
           completedJobPre,
@@ -173,10 +215,13 @@ module.exports = function () {
           terminatedJobPost
         ], true)
       }).then((result) => {
+        t.equal(result.length, 4, 'removeFinishedJobs test jobs added successfully')
         q._removeFinishedJobs = false
+        t.notOk(q.removeFinishedJobs, 'removeFinishedJobs is false')
         return dbReview.runOnce(q)
       }).then((result) => {
-        console.dir(result)
+        t.equal(result.reviewed, 0, 'Db review found no stalled jobs')
+        t.equal(result.removed, 0, 'Db review did not remove any jobs')
         return q.getJob([
           completedJobPre,
           completedJobPost,
@@ -184,10 +229,13 @@ module.exports = function () {
           terminatedJobPost
         ])
       }).then((result) => {
-        console.dir(result)
+        t.equal(result.length, 4, 'No jobs have been removed from the database')
         q._removeFinishedJobs = true
+        t.ok(q.removeFinishedJobs, 'removeFinishedJobs is true')
         return dbReview.runOnce(q)
       }).then((result) => {
+        t.equal(result.reviewed, 0, 'Db review found no stalled jobs')
+        t.ok(result.removed > 4, 'Db review removed jobs')
 
         return q.getJob([
           completedJobPre,
@@ -196,7 +244,8 @@ module.exports = function () {
           terminatedJobPost
         ])
       }).then((result) => {
-        console.dir(result)
+        t.equal(result.length, 0, 'All review jobs have been deleted')
+
         //  ---------- enable Tests ----------
         t.comment('db-review: enable')
         return dbReview.enable(q)
@@ -211,7 +260,8 @@ module.exports = function () {
         dbReview.disable(q)
         t.notOk(dbReview.isEnabled(q), 'Review isEnabled reports false')
 
-        removeEventHandlers()
+        t.comment('db-review: event summary')
+        eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

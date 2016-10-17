@@ -78,7 +78,9 @@ function removeFinishedJobsBasedOnNow (q) {
 function removeFinishedJobs (q) {
   logger('removeFinishedJobs: ' + datetime.format(new Date()))
 
-  if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) { return }
+  if (q.removeFinishedJobs < 1 || q.removeFinishedJobs === false) {
+    return Promise.resolve(0)
+  }
 
   return Promise.resolve().then(() => {
     if (is.true(q.removeFinishedJobs)) {

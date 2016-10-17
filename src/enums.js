@@ -38,7 +38,7 @@ const enums = module.exports = {
     // ---------- Job Status Values ----------
     created: 'created', // Non-event, initial create job status
     added: 'added', // Event only, not a job status
-    waiting: 'waiting',
+    waiting: 'waiting', // Non-event, job status only
     active: 'active',
     completed: 'completed',
     cancelled: 'cancelled',
