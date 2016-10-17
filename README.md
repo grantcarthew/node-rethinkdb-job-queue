@@ -59,6 +59,8 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 For full documentation [please see the wiki][rjq-wiki-url]
 
+See the [Change Log][rjq-changelog-url] for recent changes.
+
 ## Project Status
 
 *   This `rethinkdb-job-queue` module is fully functional.
@@ -224,6 +226,7 @@ MIT
 [neumino-url]: https://github.com/neumino
 [rjq-github-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue
 [rjq-wiki-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki
+[rjq-changelog-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Change-Log
 [thinker-image]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/thinkerjoblist.png
 [nodemailer-url]: https://www.npmjs.com/package/nodemailer
 [bluebird-url]: https://github.com/petkaantonov/bluebird
