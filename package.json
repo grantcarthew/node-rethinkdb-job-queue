@@ -35,7 +35,7 @@
     "clean": "rm -Rf dist",
     "test": "tape ./tests/test-runner.js | tap-spec",
     "tc": "tape ./tests/test-current.js | tap-spec",
-    "build": "npm run clean && babel src --presets babel-preset-es2015 --out-dir dist",
+    "build": "npm run clean && babel src --presets babel-preset-latest --out-dir dist",
     "lint": "standard",
     "upgrade": "npm run upgrade:rm && npm run upgrade:ncu && npm run upgrade:install && npm run upgrade:finish",
     "upgrade:rm": "rm -Rf node_modules",
@@ -44,7 +44,6 @@
     "upgrade:finish": "npm run build"
   },
   "standard": {
-    "parser": "babel-eslint",
     "ignore": "dist"
   },
   "dependencies": {
@@ -56,8 +55,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.16.0",
-    "babel-eslint": "^7.0.0",
-    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-latest": "^6.16.0",
     "npm-check-updates": "^2.8.5",
     "proxyquire": "^1.7.10",
     "standard": "^8.4.0",
