@@ -1,5 +1,10 @@
 # `rethinkdb-job-queue` Change log
 
+## v1.0.1 / 2016-10-17
+
+*   Fixed `removeFinishedJobs = false` bug.
+*   Upgraded  Babel transpiling to [babel-preset-latest](http://babeljs.io/docs/plugins/preset-latest/).
+
 ## v1.0.0 / 2016-10-12
 
 *   `Job.update` now adds log entry automatically.
