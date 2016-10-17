@@ -26,7 +26,6 @@ module.exports = function () {
       }
 
       const q = new Queue(tOpts.cxn(), tOpts.master(1000))
-      let reviewCount = 0
 
       // ---------- Event Handler Setup ----------
       let state = {
@@ -56,24 +55,6 @@ module.exports = function () {
         log: 0,
         updated: 0
       }
-      // let testEvents = false
-      // function reviewedEventHandler (reviewResult) {
-      //   reviewCount++
-      //   if (testEvents) {
-      //     t.pass(`Event: reviewed [Review Count: ${reviewCount}]`)
-      //     t.ok(is.object(reviewResult), 'reviewed event returns an Object')
-      //     t.ok(is.integer(reviewResult.reviewed), 'reviewed event returns reviewed as integer')
-      //     t.ok(is.integer(reviewResult.removed), 'reviewed event returns removed as integer')
-      //   }
-      // }
-      // function addEventHandlers () {
-      //   testEvents = true
-      //   q.on(enums.status.reviewed, reviewedEventHandler)
-      // }
-      // function removeEventHandlers () {
-      //   testEvents = false
-      //   q.removeListener(enums.status.reviewed, reviewedEventHandler)
-      // }
 
       function createRetryCount0Job () {
         let rc0Job = q.createJob()
