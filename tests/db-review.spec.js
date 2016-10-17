@@ -133,7 +133,6 @@ module.exports = function () {
         t.equal(savedJobs[4].id, cancelledJobPost.id, 'Cancelled job post-remove date saved successfully')
         t.equal(savedJobs[5].id, terminatedJobPost.id, 'Terminated job post-remove date saved successfully')
       }).then(() => {
-        // addEventHandlers()
         eventHandlers.add(t, q, state)
 
         //  ---------- runOnce Tests ----------
