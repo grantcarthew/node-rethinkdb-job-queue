@@ -46,3 +46,15 @@ module.exports.commitLog = function addLog (job,
     return true
   })
 }
+
+module.exports.getLastLog = function(job) {
+    let logEntry = null;
+    let lastTimestamp = 0;
+    for (const i in job.log) {
+        if (job.log[i].date.getTime() >= lastTimestamp) {
+            lastTimestamp = job.log[i].date.getTime();
+            logEntry = job.log[i];
+        }
+    }
+    return logEntry;
+}

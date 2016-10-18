@@ -11,7 +11,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-add-log', (t) => {
-      t.plan(43)
+      t.plan(47)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
@@ -56,6 +56,7 @@ module.exports = function () {
         t.ok(jobWithLog1[0].log[1].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog1[0].log[1].message, tData, 'Log 1 message is valid')
         t.equal(jobWithLog1[0].log[1].data, tData, 'Log 1 detail is valid')
+        t.equal(jobWithLog1[0].getLastLog(), jobWithLog1[0].log[1], 'Last log entry is correctly retrieved')
 
         // ---------- Add Second Log Tests ----------
         t.comment('job-add-log: Add Second Log')
@@ -72,6 +73,7 @@ module.exports = function () {
         t.ok(jobWithLog2[0].log[2].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog2[0].log[2].message, tData, 'Log 2 message is valid')
         t.equal(jobWithLog2[0].log[2].data, tData, 'Log 2 data is valid')
+        t.equal(jobWithLog2[0].getLastLog(), jobWithLog2[0].log[2], 'Last log entry is correctly retrieved')
 
         // ---------- Add Log with Defaults Tests ----------
         t.comment('job-add-log: Add Log with Defaults')
@@ -88,6 +90,7 @@ module.exports = function () {
         t.ok(jobWithLog3[0].log[3].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog3[0].log[3].message, enums.message.seeLogData, 'Log 3 message is valid')
         t.ok(is.object(jobWithLog3[0].log[3].data), 'Log 3 data is valid')
+        t.equal(jobWithLog3[0].getLastLog(), jobWithLog3[0].log[3], 'Last log entry is correctly retrieved')
 
         // ---------- Add Object Log Tests ----------
         t.comment('job-add-log: Add Object Log')
@@ -104,6 +107,7 @@ module.exports = function () {
         t.ok(jobWithLog4[0].log[4].retryCount >= 0, 'Log retryCount is valid')
         t.equal(jobWithLog4[0].log[4].message, enums.message.seeLogData, 'Log 4 message is valid')
         t.equal(jobWithLog4[0].log[4].data.foo, 'bar', 'Log 4 data object is valid')
+        t.equal(jobWithLog4[0].getLastLog(), jobWithLog4[0].log[4], 'Last log entry is correctly retrieved')
 
         return q.reset()
       }).then((resetResult) => {

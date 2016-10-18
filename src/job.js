@@ -138,6 +138,10 @@ class Job {
       return Promise.reject(err)
     })
   }
+
+  getLastLog () {
+    return jobAddLog.getLastLog(this)
+  }
 }
 
 module.exports = Job
