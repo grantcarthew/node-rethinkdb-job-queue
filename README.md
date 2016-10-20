@@ -195,6 +195,14 @@ return q.addJob(job).then((savedJobs) => {
 
 ```
 
+## About the Owner
+
+I, Grant Carthew, am a technologist, trainer, and Dad from Queensland, Australia. I work on code in a number of personal projects and when the need arises I build my own packages.
+
+This project exists because there were no functional job queues built on the RethinkDB database. I wanted an alternative to the other job queues on NPM.
+
+Everything I do in open source is done in my own time and as a contribution to the open source community.
+
 ## Contributing
 
 1.  Fork it!
