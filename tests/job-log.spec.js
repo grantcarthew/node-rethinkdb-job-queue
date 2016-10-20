@@ -3,14 +3,14 @@ const Promise = require('bluebird')
 const is = require('../src/is')
 const tError = require('./test-error')
 const enums = require('../src/enums')
-const jobAddLog = require('../src/job-add-log')
+const jobLog = require('../src/job-log')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-add-log', (t) => {
+    test('job-log', (t) => {
       t.plan(47)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -42,8 +42,8 @@ module.exports = function () {
         t.equal(job.status, enums.status.waiting, 'New job added successfully')
 
         // ---------- Add First Log Tests ----------
-        t.comment('job-add-log: Add First Log')
-        return jobAddLog.commitLog(job, tData, tData)
+        t.comment('job-log: Add First Log')
+        return jobLog.commitLog(job, tData, tData)
       }).then((updateResult1) => {
         t.ok(updateResult1, 'Log 1 added to job successfully')
         return q.getJob(job.id)
@@ -59,8 +59,8 @@ module.exports = function () {
         t.equal(jobWithLog1[0].getLastLog(), jobWithLog1[0].log[1], 'Last log entry is correctly retrieved')
 
         // ---------- Add Second Log Tests ----------
-        t.comment('job-add-log: Add Second Log')
-        return jobAddLog.commitLog(job, tData, tData)
+        t.comment('job-log: Add Second Log')
+        return jobLog.commitLog(job, tData, tData)
       }).then((updateResult2) => {
         t.ok(updateResult2, 'Log 2 added to job successfully')
         return q.getJob(job.id)
@@ -76,8 +76,8 @@ module.exports = function () {
         t.equal(jobWithLog2[0].getLastLog(), jobWithLog2[0].log[2], 'Last log entry is correctly retrieved')
 
         // ---------- Add Log with Defaults Tests ----------
-        t.comment('job-add-log: Add Log with Defaults')
-        return jobAddLog.commitLog(job)
+        t.comment('job-log: Add Log with Defaults')
+        return jobLog.commitLog(job)
       }).then((updateResult3) => {
         t.ok(updateResult3, 'Log 3 added to job successfully')
         return q.getJob(job.id)
@@ -93,8 +93,8 @@ module.exports = function () {
         t.equal(jobWithLog3[0].getLastLog(), jobWithLog3[0].log[3], 'Last log entry is correctly retrieved')
 
         // ---------- Add Object Log Tests ----------
-        t.comment('job-add-log: Add Object Log')
-        return jobAddLog.commitLog(job, logObject)
+        t.comment('job-log: Add Object Log')
+        return jobLog.commitLog(job, logObject)
       }).then((updateResult4) => {
         t.ok(updateResult4, 'Log 4 added to job successfully')
         return q.getJob(job.id)

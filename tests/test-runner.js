@@ -16,7 +16,7 @@ const jobProgress = require('./job-progress.spec')
 const jobUpdate = require('./job-update.spec')
 const jobCompleted = require('./job-completed.spec')
 const jobFailed = require('./job-failed.spec')
-const jobAddLog = require('./job-add-log.spec')
+const jobLog = require('./job-log.spec')
 const queue = require('./queue.spec')
 const queueDb = require('./queue-db.spec')
 const queueState = require('./queue-state.spec')
@@ -51,7 +51,7 @@ return dbAssertDatabase().then(() => {
     jobParse(),
     job(),
     jobProgress(),
-    jobAddLog(),
+    jobLog(),
     jobUpdate(),
     queueGetJob(),
     queueFindJob(),

@@ -3,7 +3,7 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const queueProcess = require('./queue-process')
 const dbResult = require('./db-result')
-const jobAddLog = require('./job-add-log')
+const jobLog = require('./job-log')
 const jobParse = require('./job-parse')
 
 module.exports = function queueAddJob (q, job, skipStatusCheck) {
@@ -15,7 +15,7 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
       return Promise.reject(new Error(enums.message.jobAlreadyAdded))
     }
     if (!skipStatusCheck) { oneJob.status = enums.status.waiting }
-    const log = jobAddLog.createLogObject(oneJob,
+    const log = jobLog.createLogObject(oneJob,
       null,
       enums.message.jobAdded,
       enums.log.information,

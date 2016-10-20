@@ -2,12 +2,12 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const queueGetJob = require('./queue-get-job')
-const jobAddLog = require('./job-add-log')
+const jobLog = require('./job-log')
 
 module.exports = function jobUpdate (job) {
   logger(`jobUpdate:  [${job.id}]`)
 
-  const log = jobAddLog.createLogObject(job,
+  const log = jobLog.createLogObject(job,
     null, enums.message.jobUpdated, enums.log.information)
 
   return Promise.resolve().then(() => {

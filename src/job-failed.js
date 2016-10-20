@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
-const jobAddLog = require('./job-add-log')
+const jobLog = require('./job-log')
 const dbResult = require('./db-result')
 const serializeError = require('serialize-error')
 
@@ -26,7 +26,7 @@ module.exports = function failed (job, err) {
 
   const errAsString = serializeError(err)
 
-  const log = jobAddLog.createLogObject(job,
+  const log = jobLog.createLogObject(job,
     errAsString,
     enums.message.failed,
     logType,

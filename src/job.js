@@ -5,7 +5,7 @@ const is = require('./is')
 const jobOptions = require('./job-options')
 const jobProgress = require('./job-progress')
 const jobUpdate = require('./job-update')
-const jobAddLog = require('./job-add-log')
+const jobLog = require('./job-log')
 
 class Job {
 
@@ -131,7 +131,7 @@ class Job {
           status = this.status) {
     logger('addLog', data, message, type, status)
     return this.q.ready().then(() => {
-      return jobAddLog.commitLog(this, data, message, type, status)
+      return jobLog.commitLog(this, data, message, type, status)
     }).catch((err) => {
       logger('addLog Error:', err)
       this.q.emit(enums.status.error, err)
@@ -140,7 +140,7 @@ class Job {
   }
 
   getLastLog () {
-    return jobAddLog.getLastLog(this)
+    return jobLog.getLastLog(this)
   }
 }
 
