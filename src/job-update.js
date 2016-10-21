@@ -7,14 +7,15 @@ const jobLog = require('./job-log')
 module.exports = function jobUpdate (job) {
   logger(`jobUpdate:  [${job.id}]`)
 
-  const log = jobLog.createLogObject(job,
-    null, enums.message.jobUpdated, enums.log.information)
-
   return Promise.resolve().then(() => {
     return queueGetJob(job.q, job.id)
   }).then((oldJobs) => {
-    log.data = oldJobs[0].getCleanCopy()
-    delete log.data.log
+    let oldJobCopy = oldJobs[0].getCleanCopy()
+    delete oldJobCopy.log
+    let log = jobLog.createLogObject(job,
+      oldJobCopy,
+      enums.message.jobUpdated,
+      enums.log.information)
     job.log.push(log)
     return job.getCleanCopy()
   }).then((cleanJob) => {
