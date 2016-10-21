@@ -7,37 +7,53 @@ const enums = require('../src/enums')
 const jobProgress = require('../src/job-progress')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-progress', (t) => {
-      t.plan(23)
+      t.plan(46)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const job = q.createJob()
       job.timeout = enums.options.timeout
       job.retryDelay = enums.options.retryDelay
       job.retryCount = 0
+      let oldPercent
 
-      let testEvents = false
-      function progressEventHandler (jobId, percent) {
-        if (testEvents) {
-          t.equal(jobId, job.id, `Event: Job progress [${percent}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.progress, progressEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.progress, progressEventHandler)
+      // ---------- Event Handler Setup ----------
+      let state = {
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 6,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        idle: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 0,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        log: 0,
+        updated: 0
       }
 
       let tempDateEnable = job.dateEnable
       return q.addJob(job).then((savedJob) => {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         savedJob[0].retryCount = 1
         savedJob[0].status = enums.status.active
         return jobProgress(savedJob[0])
@@ -90,6 +106,7 @@ module.exports = function () {
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 100, 'Job progress is 100 percent')
+        t.equal(updatedJob[0].getLastLog().data, 50, 'Job progress log contains old percent')
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], 101)
       }).then((updatedJob) => {
@@ -102,7 +119,9 @@ module.exports = function () {
       }).then((inactiveResult) => {
         t.notOk(inactiveResult, 'Inactive job returns false')
 
-        removeEventHandlers()
+        // ---------- Event Summary ----------
+        t.comment('job-progress: Event Summary')
+        eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

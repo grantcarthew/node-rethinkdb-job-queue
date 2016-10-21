@@ -36,7 +36,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   [Job reanimation][job-reanimation-url]
 *   [Job Editing][job-editing-url]
 *   Rich job [history log][job-log-url]
-*   Over 1300 [integration tests][testing-url]
+*   Over 1400 [integration tests][testing-url]
 
 [queue-connection-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Connection
 [queue-events-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Events
@@ -64,7 +64,7 @@ See the [Change Log][rjq-changelog-url] for recent changes.
 ## Project Status
 
 *   This `rethinkdb-job-queue` module is fully functional.
-*   There are over 1300 integration tests.
+*   There are over 1400 integration tests.
 *   Updated to v1.0.0 to support [SemVer](http://semver.org/).
 
 ## Quick Start

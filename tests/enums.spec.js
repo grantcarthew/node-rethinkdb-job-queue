@@ -1,6 +1,6 @@
 const test = require('tape')
 const tError = require('./test-error')
-const enums = require('../src/enums')
+const enums = require('../dist/enums')
 
 module.exports = function () {
   test('enums', (t) => {
