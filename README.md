@@ -71,13 +71,15 @@ See the [Change Log][rjq-changelog-url] for recent changes.
 
 ### Installation
 
-Note: You will need to install [RethinkDB][rethinkdb-url] before you can use `rethinkdb-job-queue`
+__Note:__ You will need to install [RethinkDB][rethinkdb-url] before you can use `rethinkdb-job-queue`
 
 After installing [RethinkDB][rethinkdb-url] install the job queue using the following command.
 
 ```sh
 npm install rethinkdb-job-queue --save
 ```
+
+__WARNING:__ If you are using an older version of Node.js you may need the [Babel Pollyfill](http://babeljs.io/docs/usage/polyfill/).  The `index.js` file points to the `dist` directory, which has been transpiled by Babel. Babel only transforms syntax.
 
 ### Simple Example
 
