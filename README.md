@@ -43,7 +43,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 [queue-concurrency-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Options#queue-concurrency-option
 [queue-pubsub-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-PubSub
 [job-priority-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-priority-option
-[job-progress-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.setProgress
+[job-progress-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.updateProgress
 [job-delayed-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Delayed-Job
 [find-job-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.findJob
 [job-cancel-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.process#failed-job-with-cancel

@@ -81,7 +81,7 @@ module.exports = function () {
         } else {
           if (updateProgress) {
             setTimeout(function () {
-              return job.setProgress(50).then((result) => {
+              return job.updateProgress(50).then((result) => {
                 t.ok(result, 'Job progress updated: ' + job.id)
               })
             }, jobDelay / 2)

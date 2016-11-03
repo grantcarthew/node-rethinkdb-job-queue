@@ -93,12 +93,12 @@ class Job {
     throw new Error(enums.message.dateEnableIvalid)
   }
 
-  setProgress (percent) {
-    logger(`setProgress [${percent}]`)
+  updateProgress (percent) {
+    logger(`updateProgress [${percent}]`)
     return this.q.ready().then(() => {
       return jobProgress(this, percent)
     }).catch((err) => {
-      logger('setProgress Error:', err)
+      logger('updateProgress Error:', err)
       this.q.emit(enums.status.error, err)
       return Promise.reject(err)
     })

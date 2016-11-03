@@ -180,9 +180,9 @@ module.exports = function () {
         // ---------- Set Job Progress ----------
         t.comment('job: Set Job Progress')
         savedJob.status = enums.status.active
-        return savedJob.setProgress(50)
+        return savedJob.updateProgress(50)
       }).then((progressResult) => {
-        t.ok(progressResult, 'Job setProgress returned true')
+        t.ok(progressResult, 'Job updateProgress returned true')
         return q.getJob(savedJob.id)
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')

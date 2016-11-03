@@ -280,7 +280,7 @@ module.exports = function () {
             t.equal(j.id, job.id, `Job Processed [${j.id}]`)
             next('queue-change')
           }, processDelay)
-          return j.setProgress(50)
+          return j.updateProgress(50)
         })
 
         // ---------- Test added, active, progress completed, removed  ----------
