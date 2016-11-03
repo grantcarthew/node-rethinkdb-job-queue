@@ -83,7 +83,9 @@ module.exports = function queueChange (q, err, change = {}) {
         return enums.status.reviewed
       }
     }
-    q.emit(enums.status.error, new Error(enums.message.globalStateError))
+    const err = new Error(enums.message.globalStateError)
+    logger('Event: State document change error', err, q.id)
+    q.emit(enums.status.error, err, q.id)
     return enums.status.error
   }
 

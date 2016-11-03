@@ -98,8 +98,8 @@ class Job {
     return this.q.ready().then(() => {
       return jobProgress(this, percent)
     }).catch((err) => {
-      logger('updateProgress Error:', err)
-      this.q.emit(enums.status.error, err)
+      logger('Event: updateProgress error', err, this.q.id)
+      this.q.emit(enums.status.error, err, this.q.id)
       return Promise.reject(err)
     })
   }
@@ -109,8 +109,8 @@ class Job {
     return this.q.ready().then(() => {
       return jobUpdate(this)
     }).catch((err) => {
-      logger('update Error:', err)
-      this.q.emit(enums.status.error, err)
+      logger('Event: update error', err, this.q.id)
+      this.q.emit(enums.status.error, err, this.q.id)
       return Promise.reject(err)
     })
   }
@@ -133,8 +133,8 @@ class Job {
     return this.q.ready().then(() => {
       return jobLog.commitLog(this, data, message, type, status)
     }).catch((err) => {
-      logger('addLog Error:', err)
-      this.q.emit(enums.status.error, err)
+      logger('Event: addLog error', err, this.q.id)
+      this.q.emit(enums.status.error, err, this.q.id)
       return Promise.reject(err)
     })
   }
