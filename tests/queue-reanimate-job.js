@@ -13,7 +13,7 @@ const eventHandlers = require('./test-event-handlers')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('XXXXXXXXXXXX', (t) => {
+    test('queue-reanimate', (t) => {
       t.plan(1000)
 
       // ---------- Test Setup ----------

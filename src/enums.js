@@ -86,6 +86,7 @@ const message = Object.freeze({
   jobAlreadyAdded: 'Job is already in the queue',
   jobDataInvalid: 'Job data can not be a function',
   jobInvalid: 'Job object is invalid',
+  jobReanimated: 'Job has been reanimated',
   processTwice: 'Cannot call queue process twice',
   idInvalid: 'The job id is invalid',
   priorityInvalid: 'The job priority value is invalid',
