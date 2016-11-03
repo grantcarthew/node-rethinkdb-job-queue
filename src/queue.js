@@ -78,8 +78,8 @@ class Queue extends EventEmitter {
     logger('set concurrency', value)
     if (!is.integer(value) || value < 1) {
       const err = new Error(enums.message.concurrencyInvalid)
-      logger('Event: concurrency error', err, q.id)
-      this.emit(enums.status.error, err, q.id)
+      logger('Event: concurrency error', err, this.id)
+      this.emit(enums.status.error, err, this.id)
       return
     }
     this._concurrency = value
