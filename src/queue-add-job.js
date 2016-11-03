@@ -31,9 +31,9 @@ module.exports = function queueAddJob (q, job, skipStatusCheck) {
     queueProcess.restart(q)
     return dbResult.toJob(q, saveResult)
   }).then((savedJobs) => {
-    for (let job of savedJobs) {
-      logger(`Event: added [${job.id}]`)
-      q.emit(enums.status.added, job.id)
+    for (let savedjob of savedJobs) {
+      logger(`Event: added [${savedjob.id}]`)
+      q.emit(enums.status.added, savedjob.id)
     }
     return savedJobs
   })
