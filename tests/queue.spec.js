@@ -9,7 +9,7 @@ const Queue = require('../src/queue')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue', (t) => {
-      t.plan(157)
+      t.plan(159)
 
       let q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
       let q2
@@ -19,7 +19,9 @@ module.exports = function () {
         priority: 'high',
         timeout: 200,
         retryMax: 5,
-        retryDelay: 400
+        retryDelay: 400,
+        repeat: 5,
+        repeatDelay: 5000
       }
       function processHandler (job, next) {
         setTimeout(function finishJob () {
@@ -328,6 +330,8 @@ module.exports = function () {
         t.equal(q.jobOptions.timeout, enums.options.timeout, 'Default job timeout is valid')
         t.equal(q.jobOptions.retryMax, enums.options.retryMax, 'Default job retryMax is valid')
         t.equal(q.jobOptions.retryDelay, enums.options.retryDelay, 'Default job retryDelay is valid')
+        t.equal(q.jobOptions.repeat, enums.options.repeat, 'Default job repeat is valid')
+        t.equal(q.jobOptions.repeatDelay, enums.options.repeatDelay, 'Default job repeatDelay is valid')
         t.equal(q.removeFinishedJobs, enums.options.removeFinishedJobs, 'Default removeFinishedJobs is valid')
         t.equal(q.running, 0, 'Running jobs is zero')
         t.equal(q.concurrency, enums.options.concurrency, 'Default concurrency is valid')
