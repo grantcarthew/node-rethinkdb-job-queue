@@ -49,6 +49,7 @@ module.exports = function () {
         cancelled: 2,
         failed: 3,
         terminated: 1,
+        reanimated: 0,
         log: 0,
         updated: 0
       }

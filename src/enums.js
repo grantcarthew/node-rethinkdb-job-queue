@@ -38,6 +38,7 @@ const status = Object.freeze({
   cancelled: 'cancelled',
   failed: 'failed',
   terminated: 'terminated',
+  reanimated: 'reanimated',
   log: 'log', // Event only, not a job status
   updated: 'updated' // Event only, not a job status
 })

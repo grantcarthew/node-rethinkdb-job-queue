@@ -17,7 +17,7 @@ const eventHandlers = require('./test-event-handlers')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('db-review', (t) => {
-      t.plan(85)
+      t.plan(86)
 
       let processRestart = 0
       processStub.restart = function (q) {
@@ -52,6 +52,7 @@ module.exports = function () {
         cancelled: 0,
         failed: 0,
         terminated: 0,
+        reanimated: 0,
         log: 0,
         updated: 0
       }

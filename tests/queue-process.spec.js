@@ -14,7 +14,7 @@ const eventHandlers = require('./test-event-handlers')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-process', (t) => {
-      t.plan(304)
+      t.plan(305)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -50,6 +50,7 @@ module.exports = function () {
         cancelled: 2,
         failed: 3,
         terminated: 1,
+        reanimated: 0,
         log: 0,
         updated: 0
       }

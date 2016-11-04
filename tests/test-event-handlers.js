@@ -179,6 +179,15 @@ module.exports.add = function eventHandlersAdd (t, q, state) {
   }
   state.handler.set(enums.status.terminated, terminatedEventHandler)
 
+  function reanimatedEventHandler (jobId) {
+    if (state.enabled) {
+      let total = incCount(enums.status.reanimated)
+      t.ok(is.uuid(jobId),
+        `Event: reanimated [${total} of ${state.reanimated}] [${jobId}]`)
+    }
+  }
+  state.handler.set(enums.status.reanimated, reanimatedEventHandler)
+
   function logEventHandler (jobId) {
     if (state.enabled) {
       let total = incCount(enums.status.log)

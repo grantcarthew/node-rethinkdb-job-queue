@@ -12,7 +12,7 @@ const eventHandlers = require('./test-event-handlers')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('job-progress', (t) => {
-      t.plan(46)
+      t.plan(47)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       const job = q.createJob()
@@ -46,6 +46,7 @@ module.exports = function () {
         cancelled: 0,
         failed: 0,
         terminated: 0,
+        reanimated: 0,
         log: 0,
         updated: 0
       }

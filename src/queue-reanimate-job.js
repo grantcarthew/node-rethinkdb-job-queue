@@ -30,10 +30,16 @@ module.exports = function queueGetJob (q,
         queueId: q.id,
         retryCount: 0,
         status: enums.status.waiting
-      })
+      }, {returnChanges: true})
       .run()
-  }).then((jobsData) => {
-    logger('jobsData', jobsData)
-    return dbResult.toJob(q, jobsData)
+  }).then((jobsResult) => {
+    logger('jobsResult', jobsResult)
+    return dbResult.toJob(q, jobsResult)
+  }).then((reanimatedJobs) => {
+    for (let reanimatedJob of reanimatedJobs) {
+      logger(`Event: reanimated [${reanimatedJob.id}]`)
+      q.emit(enums.status.reanimated, reanimatedJob.id)
+    }
+    return reanimatedJobs
   })
 }
