@@ -10,7 +10,7 @@ const tOpts = require('./test-options')
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test('queue-add-job', (t) => {
-      t.plan(30)
+      t.plan(29)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let addedCount = 0
@@ -81,16 +81,6 @@ module.exports = function () {
           t.fail('Job invalid is not returning a rejected promise')
         }).catch((err) => {
           t.ok(err.message.includes(enums.message.jobInvalid), 'Job invalid returns a rejected promise')
-        })
-      }).then(() => {
-        job.status = enums.status.waiting
-
-        // ---------- Add Invalid Status Job Tests ----------
-        t.comment('queue-add-job: Add Invalid Status Job')
-        return queueAddJob(q, job).then(() => {
-          t.fail('Promise is not being rejected when job status is invalid')
-        }).catch((err) => {
-          t.equal(err.message, enums.message.jobAlreadyAdded, 'Job with status not equal to created returns a rejected promise')
         })
       }).then(() => {
         t.equal(addedCount, 3, 'Jobs added event count is valid')
