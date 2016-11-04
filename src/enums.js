@@ -83,7 +83,6 @@ const message = Object.freeze({
   jobUpdated: 'Job updated. Old values in log data',
   jobProgress: 'Job progress updated. Old value in log data',
   jobNotAdded: 'Job not added to the queue',
-  jobAlreadyAdded: 'Job is already in the queue',
   jobDataInvalid: 'Job data can not be a function',
   jobInvalid: 'Job object is invalid',
   jobReanimated: 'Job has been reanimated',

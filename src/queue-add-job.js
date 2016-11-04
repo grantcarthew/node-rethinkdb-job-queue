@@ -6,15 +6,14 @@ const dbResult = require('./db-result')
 const jobLog = require('./job-log')
 const jobParse = require('./job-parse')
 
-module.exports = function queueAddJob (q, job, skipStatusCheck) {
+module.exports = function queueAddJob (q, job) {
   logger('addJob', job)
   return Promise.resolve().then(() => {
     return jobParse.job(job)
   }).map((oneJob) => {
-    if (!skipStatusCheck && oneJob.status !== enums.status.created) {
-      return Promise.reject(new Error(enums.message.jobAlreadyAdded))
+    if (oneJob.status === enums.status.created) {
+      oneJob.status = enums.status.waiting
     }
-    if (!skipStatusCheck) { oneJob.status = enums.status.waiting }
     const log = jobLog.createLogObject(oneJob,
       null,
       enums.message.jobAdded,
