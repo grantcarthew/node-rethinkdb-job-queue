@@ -52,6 +52,8 @@ const options = Object.freeze({
   timeout: 300000, // 5 minutes
   retryMax: 3,
   retryDelay: 600000, // 10 minutes
+  repeat: false,
+  repeatDelay: 300000, // 5 minutes
   concurrency: 1,
   removeFinishedJobs: 15552000000 // 180 days
 })

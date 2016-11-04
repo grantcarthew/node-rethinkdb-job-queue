@@ -10,6 +10,8 @@ module.exports = function jobOptions (newOptions = {}, oldOptions = {}) {
   finalOptions.timeout = enums.options.timeout
   finalOptions.retryMax = enums.options.retryMax
   finalOptions.retryDelay = enums.options.retryDelay
+  finalOptions.repeat = enums.options.repeat
+  finalOptions.repeatDelay = enums.options.repeatDelay
 
   if (Object.keys(enums.priority).includes(oldOptions.priority)) {
     finalOptions.priority = oldOptions.priority
@@ -27,6 +29,16 @@ module.exports = function jobOptions (newOptions = {}, oldOptions = {}) {
     finalOptions.retryDelay = oldOptions.retryDelay
   }
 
+  if (is.true(oldOptions.repeat) ||
+      is.false(oldOptions.repeat) ||
+      (is.integer(oldOptions.repeat) && oldOptions.repeat >= 0)) {
+    finalOptions.repeat = oldOptions.repeat
+  }
+
+  if (is.integer(oldOptions.repeatDelay) && oldOptions.repeatDelay >= 0) {
+    finalOptions.repeatDelay = oldOptions.repeatDelay
+  }
+
   if (Object.keys(enums.priority).includes(newOptions.priority)) {
     finalOptions.priority = newOptions.priority
   }
@@ -41,6 +53,16 @@ module.exports = function jobOptions (newOptions = {}, oldOptions = {}) {
 
   if (is.integer(newOptions.retryDelay) && newOptions.retryDelay >= 0) {
     finalOptions.retryDelay = newOptions.retryDelay
+  }
+
+  if (is.true(newOptions.repeat) ||
+      is.false(newOptions.repeat) ||
+      (is.integer(newOptions.repeat) && newOptions.repeat >= 0)) {
+    finalOptions.repeat = newOptions.repeat
+  }
+
+  if (is.integer(newOptions.repeatDelay) && newOptions.repeatDelay >= 0) {
+    finalOptions.repeatDelay = newOptions.repeatDelay
   }
 
   return finalOptions

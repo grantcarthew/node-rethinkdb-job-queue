@@ -30,6 +30,9 @@ class Job {
       this.retryDelay = options.retryDelay
       this.retryMax = options.retryMax
       this.retryCount = 0
+      this.repeat = options.repeat
+      this.repeatDelay = options.repeatDelay
+      this.repeatCount = 0
       this.progress = 0
       this.status = enums.status.created
       this.log = []
