@@ -143,6 +143,18 @@ module.exports.active = function isActive (job) {
   return isStatus(job, enums.status.active)
 }
 
+module.exports.repeating = function isRepeating (job) {
+  logger('isRepeating', job)
+  if (isTrue(job.repeat)) {
+    return true
+  }
+  if (isInteger(job.repeat) &&
+      job.repeatCount < job.repeat) {
+    return true
+  }
+  return false
+}
+
 module.exports.completed = function isCompleted (job) {
   logger('isCompleted', job)
   return isStatus(job, enums.status.completed)

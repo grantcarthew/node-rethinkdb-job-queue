@@ -5,6 +5,7 @@ const is = require('../src/is')
 const tError = require('./test-error')
 const tOpts = require('./test-options')
 const Queue = require('../src/queue')
+const jobOptions = require('../src/job-options')
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
@@ -366,7 +367,8 @@ module.exports = function () {
           priority: 'low',
           timeout: 400,
           retryMax: 2,
-          retryDelay: 900
+          retryDelay: 900,
+          repeat: 0
         }
         job = q.createJob().setPriority('low').setTimeout(400).setRetryMax(2).setRetryDelay(900)
         t.ok(is.job(job), 'Queue createJob created a job object')
@@ -375,8 +377,9 @@ module.exports = function () {
         t.equal(job.retryMax, customJobOptions.retryMax, 'Queue created job with custom retryMax')
         t.equal(job.retryDelay, customJobOptions.retryDelay, 'Queue created job with custom retryDelay')
 
-        // ---------- Create Job Tests ----------
+        // ---------- Add Job Tests ----------
         t.comment('queue: Add Job')
+        q.jobOptions = jobOptions() // Resetting job options
         job = q.createJob()
         job.data = tOpts.tData
         return q.addJob(job)

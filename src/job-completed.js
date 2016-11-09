@@ -7,13 +7,16 @@ const dbResult = require('./db-result')
 
 module.exports = function completed (job, result) {
   logger(`completed:  [${job.id}]`, result)
-  job.status = enums.status.completed
+  const isRepeating = is.repeating(job)
+  job.status = isRepeating ? enums.status.waiting : enums.status.completed
   job.dateFinished = new Date()
-  job.progress = 100
+  job.progress = isRepeating ? 0 : 100
+  if (isRepeating) { job.repeatCount++ }
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
-  const log = jobLog.createLogObject(job, result, enums.message.completed)
+  const logStatus = isRepeating ? enums.status.repeated : enums.status.completed
+  const log = jobLog.createLogObject(job, result, logStatus)
   log.duration = duration
 
   return Promise.resolve().then(() => {
@@ -23,6 +26,7 @@ module.exports = function completed (job, result) {
       status: job.status,
       dateFinished: job.dateFinished,
       progress: job.progress,
+      repeatCount: job.repeatCount,
       log: job.q.r.row('log').append(log),
       queueId: job.q.id
     }, { returnChanges: true })
@@ -31,9 +35,9 @@ module.exports = function completed (job, result) {
     logger(`updateResult`, updateResult)
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
-    logger(`Event: completed [${jobIds[0]}]`)
-    job.q.emit(enums.status.completed, jobIds[0])
-    if (is.true(job.q.removeFinishedJobs)) {
+    logger(`Event: completed`, jobIds[0], isRepeating)
+    job.q.emit(enums.status.completed, jobIds[0], isRepeating)
+    if (!isRepeating && is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
         return jobIds
       })
