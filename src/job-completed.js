@@ -15,15 +15,22 @@ module.exports = function completed (job, result) {
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
-  const logStatus = isRepeating ? enums.status.repeated : enums.status.completed
-  const log = jobLog.createLogObject(job, result, logStatus)
+  const log = jobLog.createLogObject(job, result, enums.status.completed)
   log.duration = duration
+  if (is.true(job.repeat) || is.integer(job.repeat)) {
+    log.repeatCount = job.repeatCount
+  }
 
   return Promise.resolve().then(() => {
     return job.q.r.db(job.q.db).table(job.q.name)
     .get(job.id)
     .update({
       status: job.status,
+      dateEnable: job.q.r.branch(
+        isRepeating,
+        job.q.r.now().add(job.q.r.row('repeatDelay').div(1000)),
+        job.q.r.row('dateEnable')
+      ),
       dateFinished: job.dateFinished,
       progress: job.progress,
       repeatCount: job.repeatCount,
