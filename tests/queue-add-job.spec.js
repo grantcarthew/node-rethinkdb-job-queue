@@ -6,19 +6,45 @@ const enums = require('../src/enums')
 const queueAddJob = require('../src/queue-add-job')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-add-job'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-add-job', (t) => {
-      t.plan(29)
+    test(testName, (t) => {
+      t.plan(51)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
-      let addedCount = 0
-      function addedEventHandler (jobId) {
-        addedCount++
-        t.ok(is.uuid(jobId), `Event: added [${addedCount}] [${jobId}]`)
+
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 3,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
-      q.on(enums.status.added, addedEventHandler)
 
       const job = q.createJob()
       const jobs = [
@@ -28,6 +54,7 @@ module.exports = function () {
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
+        eventHandlers.add(t, q, state)
 
         // ---------- Add Single Job Tests ----------
         t.comment('queue-add-job: Add Single Job')
@@ -83,8 +110,9 @@ module.exports = function () {
           t.ok(err.message.includes(enums.message.jobInvalid), 'Job invalid returns a rejected promise')
         })
       }).then(() => {
-        t.equal(addedCount, 3, 'Jobs added event count is valid')
-        q.removeListener(enums.status.added, addedEventHandler)
+        //
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

@@ -7,11 +7,13 @@ const jobUpdate = require('../src/job-update')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'job-update'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-update', (t) => {
-      t.plan(31)
+    test(testName, (t) => {
+      t.plan(55)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
@@ -19,19 +21,33 @@ module.exports = function () {
       let tDate = new Date()
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      function updatedEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id, `Event: updated [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.updated, updatedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.updated, updatedEventHandler)
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        reset: 1,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 0,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 1
       }
 
       return q.reset().then((resetResult) => {
@@ -46,7 +62,7 @@ module.exports = function () {
         t.equal(savedJobs1[0].log.length, 1, 'Job log is valid')
 
         // ---------- Job Update Test ----------
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         t.comment('job-update: Update')
         job = savedJobs1[0]
         job.newData = tData
@@ -83,7 +99,9 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
-        removeEventHandlers()
+
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))

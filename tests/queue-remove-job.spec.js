@@ -6,11 +6,13 @@ const tError = require('./test-error')
 const queueRemoveJob = require('../src/queue-remove-job')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-remove-job'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-remove-job', (t) => {
-      t.plan(24)
+    test(testName, (t) => {
+      t.plan(55)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let jobs = []
@@ -18,24 +20,39 @@ module.exports = function () {
         jobs.push(q.createJob())
       }
 
-      let testEvents = false
-      function removedEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: removed [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.removed, removedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.removed, removedEventHandler)
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 8,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 8,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         return q.addJob(jobs)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 3, 'Jobs saved successfully')
@@ -105,7 +122,9 @@ module.exports = function () {
           t.ok(err.message.includes(enums.message.idInvalid), 'Invalid job returns a rejected Promise')
         })
       }).then(() => {
-        removeEventHandlers()
+        //
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

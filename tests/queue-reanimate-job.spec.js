@@ -7,10 +7,11 @@ const tOpts = require('./test-options')
 const queueReanimateJob = require('../src/queue-reanimate-job')
 const Queue = require('../src/queue')
 const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-reanimate'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-reanimate', (t) => {
+    test(testName, (t) => {
       t.plan(48)
 
       // ---------- Test Setup ----------
@@ -18,6 +19,7 @@ module.exports = function () {
 
       // ---------- Event Handler Setup ----------
       let state = {
+        testName,
         enabled: false,
         ready: 0,
         processing: 0,

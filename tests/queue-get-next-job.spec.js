@@ -8,21 +8,17 @@ const queueAddJob = require('../src/queue-add-job')
 const queueGetNextJob = require('../src/queue-get-next-job')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-get-next-job'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-get-next-job', (t) => {
-      t.plan(105)
+    test(testName, (t) => {
+      t.plan(151)
 
       // ---------- Creating Priority Test Jobs ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
       q._concurrency = 1
-      let activeCount = 0
-      function activeEventHandler (jobId) {
-        activeCount++
-        t.ok(is.uuid(jobId), `Event: Job Active [${activeCount}] [${jobId}]`)
-      }
-      q.on(enums.status.active, activeEventHandler)
 
       const jobLowest = q.createJob().setPriority('lowest')
       jobLowest.status = enums.status.waiting
@@ -74,6 +70,36 @@ module.exports = function () {
       ]
       let retryJobs
 
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 24,
+        waiting: 0,
+        active: 19,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
+      }
+
       // Uncomment below for debugging
       // allCreatedJobs.map((j) => {
       //   console.log(`${j.id} ${j.data}`)
@@ -82,6 +108,7 @@ module.exports = function () {
       // ---------- Adding Jobs for Testing ----------
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
+        eventHandlers.add(t, q, state)
         return queueAddJob(q, allCreatedJobs, true)
       }).then((savedJobs) => {
         t.equal(savedJobs.length, 11, 'Jobs saved successfully')
@@ -247,8 +274,11 @@ module.exports = function () {
       }).then((retryGet3) => {
         t.equal(retryGet3.length, 1, 'Last job retrieved successfully')
         t.equal(retryGet3[0].id, retryJobs[0].id, 'Last job is valid')
-        t.equal(activeCount, 19, 'Active event count valid')
-        q.removeListener(enums.status.active, activeEventHandler)
+
+        // ---------- Event Summary ----------
+        t.comment('queue-process: Event Summary')
+        eventHandlers.remove(t, q, state)
+
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

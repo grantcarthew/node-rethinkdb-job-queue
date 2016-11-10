@@ -19,7 +19,7 @@ module.exports = function () {
         q.createJob()
       ]
       let eventCount = 0
-      function resetEventHandler (total) {
+      function resetEventHandler (qid, total) {
         eventCount++
         t.pass('Event: Queue reset')
         if (eventCount < 2) { return }

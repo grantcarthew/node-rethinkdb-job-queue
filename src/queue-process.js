@@ -55,8 +55,8 @@ function onCancelJob (jobId, q) {
   }
 }
 
-function restartJobTimeout (jobId) {
-  logger('resetJobTimeout', jobId)
+function restartJobTimeout (queueId, jobId) {
+  logger('resetJobTimeout', queueId, jobId)
   let jobTimeout
   if (jobTimeouts.has(jobId)) {
     jobTimeout = jobTimeouts.get(jobId)
@@ -115,7 +115,7 @@ function jobRun (job) {
 
   addJobTimeout(job, timeoutHandler)
   logger(`Event: processing [${job.id}]`)
-  job.q.emit(enums.status.processing, job.id)
+  job.q.emit(enums.status.processing, job.q.id, job.id)
   logger('calling handler function')
   job.q._handler(job, nextHandler, addOnCancelHandler)
 }
@@ -180,7 +180,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q._handler = handler
   q._running = 0
   q.on(enums.status.progress, restartJobTimeout)
-  q.on(enums.status.cancelled, (jobId) => onCancelJob(jobId, q))
+  q.on(enums.status.cancelled, (queueId, jobId) => onCancelJob(jobId, q))
 
   // Returning a Promise so the jobTick is initiated
   // after the dbReview process. The Promise can be ignored.

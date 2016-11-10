@@ -56,11 +56,11 @@ module.exports = function failed (job, err) {
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     if (isRetry) {
-      logger(`Event: failed [${jobIds[0]}]`)
-      job.q.emit(enums.status.failed, jobIds[0])
+      logger(`Event: failed`, job.q.id, jobIds[0])
+      job.q.emit(enums.status.failed, job.q.id, jobIds[0])
     } else {
-      logger(`Event: terminated [${jobIds[0]}]`)
-      job.q.emit(enums.status.terminated, jobIds[0])
+      logger(`Event: terminated`, job.q.id, jobIds[0])
+      job.q.emit(enums.status.terminated, job.q.id, jobIds[0])
     }
     if (!isRetry &&
         is.true(job.q.removeFinishedJobs)) {

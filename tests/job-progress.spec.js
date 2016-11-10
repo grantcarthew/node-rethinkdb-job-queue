@@ -8,10 +8,11 @@ const jobProgress = require('../src/job-progress')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
+const testName = 'job-progress'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-progress', (t) => {
+    test(testName, (t) => {
       t.plan(47)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -23,6 +24,7 @@ module.exports = function () {
 
       // ---------- Event Handler Setup ----------
       let state = {
+        testName,
         enabled: false,
         ready: 0,
         processing: 0,

@@ -7,35 +7,44 @@ const queueCancelJob = require('../src/queue-cancel-job')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-cancel-job'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-cancel-job', (t) => {
-      t.plan(40)
+    test(testName, (t) => {
+      t.plan(70)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      function cancelledEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: Job cancelled [${jobId}]`)
-        }
-      }
-      function removedEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: Job removed [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.cancelled, cancelledEventHandler)
-        q.on(enums.status.removed, removedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.cancelled, cancelledEventHandler)
-        q.removeListener(enums.status.removed, removedEventHandler)
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 5,
+        reset: 1,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 6,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 11,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       const jobsToCreate = 5
@@ -50,7 +59,7 @@ module.exports = function () {
         t.equal(savedJobs.length, jobsToCreate, 'Jobs saved successfully')
 
         // ---------- Cancel Multiple Jobs Tests ----------
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         t.comment('queue-cancel-job: Cancel Multiple Jobs')
         return queueCancelJob(q, savedJobs, tData)
       }).then((cancelResult) => {
@@ -101,7 +110,11 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
-        removeEventHandlers()
+
+        // ---------- Event Summary ----------
+        t.comment('queue-process: Event Summary')
+        eventHandlers.remove(t, q, state)
+
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))

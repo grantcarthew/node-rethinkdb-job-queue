@@ -13,10 +13,11 @@ const processStub = {}
 const dbReview = proxyquire('../src/db-review',
   { './queue-process': processStub })
 const eventHandlers = require('./test-event-handlers')
+const testName = 'db-review'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('db-review', (t) => {
+    test(testName, (t) => {
       t.plan(86)
 
       let processRestart = 0
@@ -29,6 +30,7 @@ module.exports = function () {
 
       // ---------- Event Handler Setup ----------
       let state = {
+        testName,
         enabled: false,
         ready: 0,
         processing: 0,

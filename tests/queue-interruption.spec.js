@@ -9,11 +9,13 @@ const proxyquire = require('proxyquire')
 const processStub = {}
 const queueInterruption = proxyquire('../src/queue-interruption',
   { './queue-process': processStub })
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-interruption'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-interruption', (t) => {
-      t.plan(19)
+    test(testName, (t) => {
+      t.plan(33)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       processStub.restart = function (q) {
@@ -21,52 +23,37 @@ module.exports = function () {
       }
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      let pausingEventCount = 0
-      let pausingEventTotal = 1
-      function pausingEventHandler (global, queueId) {
-        pausingEventCount++
-        if (testEvents) {
-          t.pass(`Event: pausing [${pausingEventCount} of ${pausingEventTotal}] `)
-          t.ok(is.boolean(global), `Event: pausing [global: ${global}]`)
-          t.ok(is.string(queueId), `Event: pausing [queueId: ${queueId}]`)
-        }
-      }
-      let pausedEventCount = 0
-      let pausedEventTotal = 1
-      function pausedEventHandler (global, queueId) {
-        pausedEventCount++
-        if (testEvents) {
-          t.pass(`Event: paused [${pausedEventCount} of ${pausedEventTotal}] `)
-          t.ok(is.boolean(global), `Event: paused [global: ${global}]`)
-          t.ok(is.string(queueId), `Event: paused [queueId: ${queueId}]`)
-        }
-      }
-      let resumedEventCount = 0
-      let resumedEventTotal = 1
-      function resumedEventHandler (global, queueId) {
-        resumedEventCount++
-        if (testEvents) {
-          t.pass(`Event: resumed [${resumedEventCount} of ${resumedEventTotal}] `)
-          t.ok(is.boolean(global), `Event: resumed [global: ${global}]`)
-          t.ok(is.string(queueId), `Event: resumed [queueId: ${queueId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.paused, pausingEventHandler)
-        q.on(enums.status.paused, pausedEventHandler)
-        q.on(enums.status.resumed, resumedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.pausing, pausedEventHandler)
-        q.removeListener(enums.status.paused, pausedEventHandler)
-        q.removeListener(enums.status.resumed, resumedEventHandler)
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 1,
+        paused: 1,
+        resumed: 1,
+        removed: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 0,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       return q.ready().then((ready) => {
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         t.ok(ready, 'Queue is ready')
 
         // ---------- Pause Test ----------
@@ -88,13 +75,9 @@ module.exports = function () {
       }).then((resumed) => {
         t.ok(resumed, 'Interruption resume returns true')
         t.notOk(q.paused, 'Queue is not paused')
-        removeEventHandlers()
 
-        // ---------- Event summary Test ----------
-        t.comment('queue-interruption: Event Summary')
-        t.equal(pausingEventCount, pausingEventTotal, 'Pausing event count valid')
-        t.equal(pausedEventCount, pausedEventTotal, 'Paused event count valid')
-        t.equal(resumedEventCount, resumedEventTotal, 'Resumed event count valid')
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
 
         q.stop()
         return resolve(t.end())

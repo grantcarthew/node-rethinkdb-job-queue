@@ -32,8 +32,8 @@ module.exports = function cancelJob (q, jobOrId, reason) {
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     jobIds.forEach((jobId) => {
-      logger(`Event: cancelled [${jobId}]`)
-      q.emit(enums.status.cancelled, jobId)
+      logger(`Event: cancelled`, q.id, jobId)
+      q.emit(enums.status.cancelled, q.id, jobId)
     })
     if (is.true(q.removeFinishedJobs)) {
       return q.removeJob(jobIds).then((deleteResult) => {

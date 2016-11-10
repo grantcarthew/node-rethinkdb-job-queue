@@ -43,7 +43,7 @@ module.exports = function completed (job, result) {
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
     logger(`Event: completed`, jobIds[0], isRepeating)
-    job.q.emit(enums.status.completed, jobIds[0], isRepeating)
+    job.q.emit(enums.status.completed, job.q.id, jobIds[0], isRepeating)
     if (!isRepeating && is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
         return jobIds

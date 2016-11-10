@@ -25,8 +25,8 @@ module.exports = function jobUpdate (job) {
       .run()
   }).then((updateResult) => {
     logger(`updateResult`, updateResult)
-    logger(`Event: updated [${job.id}]`)
-    job.q.emit(enums.status.updated, job.id)
+    logger(`Event: updated`, job.q.id, job.id)
+    job.q.emit(enums.status.updated, job.q.id, job.id)
     return true
   })
 }

@@ -33,8 +33,8 @@ module.exports = function jobProgress (job, percent) {
       log: job.q.r.row('log').append(newLog)
     }).run()
   }).then((updateResult) => {
-    logger(`Event: progress [${job.id}] [${percent}]`)
-    job.q.emit(enums.status.progress, job.id, percent)
+    logger(`Event: progress`, job.q.id, job.id, percent)
+    job.q.emit(enums.status.progress, job.q.id, job.id, percent)
     return true
   })
 }
