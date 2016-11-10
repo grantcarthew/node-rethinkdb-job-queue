@@ -5,7 +5,7 @@ const enums = require('../src/enums')
 
 module.exports = function () {
   test('is', (t) => {
-    t.plan(62)
+    t.plan(68)
 
     const ms = 5000
     const tDate = new Date()
@@ -16,7 +16,9 @@ module.exports = function () {
       queueId: 'queue id string',
       dateCreated: new Date(),
       priority: enums.priority.normal,
-      status: enums.status.created
+      status: enums.status.created,
+      repeat: false,
+      repeatCount: 0
     }
     const log = {
       date: new Date(),
@@ -75,6 +77,18 @@ module.exports = function () {
     job.priority = enums.priority.normal
     job.status = 'not a real status'
     t.notOk(is.job(job), 'Is job false with invalid status')
+    job.repeat = true
+    t.ok(is.repeating(job), 'Is job repeating true when repeat is true')
+    job.repeat = 5
+    t.ok(is.repeating(job), 'Is job repeating true when repeat is integer')
+    job.repeatCount = 5
+    t.notOk(is.repeating(job), 'Is job repeating false when repeat === repeatCount')
+    job.repeatCount = 6
+    t.notOk(is.repeating(job), 'Is job repeating false when repeat < repeatCount')
+    job.repeat = 0
+    t.notOk(is.repeating(job), 'Is job repeating false when repeat is 0')
+    job.repeat = false
+    t.notOk(is.repeating(job), 'Is job repeating false when repeat is false')
     job.status = enums.status.created
     t.notOk(is.active(job), 'Is active false with invalid status')
     job.status = enums.status.active
