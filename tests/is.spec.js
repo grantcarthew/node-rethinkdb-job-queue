@@ -5,7 +5,7 @@ const enums = require('../src/enums')
 
 module.exports = function () {
   test('is', (t) => {
-    t.plan(68)
+    t.plan(71)
 
     const ms = 5000
     const tDate = new Date()
@@ -59,6 +59,9 @@ module.exports = function () {
     t.ok(is.array([]), 'Is array true with array')
     t.notOk(is.array(1), 'Is array false with integer 1')
     t.notOk(is.array({}), 'Is array false with object')
+    t.ok(is.error(new Error()), 'Is error true with new Error')
+    t.ok(is.error(Error()), 'Is error true with Error')
+    t.notOk(is.error('not an error'), 'Is error false with string')
     t.ok(is.job(job), 'Is job true with mock job')
     t.notOk(is.job(), 'Is job false with null')
     job.id = null

@@ -106,6 +106,12 @@ function isArray (value) {
 }
 module.exports.array = isArray
 
+function isError (value) {
+  logger('isError', value)
+  return value instanceof Error
+}
+module.exports.error = isError
+
 function isLog (value) {
   logger('isLog', value)
   if (!value) { return false }

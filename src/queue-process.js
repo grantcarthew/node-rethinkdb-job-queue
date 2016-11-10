@@ -28,7 +28,7 @@ function addOnCancelHandler (job, cancellationCallback) {
   } else {
     let err = new Error(enums.message.cancelCallbackInvalid)
     logger(`Event: addOnCancelHandler error`, err, job.q.id)
-    job.q.emit(enums.status.error, err, job.q.id)
+    job.q.emit(enums.status.error, job.q.id, err)
     throw err
   }
 }
@@ -84,7 +84,7 @@ function jobRun (job) {
 
     return new Promise((resolve, reject) => {
       logger('Promise resolving or rejecting jobResult')
-      if (jobResult instanceof Error) { reject(jobResult) }
+      if (is.error(jobResult)) { reject(jobResult) }
       return resolve(jobResult)
     }).then((successResult) => {
       logger('jobResult resolved successfully')
@@ -102,7 +102,7 @@ function jobRun (job) {
       return job.q.running
     }).catch((err) => {
       logger('Event: next() Promise error', err, job.q.id)
-      job.q.emit(enums.status.error, err, job.q.id)
+      job.q.emit(enums.status.error, job.q.id, err)
       return Promise.reject(err)
     })
   }
@@ -165,7 +165,7 @@ const jobTick = function jobTick (q) {
   }).catch((err) => {
     getNextJobCleanup(q._getNextJobCalled)
     logger('Event: queueGetNextJob error:', err, q.id)
-    q.emit(enums.status.error, err, q.id)
+    q.emit(enums.status.error, q.id, err)
     return Promise.reject(err)
   })
 }
