@@ -99,7 +99,6 @@ module.exports = function () {
         t.equal(lastLog.type, enums.log.information, 'Job reanimate log type is valid')
 
         // ---------- Event Summary ----------
-        t.comment('queue-process: Event Summary')
         eventHandlers.remove(t, q, state)
 
         return q.reset()

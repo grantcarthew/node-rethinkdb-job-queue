@@ -243,7 +243,6 @@ module.exports = function () {
         dbReview.disable(q)
         t.notOk(dbReview.isEnabled(q), 'Review isEnabled reports false')
 
-        t.comment('db-review: event summary')
         eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {

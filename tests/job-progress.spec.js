@@ -123,7 +123,6 @@ module.exports = function () {
         t.notOk(inactiveResult, 'Inactive job returns false')
 
         // ---------- Event Summary ----------
-        t.comment('job-progress: Event Summary')
         eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {

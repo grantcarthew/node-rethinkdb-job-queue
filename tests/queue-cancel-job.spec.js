@@ -112,7 +112,6 @@ module.exports = function () {
         t.ok(resetResult >= 0, 'Queue reset')
 
         // ---------- Event Summary ----------
-        t.comment('queue-process: Event Summary')
         eventHandlers.remove(t, q, state)
 
         q.stop()

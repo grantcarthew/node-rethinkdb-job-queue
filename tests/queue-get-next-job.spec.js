@@ -276,7 +276,6 @@ module.exports = function () {
         t.equal(retryGet3[0].id, retryJobs[0].id, 'Last job is valid')
 
         // ---------- Event Summary ----------
-        t.comment('queue-process: Event Summary')
         eventHandlers.remove(t, q, state)
 
         return q.reset()

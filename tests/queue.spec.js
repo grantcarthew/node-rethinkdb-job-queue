@@ -315,7 +315,6 @@ module.exports = function () {
         t.equal(jobCheck[0].status, enums.status.completed, 'Job is completed')
 
         // ---------- Event Summary ----------
-        t.comment('queue: Event Summary')
         eventHandlers.remove(t, q, state)
 
         return Promise.all([
