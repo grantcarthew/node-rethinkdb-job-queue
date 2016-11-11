@@ -60,7 +60,8 @@ const options = Object.freeze({
 const index = Object.freeze({
   indexActiveDateEnable: 'indexActiveDateEnable',
   indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',
-  indexFinishedDateFinished: 'indexFinishedDateFinished'
+  indexFinishedDateFinished: 'indexFinishedDateFinished',
+  indexStatus: 'status',
 })
 const dbResult = Object.freeze({
   deleted: 'deleted',
