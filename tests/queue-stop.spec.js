@@ -8,36 +8,44 @@ const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-stop'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-stop', (t) => {
-      t.plan(31)
+    test(testName, (t) => {
+      t.plan(78)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      let q = new Queue(tOpts.cxn(), tOpts.master(999999))
 
-      let testEvents = false
-      function stoppingEventHandler (qid) {
-        if (testEvents) {
-          t.pass(`Event: Queue stopping [${qid}]`)
-          t.equal(qid, q.id, `Event: Queue stopping id is valid`)
-        }
-      }
-      function stoppedEventHandler (qid) {
-        if (testEvents) {
-          t.pass(`Event: Queue stopped [${qid}]`)
-          t.equal(qid, q.id, `Event: Queue stopped id is valid`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.stopping, stoppingEventHandler)
-        q.on(enums.status.stopped, stoppedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.stopping, stoppingEventHandler)
-        q.removeListener(enums.status.stopped, stoppedEventHandler)
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 1,
+        paused: 1,
+        resumed: 0,
+        removed: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 1,
+        stopping: 1,
+        stopped: 1,
+        dropped: 0,
+        added: 0,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       function simulateJobProcessing () {
@@ -49,16 +57,13 @@ module.exports = function () {
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        q._running = 1
-        q._masterInterval = 300
-        dbReview.enable(q)
         return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
 
         // ---------- Stop with Drain ----------
         t.comment('queue-stop: Stop with Drain')
@@ -73,15 +78,17 @@ module.exports = function () {
       }).then((ready) => {
         t.notOk(ready, 'Queue ready returns false')
 
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
+
         // ---------- Stop without Drain ----------
         t.comment('queue-stop: Stop without Drain')
-        return queueDb.attach(q, tOpts.cxn())
-      }).then(() => {
+        q = new Queue(tOpts.cxn(), tOpts.master(999999))
         return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
-        return q.resume()
-      }).then(() => {
+        state.detached = 0
+        eventHandlers.add(t, q, state)
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
@@ -109,8 +116,8 @@ module.exports = function () {
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
 
-        // ---------- Clean Up ----------
-        removeEventHandlers()
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
