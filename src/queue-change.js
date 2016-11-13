@@ -72,7 +72,7 @@ module.exports = function queueChange (q, err, change = {}) {
       if (newVal.state === enums.status.reviewed) {
         logger('Global queue state reviewed')
         logger(`Event: reviewed [local: false]`)
-        q.emit(enums.status.reviewed, {
+        q.emit(enums.status.reviewed, newVal.queueId, {
           local: false,
           reviewed: null,
           removed: null
@@ -85,7 +85,7 @@ module.exports = function queueChange (q, err, change = {}) {
     }
     const err = new Error(enums.message.globalStateError)
     logger('Event: State document change error', err, q.id)
-    q.emit(enums.status.error, err, q.id)
+    q.emit(enums.status.error, q.id, err)
     return enums.status.error
   }
 
@@ -93,7 +93,7 @@ module.exports = function queueChange (q, err, change = {}) {
   if (is.job(newVal) &&
       !is.job(oldVal)) {
     logger(`Event: added [${newVal.id}]`)
-    q.emit(enums.status.added, newVal.id)
+    q.emit(enums.status.added, newVal.queueId, newVal.id)
     restartProcessing(q)
     return enums.status.added
   }
@@ -102,7 +102,7 @@ module.exports = function queueChange (q, err, change = {}) {
   if (is.active(newVal) &&
       !is.active(oldVal)) {
     logger(`Event: active [${newVal.id}]`)
-    q.emit(enums.status.active, newVal.id)
+    q.emit(enums.status.active, newVal.queueId, newVal.id)
     return enums.status.active
   }
 
@@ -111,47 +111,48 @@ module.exports = function queueChange (q, err, change = {}) {
       is.job(oldVal) &&
       newVal.progress !== oldVal.progress) {
     logger(`Event: progress [${newVal.progress}]`)
-    q.emit(enums.status.progress, newVal.id, newVal.progress)
+    q.emit(enums.status.progress, newVal.queueId, newVal.id, newVal.progress)
     return enums.status.progress
   }
 
   // Job completed
   if (is.completed(newVal) &&
       !is.completed(oldVal)) {
-    logger(`Event: completed [${newVal.id}]`)
-    q.emit(enums.status.completed, newVal.id)
+    let isRepeating = is.repeating(newVal)
+    logger(`Event: completed`, newVal.queueId, newVal.id, isRepeating)
+    q.emit(enums.status.completed, newVal.queueId, newVal.id, isRepeating)
     return enums.status.completed
   }
 
   // Job cancelled
   if (is.cancelled(newVal) &&
       !is.cancelled(oldVal)) {
-    logger(`Event: cancelled [${newVal.id}]`)
-    q.emit(enums.status.cancelled, newVal.id)
+    logger(`Event: cancelled`, newVal.queueId, newVal.id)
+    q.emit(enums.status.cancelled, newVal.queueId, newVal.id)
     return enums.status.cancelled
   }
 
   // Job failed
   if (is.failed(newVal) &&
       !is.failed(oldVal)) {
-    logger(`Event: failed [${newVal.id}]`)
-    q.emit(enums.status.failed, newVal.id)
+    logger(`Event: failed`, newVal.queueId, newVal.id)
+    q.emit(enums.status.failed, newVal.queueId, newVal.id)
     return enums.status.failed
   }
 
   // Job terminated
   if (is.terminated(newVal) &&
       !is.terminated(oldVal)) {
-    logger(`Event: terminated [${newVal.id}]`)
-    q.emit(enums.status.terminated, newVal.id)
+    logger(`Event: terminated`, newVal.queueId, newVal.id)
+    q.emit(enums.status.terminated, newVal.queueId, newVal.id)
     return enums.status.terminated
   }
 
   // Job removed
   if (!is.job(newVal) &&
       is.job(oldVal)) {
-    logger(`Event: removed [${oldVal.id}]`)
-    q.emit(enums.status.removed, oldVal.id)
+    logger(`Event: removed`, oldVal.id)
+    q.emit(enums.status.removed, null, oldVal.id)
     return enums.status.removed
   }
 
@@ -161,8 +162,8 @@ module.exports = function queueChange (q, err, change = {}) {
       is.array(newVal.log) &&
       is.array(oldVal.log) &&
       newVal.log.length > oldVal.log.length) {
-    logger(`Event: log`, newVal.log)
-    q.emit(enums.status.log, newVal.id)
+    logger(`Event: log`, newVal.queueId, newVal.log)
+    q.emit(enums.status.log, newVal.queueId, newVal.id)
     return enums.status.log
   }
 

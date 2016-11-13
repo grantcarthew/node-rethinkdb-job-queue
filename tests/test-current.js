@@ -37,5 +37,5 @@ const queueSummary = require('./queue-summary.spec')
 
 return dbAssert().then(() => {
 }).then(() => {
-  return queueSummary()
+  return queue()
 })

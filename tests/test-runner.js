@@ -43,6 +43,8 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return dbAssert()
 }).then(() => {
+  return queueReset()
+}).then(() => {
   return Promise.all([
     dbDriver(),
     enums(),

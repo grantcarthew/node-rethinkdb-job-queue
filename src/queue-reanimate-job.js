@@ -37,8 +37,8 @@ module.exports = function queueGetJob (q,
     return dbResult.toJob(q, jobsResult)
   }).then((reanimatedJobs) => {
     for (let reanimatedJob of reanimatedJobs) {
-      logger(`Event: reanimated [${reanimatedJob.id}]`)
-      q.emit(enums.status.reanimated, reanimatedJob.id)
+      logger(`Event: reanimated`, q.id, reanimatedJob.id)
+      q.emit(enums.status.reanimated, q.id, reanimatedJob.id)
     }
     return reanimatedJobs
   })

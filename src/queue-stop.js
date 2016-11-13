@@ -11,6 +11,10 @@ module.exports = function queueStop (q, drainPool = true) {
   }).then(() => {
     logger(`Event: stopped [${q.id}]`)
     q.emit(enums.status.stopped, q.id)
+  }).delay(1000).then(() => {
+    q.eventNames().forEach((key) => {
+      q.removeAllListeners(key)
+    })
     return true
   })
 }

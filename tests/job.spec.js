@@ -7,11 +7,13 @@ const Job = require('../src/job')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'job'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job', (t) => {
-      t.plan(81)
+    test(testName, (t) => {
+      t.plan(106)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -20,42 +22,35 @@ module.exports = function () {
       let savedJob
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      function addedEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: added [${jobId}]`)
-        }
+      let state = {
+        testName,
+        enabled: false,
+        ready: 1,
+        processing: 0,
+        progress: 1,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        reset: 1,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 1,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 1,
+        updated: 0
       }
-      function logEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: log [${jobId}]`)
-        }
-      }
-      function progressEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: progress [${jobId}]`)
-        }
-      }
-      function updatedEventHandler (jobId) {
-        if (testEvents) {
-          t.ok(is.uuid(jobId), `Event: updated [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.added, addedEventHandler)
-        q.on(enums.status.log, logEventHandler)
-        q.on(enums.status.progress, progressEventHandler)
-        q.on(enums.status.updated, updatedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.added, addedEventHandler)
-        q.removeListener(enums.status.log, logEventHandler)
-        q.removeListener(enums.status.progress, progressEventHandler)
-        q.removeListener(enums.status.updated, updatedEventHandler)
-      }
-      addEventHandlers()
+      eventHandlers.add(t, q, state)
 
       // ---------- New Job Tests ----------
       t.comment('job: New Job')
@@ -188,7 +183,8 @@ module.exports = function () {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
         t.equal(jobsFromDb[0].progress, 50, 'Job progress valid')
 
-        removeEventHandlers()
+
+        eventHandlers.remove(t, q, state)
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

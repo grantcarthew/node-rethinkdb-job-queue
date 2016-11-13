@@ -7,35 +7,52 @@ const jobLog = require('../src/job-log')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'job-log'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-log', (t) => {
-      t.plan(47)
+    test(testName, (t) => {
+      t.plan(72)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
       job.detail = tData
       let logObject = { foo: 'bar' }
 
-      let testEvents = false
-      function logEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id, `Event: log [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.log, logEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.log, logEventHandler)
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        reset: 1,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 1,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 4,
+        updated: 0
       }
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         return q.addJob(job)
       }).then((newJob) => {
         job = newJob[0]
@@ -112,7 +129,9 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
-        removeEventHandlers()
+
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))

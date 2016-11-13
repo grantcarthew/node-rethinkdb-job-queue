@@ -10,11 +10,12 @@ const queueProcess = require('../src/queue-process')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
 const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-process'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-process', (t) => {
-      t.plan(305)
+    test(testName, (t) => {
+      t.plan(293)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -27,6 +28,7 @@ module.exports = function () {
 
       // ---------- Event Handler Setup ----------
       let state = {
+        testName,
         enabled: false,
         ready: 0,
         processing: 38,
@@ -279,7 +281,6 @@ module.exports = function () {
         t.equal(queueSummary.terminated, summaryTerminated, `Summary ${summaryTerminated} job terminated`)
 
         // ---------- Event Summary ----------
-        t.comment('queue-process: Event Summary')
         eventHandlers.remove(t, q, state)
 
         return q.reset()

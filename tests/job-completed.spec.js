@@ -7,37 +7,46 @@ const jobCompleted = require('../src/job-completed')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'job-completed'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-completed', (t) => {
-      t.plan(23)
+    test(testName, (t) => {
+      t.plan(48)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
       job.data = tData
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      function completedEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id, `Event: Job completed [${jobId}]`)
-        }
-      }
-      function removedEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id, `Event: Job removed [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.completed, completedEventHandler)
-        q.on(enums.status.removed, removedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.completed, completedEventHandler)
-        q.removeListener(enums.status.removed, removedEventHandler)
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 1,
+        reset: 1,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 1,
+        waiting: 0,
+        active: 0,
+        completed: 2,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       return q.reset().then((resetResult) => {
@@ -47,7 +56,7 @@ module.exports = function () {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
 
         // ---------- Job Completed Test ----------
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         t.comment('job-completed: Job Completed')
         return jobCompleted(savedJob[0], tData)
       }).then((completedIds) => {
@@ -85,7 +94,9 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
-        removeEventHandlers()
+
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))

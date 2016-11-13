@@ -17,8 +17,8 @@ module.exports.pause = function interruptionPause (q, source) {
     return
   }).then(() => {
     return new Promise((resolve, reject) => {
-      logger(`Event: pausing [${q.id}]`)
-      q.emit(enums.status.pausing, eventGlobal, q.id)
+      logger(`Event: pausing`, q.id, eventGlobal)
+      q.emit(enums.status.pausing, q.id, eventGlobal)
       if (q.running < 1) { return resolve() }
       let intId = setInterval(function pausing () {
         logger(`Pausing, waiting on running jobs: [${q.running}]`)
@@ -29,8 +29,8 @@ module.exports.pause = function interruptionPause (q, source) {
       }, 400)
     })
   }).then(() => {
-    logger(`Event: paused [global:${eventGlobal}] [${q.id}]`)
-    q.emit(enums.status.paused, eventGlobal, q.id)
+    logger(`Event: paused`, q.id, eventGlobal)
+    q.emit(enums.status.paused, q.id, eventGlobal)
     return true
   })
 }
@@ -47,8 +47,8 @@ module.exports.resume = function interruptionResume (q, source) {
     return
   }).then(() => {
     queueProcess.restart(q)
-    logger(`Event: resumed [global:${eventGlobal}] [${q.id}]`)
-    q.emit(enums.status.resumed, eventGlobal, q.id)
+    logger(`Event: resumed`, q.id, eventGlobal)
+    q.emit(enums.status.resumed, q.id, eventGlobal)
     return true
   })
 }

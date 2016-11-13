@@ -41,8 +41,8 @@ module.exports.commitLog = function addLog (job,
     })
   }).then((updateResult) => {
     job.log.push(newLog)
-    logger(`Event: log [${job.id}]`, updateResult)
-    job.q.emit(enums.status.log, job.id)
+    logger(`Event: log`, job.q.id, job.id)
+    job.q.emit(enums.status.log, job.q.id, job.id)
     return true
   })
 }

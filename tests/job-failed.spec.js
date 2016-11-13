@@ -7,45 +7,44 @@ const jobFailed = require('../src/job-failed')
 const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'job-failed'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('job-failed', (t) => {
-      t.plan(88)
+    test(testName, (t) => {
+      t.plan(113)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
       // ---------- Event Handler Setup ----------
-      let testEvents = false
-      function failedEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id,
-            `Event: Job failed [${jobId}]`)
-        }
-      }
-      function terminatedEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id,
-            `Event: Job terminated [${jobId}]`)
-        }
-      }
-      function removedEventHandler (jobId) {
-        if (testEvents) {
-          t.equal(jobId, job.id,
-            `Event: Job removed [${jobId}]`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.failed, failedEventHandler)
-        q.on(enums.status.terminated, terminatedEventHandler)
-        q.on(enums.status.removed, removedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.failed, failedEventHandler)
-        q.removeListener(enums.status.terminated, terminatedEventHandler)
-        q.removeListener(enums.status.removed, removedEventHandler)
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 1,
+        reset: 1,
+        error: 0,
+        reviewed: 0,
+        detached: 0,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 1,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 3,
+        terminated: 2,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       let job = q.createJob()
@@ -59,7 +58,7 @@ module.exports = function () {
         t.equal(savedJob[0].id, job.id, 'Job saved successfully')
 
         // ---------- Job Failed Retry 0 Test ----------
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         t.comment('job-failed: Original Job Failure')
         return jobFailed(savedJob[0], err)
       }).then((retry1id) => {
@@ -181,7 +180,9 @@ module.exports = function () {
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
-        removeEventHandlers()
+
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))

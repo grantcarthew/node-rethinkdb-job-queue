@@ -15,7 +15,7 @@ module.exports = function queueReset (q) {
     return dbResult.status(resetResult, enums.dbResult.deleted)
   }).then((totalRemoved) => {
     logger(`Event: reset [${totalRemoved}]`)
-    q.emit(enums.status.reset, totalRemoved)
+    q.emit(enums.status.reset, q.id, totalRemoved)
     return totalRemoved
   })
 }

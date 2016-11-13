@@ -19,8 +19,8 @@ module.exports = function removeJob (q, jobOrId) {
     })
   }).then((result) => {
     for (let id of result.jobIds) {
-      logger(`Event: removed [${id}]`)
-      q.emit(enums.status.removed, id)
+      logger(`Event: removed`, q.id, id)
+      q.emit(enums.status.removed, q.id, id)
     }
     return result.jobIds
   })

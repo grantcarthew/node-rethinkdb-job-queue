@@ -28,7 +28,7 @@ function addOnCancelHandler (job, cancellationCallback) {
   } else {
     let err = new Error(enums.message.cancelCallbackInvalid)
     logger(`Event: addOnCancelHandler error`, err, job.q.id)
-    job.q.emit(enums.status.error, err, job.q.id)
+    job.q.emit(enums.status.error, job.q.id, err)
     throw err
   }
 }
@@ -55,8 +55,8 @@ function onCancelJob (jobId, q) {
   }
 }
 
-function restartJobTimeout (jobId) {
-  logger('resetJobTimeout', jobId)
+function restartJobTimeout (queueId, jobId) {
+  logger('resetJobTimeout', queueId, jobId)
   let jobTimeout
   if (jobTimeouts.has(jobId)) {
     jobTimeout = jobTimeouts.get(jobId)
@@ -84,7 +84,7 @@ function jobRun (job) {
 
     return new Promise((resolve, reject) => {
       logger('Promise resolving or rejecting jobResult')
-      if (jobResult instanceof Error) { reject(jobResult) }
+      if (is.error(jobResult)) { reject(jobResult) }
       return resolve(jobResult)
     }).then((successResult) => {
       logger('jobResult resolved successfully')
@@ -102,7 +102,7 @@ function jobRun (job) {
       return job.q.running
     }).catch((err) => {
       logger('Event: next() Promise error', err, job.q.id)
-      job.q.emit(enums.status.error, err, job.q.id)
+      job.q.emit(enums.status.error, job.q.id, err)
       return Promise.reject(err)
     })
   }
@@ -115,7 +115,7 @@ function jobRun (job) {
 
   addJobTimeout(job, timeoutHandler)
   logger(`Event: processing [${job.id}]`)
-  job.q.emit(enums.status.processing, job.id)
+  job.q.emit(enums.status.processing, job.q.id, job.id)
   logger('calling handler function')
   job.q._handler(job, nextHandler, addOnCancelHandler)
 }
@@ -165,7 +165,7 @@ const jobTick = function jobTick (q) {
   }).catch((err) => {
     getNextJobCleanup(q._getNextJobCalled)
     logger('Event: queueGetNextJob error:', err, q.id)
-    q.emit(enums.status.error, err, q.id)
+    q.emit(enums.status.error, q.id, err)
     return Promise.reject(err)
   })
 }
@@ -180,7 +180,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   q._handler = handler
   q._running = 0
   q.on(enums.status.progress, restartJobTimeout)
-  q.on(enums.status.cancelled, (jobId) => onCancelJob(jobId, q))
+  q.on(enums.status.cancelled, (queueId, jobId) => onCancelJob(jobId, q))
 
   // Returning a Promise so the jobTick is initiated
   // after the dbReview process. The Promise can be ignored.

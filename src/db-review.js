@@ -101,7 +101,7 @@ function runReviewTasks (q) {
   }).then((runReviewTasksResult) => {
     runReviewTasksResult.local = true
     logger(`Event: reviewed`, runReviewTasksResult)
-    q.emit(enums.status.reviewed, runReviewTasksResult)
+    q.emit(enums.status.reviewed, q.id, runReviewTasksResult)
     queueProcess.restart(q)
     return Promise.props({
       queueStateChange: queueState(q, enums.status.reviewed),

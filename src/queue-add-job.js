@@ -32,7 +32,7 @@ module.exports = function queueAddJob (q, job) {
   }).then((savedJobs) => {
     for (let savedjob of savedJobs) {
       logger(`Event: added [${savedjob.id}]`)
-      q.emit(enums.status.added, savedjob.id)
+      q.emit(enums.status.added, q.id, savedjob.id)
     }
     return savedJobs
   })

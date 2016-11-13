@@ -41,7 +41,7 @@ module.exports = function queueGetNextJob (q) {
   }).then((updatedJobs) => {
     for (let job of updatedJobs) {
       logger(`Event: active [${job.id}]`)
-      q.emit(enums.status.active, job.id)
+      q.emit(enums.status.active, q.id, job.id)
     }
     return updatedJobs
   })
