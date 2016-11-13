@@ -1,0 +1,23 @@
+verbose: false
+instrumentation:
+    root: .
+    default-excludes: true
+    excludes: ['tests']
+    include-all-sources: true
+reporting:
+    print: summary
+    reports:
+        - lcov
+    dir: ./coverage
+    watermarks:
+        statements: [50, 80]
+        lines: [50, 80]
+        functions: [50, 80]
+        branches: [50, 80]
+check:
+    global:
+        statements: 76
+        lines: 76
+        branches: 71
+        functions: 78
+        excludes: []

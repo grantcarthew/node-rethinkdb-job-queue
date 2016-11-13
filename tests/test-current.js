@@ -35,7 +35,7 @@ const queueStop = require('./queue-stop.spec')
 const queueDrop = require('./queue-drop.spec')
 const queueSummary = require('./queue-summary.spec')
 
-dbAssert().then(() => {
+return dbAssert().then(() => {
 }).then(() => {
   return queue()
 })
