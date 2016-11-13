@@ -12,11 +12,17 @@ const testName = 'queue'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(140)
+      // t.plan(135)
+      t.plan(142)
 
       // ---------- Test Setup ----------
-      let q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
-      let q2
+      let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+      let qNotMaster
+      let qNumMaster
+      let qMain
+      let qDrop
+      let qSub
+      let qPub
 
       let job
       let customJobOptions = {
@@ -64,83 +70,81 @@ module.exports = function () {
         updated: 0
       }
 
-      return q.ready().then((ready) => {
-        t.ok(ready, 'Queue ready returns true')
+      const stopDelay = 1000
 
+      return qReady.ready().then((ready) => {
+        t.ok(ready, 'Queue ready returns true')
+        return qReady.reset()
+      }).delay(stopDelay).then(() => {
+        t.pass('Queue reset')
+        return qReady.stop()
+      }).then(() => {
         // ---------- masterInterval Options Tests ----------
         t.comment('queue: masterInterval Options')
-        return q.stop()
+        qNotMaster = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: false }))
+        t.ok(is.false(qNotMaster.masterInterval), 'False masterInterval is false')
+        return qNotMaster.ready()
+      }).delay(stopDelay).then(() => {
+        return qNotMaster.stop()
       }).then(() => {
-        q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: true }))
-        t.ok(is.true(q.masterInterval), 'True masterInterval is true')
-        return q.ready()
+        qNumMaster = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: 12345 }))
+        t.equal(qNumMaster.masterInterval, 12345, 'Number masterInterval is number')
+        return qNumMaster.ready()
+      }).delay(stopDelay).then(() => {
+        return qNumMaster.stop()
       }).then(() => {
-        return q.stop()
-      }).then(() => {
-        q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: false }))
-        t.ok(is.false(q.masterInterval), 'False masterInterval is false')
-        return q.ready()
-      }).then(() => {
-        return q.stop()
-      }).then(() => {
-        q = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: 12345 }))
-        t.equal(q.masterInterval, 12345, 'Number masterInterval is number')
-        return q.ready()
-      }).then(() => {
-        return q.stop()
-      }).then(() => {
-        q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+        qMain = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
 
-        return q.ready()
+        return qMain.ready()
       }).then(() => {
-        return q.reset()
+        return qMain.reset()
       }).then((totalRemoved) => {
         t.ok(is.integer(totalRemoved), 'Queue has been reset')
-        eventHandlers.add(t, q, state)
+        eventHandlers.add(t, qMain, state)
 
         // ---------- Constructor with Default Options Tests ----------
         t.comment('queue: Constructor with Default Options')
-        t.ok(q, 'Queue created with default options')
-        t.equal(q.name, tOpts.queueName, 'Default queue name valid')
-        t.ok(is.string(q.id), 'Queue id is valid')
-        t.equal(q.host, enums.options.host, 'Default host name is valid')
-        t.equal(q.port, enums.options.port, 'Default port is valid')
-        t.equal(q.db, tOpts.dbName, 'Default db name is valid')
-        t.ok(is.function(q.r), 'Queue r valid')
-        t.ok(q.changeFeed, 'Queue change feed is enabled')
-        t.ok(q.master, 'Queue is master queue')
-        t.equal(q.masterInterval, enums.options.masterInterval, 'Queue masterInterval is valid')
-        t.ok(is.object(q.jobOptions), 'Queue jobOptions is an object')
-        t.equal(q.jobOptions.priority, enums.priorityFromValue(40), 'Default job priority is normal')
-        t.equal(q.jobOptions.timeout, enums.options.timeout, 'Default job timeout is valid')
-        t.equal(q.jobOptions.retryMax, enums.options.retryMax, 'Default job retryMax is valid')
-        t.equal(q.jobOptions.retryDelay, enums.options.retryDelay, 'Default job retryDelay is valid')
-        t.equal(q.jobOptions.repeat, enums.options.repeat, 'Default job repeat is valid')
-        t.equal(q.jobOptions.repeatDelay, enums.options.repeatDelay, 'Default job repeatDelay is valid')
-        t.equal(q.removeFinishedJobs, enums.options.removeFinishedJobs, 'Default removeFinishedJobs is valid')
-        t.equal(q.running, 0, 'Running jobs is zero')
-        t.equal(q.concurrency, enums.options.concurrency, 'Default concurrency is valid')
-        t.notOk(q.paused, 'Queue is not paused')
-        t.ok(q.idle, 'Queue is idle')
+        t.ok(qMain, 'Queue created with default options')
+        t.equal(qMain.name, tOpts.queueName, 'Default queue name valid')
+        t.ok(is.string(qMain.id), 'Queue id is valid')
+        t.equal(qMain.host, enums.options.host, 'Default host name is valid')
+        t.equal(qMain.port, enums.options.port, 'Default port is valid')
+        t.equal(qMain.db, tOpts.dbName, 'Default db name is valid')
+        t.ok(is.function(qMain.r), 'Queue r valid')
+        t.ok(qMain.changeFeed, 'Queue change feed is enabled')
+        t.ok(qMain.master, 'Queue is master queue')
+        t.equal(qMain.masterInterval, enums.options.masterInterval, 'Queue masterInterval is valid')
+        t.ok(is.object(qMain.jobOptions), 'Queue jobOptions is an object')
+        t.equal(qMain.jobOptions.priority, enums.priorityFromValue(40), 'Default job priority is normal')
+        t.equal(qMain.jobOptions.timeout, enums.options.timeout, 'Default job timeout is valid')
+        t.equal(qMain.jobOptions.retryMax, enums.options.retryMax, 'Default job retryMax is valid')
+        t.equal(qMain.jobOptions.retryDelay, enums.options.retryDelay, 'Default job retryDelay is valid')
+        t.equal(qMain.jobOptions.repeat, enums.options.repeat, 'Default job repeat is valid')
+        t.equal(qMain.jobOptions.repeatDelay, enums.options.repeatDelay, 'Default job repeatDelay is valid')
+        t.equal(qMain.removeFinishedJobs, enums.options.removeFinishedJobs, 'Default removeFinishedJobs is valid')
+        t.equal(qMain.running, 0, 'Running jobs is zero')
+        t.equal(qMain.concurrency, enums.options.concurrency, 'Default concurrency is valid')
+        t.notOk(qMain.paused, 'Queue is not paused')
+        t.ok(qMain.idle, 'Queue is idle')
 
         // ---------- Set Properties Tests ----------
         t.comment('queue: Set Properties')
-        q.jobOptions = customJobOptions
-        t.deepEqual(q.jobOptions, customJobOptions, 'Job options set successfully')
-        q.jobOptions = undefined
-        t.deepEqual(q.jobOptions, customJobOptions, 'Job options restored to default on invalid value')
-        q.concurrency = 100
-        t.equal(q.concurrency, 100, 'Queue concurrency set with valid value successfully')
-        q.concurrency = -50
-        t.equal(q.concurrency, 100, 'Queue concurrency unchanged with invalid value')
-        q.concurrency = 1.5
-        t.equal(q.concurrency, 100, 'Queue concurrency unchanged with invalid value')
-        q.concurrency = 'string'
-        t.equal(q.concurrency, 100, 'Queue concurrency unchanged with invalid value')
+        qMain.jobOptions = customJobOptions
+        t.deepEqual(qMain.jobOptions, customJobOptions, 'Job options set successfully')
+        qMain.jobOptions = undefined
+        t.deepEqual(qMain.jobOptions, customJobOptions, 'Job options restored to default on invalid value')
+        qMain.concurrency = 100
+        t.equal(qMain.concurrency, 100, 'Queue concurrency set with valid value successfully')
+        qMain.concurrency = -50
+        t.equal(qMain.concurrency, 100, 'Queue concurrency unchanged with invalid value')
+        qMain.concurrency = 1.5
+        t.equal(qMain.concurrency, 100, 'Queue concurrency unchanged with invalid value')
+        qMain.concurrency = 'string'
+        t.equal(qMain.concurrency, 100, 'Queue concurrency unchanged with invalid value')
 
         // ---------- Create Job Tests ----------
         t.comment('queue: Create Job')
-        job = q.createJob()
+        job = qMain.createJob()
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with new default priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with new default timeout')
@@ -154,7 +158,7 @@ module.exports = function () {
           retryDelay: 900,
           repeat: 0
         }
-        job = q.createJob().setPriority('low').setTimeout(400).setRetryMax(2).setRetryDelay(900)
+        job = qMain.createJob().setPriority('low').setTimeout(400).setRetryMax(2).setRetryDelay(900)
         t.ok(is.job(job), 'Queue createJob created a job object')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')
@@ -163,10 +167,10 @@ module.exports = function () {
 
         // ---------- Add Job Tests ----------
         t.comment('queue: Add Job')
-        q.jobOptions = jobOptions() // Resetting job options
-        job = q.createJob()
+        qMain.jobOptions = jobOptions() // Resetting job options
+        job = qMain.createJob()
         job.data = tOpts.tData
-        return q.addJob(job)
+        return qMain.addJob(job)
       }).then((savedJobs) => {
         t.ok(is.array(savedJobs), 'Add job returns an array')
         t.ok(is.job(savedJobs[0]), 'Job saved successfully')
@@ -175,7 +179,7 @@ module.exports = function () {
 
         // ---------- Get Job Tests ----------
         t.comment('queue: Get Job')
-        return q.getJob(savedJobs[0].id)
+        return qMain.getJob(savedJobs[0].id)
       }).then((savedJobs2) => {
         t.ok(is.array(savedJobs2), 'Get job returns an array')
         t.ok(is.job(savedJobs2[0]), 'Job retrieved successfully')
@@ -184,7 +188,7 @@ module.exports = function () {
 
         // ---------- Find Job Tests ----------
         t.comment('queue: Find Job')
-        return q.findJob({ data: tOpts.tData })
+        return qMain.findJob({ data: tOpts.tData })
       }).then((savedJobs3) => {
         t.ok(is.array(savedJobs3), 'Find job returns an array')
         t.ok(is.job(savedJobs3[0]), 'Job retrieved successfully')
@@ -193,66 +197,66 @@ module.exports = function () {
 
         // ---------- Cancel Job Tests ----------
         t.comment('queue: Cancel Job')
-        return q.cancelJob(savedJobs3[0].id)
+        return qMain.cancelJob(savedJobs3[0].id)
       }).then((cancelledJobs) => {
         t.ok(is.array(cancelledJobs), 'Cancel job returns an array')
         t.ok(is.uuid(cancelledJobs[0]), 'Cancel job returns ids')
-        return q.getJob(cancelledJobs[0])
+        return qMain.getJob(cancelledJobs[0])
       }).then((cancelledJobs2) => {
         t.ok(is.array(cancelledJobs2), 'Get job returns an array')
         t.equal(cancelledJobs2[0].status, enums.status.cancelled, 'Cancelled job status is cancelled')
 
         // ---------- Remove Job Tests ----------
         t.comment('queue: Remove Job')
-        return q.removeJob(cancelledJobs2[0].id)
+        return qMain.removeJob(cancelledJobs2[0].id)
       }).then((removedCount) => {
         t.ok(is.array(removedCount), 'Remove job returns an array')
         t.equal(removedCount.length, 1, 'Removed count is valid')
-        return q.getJob(job.id)
+        return qMain.getJob(job.id)
       }).then((noJobs) => {
         t.ok(is.array(noJobs), 'Get job returns an array')
         t.equal(noJobs.length, 0, 'Removed job is not in the database')
 
         // ---------- Process Job Tests ----------
         t.comment('queue: Process Job')
-        return q.process(processHandler)
+        return qMain.process(processHandler)
       }).then(() => {
-        job = q.createJob()
-        return q.addJob(job)
+        job = qMain.createJob()
+        return qMain.addJob(job)
       }).delay(400).then((addedJob) => {
-        return q.getJob(addedJob[0].id)
+        return qMain.getJob(addedJob[0].id)
       }).then((finishedJobs) => {
         t.ok(is.array(finishedJobs), 'Job is in queue')
         t.equal(finishedJobs[0].status, enums.status.completed, 'Job is completed')
 
         // ---------- Pause Tests ----------
         t.comment('queue: Pause')
-        return q.pause()
+        return qMain.pause()
       }).then((isPaused) => {
         t.ok(isPaused, 'Queue pause returns true')
-        t.ok(q.paused, 'Queue is paused')
-        job = q.createJob()
-        return q.addJob(job)
+        t.ok(qMain.paused, 'Queue is paused')
+        job = qMain.createJob()
+        return qMain.addJob(job)
       }).delay(200).then((addedJob) => {
-        return q.getJob(addedJob[0].id)
+        return qMain.getJob(addedJob[0].id)
       }).then((addedJobs) => {
         t.ok(is.array(addedJobs), 'Job is in queue')
         t.equal(addedJobs[0].status, enums.status.waiting, 'Job has not been processed')
 
         // ---------- Resume Tests ----------
         t.comment('queue: Resume')
-        return q.resume()
+        return qMain.resume()
       }).delay(200).then((isResumed) => {
         t.ok(isResumed, 'Queue resume returns true')
-        t.notOk(q.paused, 'Queue is not paused')
-        return q.getJob(job.id)
+        t.notOk(qMain.paused, 'Queue is not paused')
+        return qMain.getJob(job.id)
       }).then((finishedJobs2) => {
         t.ok(is.array(finishedJobs2), 'Job is in queue')
         t.equal(finishedJobs2[0].status, enums.status.completed, 'Job is completed')
 
         // ---------- Summary Tests ----------
         t.comment('queue: Summary')
-        return q.summary()
+        return qMain.summary()
       }).then((summary) => {
         t.ok(is.object(summary), 'Queue summary returns an object')
         t.equal(summary.waiting, 0, 'Summary waiting is valid')
@@ -265,63 +269,64 @@ module.exports = function () {
 
         // ---------- Reset Tests ----------
         t.comment('queue: Reset')
-        return q.reset()
+        return qMain.reset()
       }).then((totalReset) => {
         t.ok(is.integer(totalReset), 'Queue reset returns integer')
         t.equal(totalReset, 2, 'Reset return value is valid')
-        return q.summary()
+        return qMain.summary()
       }).then((summary2) => {
         t.ok(is.object(summary2), 'Queue summary returns an object')
         t.equal(summary2.total, 0, 'Summary total is zero')
 
         // ---------- Stop Tests ----------
         t.comment('queue: Stop')
-        return q.stop()
+        return qMain.stop()
       }).then((stopped) => {
         t.ok(stopped, 'Queue stop returns true')
-        return q.ready()
+        return qMain.ready()
       }).then((ready) => {
         t.ok(is.false(ready), 'Queue ready returns false')
 
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, qMain, state)
+
         // ---------- Drop Tests ----------
         t.comment('queue: Drop')
-        q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
-        return q.drop()
+        qDrop = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+      }).then(() => {
+        return qDrop.drop()
       }).then((dropped) => {
         t.ok(dropped, 'Queue drop returns true')
-        return q.ready()
+        return qDrop.ready()
       }).then((ready) => {
         t.ok(is.false(ready), 'Queue ready returns false')
 
         // ---------- Multi Queue Tests ----------
         t.comment('queue: Multi-Queue')
-        q = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
-        return q.ready()
-      }).then((ready) => {
-        t.ok(ready, `First queue ready [${q.id}]`)
-        q2 = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
-        return q2.ready()
-      }).then((ready2) => {
-        t.ok(ready2, `Second queue ready [${q2.id}]`)
-        q.process(processHandler)
-        job = q2.createJob()
-        return q2.addJob(job)
-      }).then((jobOnQ2) => {
-        t.equal(jobOnQ2[0].id, job.id, 'Job added to second queue')
+        qSub = new Queue(tOpts.cxn(), tOpts.default())
+        return qSub.ready()
+      }).then((subReady) => {
+        t.ok(subReady, `Subscriber queue ready [${qSub.id}]`)
+        qPub = new Queue(tOpts.cxn(), tOpts.default())
+        return qPub.ready()
+      }).then((pubReady) => {
+        t.ok(pubReady, `Publisher queue ready [${qPub.id}]`)
+        qSub.process(processHandler)
+        job = qPub.createJob()
+        return qPub.addJob(job)
+      }).then((jobOnQPub) => {
+        t.equal(jobOnQPub[0].id, job.id, 'Job added to publisher queue')
       }).delay(1000).then(() => {
-        return q.getJob(job.id)
+        return qSub.getJob(job.id)
       }).then((jobCheck) => {
         t.ok(is.array(jobCheck), 'Job is in queue')
         t.equal(jobCheck[0].status, enums.status.completed, 'Job is completed')
-
-        // ---------- Event Summary ----------
-        eventHandlers.remove(t, q, state)
-
-        return Promise.all([
-          q.stop(),
-          q2.stop()
-        ])
-      }).then(() => {
+        return qSub.stop()
+      }).delay(stopDelay).then(() => {
+        t.pass('Subscriber Queue Stopped')
+        return qPub.stop()
+      }).delay(stopDelay).then(() => {
+        t.pass('Publisher Queue Stopped')
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
     })
