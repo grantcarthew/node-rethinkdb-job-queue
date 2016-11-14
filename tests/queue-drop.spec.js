@@ -7,51 +7,51 @@ const queueDrop = require('../src/queue-drop')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 const rethinkdbdash = require('rethinkdbdash')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-drop'
 
 module.exports = function () {
-  const mockQueue = {
-    r: rethinkdbdash(Object.assign(tOpts.cxn(), { silent: true })),
-    db: tOpts.dbName,
-    name: tOpts.queueName,
-    id: 'mock:queue:id'
-  }
-
   return new Promise((resolve, reject) => {
-    test('queue-drop', (t) => {
-      t.plan(10)
+    test(testName, (t) => {
+      t.plan(33)
+
+      const mockQueue = {
+        r: rethinkdbdash(Object.assign(tOpts.cxn(), { silent: true })),
+        db: tOpts.dbName,
+        name: tOpts.queueName,
+        id: 'mock:queue:id'
+      }
 
       let q = new Queue(tOpts.cxn(), tOpts.default())
 
-      let testEvents = false
-      function stoppingEventHandler (qid) {
-        if (testEvents) {
-          t.pass(`Event: Queue stopping [${qid}]`)
-          t.equal(qid, q.id, `Event: Queue stopping id is valid`)
-        }
-      }
-      function stoppedEventHandler (qid) {
-        if (testEvents) {
-          t.pass(`Event: Queue stopped [${qid}]`)
-          t.equal(qid, q.id, `Event: Queue stopped id is valid`)
-        }
-      }
-      function droppedEventHandler (qid) {
-        if (testEvents) {
-          t.pass(`Event: Queue dropped [${qid}]`)
-          t.equal(qid, q.id, `Event: Queue dropped id is valid`)
-        }
-      }
-      function addEventHandlers () {
-        testEvents = true
-        q.on(enums.status.stopping, stoppingEventHandler)
-        q.on(enums.status.stopped, stoppedEventHandler)
-        q.on(enums.status.dropped, droppedEventHandler)
-      }
-      function removeEventHandlers () {
-        testEvents = false
-        q.removeListener(enums.status.stopping, stoppingEventHandler)
-        q.removeListener(enums.status.stopped, stoppedEventHandler)
-        q.removeListener(enums.status.dropped, droppedEventHandler)
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 1,
+        paused: 1,
+        resumed: 0,
+        removed: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 1,
+        stopping: 1,
+        stopped: 1,
+        dropped: 1,
+        added: 0,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
       }
 
       function simulateJobProcessing () {
@@ -66,7 +66,7 @@ module.exports = function () {
 
         // ---------- Drop Queue Test ----------
         t.comment('queue-drop: Drop Queue')
-        addEventHandlers()
+        eventHandlers.add(t, q, state)
         simulateJobProcessing()
         return queueDrop(q)
       }).then((removeResult) => {
@@ -78,7 +78,8 @@ module.exports = function () {
       }).then((tableList) => {
         t.notOk(tableList.includes(mockQueue.name), 'Table dropped from database')
 
-        removeEventHandlers()
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         mockQueue.r.getPoolMaster().drain()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
