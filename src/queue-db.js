@@ -55,25 +55,32 @@ module.exports.detach = function dbDetach (q, drainPool) {
       logger('closing changeFeed')
       return feed.close()
     }
-    return null
+    return true
   }).then(() => {
     if (q.master) {
       logger('disabling dbReview')
       return dbReview.disable(q)
     }
-    return null
+    return true
   }).then(() => {
     if (drainPool) {
       q._ready = Promise.resolve(false)
       logger('draining connection pool')
       return q.r.getPoolMaster().drain()
     }
-    return null
-  }).then(() => {
+    return true
+  }).delay(1000).then(() => {
     if (drainPool) {
       logger(`Event: detached [${q.id}]`)
       q.emit(enums.status.detached, q.id)
     }
-    return null
+    return true
+  }).delay(1000).then(() => {
+    if (drainPool) {
+      q.eventNames().forEach((key) => {
+        q.removeAllListeners(key)
+      })
+    }
+    return true
   })
 }
