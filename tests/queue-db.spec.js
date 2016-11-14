@@ -7,36 +7,49 @@ const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
+const eventHandlers = require('./test-event-handlers')
+const testName = 'queue-db'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test('queue-db', (t) => {
-      t.plan(70)
+    test(testName, (t) => {
+      t.plan(75)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
-      let readyEventCount = 0
-      q.on(enums.status.ready, function readyEventHandler (qid) {
-        readyEventCount++
-        t.pass(`Event: Queue ready [${qid}]`)
-        t.equal(qid, q.id, `Event: Queue ready id is valid`)
-        if (readyEventCount >= 6) {
-          this.removeListener(enums.status.ready, readyEventHandler)
-        }
-      })
-
-      let detachEventCount = 0
-      q.on(enums.status.detached, function detachedEventHandler (qid) {
-        detachEventCount++
-        t.pass(`Event: Queue detached [${qid}]`)
-        t.equal(qid, q.id, `Event: Queue detached id valid`)
-        if (detachEventCount >= 6) {
-          this.removeListener(enums.status.detached, detachedEventHandler)
-        }
-      })
+      // ---------- Event Handler Setup ----------
+      let state = {
+        testName,
+        enabled: false,
+        ready: 0,
+        processing: 0,
+        progress: 0,
+        pausing: 0,
+        paused: 0,
+        resumed: 0,
+        removed: 0,
+        reset: 0,
+        error: 0,
+        reviewed: 0,
+        detached: 1,
+        stopping: 0,
+        stopped: 0,
+        dropped: 0,
+        added: 0,
+        waiting: 0,
+        active: 0,
+        completed: 0,
+        cancelled: 0,
+        failed: 0,
+        terminated: 0,
+        reanimated: 0,
+        log: 0,
+        updated: 0
+      }
 
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
+        eventHandlers.add(t, q, state)
         q._masterInterval = 300
         q._changeFeed = true
         dbReview.enable(q)
@@ -63,6 +76,7 @@ module.exports = function () {
       }).then(() => {
         return q.ready()
       }).then((ready) => {
+        eventHandlers.add(t, q, state)
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
@@ -86,6 +100,7 @@ module.exports = function () {
       }).then(() => {
         return q.ready()
       }).then((ready) => {
+        eventHandlers.add(t, q, state)
         t.ok(ready, 'Queue in a ready state')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
@@ -109,6 +124,7 @@ module.exports = function () {
       }).then(() => {
         return q.ready()
       }).then((ready) => {
+        eventHandlers.add(t, q, state)
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
@@ -132,6 +148,7 @@ module.exports = function () {
       }).then(() => {
         return q.ready()
       }).then((ready) => {
+        eventHandlers.add(t, q, state)
         t.ok(ready, 'Queue in a ready state')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
         t.notOk(q._changeFeedCursor, 'Change feed is disconnected')
@@ -155,6 +172,7 @@ module.exports = function () {
       }).then(() => {
         return q.ready()
       }).then((ready) => {
+        eventHandlers.add(t, q, state)
         t.ok(ready, 'Queue in a ready state')
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
@@ -186,6 +204,9 @@ module.exports = function () {
         t.ok(ready, 'Queue in a ready state')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
+
+        // ---------- Event Summary ----------
+        eventHandlers.remove(t, q, state)
         q.stop()
         return resolve(t.end())
       }).catch(err => tError(err, module, t))
