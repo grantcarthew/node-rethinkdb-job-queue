@@ -4,7 +4,7 @@ const tError = require('./test-error')
 const datetime = require('../src/datetime')
 
 module.exports = function () {
-  test('chrono', (t) => {
+  test('datetime', (t) => {
     t.plan(13)
 
     try {
