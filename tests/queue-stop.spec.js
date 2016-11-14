@@ -14,7 +14,7 @@ const testName = 'queue-stop'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(78)
+      t.plan(79)
 
       let q = new Queue(tOpts.cxn(), tOpts.master(999999))
 
@@ -68,7 +68,9 @@ module.exports = function () {
         // ---------- Stop with Drain ----------
         t.comment('queue-stop: Stop with Drain')
         simulateJobProcessing()
-        return queueStop(q, true)
+        return queueStop(q)
+      }).then((stopped) => {
+        return queueDb.drain(q)
       }).then((stopped) => {
         t.ok(stopped, 'Queue stopped with pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -87,13 +89,12 @@ module.exports = function () {
         return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')
-        state.detached = 0
         eventHandlers.add(t, q, state)
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
         simulateJobProcessing()
-        return queueStop(q, false)
+        return queueStop(q)
       }).then((stopped2) => {
         t.ok(stopped2, 'Queue stopped without pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -103,7 +104,9 @@ module.exports = function () {
       }).then((ready) => {
         t.ok(ready, 'Queue is still ready')
         // detaching with drain or node will not exit gracefully
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         return queueDb.attach(q, tOpts.cxn())
       }).then(() => {
