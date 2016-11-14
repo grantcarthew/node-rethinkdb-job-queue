@@ -219,7 +219,9 @@ class Queue extends EventEmitter {
 
   stop () {
     logger('stop')
-    return queueStop(this).catch((err) => {
+    return queueStop(this).then(() => {
+      return queueDb.drain(this)
+    }).catch((err) => {
       logger('Event: stop error', this.id, err)
       this.emit(enums.status.error, this.id, err)
       return Promise.reject(err)

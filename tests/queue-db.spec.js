@@ -61,7 +61,9 @@ module.exports = function () {
 
         // ---------- Detach with Drain ----------
         t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -83,7 +85,9 @@ module.exports = function () {
 
         // ---------- Detach with Drain ----------
         t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -107,7 +111,9 @@ module.exports = function () {
 
         // ---------- Detach with Drain ----------
         t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -131,7 +137,9 @@ module.exports = function () {
 
         // ---------- Detach with Drain ----------
         t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -155,7 +163,9 @@ module.exports = function () {
 
         // ---------- Detach with Drain ----------
         t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         t.pass('Pass: Queue detached with pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -177,9 +187,9 @@ module.exports = function () {
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
 
-        // ---------- Detach with Drain ----------
-        t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, false)
+        // ---------- Detach without Drain ----------
+        t.comment('queue-db: Detach without Drain')
+        return queueDb.detach(q)
       }).then(() => {
         t.pass('Pass: Queue detached without pool drain')
         t.notOk(dbReview.isEnabled(q), 'Review is disabled')
@@ -190,7 +200,9 @@ module.exports = function () {
 
         // ---------- Detach with Drain ----------
         t.comment('queue-db: Detach with Drain')
-        return queueDb.detach(q, true)
+        return queueDb.detach(q)
+      }).then(() => {
+        return queueDb.drain(q)
       }).then(() => {
         q._masterInterval = false
         q._changeFeed = true

@@ -8,12 +8,12 @@ module.exports = function queueDrop (q) {
   logger('queueDrop')
   return queueStop(q, false).then(() => {
     q._ready = Promise.resolve(false)
-    return queueDb.detach(q, false)
+    return queueDb.detach(q)
   }).then(() => {
     return q.r.db(q.db).tableDrop(q.name).run()
   }).then(() => {
     logger(`Event: dropped [${q.id}]`)
     q.emit(enums.status.dropped, q.id)
-    return queueDb.detach(q, true)
+    return queueDb.drain(q)
   })
 }

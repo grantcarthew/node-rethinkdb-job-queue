@@ -46,7 +46,7 @@ module.exports.attach = function dbAttach (q, cxn) {
   return q._ready
 }
 
-module.exports.detach = function dbDetach (q, drainPool) {
+module.exports.detach = function dbDetach (q) {
   logger('detach')
   return Promise.resolve().then(() => {
     if (q._changeFeedCursor) {
@@ -62,25 +62,21 @@ module.exports.detach = function dbDetach (q, drainPool) {
       return dbReview.disable(q)
     }
     return true
-  }).then(() => {
-    if (drainPool) {
-      q._ready = Promise.resolve(false)
-      logger('draining connection pool')
-      return q.r.getPoolMaster().drain()
-    }
-    return true
+  })
+}
+
+module.exports.drain = function drain (q) {
+  return Promise.resolve().then(() => {
+    q._ready = Promise.resolve(false)
+    logger('draining connection pool')
+    return q.r.getPoolMaster().drain()
   }).delay(1000).then(() => {
-    if (drainPool) {
-      logger(`Event: detached [${q.id}]`)
-      q.emit(enums.status.detached, q.id)
-    }
-    return true
+    logger(`Event: detached [${q.id}]`)
+    q.emit(enums.status.detached, q.id)
   }).delay(1000).then(() => {
-    if (drainPool) {
-      q.eventNames().forEach((key) => {
-        q.removeAllListeners(key)
-      })
-    }
+    q.eventNames().forEach((key) => {
+      q.removeAllListeners(key)
+    })
     return true
   })
 }
