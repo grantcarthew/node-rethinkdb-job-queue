@@ -6,7 +6,7 @@ const queueStop = require('./queue-stop')
 
 module.exports = function queueDrop (q) {
   logger('queueDrop')
-  return queueStop(q, false).then(() => {
+  return queueStop(q).then(() => {
     q._ready = Promise.resolve(false)
     return queueDb.detach(q)
   }).then(() => {
