@@ -84,12 +84,17 @@ module.exports.add = function eventHandlersAdd (t, q, state) {
   function reviewedEventHandler (qid, reviewResult) {
     if (state.enabled) {
       let total = incCount(enums.status.reviewed)
-      t.ok(is.string(qid) &&
-        is.object(reviewResult) &&
-        is.integer(reviewResult.reviewed) &&
-        is.integer(reviewResult.removed) &&
-        reviewResult.reviewed >= 0 &&
-        reviewResult.removed >= 0,
+      let result
+      if (is.object(reviewResult) && reviewResult.local) {
+        result = is.integer(reviewResult.reviewed) &&
+          is.integer(reviewResult.removed) &&
+          reviewResult.reviewed >= 0 &&
+          reviewResult.removed >= 0
+      } else {
+        // global events will contain null in reviewed and removed.
+        result = is.object(reviewResult) && !reviewResult.local
+      }
+      t.ok(result,
         `Event: reviewed [${total} of ${state.reviewed}] [${reviewResult}]`)
     }
   }
