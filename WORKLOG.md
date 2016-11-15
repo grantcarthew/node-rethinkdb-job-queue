@@ -3,9 +3,7 @@
 ## Working On
 
 job-completed has been updated to support repeat jobs.
-Working on fixing tests. Specifically fixing queue-stop to remove event listeners
-added by queue-process. I think this is what is causing issues with 'queue' tests
-not completing.
+Tests all fixed, now working on testing repeating jobs.
 
 
 ## TODO
