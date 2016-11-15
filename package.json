@@ -34,9 +34,9 @@
     "prepublish": "npm run build",
     "clean": "rm -Rf dist",
     "check-coverage": "node_modules/.bin/istanbul check-coverage ./coverage/coverage.json",
-    "coverage": "node_modules/.bin/istanbul cover tape ./tests/test-runner.js | tap-spec",
-    "test": "tape ./tests/test-runner.js | tap-spec",
-    "tc": "tape ./tests/test-current.js | tap-spec",
+    "coverage": "node_modules/.bin/istanbul cover node ./tests/test-runner.js | tap-spec",
+    "test": "node ./tests/test-runner.js | tap-spec",
+    "tc": "node ./tests/test-current.js | tap-spec",
     "build": "npm run clean && babel src --presets babel-preset-latest --out-dir dist",
     "lint": "standard",
     "upgrade": "npm run upgrade:rm && npm run upgrade:ncu && npm run upgrade:install && npm run upgrade:finish",
@@ -63,6 +63,6 @@
     "proxyquire": "^1.7.10",
     "standard": "^8.5.0",
     "tap-spec": "^4.1.1",
-    "tape": "^4.6.2"
+    "tap": "^8.0.0"
   }
 }
