@@ -229,7 +229,7 @@ MIT
 [rjq-github-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue
 [rjq-wiki-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki
 [rjq-changelog-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Change-Log
-[rjq-coverage-url]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/coverage/lcov-report/index.html
+[rjq-coverage-url]: https://rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/coverage/lcov-report/index.html
 [thinker-image]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/thinkerjoblist.png
 [nodemailer-url]: https://www.npmjs.com/package/nodemailer
 [bluebird-url]: https://github.com/petkaantonov/bluebird
