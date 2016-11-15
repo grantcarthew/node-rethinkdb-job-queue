@@ -57,15 +57,9 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 ## Documentation
 
-For full documentation [please see the wiki][rjq-wiki-url]
-
-See the [Change Log][rjq-changelog-url] for recent changes.
-
-## Project Status
-
-*   This `rethinkdb-job-queue` module is fully functional.
-*   There are over 1400 integration tests.
-*   Updated to v1.0.0 to support [SemVer](http://semver.org/).
+*   [Full Documentation][rjq-wiki-url]
+*   [Change Log][rjq-changelog-url]
+*   [Code Coverage Report][rjq-coverage-url] from more than 1900 Integration Tests
 
 ## Quick Start
 
@@ -235,6 +229,7 @@ MIT
 [rjq-github-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue
 [rjq-wiki-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki
 [rjq-changelog-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Change-Log
+[rjq-coverage-url]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/coverage/lcov-report/index.html
 [thinker-image]: https://cdn.rawgit.com/grantcarthew/node-rethinkdb-job-queue/master/thinkerjoblist.png
 [nodemailer-url]: https://www.npmjs.com/package/nodemailer
 [bluebird-url]: https://github.com/petkaantonov/bluebird
