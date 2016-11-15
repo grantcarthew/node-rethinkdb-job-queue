@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/job-options.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> job-options.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>37/37</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>48/48</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/1</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>37/37</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">204×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const logger = require('./logger')(module)
+const enums = require('./enums')
+const is = require('./is')
+&nbsp;
+module.exports = function jobOptions (newOptions = {}, oldOptions = {}) {
+  logger('jobOptions', newOptions, oldOptions)
+&nbsp;
+  const finalOptions = {}
+  finalOptions.priority = enums.options.priority
+  finalOptions.timeout = enums.options.timeout
+  finalOptions.retryMax = enums.options.retryMax
+  finalOptions.retryDelay = enums.options.retryDelay
+  finalOptions.repeat = enums.options.repeat
+  finalOptions.repeatDelay = enums.options.repeatDelay
+&nbsp;
+  if (Object.keys(enums.priority).includes(oldOptions.priority)) {
+    finalOptions.priority = oldOptions.priority
+  }
+&nbsp;
+  if (is.integer(oldOptions.timeout) &amp;&amp; oldOptions.timeout &gt;= 0) {
+    finalOptions.timeout = oldOptions.timeout
+  }
+&nbsp;
+  if (is.integer(oldOptions.retryMax) &amp;&amp; oldOptions.retryMax &gt;= 0) {
+    finalOptions.retryMax = oldOptions.retryMax
+  }
+&nbsp;
+  if (is.integer(oldOptions.retryDelay) &amp;&amp; oldOptions.retryDelay &gt;= 0) {
+    finalOptions.retryDelay = oldOptions.retryDelay
+  }
+&nbsp;
+  if (is.true(oldOptions.repeat) ||
+      is.false(oldOptions.repeat) ||
+      (is.integer(oldOptions.repeat) &amp;&amp; oldOptions.repeat &gt;= 0)) {
+    finalOptions.repeat = oldOptions.repeat
+  }
+&nbsp;
+  if (is.integer(oldOptions.repeatDelay) &amp;&amp; oldOptions.repeatDelay &gt;= 0) {
+    finalOptions.repeatDelay = oldOptions.repeatDelay
+  }
+&nbsp;
+  if (Object.keys(enums.priority).includes(newOptions.priority)) {
+    finalOptions.priority = newOptions.priority
+  }
+&nbsp;
+  if (is.integer(newOptions.timeout) &amp;&amp; newOptions.timeout &gt;= 0) {
+    finalOptions.timeout = newOptions.timeout
+  }
+&nbsp;
+  if (is.integer(newOptions.retryMax) &amp;&amp; newOptions.retryMax &gt;= 0) {
+    finalOptions.retryMax = newOptions.retryMax
+  }
+&nbsp;
+  if (is.integer(newOptions.retryDelay) &amp;&amp; newOptions.retryDelay &gt;= 0) {
+    finalOptions.retryDelay = newOptions.retryDelay
+  }
+&nbsp;
+  if (is.true(newOptions.repeat) ||
+      is.false(newOptions.repeat) ||
+      (is.integer(newOptions.repeat) &amp;&amp; newOptions.repeat &gt;= 0)) {
+    finalOptions.repeat = newOptions.repeat
+  }
+&nbsp;
+  if (is.integer(newOptions.repeatDelay) &amp;&amp; newOptions.repeatDelay &gt;= 0) {
+    finalOptions.repeatDelay = newOptions.repeatDelay
+  }
+&nbsp;
+  return finalOptions
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 15 2016 15:40:18 GMT+1000 (AEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

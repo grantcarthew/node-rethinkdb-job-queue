@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const is = require('../src/is')
 const jobParse = require('../src/job-parse')
 const Job = require('../src/job')

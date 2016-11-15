@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const Promise = require('bluebird')
 const enums = require('../src/enums')
 const is = require('../src/is')

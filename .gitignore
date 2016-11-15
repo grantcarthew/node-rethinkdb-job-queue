@@ -1,7 +1,6 @@
 # Ignore Folders
 node_modules
 dist
-converage
 
 # Ignore Files
 .idea

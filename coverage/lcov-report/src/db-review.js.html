@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/db-review.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> db-review.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>59/59</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">90% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>9/10</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>9/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>59/59</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144</td><td class="line-coverage quiet"><span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-yes">10×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-yes">9×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const logger = require('./logger')(module)
+const Promise = require('bluebird')
+const datetime = require('./datetime')
+const dbResult = require('./db-result')
+const queueProcess = require('./queue-process')
+const queueState = require('./queue-state')
+const is = require('./is')
+const enums = require('./enums')
+const dbReviewIntervalList = new Map()
+&nbsp;
+function updateFailedJobs (q) {
+  logger('updateFailedJobs: ' + datetime.format(new Date()))
+&nbsp;
+  return Promise.resolve().then(() =&gt; {
+    return q.r.db(q.db).table(q.name)
+    .orderBy({index: enums.index.indexActiveDateEnable})
+    .filter(
+      q.r.row('dateEnable').lt(q.r.now())
+    ).update({
+      status: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        enums.status.failed,
+        enums.status.terminated
+      ),
+      dateFinished: q.r.now(),
+      retryCount: q.r.branch(
+        q.r.row('retryCount').lt(q.r.row('retryMax')),
+        q.r.row('retryCount').add(1),
+        q.r.row('retryCount')
+      ),
+      log: q.r.row('log').append({
+        date: q.r.now(),
+        queueId: q.id,
+        type: q.r.branch(
+          q.r.row('retryCount').lt(q.r.row('retryMax')),
+          enums.log.warning,
+          enums.log.error
+        ),
+        status: q.r.branch(
+          q.r.row('retryCount').lt(q.r.row('retryMax')),
+          enums.status.failed,
+          enums.status.terminated
+        ),
+        retryCount: q.r.row('retryCount'),
+        message: `Master: ${enums.message.failed}`,
+        dateEnable: q.r.row('dateEnable')
+      }),
+      queueId: q.id
+    })
+    .run()
+  }).then((updateResult) =&gt; {
+    logger(`updateResult`, updateResult)
+    return dbResult.status(updateResult, enums.dbResult.replaced)
+  })
+}
+&nbsp;
+function removeFinishedJobsBasedOnTime (q) {
+  logger('removeFinishedJobsBasedOnTime')
+  return q.r.db(q.db).table(q.name)
+  .orderBy({index: enums.index.indexFinishedDateFinished})
+  .filter(
+    q.r.row('dateFinished').add(
+      q.r.expr(q.removeFinishedJobs).div(1000)
+    ).lt(q.r.now())
+  ).delete()
+  .run()
+}
+&nbsp;
+function removeFinishedJobsBasedOnNow (q) {
+  logger('removeFinishedJobsBasedOnNow')
+  return q.r.db(q.db).table(q.name)
+  .orderBy({index: enums.index.indexFinishedDateFinished})
+  .filter(q.r.row('dateFinished').lt(q.r.now()))
+  .delete()
+  .run()
+}
+&nbsp;
+function removeFinishedJobs (q) {
+  logger('removeFinishedJobs: ' + datetime.format(new Date()))
+&nbsp;
+  if (q.removeFinishedJobs &lt; 1 || q.removeFinishedJobs === false) {
+    return Promise.resolve(0)
+  }
+&nbsp;
+  return Promise.resolve().then(() =&gt; {
+    if (is.true(q.removeFinishedJobs)) {
+      return removeFinishedJobsBasedOnNow(q)
+    }
+    return removeFinishedJobsBasedOnTime(q)
+  }).then((deleteResult) =&gt; {
+    logger(`deleteResult`, deleteResult)
+    return dbResult.status(deleteResult, enums.dbResult.deleted)
+  })
+}
+&nbsp;
+function runReviewTasks (q) {
+  logger(`runReviewTasks`)
+  return Promise.props({
+    reviewed: updateFailedJobs(q),
+    removed: removeFinishedJobs(q)
+  }).then((runReviewTasksResult) =&gt; {
+    runReviewTasksResult.local = true
+    logger(`Event: reviewed`, runReviewTasksResult)
+    q.emit(enums.status.reviewed, q.id, runReviewTasksResult)
+    queueProcess.restart(q)
+    return Promise.props({
+      queueStateChange: queueState(q, enums.status.reviewed),
+      reviewResult: runReviewTasksResult
+    })
+  }).then((stateChangeAndReviewResult) =&gt; {
+    return stateChangeAndReviewResult.reviewResult
+  })
+}
+&nbsp;
+module.exports.enable = function enable (q) {
+  logger('enable', q.masterInterval)
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (!dbReviewIntervalList.has(q.id)) {
+    const interval = q.masterInterval
+    dbReviewIntervalList.set(q.id, setInterval(() =&gt; {
+      return runReviewTasks(q)
+    }, interval))
+  }
+  return true
+}
+&nbsp;
+module.exports.disable = function disable (q) {
+  logger('disable', q.id)
+  if (dbReviewIntervalList.has(q.id)) {
+    clearInterval(dbReviewIntervalList.get(q.id))
+    dbReviewIntervalList.delete(q.id)
+  }
+  return true
+}
+&nbsp;
+module.exports.runOnce = function run (q) {
+  logger('runOnce')
+  return runReviewTasks(q)
+}
+&nbsp;
+module.exports.isEnabled = function reviewIsEnabled (q) {
+  logger('isEnabled', q.id)
+  return dbReviewIntervalList.has(q.id)
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 15 2016 15:40:18 GMT+1000 (AEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

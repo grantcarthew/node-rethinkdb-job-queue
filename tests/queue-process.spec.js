@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const Promise = require('bluebird')
 const datetime = require('../src/datetime')
 const is = require('../src/is')
@@ -14,7 +14,7 @@ const testName = 'queue-process'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test(testName, (t) => {
+    test(testName, { timeout: 60000 }, (t) => {
       t.plan(293)
 
       // ---------- Test Setup ----------

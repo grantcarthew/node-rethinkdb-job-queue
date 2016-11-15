@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const uuid = require('uuid')
 const is = require('../src/is')
 const enums = require('../src/enums')

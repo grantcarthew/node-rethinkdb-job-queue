@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const tError = require('./test-error')
 const tOpts = require('./test-options')
 const dbDriver = require('../src/db-driver')

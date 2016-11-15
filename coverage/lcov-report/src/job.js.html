@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/job.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../index.html">all files</a> / <a href="index.html">src/</a> job.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">89.66% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>78/87</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>26/26</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>11/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">89.66% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>78/87</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">407×</span>
+<span class="cline-any cline-yes">407×</span>
+<span class="cline-any cline-yes">407×</span>
+<span class="cline-any cline-yes">407×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">407×</span>
+<span class="cline-any cline-yes">252×</span>
+<span class="cline-any cline-yes">252×</span>
+<span class="cline-any cline-yes">252×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">155×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">154×</span>
+<span class="cline-any cline-yes">22×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">132×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-yes">7×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-yes">5×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">143×</span>
+<span class="cline-any cline-yes">143×</span>
+<span class="cline-any cline-yes">143×</span>
+<span class="cline-any cline-yes">142×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">143×</span>
+<span class="cline-any cline-yes">143×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">const logger = require('./logger')(module)
+const uuid = require('uuid')
+const enums = require('./enums')
+const is = require('./is')
+const jobOptions = require('./job-options')
+const jobProgress = require('./job-progress')
+const jobUpdate = require('./job-update')
+const jobLog = require('./job-log')
+&nbsp;
+class Job {
+&nbsp;
+  constructor (q, jobData) {
+    logger('constructor')
+    logger('queue id', q.id)
+    logger('jobData', jobData)
+    this.q = q
+&nbsp;
+    if (is.job(jobData)) {
+      logger('Creating job from database object')
+      Object.assign(this, jobData)
+      this.priority = enums.priorityFromValue(this.priority)
+    } else {
+      logger('Creating new job from defaults')
+&nbsp;
+      const options = jobOptions()
+      const now = new Date()
+      this.id = uuid.v4()
+      this.priority = options.priority
+      this.timeout = options.timeout
+      this.retryDelay = options.retryDelay
+      this.retryMax = options.retryMax
+      this.retryCount = 0
+      this.repeat = options.repeat
+      this.repeatDelay = options.repeatDelay
+      this.repeatCount = 0
+      this.progress = 0
+      this.status = enums.status.created
+      this.log = []
+      this.dateCreated = now
+      this.dateEnable = now
+      this.dateStarted
+      this.dateFinished
+      this.queueId = q.id
+      // Conflicting job options will be overwritten.
+      if (is.function(jobData)) {
+        throw new Error(enums.message.jobDataInvalid)
+      }
+      if (is.array(jobData) || !is.object(jobData)) {
+        this.data = jobData
+      } else {
+        Object.assign(this, jobData)
+      }
+    }
+  }
+&nbsp;
+  setPriority (newPriority) {
+    if (Object.keys(enums.priority).includes(newPriority)) {
+      this.priority = newPriority
+      return this
+    }
+    throw new Error(enums.message.priorityInvalid)
+  }
+&nbsp;
+  setTimeout (newTimeout) {
+    if (is.integer(newTimeout) &amp;&amp;
+        newTimeout &gt;= 0) {
+      this.timeout = newTimeout
+      return this
+    }
+    throw new Error(enums.message.timeoutIvalid)
+  }
+&nbsp;
+  setRetryMax (newRetryMax) {
+    if (is.integer(newRetryMax) &amp;&amp;
+        newRetryMax &gt;= 0) {
+      this.retryMax = newRetryMax
+      return this
+    }
+    throw new Error(enums.message.retryMaxIvalid)
+  }
+&nbsp;
+  setRetryDelay (newRetryDelay) {
+    if (is.integer(newRetryDelay) &amp;&amp;
+        newRetryDelay &gt;= 0) {
+      this.retryDelay = newRetryDelay
+      return this
+    }
+    throw new Error(enums.message.retryDelayIvalid)
+  }
+&nbsp;
+  setDateEnable (newDateEnable) {
+    if (is.date(newDateEnable)) {
+      this.dateEnable = newDateEnable
+      return this
+    }
+    throw new Error(enums.message.dateEnableIvalid)
+  }
+&nbsp;
+  updateProgress (percent) {
+    logger(`updateProgress [${percent}]`)
+    return this.q.ready().then(() =&gt; {
+      return jobProgress(this, percent)
+    }).catch((err) =&gt; {
+<span class="cstat-no" title="statement not covered" >      logger('Event: updateProgress error', err, this.q.id)</span>
+<span class="cstat-no" title="statement not covered" >      this.q.emit(enums.status.error, this.q.id, err)</span>
+<span class="cstat-no" title="statement not covered" >      return Promise.reject(err)</span>
+    })
+  }
+&nbsp;
+  update () {
+    logger(`update`)
+    return this.q.ready().then(() =&gt; {
+      return jobUpdate(this)
+    }).catch((err) =&gt; {
+<span class="cstat-no" title="statement not covered" >      logger('Event: update error', err, this.q.id)</span>
+<span class="cstat-no" title="statement not covered" >      this.q.emit(enums.status.error, this.q.id, err)</span>
+<span class="cstat-no" title="statement not covered" >      return Promise.reject(err)</span>
+    })
+  }
+&nbsp;
+  getCleanCopy (priorityAsString) {
+    logger('getCleanCopy')
+    const jobCopy = Object.assign({}, this)
+    if (!priorityAsString) {
+      jobCopy.priority = enums.priority[jobCopy.priority]
+    }
+    delete jobCopy.q
+    return jobCopy
+  }
+&nbsp;
+  addLog (data = {},
+          message = enums.message.seeLogData,
+          type = enums.log.information,
+          status = this.status) {
+    logger('addLog', data, message, type, status)
+    return this.q.ready().then(() =&gt; {
+      return jobLog.commitLog(this, data, message, type, status)
+    }).catch((err) =&gt; {
+<span class="cstat-no" title="statement not covered" >      logger('Event: addLog error', err, this.q.id)</span>
+<span class="cstat-no" title="statement not covered" >      this.q.emit(enums.status.error, this.q.id, err)</span>
+<span class="cstat-no" title="statement not covered" >      return Promise.reject(err)</span>
+    })
+  }
+&nbsp;
+  getLastLog () {
+    return jobLog.getLastLog(this)
+  }
+}
+&nbsp;
+module.exports = Job
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 15 2016 15:40:18 GMT+1000 (AEST)
+</div>
+</div>
+<script src="../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../sorter.js"></script>
+</body>
+</html>

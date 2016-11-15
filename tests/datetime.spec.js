@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const is = require('../src/is')
 const tError = require('./test-error')
 const datetime = require('../src/datetime')

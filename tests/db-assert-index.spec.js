@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const Promise = require('bluebird')
 const tError = require('./test-error')
 const dbAssertIndex = require('../src/db-assert-index')

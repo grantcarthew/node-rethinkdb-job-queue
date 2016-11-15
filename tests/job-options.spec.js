@@ -1,4 +1,4 @@
-const test = require('tape')
+const test = require('tap').test
 const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobOptions = require('../src/job-options')

@@ -85,12 +85,8 @@ return dbAssertDatabase().then(() => {
 }).then(() => {
   return queueProcess()
 }).then(() => {
-  // This test has bee removed for now due to this issue on Tape
-  // https://github.com/substack/tape/issues/223
-  // To test queueChange, use the test-current.js file by running
-  // npm run tc
-  // return queueChange()
-// }).then(() => {
+  return queueChange()
+}).then(() => {
   return queue()
 }).then(() => {
   return queueStop()
