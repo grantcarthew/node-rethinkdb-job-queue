@@ -15,7 +15,7 @@ const testName = 'queue-process'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, { timeout: 60000 }, (t) => {
-      t.plan(293)
+      t.plan(294)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -55,6 +55,13 @@ module.exports = function () {
         reanimated: 0,
         log: 0,
         updated: 0
+      }
+
+      // idle event testing is not part of the test-event-handlers module
+      // because it is too difficult to measure. This handler and one
+      // test below is to ensure idle is being called.
+      function idleEventHandler (qid) {
+        t.ok(is.string(qid), `Event: idle`)
       }
 
       let completedEventCount = 0
@@ -139,10 +146,12 @@ module.exports = function () {
         q._concurrency = 3
         return q.pause()
       }).then(() => {
+        q.on(enums.status.idle, idleEventHandler)
         return q.resume()
       }).delay(jobDelay / 2).then(() => {
         t.equal(q._running, q._concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
+        q.removeListener(enums.status.idle, idleEventHandler)
         completedEventCount = state.count.get(enums.status.completed)
         t.equal(state.count.get(enums.status.completed), noOfJobsToCreate, `Queue has completed ${completedEventCount} jobs`)
         t.ok(q.idle, 'Queue is idle')
