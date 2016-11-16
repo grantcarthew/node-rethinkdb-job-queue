@@ -53,7 +53,7 @@ module.exports.date = isDate
 
 function ensureDate (value) {
   logger(`ensureDate`, value)
-  return isDate(value) ? value : new Date(value)
+  return isDate(value) ? value : new Date()
 }
 
 function isDateBefore (testDate, refDate) {
