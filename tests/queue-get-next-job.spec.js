@@ -14,7 +14,7 @@ const testName = 'queue-get-next-job'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(151)
+      t.plan(152)
 
       // ---------- Creating Priority Test Jobs ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -243,8 +243,8 @@ module.exports = function () {
         t.equal(retryGet.length, 1, 'Only one job available based on dateEnable')
         t.equal(retryGet[0].id, retryJobs[1].id, 'Retry job valid')
 
-        // ---------- Testing dateEnable with retryCount ----------
-        t.comment('queue-get-next-job: dateEnable with retryCount')
+        // ---------- Testing dateEnable, retryCount, and processCount ----------
+        t.comment('queue-get-next-job: dateEnable, retryCount, and processCount')
         retryJobs = new Array(4)
         retryJobs[0] = q.createJob().setDateEnable(datetime.add.sec(new Date(), -100))
         retryJobs[0].retryCount = 0
@@ -270,6 +270,7 @@ module.exports = function () {
         t.ok(is.dateBefore(new Date(), retryGet2[0].dateEnable), 'dateEnable for first job is valid')
         t.ok(is.dateBefore(retryGet2[0].dateEnable, retryGet2[1].dateEnable), 'dateEnable for second job is valid')
         t.ok(is.dateBefore(retryGet2[1].dateEnable, retryGet2[2].dateEnable), 'dateEnable for third job is valid')
+        t.equal(retryGet2[0].processCount, 1, 'processCount is valid')
         return queueGetNextJob(q)
       }).then((retryGet3) => {
         t.equal(retryGet3.length, 1, 'Last job retrieved successfully')
