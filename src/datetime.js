@@ -12,31 +12,35 @@ function isInteger (value) {
     value % 1 === 0
 }
 
-function addMilliseconds (dateObject, ms) {
+function addMs (dateObject, value, multiplier = 0) {
   if (isInteger(dateObject)) {
-    ms = dateObject
+    value = dateObject
     dateObject = new Date()
   }
-  if (isDate(dateObject) && isInteger(ms)) {
-    return new Date(dateObject.getTime() + ms)
+  if (isDate(dateObject) && isInteger(value)) {
+    return new Date(dateObject.getTime() + (value * multiplier))
   }
   throw new Error(enums.message.datetimeInvalid)
 }
 
+function addMilliseconds (dateObject, ms) {
+  return addMs(dateObject, ms, 1)
+}
+
 function addSeconds (dateObject, sec) {
-  return addMilliseconds(dateObject, sec * 1000)
+  return addMs(dateObject, sec, 1000)
 }
 
 function addMinutes (dateObject, min) {
-  return addMilliseconds(dateObject, min * 60000)
+  return addMs(dateObject, min, 60000)
 }
 
 function addHours (dateObject, hours) {
-  return addMilliseconds(dateObject, hours * 3600000)
+  return addMs(dateObject, hours, 3600000)
 }
 
 function addDays (dateObject, days) {
-  return addMilliseconds(dateObject, days * 86400000)
+  return addMs(dateObject, days, 86400000)
 }
 
 module.exports.add = {
