@@ -61,7 +61,7 @@ module.exports = function () {
         savedJob[0].status = enums.status.active
         return jobProgress(savedJob[0])
       }).then((updatedJob) => {
-        t.ok(updatedJob, 'Job updated successfully')
+        t.ok(is.job(updatedJob), 'Job updated successfully')
         return job.q.r.db(job.q.db).table(job.q.name).get(job.id).update({
           retryCount: 1
         }).run()
@@ -78,7 +78,7 @@ module.exports = function () {
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], -10)
       }).then((updatedJob) => {
-        t.ok(updatedJob, 'Job updated successfully')
+        t.ok(is.job(updatedJob), 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 0, 'Job progress is 0 when updated with negative value')
@@ -91,21 +91,21 @@ module.exports = function () {
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], 1)
       }).then((updatedJob) => {
-        t.ok(updatedJob, 'Job updated successfully')
+        t.ok(is.job(updatedJob), 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 1, 'Job progress is 1 percent')
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], 50)
       }).then((updatedJob) => {
-        t.ok(updatedJob, 'Job updated successfully')
+        t.ok(is.job(updatedJob), 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 50, 'Job progress is 50 percent')
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], 100)
       }).then((updatedJob) => {
-        t.ok(updatedJob, 'Job updated successfully')
+        t.ok(is.job(updatedJob), 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 100, 'Job progress is 100 percent')
@@ -113,15 +113,16 @@ module.exports = function () {
         updatedJob[0].status = enums.status.active
         return jobProgress(updatedJob[0], 101)
       }).then((updatedJob) => {
-        t.ok(updatedJob, 'Job updated successfully')
+        t.ok(is.job(updatedJob), 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].progress, 100, 'Job progress is 100 when updated with larger value')
         updatedJob[0].status = enums.status.failed
-        return jobProgress(updatedJob[0], 101)
-      }).then((inactiveResult) => {
-        t.notOk(inactiveResult, 'Inactive job returns false')
-
+        return jobProgress(updatedJob[0], 101).catch((err) => {
+          t.ok(is.error(err), 'Inactive job rejects Promise')
+        })
+      }).then(() => {
+        //
         // ---------- Event Summary ----------
         eventHandlers.remove(t, q, state)
         return q.reset()

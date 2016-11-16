@@ -3,12 +3,13 @@ const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
 const jobLog = require('./job-log')
+const dbResult = require('./db-result')
 
 module.exports = function jobProgress (job, percent) {
   logger('jobProgress: ' + job.id)
   if (!is.active(job)) {
     logger(`Error: progress called on non-active job`, job)
-    return Promise.resolve(false)
+    return Promise.reject(new Error(enums.message.jobNotActive))
   }
   if (!percent || !is.number(percent) || percent < 0) { percent = 0 }
   if (percent > 100) { percent = 100 }
@@ -31,10 +32,12 @@ module.exports = function jobProgress (job, percent) {
       .add(job.q.r.row('timeout').div(1000))
       .add(job.q.r.row('retryDelay').div(1000).mul(job.q.r.row('retryCount'))),
       log: job.q.r.row('log').append(newLog)
-    }).run()
+    }, { returnChanges: true }).run()
+  }).then((updateResult) => {
+    return dbResult.toJob(job.q, updateResult)
   }).then((updateResult) => {
     logger(`Event: progress`, job.q.id, job.id, percent)
     job.q.emit(enums.status.progress, job.q.id, job.id, percent)
-    return true
+    return updateResult[0]
   })
 }

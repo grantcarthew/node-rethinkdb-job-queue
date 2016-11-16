@@ -86,6 +86,7 @@ const message = Object.freeze({
   seeLogData: 'See the data attached to this log entry',
   jobUpdated: 'Job updated. Old values in log data',
   jobProgress: 'Job progress updated. Old value in log data',
+  jobNotActive: 'Job is not at an active status',
   jobNotAdded: 'Job not added to the queue',
   jobDataInvalid: 'Job data can not be a function',
   jobInvalid: 'Job object is invalid',
@@ -103,6 +104,7 @@ const message = Object.freeze({
   concurrencyInvalid: 'Invalid concurrency value',
   cancelCallbackInvalid: 'The onCancel callback is not a function',
   globalStateError: 'The global state document change feed is invalid',
+  datetimeInvalid: 'Invalid datetime arguments',
   noErrorStack: 'The error has no stack detail',
   noErrorMessage: 'The error has no message'
 })
