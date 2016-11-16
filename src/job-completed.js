@@ -11,15 +11,11 @@ module.exports = function completed (job, result) {
   job.status = isRepeating ? enums.status.waiting : enums.status.completed
   job.dateFinished = new Date()
   job.progress = isRepeating ? 0 : 100
-  if (isRepeating) { job.repeatCount++ }
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
   const log = jobLog.createLogObject(job, result, enums.status.completed)
   log.duration = duration
-  if (is.true(job.repeat) || is.integer(job.repeat)) {
-    log.repeatCount = job.repeatCount
-  }
 
   return Promise.resolve().then(() => {
     return job.q.r.db(job.q.db).table(job.q.name)
@@ -33,7 +29,6 @@ module.exports = function completed (job, result) {
       ),
       dateFinished: job.dateFinished,
       progress: job.progress,
-      repeatCount: job.repeatCount,
       log: job.q.r.row('log').append(log),
       queueId: job.q.id
     }, { returnChanges: true })

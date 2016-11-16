@@ -18,7 +18,7 @@ module.exports = function () {
       priority: enums.priority.normal,
       status: enums.status.created,
       repeat: false,
-      repeatCount: 0
+      processCount: 0
     }
     const log = {
       date: new Date(),
@@ -84,10 +84,10 @@ module.exports = function () {
     t.ok(is.repeating(job), 'Is job repeating true when repeat is true')
     job.repeat = 5
     t.ok(is.repeating(job), 'Is job repeating true when repeat is integer')
-    job.repeatCount = 5
-    t.notOk(is.repeating(job), 'Is job repeating false when repeat === repeatCount')
-    job.repeatCount = 6
-    t.notOk(is.repeating(job), 'Is job repeating false when repeat < repeatCount')
+    job.processCount = 5
+    t.ok(is.repeating(job), 'Is job repeating true when processCount equals repeat')
+    job.processCount = 6
+    t.notOk(is.repeating(job), 'Is job repeating false when processCount > repeat')
     job.repeat = 0
     t.notOk(is.repeating(job), 'Is job repeating false when repeat is 0')
     job.repeat = false

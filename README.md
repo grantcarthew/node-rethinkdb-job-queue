@@ -59,7 +59,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 
 *   [Full Documentation][rjq-wiki-url]
 *   [Change Log][rjq-changelog-url]
-*   [Code Coverage Report][rjq-coverage-url] from more than 1900 Integration Tests
+*   [Code Coverage Report][rjq-coverage-url] from more than 2000 Integration Tests
 
 ## Quick Start
 

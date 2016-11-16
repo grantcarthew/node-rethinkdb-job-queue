@@ -15,7 +15,8 @@ function createLogObject (job,
     data,
     type,
     status,
-    retryCount: job.retryCount
+    retryCount: job.retryCount,
+    processCount: job.processCount
   }
 }
 module.exports.createLogObject = createLogObject

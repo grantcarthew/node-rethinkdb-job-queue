@@ -151,7 +151,7 @@ module.exports.repeating = function isRepeating (job) {
   }
   if (isInteger(job.repeat) &&
       job.repeat > 0 &&
-      job.repeatCount < job.repeat) {
+      job.processCount <= job.repeat) {
     return true
   }
   return false

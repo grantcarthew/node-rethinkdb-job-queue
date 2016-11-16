@@ -1,6 +1,7 @@
 const test = require('tap').test
 const Promise = require('bluebird')
 const is = require('../src/is')
+const datetime = require('../src/datetime')
 const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobCompleted = require('../src/job-completed')
@@ -13,11 +14,13 @@ const testName = 'job-completed'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(48)
+      t.plan(137)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
       job.data = tData
+      let beforeDate
+      let afterDate
 
       // ---------- Event Handler Setup ----------
       let state = {
@@ -37,16 +40,16 @@ module.exports = function () {
         stopping: 0,
         stopped: 0,
         dropped: 0,
-        added: 1,
+        added: 3,
         waiting: 0,
         active: 0,
-        completed: 2,
+        completed: 7,
         cancelled: 0,
         failed: 0,
         terminated: 0,
         reanimated: 0,
         log: 0,
-        updated: 0
+        updated: 5
       }
 
       return q.reset().then((resetResult) => {
@@ -76,6 +79,147 @@ module.exports = function () {
         t.ok(updatedJob[0].log[1].message, 'Log message is present')
         t.ok(updatedJob[0].log[1].duration >= 0, 'Log duration is >= 0')
         t.equal(updatedJob[0].log[1].data, tData, 'Log data is valid')
+
+        // ---------- Job Repeat True Test ----------
+        t.comment('job-completed: Job Repeat True')
+        job = q.createJob().setRepeat(true)
+        job.data = tData
+        return q.addJob(job)
+      }).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        savedJob[0].processCount = 1
+        return savedJob[0].update()
+      }).then((updatedJob) => {
+        t.ok(is.job(updatedJob), 'Job updated successfully')
+        return jobCompleted(updatedJob, tData)
+      }).then((completedIds) => {
+        t.ok(is.uuid(completedIds[0]), 'Job completed returned job ids')
+        return q.getJob(completedIds[0])
+      }).then((repeatedJobs) => {
+        beforeDate = datetime.add.min(-1)
+        afterDate = datetime.add.min(6)
+        t.equal(repeatedJobs[0].status, enums.status.waiting, 'Repeat job completed status is waiting')
+        t.ok(is.dateBetween(repeatedJobs[0].dateEnable, beforeDate, afterDate), 'Repeat job completed dateEnable is set for five minutes')
+        t.ok(is.dateBefore(repeatedJobs[0].dateFinished), 'Repeat job completed dateFinished is before now')
+        t.ok(repeatedJobs[0].progress === 0, 'Repeat job completed progress is 0 ')
+        t.equal(repeatedJobs[0].processCount, 1, 'Repeat job completed processCount is 1 ')
+        t.equal(repeatedJobs[0].log.length, 3, 'Repeat job completed log count is valid')
+        let log = repeatedJobs[0].getLastLog()
+        t.ok(is.date(log.date), 'Repeat log date is a date')
+        t.equal(log.data, tData, 'Repeat log data is valid')
+        t.equal(log.message, enums.status.completed, 'Repeat log message is valid')
+        t.equal(log.queueId, q.id, 'Repeat log queueId is valid')
+        t.equal(log.processCount, 1, 'Repeat log processCount is 1')
+        t.equal(log.status, enums.status.waiting, 'Repeat log status is valid')
+        t.equal(log.type, enums.log.information, 'Repeat log type is valid')
+        repeatedJobs[0].processCount++
+        return repeatedJobs[0].update()
+      }).then((updatedJob) => {
+        t.ok(is.job(updatedJob), 'Job updated successfully')
+        return jobCompleted(updatedJob, tData)
+      }).then((completedIds) => {
+        t.ok(is.uuid(completedIds[0]), 'Job completed returned job ids')
+        return q.getJob(completedIds[0])
+      }).then((repeatedJobs) => {
+        beforeDate = datetime.add.min(-1)
+        afterDate = datetime.add.min(6)
+        t.equal(repeatedJobs[0].status, enums.status.waiting, 'Repeat job completed status is waiting')
+        t.ok(is.dateBetween(repeatedJobs[0].dateEnable, beforeDate, afterDate), 'Repeat job completed dateEnable is set for five minutes')
+        t.ok(is.dateBefore(repeatedJobs[0].dateFinished), 'Repeat job completed dateFinished is before now')
+        t.ok(repeatedJobs[0].progress === 0, 'Repeat job completed progress is 0 ')
+        t.equal(repeatedJobs[0].processCount, 2, 'Repeat job completed processCount is 2 ')
+        t.equal(repeatedJobs[0].log.length, 5, 'Repeat job completed log count is valid')
+        let log = repeatedJobs[0].getLastLog()
+        t.ok(is.date(log.date), 'Repeat log date is a date')
+        t.equal(log.data, tData, 'Repeat log data is valid')
+        t.equal(log.message, enums.status.completed, 'Repeat log message is valid')
+        t.equal(log.queueId, q.id, 'Repeat log queueId is valid')
+        t.equal(log.processCount, 2, 'Repeat log processCount is 2')
+        t.equal(log.status, enums.status.waiting, 'Repeat log status is valid')
+        t.equal(log.type, enums.log.information, 'Repeat log type is valid')
+
+        // ---------- Job Repeat Number Test ----------
+        t.comment('job-completed: Job Repeat Number')
+        job = q.createJob().setRepeat(2)
+        job.data = tData
+        return q.addJob(job)
+      }).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        savedJob[0].processCount++
+        return savedJob[0].update()
+      }).then((updatedJob) => {
+        t.ok(is.job(updatedJob), 'Job updated successfully')
+        return jobCompleted(updatedJob, tData)
+      }).then((completedIds) => {
+        t.ok(is.uuid(completedIds[0]), 'Job completed returned job ids')
+        return q.getJob(completedIds[0])
+      }).then((repeatedJobs) => {
+        beforeDate = datetime.add.min(-1)
+        afterDate = datetime.add.min(6)
+        t.equal(repeatedJobs[0].status, enums.status.waiting, 'Repeat job completed status is waiting')
+        t.ok(is.dateBetween(repeatedJobs[0].dateEnable, beforeDate, afterDate), 'Repeat job completed dateEnable is set for five minutes')
+        t.ok(is.dateBefore(repeatedJobs[0].dateFinished), 'Repeat job completed dateFinished is before now')
+        t.ok(repeatedJobs[0].progress === 0, 'Repeat job completed progress is 0 ')
+        t.equal(repeatedJobs[0].processCount, 1, 'Repeat job completed processCount is 1 ')
+        t.equal(repeatedJobs[0].log.length, 3, 'Repeat job completed log count is valid')
+        let log = repeatedJobs[0].getLastLog()
+        t.ok(is.date(log.date), 'Repeat log date is a date')
+        t.equal(log.data, tData, 'Repeat log data is valid')
+        t.equal(log.message, enums.status.completed, 'Repeat log message is valid')
+        t.equal(log.queueId, q.id, 'Repeat log queueId is valid')
+        t.equal(log.processCount, 1, 'Repeat log processCount is 1')
+        t.equal(log.status, enums.status.waiting, 'Repeat log status is valid')
+        t.equal(log.type, enums.log.information, 'Repeat log type is valid')
+        repeatedJobs[0].processCount++
+        return repeatedJobs[0].update()
+      }).then((updatedJob) => {
+        t.ok(is.job(updatedJob), 'Job updated successfully')
+        return jobCompleted(updatedJob, tData)
+      }).then((completedIds) => {
+        t.ok(is.uuid(completedIds[0]), 'Job completed returned job ids')
+        return q.getJob(completedIds[0])
+      }).then((repeatedJobs) => {
+        beforeDate = datetime.add.min(-1)
+        afterDate = datetime.add.min(6)
+        t.equal(repeatedJobs[0].status, enums.status.waiting, 'Repeat job completed status is waiting')
+        t.ok(is.dateBetween(repeatedJobs[0].dateEnable, beforeDate, afterDate), 'Repeat job completed dateEnable is set for five minutes')
+        t.ok(is.dateBefore(repeatedJobs[0].dateFinished), 'Repeat job completed dateFinished is before now')
+        t.ok(repeatedJobs[0].progress === 0, 'Repeat job completed progress is 0 ')
+        t.equal(repeatedJobs[0].processCount, 2, 'Repeat job completed processCount is 2 ')
+        t.equal(repeatedJobs[0].log.length, 5, 'Repeat job completed log count is valid')
+        let log = repeatedJobs[0].getLastLog()
+        t.ok(is.date(log.date), 'Repeat log date is a date')
+        t.equal(log.data, tData, 'Repeat log data is valid')
+        t.equal(log.message, enums.status.completed, 'Repeat log message is valid')
+        t.equal(log.queueId, q.id, 'Repeat log queueId is valid')
+        t.equal(log.processCount, 2, 'Repeat log processCount is 2')
+        t.equal(log.status, enums.status.waiting, 'Repeat log status is valid')
+        t.equal(log.type, enums.log.information, 'Repeat log type is valid')
+        repeatedJobs[0].processCount++
+        return repeatedJobs[0].update()
+      }).then((updatedJob) => {
+        t.ok(is.job(updatedJob), 'Job updated successfully')
+        return jobCompleted(updatedJob, tData)
+      }).then((completedIds) => {
+        t.ok(is.uuid(completedIds[0]), 'Job completed returned job ids')
+        return q.getJob(completedIds[0])
+      }).then((repeatedJobs) => {
+        beforeDate = datetime.add.min(-1)
+        afterDate = datetime.add.min(6)
+        t.equal(repeatedJobs[0].status, enums.status.completed, 'Repeat job completed status is completed')
+        t.ok(is.dateBetween(repeatedJobs[0].dateEnable, beforeDate, afterDate), 'Repeat job completed dateEnable is set for five minutes')
+        t.ok(is.dateBefore(repeatedJobs[0].dateFinished), 'Repeat job completed dateFinished is before now')
+        t.ok(repeatedJobs[0].progress === 100, 'Repeat job completed progress is 100 ')
+        t.equal(repeatedJobs[0].processCount, 3, 'Repeat job completed processCount is 3 ')
+        t.equal(repeatedJobs[0].log.length, 7, 'Repeat job completed log count is valid')
+        let log = repeatedJobs[0].getLastLog()
+        t.ok(is.date(log.date), 'Repeat log date is a date')
+        t.equal(log.data, tData, 'Repeat log data is valid')
+        t.equal(log.message, enums.status.completed, 'Repeat log message is valid')
+        t.equal(log.queueId, q.id, 'Repeat log queueId is valid')
+        t.equal(log.processCount, 3, 'Repeat log processCount is 3')
+        t.equal(log.status, enums.status.completed, 'Repeat log status is valid')
+        t.equal(log.type, enums.log.information, 'Repeat log type is valid')
 
         // ---------- Job Completed with Remove Test ----------
         t.comment('job-completed: Job Completed with Remove')

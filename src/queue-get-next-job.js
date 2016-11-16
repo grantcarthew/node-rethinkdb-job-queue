@@ -24,12 +24,14 @@ module.exports = function queueGetNextJob (q) {
         .add(q.r.row('timeout').div(1000))
         .add(q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))),
         queueId: q.id,
+        processCount: q.r.row('processCount').add(1),
         log: q.r.row('log').append({
           date: q.r.now(),
           queueId: q.id,
           type: enums.log.information,
           status: enums.status.active,
           retryCount: q.r.row('retryCount'),
+          processCount: q.r.row('processCount'),
           message: enums.message.active
         })
       }, {returnChanges: true})
