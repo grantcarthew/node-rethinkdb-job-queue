@@ -13,7 +13,7 @@ const testName = 'job-log'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(72)
+      t.plan(76)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
       let job = q.createJob()
@@ -71,6 +71,7 @@ module.exports = function () {
         t.equal(jobWithLog1[0].log[1].type, enums.log.information, 'Log 1 type is information')
         t.equal(jobWithLog1[0].log[1].status, enums.status.waiting, 'Log 1 status is added')
         t.ok(jobWithLog1[0].log[1].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(jobWithLog1[0].log[1].processCount >= 0, 'Log processCount is valid')
         t.equal(jobWithLog1[0].log[1].message, tData, 'Log 1 message is valid')
         t.equal(jobWithLog1[0].log[1].data, tData, 'Log 1 detail is valid')
         t.equal(jobWithLog1[0].getLastLog(), jobWithLog1[0].log[1], 'Last log entry is correctly retrieved')
@@ -88,6 +89,7 @@ module.exports = function () {
         t.equal(jobWithLog2[0].log[2].type, enums.log.information, 'Log 2 type is information')
         t.equal(jobWithLog2[0].log[2].status, enums.status.waiting, 'Log 2 status is waiting')
         t.ok(jobWithLog2[0].log[2].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(jobWithLog2[0].log[2].processCount >= 0, 'Log processCount is valid')
         t.equal(jobWithLog2[0].log[2].message, tData, 'Log 2 message is valid')
         t.equal(jobWithLog2[0].log[2].data, tData, 'Log 2 data is valid')
         t.equal(jobWithLog2[0].getLastLog(), jobWithLog2[0].log[2], 'Last log entry is correctly retrieved')
@@ -105,6 +107,7 @@ module.exports = function () {
         t.equal(jobWithLog3[0].log[3].type, enums.log.information, 'Log 3 type is information')
         t.equal(jobWithLog3[0].log[3].status, enums.status.waiting, 'Log 3 status is waiting')
         t.ok(jobWithLog3[0].log[3].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(jobWithLog3[0].log[3].processCount >= 0, 'Log processCount is valid')
         t.equal(jobWithLog3[0].log[3].message, enums.message.seeLogData, 'Log 3 message is valid')
         t.ok(is.object(jobWithLog3[0].log[3].data), 'Log 3 data is valid')
         t.equal(jobWithLog3[0].getLastLog(), jobWithLog3[0].log[3], 'Last log entry is correctly retrieved')
@@ -122,6 +125,7 @@ module.exports = function () {
         t.equal(jobWithLog4[0].log[4].type, enums.log.information, 'Log 4 type is information')
         t.equal(jobWithLog4[0].log[4].status, enums.status.waiting, 'Log 4 status is added')
         t.ok(jobWithLog4[0].log[4].retryCount >= 0, 'Log retryCount is valid')
+        t.ok(jobWithLog4[0].log[4].processCount >= 0, 'Log processCount is valid')
         t.equal(jobWithLog4[0].log[4].message, enums.message.seeLogData, 'Log 4 message is valid')
         t.equal(jobWithLog4[0].log[4].data.foo, 'bar', 'Log 4 data object is valid')
         t.equal(jobWithLog4[0].getLastLog(), jobWithLog4[0].log[4], 'Last log entry is correctly retrieved')
