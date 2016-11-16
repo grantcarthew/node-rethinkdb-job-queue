@@ -22,6 +22,7 @@ module.exports = function cancelJob (q, jobOrId, reason) {
         type: enums.log.information,
         status: enums.status.cancelled,
         retryCount: q.r.row('retryCount'),
+        processCount: q.r.row('processCount'),
         message: reason
       }),
       queueId: q.id

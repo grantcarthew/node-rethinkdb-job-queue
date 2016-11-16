@@ -42,6 +42,7 @@ function updateFailedJobs (q) {
           enums.status.terminated
         ),
         retryCount: q.r.row('retryCount'),
+        processCount: q.r.row('processCount'),
         message: `Master: ${enums.message.failed}`,
         dateEnable: q.r.row('dateEnable')
       }),
