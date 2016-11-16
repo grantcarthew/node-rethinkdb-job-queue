@@ -69,7 +69,7 @@ module.exports = function () {
         job.dateEnable = tDate
         return jobUpdate(job)
       }).then((updateResult) => {
-        t.ok(updateResult, 'Job updated successfully')
+        t.ok(is.job(updateResult), 'Job updated successfully')
         return q.getJob(job.id)
       }).then((updatedJob) => {
         t.equal(updatedJob[0].status, job.status, 'Updated job status is valid')

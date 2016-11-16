@@ -27,6 +27,6 @@ module.exports = function jobUpdate (job) {
     logger(`updateResult`, updateResult)
     logger(`Event: updated`, job.q.id, job.id)
     job.q.emit(enums.status.updated, job.q.id, job.id)
-    return true
+    return job
   })
 }
