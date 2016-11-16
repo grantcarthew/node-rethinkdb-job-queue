@@ -61,7 +61,7 @@ const index = Object.freeze({
   indexActiveDateEnable: 'indexActiveDateEnable',
   indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',
   indexFinishedDateFinished: 'indexFinishedDateFinished',
-  indexStatus: 'status',
+  indexStatus: 'status'
 })
 const dbResult = Object.freeze({
   deleted: 'deleted',
@@ -96,6 +96,8 @@ const message = Object.freeze({
   timeoutInvalid: 'The job timeout value is invalid',
   retryMaxIvalid: 'The job retryMax value is invalid',
   retryDelayIvalid: 'The job retryDelay value is invalid',
+  repeatInvalid: 'The job repeat value is invalid',
+  repeatDelayInvalid: 'The job repeatDelay value is invalid',
   dateEnableIvalid: 'The job dateEnable value is invalid',
   dbError: 'RethinkDB returned an error',
   concurrencyInvalid: 'Invalid concurrency value',

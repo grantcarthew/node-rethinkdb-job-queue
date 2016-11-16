@@ -13,7 +13,7 @@ const testName = 'job'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(106)
+      t.plan(114)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -84,6 +84,18 @@ module.exports = function () {
       t.throws(() => { newJob.setRetryDelay('not valid') }, 'Job setRetryDelay thows if invalid')
       newJob.setRetryDelay(100)
       t.equal(newJob.retryDelay, 100, 'Job setRetryDelay successfully changed value')
+      t.throws(() => { newJob.setRepeat('not valid') }, 'Job setRepeat thows if invalid')
+      newJob.setRepeat(100)
+      t.equal(newJob.repeat, 100, 'Job setRepeat successfully changed value')
+      t.throws(() => { newJob.setRepeat(-10) }, 'Job setRepeat thows if negative')
+      newJob.setRepeat(true)
+      t.ok(is.true(newJob.repeat), 'Job setRepeat successfully changed value to true')
+      newJob.setRepeat(false)
+      t.ok(is.false(newJob.repeat), 'Job setRepeat successfully changed value to false')
+      t.throws(() => { newJob.setRepeatDelay('not valid') }, 'Job setRepeatDelay thows if invalid')
+      t.throws(() => { newJob.setRepeatDelay(-10) }, 'Job setRepeatDelay thows if negative')
+      newJob.setRepeatDelay(100)
+      t.equal(newJob.repeatDelay, 100, 'Job setRetryDelay successfully changed value')
       t.throws(() => { newJob.setDateEnable('not valid') }, 'Job setDateEnable thows if invalid')
       const testDate = new Date()
       newJob.setDateEnable(testDate)

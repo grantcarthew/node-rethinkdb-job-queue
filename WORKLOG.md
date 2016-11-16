@@ -8,6 +8,7 @@ Tests all fixed, now working on testing repeating jobs.
 
 ## TODO
 
+*   `job.setRepeat` and `job.setRepeatDelay` need testing.
 *   `completed` event needs repeating to be tested
 *   `job-completed` needs repeated job tests.
 *   need to create `setRepeat` and `setRepeatDelay` methods and test.

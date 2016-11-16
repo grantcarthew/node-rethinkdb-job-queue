@@ -88,6 +88,23 @@ class Job {
     throw new Error(enums.message.retryDelayIvalid)
   }
 
+  setRepeat (newRepeat) {
+    if (is.boolean(newRepeat) || (
+        is.integer(newRepeat) && newRepeat >= 0)) {
+      this.repeat = newRepeat
+      return this
+    }
+    throw new Error(enums.message.repeatInvalid)
+  }
+
+  setRepeatDelay (newRepeatDelay) {
+    if (is.integer(newRepeatDelay) && newRepeatDelay >= 0) {
+      this.repeatDelay = newRepeatDelay
+      return this
+    }
+    throw new Error(enums.message.repeatDelayInvalid)
+  }
+
   setDateEnable (newDateEnable) {
     if (is.date(newDateEnable)) {
       this.dateEnable = newDateEnable
