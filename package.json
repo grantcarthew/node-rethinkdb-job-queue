@@ -37,6 +37,7 @@
     "test": "tap --timeout 300 ./tests/test-runner.js",
     "tv": "tap --timeout 300 --reporter tap ./tests/test-runner.js",
     "tc": "node ./tests/test-current.js",
+    "tcd": "node --inspect --debug-brk ./tests/test-current.js",
     "lint": "standard",
     "coverage": "npm run coverage:rm && npm run coverage:cover && npm run coverage:report && npm run coverage:check",
     "coverage:cover": "istanbul cover ./tests/test-runner.js",
