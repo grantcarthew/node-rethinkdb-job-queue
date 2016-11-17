@@ -20,24 +20,24 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">97.83% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>41/41</span>
+        <span class='fraction'>45/46</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">76.92% </span>
+        <span class="strong">88% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>20/26</span>
+        <span class='fraction'>22/25</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Functions</span>
-        <span class='fraction'>9/9</span>
+        <span class='fraction'>11/11</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">100% </span>
+        <span class="strong">97.83% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>41/41</span>
+        <span class='fraction'>45/46</span>
       </div>
     </div>
   </div>
@@ -116,38 +116,60 @@
 71
 72
 73
-74</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">79×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">128×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">44×</span>
-<span class="cline-any cline-yes">44×</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-yes">20×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-yes">64×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">13×</span>
-<span class="cline-any cline-yes">13×</span>
+<span class="cline-any cline-yes">11×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">15×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">2×</span>
-<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">14×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">18×</span>
-<span class="cline-any cline-yes">18×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">20×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
@@ -191,36 +213,47 @@
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// const logger = require('./logger')(module)
 // Logging has been removed due to circular dependencies.
+const enums = require('./enums')
+&nbsp;
 function isDate (value) {
-  // logger(`isDate`, value)
   return value instanceof Date ||
 <span class="branch-1 cbranch-no" title="branch not covered" >    Object.prototype.toString.call(value) === '[object Date]'</span>
 }
+function isInteger (value) {
+  return Object.prototype.toString.call(value) === '[object Number]' &amp;&amp;
+    !Number.isNaN(value) &amp;&amp;
+    value % 1 === 0
+}
 &nbsp;
+function addMs (dateObject, value, multiplier = 0) {
+  if (isInteger(dateObject)) {
+    value = dateObject
+    dateObject = new Date()
+  }
+  <span class="missing-if-branch" title="else path not taken" >E</span>if (isDate(dateObject) &amp;&amp; isInteger(value)) {
+    return new Date(dateObject.getTime() + (value * multiplier))
+  }
+<span class="cstat-no" title="statement not covered" >  throw new Error(enums.message.datetimeInvalid)</span>
+}
 &nbsp;
 function addMilliseconds (dateObject, ms) {
-  dateObject = isDate(dateObject) ? dateObject : <span class="branch-1 cbranch-no" title="branch not covered" >new Date(dateObject)</span>
-  return new Date(dateObject.getTime() + ms)
+  return addMs(dateObject, ms, 1)
 }
 &nbsp;
 function addSeconds (dateObject, sec) {
-  dateObject = isDate(dateObject) ? dateObject : <span class="branch-1 cbranch-no" title="branch not covered" >new Date(dateObject)</span>
-  return addMilliseconds(dateObject, sec * 1000)
+  return addMs(dateObject, sec, 1000)
 }
 &nbsp;
 function addMinutes (dateObject, min) {
-  dateObject = isDate(dateObject) ? dateObject : <span class="branch-1 cbranch-no" title="branch not covered" >new Date(dateObject)</span>
-  return addMilliseconds(dateObject, min * 60000)
+  return addMs(dateObject, min, 60000)
 }
 &nbsp;
 function addHours (dateObject, hours) {
-  dateObject = isDate(dateObject) ? dateObject : <span class="branch-1 cbranch-no" title="branch not covered" >new Date(dateObject)</span>
-  return addMilliseconds(dateObject, hours * 3600000)
+  return addMs(dateObject, hours, 3600000)
 }
 &nbsp;
 function addDays (dateObject, days) {
-  dateObject = isDate(dateObject) ? dateObject : <span class="branch-1 cbranch-no" title="branch not covered" >new Date(dateObject)</span>
-  return addMilliseconds(dateObject, days * 86400000)
+  return addMs(dateObject, days, 86400000)
 }
 &nbsp;
 module.exports.add = {
@@ -251,7 +284,7 @@ function formatTime (dateObject) {
   sec = sec[1] ? sec : `0${sec}`
   let ms = dateObject.getMilliseconds().toString()
   ms = ms.length &gt; 1 ? ms : `00${ms}`
-  ms = ms.length &gt; 2 ? ms : `0${ms}`
+  ms = ms.length &gt; 2 ? ms : <span class="branch-1 cbranch-no" title="branch not covered" >`0${ms}`</span>
   return `${hour}:${min}:${sec}.${ms}`
 }
 &nbsp;
@@ -268,7 +301,7 @@ module.exports.format = format
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 15 2016 15:40:18 GMT+1000 (AEST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 17 2016 13:59:34 GMT+1000 (AEST)
 </div>
 </div>
 <script src="../prettify.js"></script>

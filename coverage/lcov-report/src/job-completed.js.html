@@ -20,14 +20,14 @@
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
-        <span class="strong">93.33% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>28/30</span>
+        <span class='fraction'>26/26</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">75% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Branches</span>
-        <span class='fraction'>12/16</span>
+        <span class='fraction'>10/10</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -35,9 +35,9 @@
         <span class='fraction'>1/1</span>
       </div>
       <div class='fl pad1y space-right2'>
-        <span class="strong">96.55% </span>
+        <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>28/29</span>
+        <span class='fraction'>26/26</span>
       </div>
     </div>
   </div>
@@ -93,12 +93,7 @@
 48
 49
 50
-51
-52
-53
-54
-55
-56</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
+51</td><td class="line-coverage quiet"><span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
@@ -106,23 +101,19 @@
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -138,18 +129,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
-<span class="cline-any cline-yes">38×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
+<span class="cline-any cline-yes">53×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-yes">1×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">37×</span>
+<span class="cline-any cline-yes">52×</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -163,18 +153,14 @@ const dbResult = require('./db-result')
 module.exports = function completed (job, result) {
   logger(`completed:  [${job.id}]`, result)
   const isRepeating = is.repeating(job)
-  job.status = isRepeating ? <span class="branch-0 cbranch-no" title="branch not covered" >enums.status.waiting </span>: enums.status.completed
+  job.status = isRepeating ? enums.status.waiting : enums.status.completed
   job.dateFinished = new Date()
-  job.progress = isRepeating ? <span class="branch-0 cbranch-no" title="branch not covered" >0 </span>: 100
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (isRepeating) { <span class="cstat-no" title="statement not covered" >job.repeatCount++ }</span>
+  job.progress = isRepeating ? 0 : 100
   let duration = job.dateFinished - job.dateStarted
   duration = duration &gt;= 0 ? duration : 0
 &nbsp;
   const log = jobLog.createLogObject(job, result, enums.status.completed)
   log.duration = duration
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (is.true(job.repeat) || is.integer(job.repeat)) {
-<span class="cstat-no" title="statement not covered" >    log.repeatCount = job.repeatCount</span>
-  }
 &nbsp;
   return Promise.resolve().then(() =&gt; {
     return job.q.r.db(job.q.db).table(job.q.name)
@@ -188,7 +174,6 @@ module.exports = function completed (job, result) {
       ),
       dateFinished: job.dateFinished,
       progress: job.progress,
-      repeatCount: job.repeatCount,
       log: job.q.r.row('log').append(log),
       queueId: job.q.id
     }, { returnChanges: true })
@@ -214,7 +199,7 @@ module.exports = function completed (job, result) {
 </div><!-- /wrapper -->
 <div class='footer quiet pad2 space-top1 center small'>
   Code coverage
-  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Tue Nov 15 2016 15:40:18 GMT+1000 (AEST)
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Nov 17 2016 13:59:34 GMT+1000 (AEST)
 </div>
 </div>
 <script src="../prettify.js"></script>
