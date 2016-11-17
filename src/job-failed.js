@@ -1,6 +1,7 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const is = require('./is')
+const datetime = require('./datetime')
 const enums = require('./enums')
 const jobLog = require('./job-log')
 const dbResult = require('./db-result')
@@ -12,13 +13,24 @@ module.exports = function failed (job, err) {
 
   let logType = enums.log.error
   const isRetry = job.retryCount < job.retryMax
+  const isRepeating = is.repeating(job)
+  let dateEnable = new Date()
+
+  job.status = enums.status.terminated
+
   if (isRetry) {
     job.status = enums.status.failed
+    dateEnable = datetime.add.ms(job.retryDelay * job.retryCount)
     job.retryCount++
     logType = enums.log.warning
-  } else {
-    job.status = enums.status.terminated
   }
+
+  if (!isRetry && isRepeating) {
+    job.status = enums.status.waiting
+    dateEnable = datetime.add.ms(job.repeatDelay)
+    job.retryCount = 0
+  }
+
   job.dateFinished = new Date()
   job.progress = 0
   let duration = job.dateFinished - job.dateStarted
@@ -45,8 +57,7 @@ module.exports = function failed (job, err) {
       retryCount: job.retryCount,
       progress: job.progress,
       dateFinished: job.dateFinished,
-      dateEnable: job.q.r.now()
-        .add(job.q.r.row('retryDelay').div(1000).mul(job.q.r.row('retryCount'))),
+      dateEnable,
       log: job.q.r.row('log').append(log),
       queueId: job.q.id
     }, {returnChanges: true})
@@ -55,7 +66,7 @@ module.exports = function failed (job, err) {
     logger(`updateResult`, updateResult)
     return dbResult.toIds(updateResult)
   }).then((jobIds) => {
-    if (isRetry) {
+    if (isRetry || isRepeating) {
       logger(`Event: failed`, job.q.id, jobIds[0])
       job.q.emit(enums.status.failed, job.q.id, jobIds[0])
     } else {
@@ -63,6 +74,7 @@ module.exports = function failed (job, err) {
       job.q.emit(enums.status.terminated, job.q.id, jobIds[0])
     }
     if (!isRetry &&
+        !isRepeating &&
         is.true(job.q.removeFinishedJobs)) {
       return job.q.removeJob(job).then((deleteResult) => {
         return jobIds

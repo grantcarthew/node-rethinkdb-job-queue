@@ -2,7 +2,7 @@
 
 ## Working On
 
-Add repeat job testing to queue-process tests.
+job-failed tests to include repeating jobs failing.
 
 
 ## TODO
