@@ -14,8 +14,8 @@ const testName = 'queue-process'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test(testName, { timeout: 60000 }, (t) => {
-      t.plan(294)
+    test(testName, { timeout: 120000 }, (t) => {
+      t.plan(409)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -23,19 +23,28 @@ module.exports = function () {
 
       let jobs
       let jobDelay = 200
+      let repeatDelay = 500
       const noOfJobsToCreate = 10
       const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
+
+      function resumeProcessPauseGet () {
+        return q.resume().delay(jobDelay * 0.7).then(() => {
+          return q.pause()
+        }).delay(jobDelay).then(() => {
+          return q.getJob(jobs)
+        })
+      }
 
       // ---------- Event Handler Setup ----------
       let state = {
         testName,
         enabled: false,
         ready: 0,
-        processing: 38,
+        processing: 48,
         progress: 1,
-        pausing: 2,
-        paused: 2,
-        resumed: 3,
+        pausing: 14,
+        paused: 14,
+        resumed: 14,
         removed: 0,
         idle: 12,
         reset: 0,
@@ -45,11 +54,11 @@ module.exports = function () {
         stopping: 0,
         stopped: 0,
         dropped: 0,
-        added: 35,
+        added: 37,
         waiting: 0,
-        active: 38,
-        completed: 32,
-        cancelled: 2,
+        active: 48,
+        completed: 42,
+        cancelled: 3,
         failed: 3,
         terminated: 1,
         reanimated: 0,
@@ -64,9 +73,8 @@ module.exports = function () {
         t.ok(is.string(qid), `Event: idle`)
       }
 
-      let completedEventCount = 0
-      const summaryCompleted = 32
-      const summaryCancelled = 2
+      const summaryCompleted = 33
+      const summaryCancelled = 3
       const summaryTerminated = 1
 
       let testTimes = false
@@ -152,10 +160,81 @@ module.exports = function () {
         t.equal(q._running, q._concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
         q.removeListener(enums.status.idle, idleEventHandler)
-        completedEventCount = state.count.get(enums.status.completed)
-        t.equal(state.count.get(enums.status.completed), noOfJobsToCreate, `Queue has completed ${completedEventCount} jobs`)
         t.ok(q.idle, 'Queue is idle')
 
+        // ---------- Repeat True Test ----------
+        t.comment('queue-process: Repeat True')
+        jobs = q.createJob().setRepeat(true).setRepeatDelay(repeatDelay)
+        t.ok(jobs.repeat, 'Job repeat is true')
+        t.equal(jobs.repeatDelay, repeatDelay, 'Job repeat delay is valid')
+        return q.pause()
+      }).then(() => {
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 1, 'Repeat job processed once')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 2, 'Repeat job processed twice')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 3, 'Repeat job processed three times')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 4, 'Repeat job processed four times')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 5, 'Repeat job processed five times')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return q.cancelJob(jobs)
+      }).then((cancelledJobs) => {
+        t.ok(is.uuid(cancelledJobs[0]), 'repeat job cancelled')
+        return q.getJob(jobs)
+      }).then((cancelledJobs) => {
+        t.equal(cancelledJobs[0].processCount, 5, `Job repeated 5 times before cancel`)
+        t.equal(cancelledJobs[0].log.length, 12, 'repeat job log count valid')
+
+        // ---------- Repeat Number Test ----------
+        t.comment('queue-process: Repeat Number')
+        jobs = q.createJob().setRepeat(4).setRepeatDelay(repeatDelay)
+        t.equal(jobs.repeat, 4, `Job repeat is 4`)
+        t.equal(jobs.repeatDelay, repeatDelay, 'Job repeat delay is valid')
+        return q.pause()
+      }).then(() => {
+        return q.addJob(jobs)
+      }).then((savedJobs) => {
+        t.equal(savedJobs.length, 1, `Jobs saved successfully: [${savedJobs.length}]`)
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 1, 'Repeat job processed once')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 2, 'Repeat job processed twice')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 3, 'Repeat job processed three times')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((repeatJob) => {
+        t.equal(repeatJob[0].processCount, 4, 'Repeat job processed four times')
+        t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        return resumeProcessPauseGet()
+      }).then((completedJobs) => {
+        t.equal(completedJobs[0].processCount, 5, 'Repeat job processed five times')
+        t.equal(completedJobs[0].status, enums.status.completed, 'Repeat job is completed')
+        t.equal(completedJobs[0].log.length, 11, 'repeat job log count valid')
+        return q.resume()
+      }).then(() => {
+        // // TODO - Remove below to run all tests.
+        // return q.stop().then(() => Promise.reject())
         // ---------- Processing Restart on Job Add Test ----------
         t.comment('queue-process: Process Restart on Job Add')
         jobs = []
@@ -167,8 +246,6 @@ module.exports = function () {
       }).then((savedJobs) => {
         t.equal(savedJobs.length, noOfJobsToCreate, `Jobs saved successfully: [${savedJobs.length}]`)
       }).delay(allJobsDelay).then(() => {
-        completedEventCount = state.count.get(enums.status.completed)
-        t.equal(completedEventCount, noOfJobsToCreate * 2, `Queue has completed ${completedEventCount} jobs`)
         t.ok(q.idle, 'Queue is idle')
         return q.pause()
       }).then(() => {
@@ -186,8 +263,6 @@ module.exports = function () {
       }).then(() => {
         return queueProcess.restart(q)
       }).delay(allJobsDelay).then(() => {
-        completedEventCount = state.count.get(enums.status.completed)
-        t.equal(completedEventCount, noOfJobsToCreate * 3, `Queue has completed ${completedEventCount} jobs`)
         t.pass('Restart processing succeeded')
         t.ok(q.idle, 'Queue is idle')
 
