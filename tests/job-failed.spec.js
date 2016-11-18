@@ -13,7 +13,7 @@ const testName = 'job-failed'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(113)
+      t.plan(155)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -35,12 +35,12 @@ module.exports = function () {
         stopping: 0,
         stopped: 0,
         dropped: 0,
-        added: 1,
+        added: 2,
         waiting: 0,
         active: 0,
         completed: 0,
         cancelled: 0,
-        failed: 3,
+        failed: 5,
         terminated: 2,
         reanimated: 0,
         log: 0,
@@ -177,6 +177,68 @@ module.exports = function () {
         return q.getJob(job.id)
       }).then((exist) => {
         t.equal(exist.length, 0, 'Job not in database')
+
+        // ---------- Job Failed with Repeat Test ----------
+        t.comment('job-failed: Job Failed with Repeat')
+        job = q.createJob()
+        job.data = tData
+        job.retryMax = 1
+        job.retryDelay = 200
+        job.repeat = 1
+        job.repeatDelay = 500
+        q._removeFinishedJobs = false
+        return q.addJob(job)
+      }).then((savedJob) => {
+        t.equal(savedJob[0].id, job.id, 'Job saved successfully')
+        return jobFailed(savedJob[0], err)
+      }).then((retry1id) => {
+        t.equal(retry1id.length, 1, 'Job failed successfully')
+        t.equal(retry1id[0], job.id, 'Job failed returned job id')
+        return q.getJob(retry1id[0])
+      }).then((retry1) => {
+        t.equal(retry1[0].status, enums.status.failed, 'Job status is failed')
+        t.equal(retry1[0].retryCount, 1, 'Job retryCount is 1')
+        t.equal(retry1[0].progress, 0, 'Job progress is 0')
+        t.equal(retry1[0].queueId, q.id, 'Job queueId is valid')
+        t.ok(is.date(retry1[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(retry1[0].dateEnable), 'Job dateEnable is a date')
+        t.equal(retry1[0].log.length, 2, 'Job has 1 log entry')
+        t.ok(is.date(retry1[0].log[1].date), 'Log date is a date')
+        t.equal(retry1[0].log[1].queueId, q.id, 'Log queueId is valid')
+        t.equal(retry1[0].log[1].type, enums.log.warning, 'Log type is warning')
+        t.equal(retry1[0].log[1].status, enums.status.failed, 'Log status is failed')
+        t.ok(retry1[0].log[1].retryCount = 1, 'Log retryCount is valid')
+        t.ok(retry1[0].log[1].message, 'Log message exists')
+        t.equal(retry1[0].log[1].message, enums.message.failed, 'Log message is valid')
+        t.equal(retry1[0].log[1].errorMessage, err.message, 'Log error message is valid')
+        t.equal(retry1[0].log[1].errorStack, err.stack, 'Log stack is valid')
+        t.ok(retry1[0].log[1].duration >= 0, 'Log duration is >= 0')
+
+        // ---------- Final Retry Job Repeat Failure Test ----------
+        t.comment('job-failed: Final Retry Job Repeat Failure')
+        return jobFailed(retry1[0], err)
+      }).then((retry2id) => {
+        t.equal(retry2id.length, 1, 'Job failed successfully')
+        t.equal(retry2id[0], job.id, 'Job failed returned job id')
+        return q.getJob(retry2id[0])
+      }).then((retry2) => {
+        t.equal(retry2[0].status, enums.status.waiting, 'Job status is waiting')
+        t.equal(retry2[0].retryCount, 0, 'Job retryCount is 0')
+        t.equal(retry2[0].progress, 0, 'Job progress is 0')
+        t.equal(retry2[0].queueId, q.id, 'Job queueId is valid')
+        t.ok(is.date(retry2[0].dateFinished), 'Job dateFinished is a date')
+        t.ok(is.date(retry2[0].dateEnable), 'Job dateEnable is a date')
+        t.equal(retry2[0].log.length, 3, 'Job has 2 log entries')
+        t.ok(is.date(retry2[0].log[2].date), 'Log date is a date')
+        t.equal(retry2[0].log[2].queueId, q.id, 'Log queueId is valid')
+        t.equal(retry2[0].log[2].type, enums.log.error, 'Log type is error')
+        t.equal(retry2[0].log[2].status, enums.status.waiting, 'Log status is waiting')
+        t.ok(retry2[0].log[2].retryCount = 2, 'Log retryCount is valid')
+        t.ok(retry2[0].log[2].message, 'Log message exists')
+        t.equal(retry2[0].log[2].message, enums.message.failed, 'Log message is valid')
+        t.equal(retry2[0].log[2].errorMessage, err.message, 'Log error message is valid')
+        t.equal(retry2[0].log[2].errorStack, err.stack, 'Log stack is valid')
+        t.ok(retry2[0].log[2].duration >= 0, 'Log duration is >= 0')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
