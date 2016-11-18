@@ -107,7 +107,7 @@ module.exports = function () {
 
           jobProcessTimeoutId = setTimeout(function () {
             jobProcessTimeoutId = false
-            next('Job Completed: ' + job.id)
+            next(null, 'Job Completed: ' + job.id)
             .then((runningJobs) => {
               t.ok(is.integer(runningJobs), `Next call returns running jobs [${runningJobs}]`)
             })
