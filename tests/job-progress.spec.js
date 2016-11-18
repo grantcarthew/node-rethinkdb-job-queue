@@ -20,7 +20,6 @@ module.exports = function () {
       job.timeout = enums.options.timeout
       job.retryDelay = enums.options.retryDelay
       job.retryCount = 0
-      let oldPercent
 
       // ---------- Event Handler Setup ----------
       let state = {

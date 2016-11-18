@@ -2,7 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 
-function createIndexActiveDateEnable(q) {
+function createIndexActiveDateEnable (q) {
   logger('createIndexActiveDateEnable')
   let indexName = enums.index.indexActiveDateEnable
   return Promise.resolve().then(() => {
@@ -25,7 +25,7 @@ function createIndexActiveDateEnable(q) {
   })
 }
 
-function createIndexInactivePriorityDateCreated(q) {
+function createIndexInactivePriorityDateCreated (q) {
   logger('createIndexInactivePriorityDateCreated')
   let indexName = enums.index.indexInactivePriorityDateCreated
   return Promise.resolve().then(() => {
@@ -58,7 +58,7 @@ function createIndexInactivePriorityDateCreated(q) {
   })
 }
 
-function createIndexFinishedDateFinished(q) {
+function createIndexFinishedDateFinished (q) {
   logger('createIndexFinishedDateFinished')
   const indexName = enums.index.indexFinishedDateFinished
   return Promise.resolve().then(() => {
@@ -85,7 +85,7 @@ function createIndexFinishedDateFinished(q) {
   })
 }
 
-function createIndexStatus(q) {
+function createIndexStatus (q) {
   logger('createIndexStatus')
   let indexName = enums.index.indexStatus
   return Promise.resolve().then(() => {
@@ -102,14 +102,13 @@ function createIndexStatus(q) {
   })
 }
 
-
-module.exports = function assertIndex(q) {
+module.exports = function assertIndex (q) {
   logger('assertIndex')
   return Promise.all([
     createIndexActiveDateEnable(q),
     createIndexInactivePriorityDateCreated(q),
     createIndexFinishedDateFinished(q),
-    createIndexStatus(q),
+    createIndexStatus(q)
   ]).then((indexCreateResult) => {
     logger('Waiting for index...')
     return q.r.db(q.db).table(q.name).indexWait().run()

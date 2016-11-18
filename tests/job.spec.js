@@ -17,7 +17,7 @@ module.exports = function () {
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
-      const newJob = new Job(q)
+      let newJob = new Job(q)
       newJob.data = tData
       let savedJob
 
@@ -165,7 +165,7 @@ module.exports = function () {
         custJob = new Job(q, { object: { foo: 'bar' }, priority: 'high' })
         t.equal(custJob.object.foo, 'bar', 'New job with child object data created successfully')
         t.equal(custJob.priority, 'high', 'New job with new priority created successfully')
-        t.throws(() => { new Job(q, () => { }) }, 'New job with function throws error')
+        t.throws(() => { newJob = new Job(q, () => { }) }, 'New job with function throws error')
 
         // ---------- Add Job Log ----------
         t.comment('job: Add Job Log')
@@ -194,7 +194,6 @@ module.exports = function () {
       }).then((jobsFromDb) => {
         t.equal(jobsFromDb[0].id, savedJob.id, 'Job retrieved successfully')
         t.equal(jobsFromDb[0].progress, 50, 'Job progress valid')
-
 
         eventHandlers.remove(t, q, state)
         return q.reset()

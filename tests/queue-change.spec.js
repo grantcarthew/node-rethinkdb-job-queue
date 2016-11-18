@@ -2,7 +2,6 @@ const test = require('tap').test
 const Promise = require('bluebird')
 const is = require('../src/is')
 const tError = require('./test-error')
-const enums = require('../src/enums')
 const Queue = require('../src/queue')
 const dbReview = require('../src/db-review')
 const tOpts = require('./test-options')
