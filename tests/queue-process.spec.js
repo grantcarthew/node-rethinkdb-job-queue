@@ -28,11 +28,11 @@ module.exports = function () {
       const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
 
       function resumeProcessPauseGet () {
-        return q.resume().delay(jobDelay * 0.7).then(() => {
+        return q.resume().delay(jobDelay * 0.6).then(() => {
           return q.pause()
         }).delay(jobDelay).then(() => {
           return q.getJob(jobs)
-        })
+        }).delay(repeatDelay)
       }
 
       // ---------- Event Handler Setup ----------
