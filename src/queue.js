@@ -39,6 +39,8 @@ class Queue extends EventEmitter {
 
     this._masterInterval = options.masterInterval == null
       ? enums.options.masterInterval : options.masterInterval
+    this._databaseInitDelay = options.databaseInitDelay == null
+      ? enums.options.databaseInitDelay : options.databaseInitDelay
     this._jobOptions = jobOptions()
     this._changeFeedCursor = false
     this._paused = false
