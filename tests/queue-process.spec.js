@@ -14,7 +14,7 @@ const testName = 'queue-process'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test(testName, { timeout: 120000 }, (t) => {
+    test(testName, { timeout: 200000 }, (t) => {
       t.plan(409)
 
       // ---------- Test Setup ----------
