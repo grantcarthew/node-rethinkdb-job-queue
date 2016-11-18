@@ -23,7 +23,7 @@ module.exports = function () {
 
       let jobs
       let jobDelay = 200
-      let repeatDelay = 500
+      let repeatDelay = 300
       const noOfJobsToCreate = 10
       const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
 
@@ -32,7 +32,7 @@ module.exports = function () {
           return q.pause()
         }).delay(jobDelay).then(() => {
           return q.getJob(jobs)
-        }).delay(repeatDelay)
+        }).delay(repeatDelay * 2)
       }
 
       // ---------- Event Handler Setup ----------
