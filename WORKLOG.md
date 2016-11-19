@@ -6,4 +6,5 @@
 ## TODO
 
 *   global queue reset, reviewed, error event?
-*   Add failedCount???
+*   Add failedCount?
+*   Add global rate limiter?

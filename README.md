@@ -33,10 +33,11 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   [Determine job uniqueness][find-job-url]
 *   [Job timeout][job-timeout-url]
 *   [Retrying failed jobs][job-retry-url]
+*   [Repeatable jobs][job-repeat-url]
 *   [Job reanimation][job-reanimation-url]
 *   [Job Editing][job-editing-url]
 *   Rich job [history log][job-log-url]
-*   Over 1400 [integration tests][testing-url]
+*   Over 2000 [integration tests][testing-url]
 
 [queue-connection-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Connection
 [queue-events-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Events
@@ -50,7 +51,8 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 [queue-pause-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.pause
 [job-timeout-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-timeout-option
 [job-retry-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Retry
-[job-reanimation-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Editing#job-reanimation
+[job-repeat-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.repeat
+[job-reanimation-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.reanimateJob
 [job-editing-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Editing
 [job-log-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.log
 [testing-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Testing
@@ -96,7 +98,7 @@ q.process((job, next) => {
     try {
       let result = job.numerator / job.denominator
       // Do something with your result
-      return next(result)
+      return next(null, result)
     } catch (err) {
       console.error(err)
       return next(err)
@@ -174,7 +176,7 @@ q.process((job, next) => {
   mailOptions.to = job.recipient
   return transporter.sendMail(mailOptions).then((info) => {
     console.dir(info)
-    return next(info)
+    return next(null, info)
   }).catch((err) => {
     // This catch is for nodemailer sendMail errors.
     return next(err)
