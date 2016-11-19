@@ -12,6 +12,7 @@ const queueGetJob = require('./queue-get-job')
 const queueFindJob = require('./queue-find-job')
 const queueInterruption = require('./queue-interruption')
 const queueCancelJob = require('./queue-cancel-job')
+const queueReanimateJob = require('./queue-reanimate-job')
 const queueRemoveJob = require('./queue-remove-job')
 const queueReset = require('./queue-reset')
 const queueSummary = require('./queue-summary')
@@ -132,6 +133,17 @@ class Queue extends EventEmitter {
       return queueCancelJob(this, jobOrId, reason)
     }).catch((err) => {
       logger('Event: cancelJob error', this.id, err)
+      this.emit(enums.status.error, this.id, err)
+      return Promise.reject(err)
+    })
+  }
+
+  reanimateJob (jobOrId, dateEnable) {
+    logger('reanimateJob', jobOrId, dateEnable)
+    return this.ready().then(() => {
+      return queueReanimateJob(this, jobOrId, dateEnable)
+    }).catch((err) => {
+      logger('Event: reanimateJob error', this.id, err)
       this.emit(enums.status.error, this.id, err)
       return Promise.reject(err)
     })

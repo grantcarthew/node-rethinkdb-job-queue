@@ -12,8 +12,7 @@ const testName = 'queue'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      // t.plan(135)
-      t.plan(142)
+      t.plan(147)
 
       // ---------- Test Setup ----------
       let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
@@ -65,7 +64,7 @@ module.exports = function () {
         cancelled: 1,
         failed: 0,
         terminated: 0,
-        reanimated: 0,
+        reanimated: 1,
         log: 0,
         updated: 0
       }
@@ -206,9 +205,20 @@ module.exports = function () {
         t.ok(is.array(cancelledJobs2), 'Get job returns an array')
         t.equal(cancelledJobs2[0].status, enums.status.cancelled, 'Cancelled job status is cancelled')
 
+        // ---------- Reanimate Job Tests ----------
+        t.comment('queue: Reanimate Job')
+        return qMain.reanimateJob(job.id)
+      }).then((reanimatedJobs) => {
+        t.ok(is.array(reanimatedJobs), 'Reanimate job returns an array')
+        t.ok(is.uuid(reanimatedJobs[0]), 'Reanimate job returns ids')
+        return qMain.getJob(reanimatedJobs[0])
+      }).then((reanimatedJobs2) => {
+        t.ok(is.array(reanimatedJobs2), 'Get job returns an array')
+        t.equal(reanimatedJobs2[0].status, enums.status.waiting, 'Reanimated job status is waiting')
+
         // ---------- Remove Job Tests ----------
         t.comment('queue: Remove Job')
-        return qMain.removeJob(cancelledJobs2[0].id)
+        return qMain.removeJob(job.id)
       }).then((removedCount) => {
         t.ok(is.array(removedCount), 'Remove job returns an array')
         t.equal(removedCount.length, 1, 'Removed count is valid')

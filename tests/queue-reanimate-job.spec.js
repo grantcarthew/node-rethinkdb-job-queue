@@ -12,7 +12,7 @@ const testName = 'queue-reanimate'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(48)
+      t.plan(49)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -83,6 +83,9 @@ module.exports = function () {
         t.equal(result[0].retryCount, 2, 'Job retryCount valid')
         t.equal(result[0].status, enums.status.cancelled, 'Job is cancelled')
         return queueReanimateJob(q, job.id, newDateEnable)
+      }).then((result) => {
+        t.ok(is.uuid(result[0]), 'Reanimate jobs returns job ids')
+        return q.getJob(job.id)
       }).then((result) => {
         t.equal(result[0].dateEnable.toString(), newDateEnable.toString(), 'Job reanimate dateEnable is valid')
         t.equal(result[0].log.length, 4, 'Job reanimate log is valid')

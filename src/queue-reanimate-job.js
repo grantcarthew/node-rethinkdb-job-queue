@@ -5,7 +5,7 @@ const dbResult = require('./db-result')
 const jobParse = require('./job-parse')
 const jobLog = require('./job-log')
 
-module.exports = function queueGetJob (q,
+module.exports = function queueReanimateJob (q,
     jobOrId,
     dateEnable = new Date()) {
   logger('queueGetJob: ', jobOrId)
@@ -34,12 +34,12 @@ module.exports = function queueGetJob (q,
       .run()
   }).then((jobsResult) => {
     logger('jobsResult', jobsResult)
-    return dbResult.toJob(q, jobsResult)
-  }).then((reanimatedJobs) => {
-    for (let reanimatedJob of reanimatedJobs) {
-      logger(`Event: reanimated`, q.id, reanimatedJob.id)
-      q.emit(enums.status.reanimated, q.id, reanimatedJob.id)
+    return dbResult.toIds(jobsResult)
+  }).then((reanimatedJobIds) => {
+    for (let reanimatedJobId of reanimatedJobIds) {
+      logger(`Event: reanimated`, q.id, reanimatedJobId)
+      q.emit(enums.status.reanimated, q.id, reanimatedJobId)
     }
-    return reanimatedJobs
+    return reanimatedJobIds
   })
 }
