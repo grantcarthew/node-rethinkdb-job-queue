@@ -1,6 +1,6 @@
+// The following have been removed due to circular dependencies.
 // const logger = require('./logger')(module)
-// Logging has been removed due to circular dependencies.
-const enums = require('./enums')
+// const enums = require('./enums')
 
 function isDate (value) {
   return value instanceof Date ||
@@ -20,7 +20,7 @@ function addMs (dateObject, value, multiplier = 0) {
   if (isDate(dateObject) && isInteger(value)) {
     return new Date(dateObject.getTime() + (value * multiplier))
   }
-  throw new Error(enums.message.datetimeInvalid)
+  throw new Error('Job data can not be a function')
 }
 
 function addMilliseconds (dateObject, ms) {
