@@ -9,10 +9,10 @@ module.exports = function queueGetJob (q, jobOrId) {
     return jobParse.id(jobOrId)
   }).then((ids) => {
     return q.r
-      .db(q.db)
-      .table(q.name)
-      .getAll(...ids)
-      .run()
+    .db(q.db)
+    .table(q.name)
+    .getAll(...ids)
+    .run()
   }).then((jobsData) => {
     logger('jobsData', jobsData)
     return dbResult.toJob(q, jobsData)

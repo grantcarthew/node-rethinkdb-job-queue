@@ -13,36 +13,36 @@ module.exports = function queueGetNextJob (q) {
   }
   return Promise.resolve().then(() => {
     return q.r
-      .table(q.name)
-      .orderBy({index: enums.index.indexInactivePriorityDateCreated})
-      .limit(quantity)
-      .filter(
-        q.r.row('dateEnable').le(q.r.now())
+    .table(q.name)
+    .orderBy({index: enums.index.indexInactivePriorityDateCreated})
+    .limit(quantity)
+    .filter(
+      q.r.row('dateEnable').le(q.r.now())
+    )
+    .update({
+      status: enums.status.active,
+      dateStarted: q.r.now(),
+      dateEnable: q.r.now()
+      .add(
+        q.r.row('timeout').div(1000)
       )
-      .update({
-        status: enums.status.active,
-        dateStarted: q.r.now(),
-        dateEnable: q.r.now()
-        .add(
-          q.r.row('timeout').div(1000)
-        )
-        .add(
-          q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))
-        ),
+      .add(
+        q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))
+      ),
+      queueId: q.id,
+      processCount: q.r.row('processCount').add(1),
+      log: q.r.row('log').append({
+        date: q.r.now(),
         queueId: q.id,
-        processCount: q.r.row('processCount').add(1),
-        log: q.r.row('log').append({
-          date: q.r.now(),
-          queueId: q.id,
-          type: enums.log.information,
-          status: enums.status.active,
-          retryCount: q.r.row('retryCount'),
-          processCount: q.r.row('processCount'),
-          message: enums.message.active
-        })
-      }, {returnChanges: true})
-      .default({})
-      .run()
+        type: enums.log.information,
+        status: enums.status.active,
+        retryCount: q.r.row('retryCount'),
+        processCount: q.r.row('processCount'),
+        message: enums.message.active
+      })
+    }, {returnChanges: true})
+    .default({})
+    .run()
   }).then((updateResult) => {
     logger('updateResult', updateResult)
     return dbResult.toJob(q, updateResult)

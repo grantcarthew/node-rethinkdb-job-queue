@@ -20,18 +20,18 @@ module.exports = function queueReanimateJob (q,
       enums.status.waiting
     )
     return q.r
-      .db(q.db)
-      .table(q.name)
-      .getAll(...ids)
-      .update({
-        dateEnable,
-        log: q.r.row('log').append(log),
-        progress: 0,
-        queueId: q.id,
-        retryCount: 0,
-        status: enums.status.waiting
-      }, {returnChanges: true})
-      .run()
+    .db(q.db)
+    .table(q.name)
+    .getAll(...ids)
+    .update({
+      dateEnable,
+      log: q.r.row('log').append(log),
+      progress: 0,
+      queueId: q.id,
+      retryCount: 0,
+      status: enums.status.waiting
+    }, {returnChanges: true})
+    .run()
   }).then((jobsResult) => {
     logger('jobsResult', jobsResult)
     return dbResult.toIds(jobsResult)
