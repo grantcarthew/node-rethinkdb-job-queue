@@ -23,7 +23,11 @@ module.exports.attach = function dbAttach (q, cxn) {
   ].join(':')
   q._ready = dbAssert(q).then(() => {
     if (q.changeFeed) {
-      return q.r.db(q.db).table(q.name).changes().run().then((changeFeed) => {
+      return q.r.db(q.db)
+      .table(q.name)
+      .changes()
+      .run()
+      .then((changeFeed) => {
         q._changeFeedCursor = changeFeed
         return q._changeFeedCursor.each((err, change) => {
           return queueChange(q, err, change)

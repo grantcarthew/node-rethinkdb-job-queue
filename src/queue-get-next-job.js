@@ -16,13 +16,19 @@ module.exports = function queueGetNextJob (q) {
       .table(q.name)
       .orderBy({index: enums.index.indexInactivePriorityDateCreated})
       .limit(quantity)
-      .filter(q.r.row('dateEnable').le(q.r.now()))
+      .filter(
+        q.r.row('dateEnable').le(q.r.now())
+      )
       .update({
         status: enums.status.active,
         dateStarted: q.r.now(),
         dateEnable: q.r.now()
-        .add(q.r.row('timeout').div(1000))
-        .add(q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))),
+        .add(
+          q.r.row('timeout').div(1000)
+        )
+        .add(
+          q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))
+        ),
         queueId: q.id,
         processCount: q.r.row('processCount').add(1),
         log: q.r.row('log').append({

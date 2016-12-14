@@ -19,10 +19,14 @@ module.exports = function jobUpdate (job) {
     job.log.push(log)
     return job.getCleanCopy()
   }).then((cleanJob) => {
-    return job.q.r.db(job.q.db).table(job.q.name)
-      .get(job.id)
-      .update(cleanJob, {returnChanges: false})
-      .run()
+    return job.q.r.db(job.q.db)
+    .table(job.q.name)
+    .get(job.id)
+    .update(
+      cleanJob,
+      {returnChanges: false}
+    )
+    .run()
   }).then((updateResult) => {
     logger(`updateResult`, updateResult)
     logger(`Event: updated`, job.q.id, job.id)

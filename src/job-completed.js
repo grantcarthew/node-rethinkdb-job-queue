@@ -18,13 +18,16 @@ module.exports = function completed (job, result) {
   log.duration = duration
 
   return Promise.resolve().then(() => {
-    return job.q.r.db(job.q.db).table(job.q.name)
+    return job.q.r.db(job.q.db)
+    .table(job.q.name)
     .get(job.id)
     .update({
       status: job.status,
       dateEnable: job.q.r.branch(
         isRepeating,
-        job.q.r.now().add(job.q.r.row('repeatDelay').div(1000)),
+        job.q.r.now().add(
+          job.q.r.row('repeatDelay').div(1000)
+        ),
         job.q.r.row('dateEnable')
       ),
       dateFinished: job.dateFinished,

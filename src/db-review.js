@@ -12,11 +12,13 @@ function updateFailedJobs (q) {
   logger('updateFailedJobs: ' + datetime.format(new Date()))
 
   return Promise.resolve().then(() => {
-    return q.r.db(q.db).table(q.name)
+    return q.r.db(q.db)
+    .table(q.name)
     .orderBy({index: enums.index.indexActiveDateEnable})
     .filter(
       q.r.row('dateEnable').lt(q.r.now())
-    ).update({
+    )
+    .update({
       status: q.r.branch(
         q.r.row('retryCount').lt(q.r.row('retryMax')),
         enums.status.failed,
@@ -57,21 +59,26 @@ function updateFailedJobs (q) {
 
 function removeFinishedJobsBasedOnTime (q) {
   logger('removeFinishedJobsBasedOnTime')
-  return q.r.db(q.db).table(q.name)
+  return q.r.db(q.db)
+  .table(q.name)
   .orderBy({index: enums.index.indexFinishedDateFinished})
   .filter(
     q.r.row('dateFinished').add(
       q.r.expr(q.removeFinishedJobs).div(1000)
     ).lt(q.r.now())
-  ).delete()
+  )
+  .delete()
   .run()
 }
 
 function removeFinishedJobsBasedOnNow (q) {
   logger('removeFinishedJobsBasedOnNow')
-  return q.r.db(q.db).table(q.name)
+  return q.r.db(q.db)
+  .table(q.name)
   .orderBy({index: enums.index.indexFinishedDateFinished})
-  .filter(q.r.row('dateFinished').lt(q.r.now()))
+  .filter(
+    q.r.row('dateFinished').lt(q.r.now())
+  )
   .delete()
   .run()
 }

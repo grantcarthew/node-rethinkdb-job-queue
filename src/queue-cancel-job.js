@@ -11,7 +11,8 @@ module.exports = function cancelJob (q, jobOrId, reason) {
   return Promise.resolve().then(() => {
     return jobParse.id(jobOrId)
   }).then((ids) => {
-    return q.r.db(q.db).table(q.name)
+    return q.r.db(q.db)
+    .table(q.name)
     .getAll(...ids)
     .update({
       status: enums.status.cancelled,

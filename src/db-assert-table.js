@@ -11,7 +11,8 @@ module.exports = function assertTable (q) {
         return q.r.branch(
           tableExists,
           { tables_created: 0 },
-          q.r.db(q.db).tableCreate(q.name)
+          q.r.db(q.db)
+          .tableCreate(q.name)
         )
       })
       .run()
@@ -20,7 +21,10 @@ module.exports = function assertTable (q) {
       ? logger('Table created: ' + q.name)
       : logger('Table exists: ' + q.name)
   }).then(() => {
-    return q.r.db(q.db).table(q.name).wait().run()
+    return q.r.db(q.db)
+    .table(q.name)
+    .wait()
+    .run()
   }).then(() => {
     logger('Table ready.')
     return true

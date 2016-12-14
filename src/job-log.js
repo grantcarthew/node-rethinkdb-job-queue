@@ -34,7 +34,8 @@ module.exports.commitLog = function addLog (job,
     return Promise.reject(new Error(enums.message.jobNotAdded))
   }
   return Promise.resolve().then(() => {
-    return job.q.r.db(job.q.db).table(job.q.name)
+    return job.q.r.db(job.q.db)
+    .table(job.q.name)
     .get(job.id)
     .update({
       log: job.q.r.row('log').append(newLog),

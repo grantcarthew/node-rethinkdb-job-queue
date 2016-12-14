@@ -7,21 +7,24 @@ function createIndexActiveDateEnable (q) {
   let indexName = enums.index.indexActiveDateEnable
   return Promise.resolve().then(() => {
     return q.r.db(q.db)
-      .table(q.name)
-      .indexList()
-      .contains(indexName)
-      .run()
+    .table(q.name)
+    .indexList()
+    .contains(indexName)
+    .run()
   }).then((exists) => {
     if (exists) {
       return exists
     }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
+    return q.r.db(q.db)
+    .table(q.name)
+    .indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq(enums.status.active),
         row('dateEnable'),
         null
       )
-    }).run()
+    })
+    .run()
   })
 }
 
@@ -30,15 +33,17 @@ function createIndexInactivePriorityDateCreated (q) {
   let indexName = enums.index.indexInactivePriorityDateCreated
   return Promise.resolve().then(() => {
     return q.r.db(q.db)
-      .table(q.name)
-      .indexList()
-      .contains(indexName)
-      .run()
+    .table(q.name)
+    .indexList()
+    .contains(indexName)
+    .run()
   }).then((exists) => {
     if (exists) {
       return exists
     }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
+    return q.r.db(q.db)
+    .table(q.name)
+    .indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq(enums.status.waiting),
         [
@@ -54,7 +59,8 @@ function createIndexInactivePriorityDateCreated (q) {
         ],
         null
       )
-    }).run()
+    })
+    .run()
   })
 }
 
@@ -63,15 +69,17 @@ function createIndexFinishedDateFinished (q) {
   const indexName = enums.index.indexFinishedDateFinished
   return Promise.resolve().then(() => {
     return q.r.db(q.db)
-      .table(q.name)
-      .indexList()
-      .contains(indexName)
-      .run()
+    .table(q.name)
+    .indexList()
+    .contains(indexName)
+    .run()
   }).then((exists) => {
     if (exists) {
       return exists
     }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName, function (row) {
+    return q.r.db(q.db)
+    .table(q.name)
+    .indexCreate(indexName, function (row) {
       return q.r.branch(
         row('status').eq(enums.status.completed),
         row('dateFinished'),
@@ -81,7 +89,8 @@ function createIndexFinishedDateFinished (q) {
         row('dateFinished'),
         null
       )
-    }).run()
+    })
+    .run()
   })
 }
 
@@ -90,15 +99,18 @@ function createIndexStatus (q) {
   let indexName = enums.index.indexStatus
   return Promise.resolve().then(() => {
     return q.r.db(q.db)
-      .table(q.name)
-      .indexList()
-      .contains(indexName)
-      .run()
+    .table(q.name)
+    .indexList()
+    .contains(indexName)
+    .run()
   }).then((exists) => {
     if (exists) {
       return exists
     }
-    return q.r.db(q.db).table(q.name).indexCreate(indexName).run()
+    return q.r.db(q.db)
+    .table(q.name)
+    .indexCreate(indexName)
+    .run()
   })
 }
 
@@ -111,7 +123,10 @@ module.exports = function assertIndex (q) {
     createIndexStatus(q)
   ]).then((indexCreateResult) => {
     logger('Waiting for index...')
-    return q.r.db(q.db).table(q.name).indexWait().run()
+    return q.r.db(q.db)
+    .table(q.name)
+    .indexWait()
+    .run()
   }).then(() => {
     logger('Indexes ready.')
     return true

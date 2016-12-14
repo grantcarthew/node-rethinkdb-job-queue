@@ -4,8 +4,9 @@ const Promise = require('bluebird')
 module.exports = function summary (q) {
   logger('summary')
   return Promise.resolve().then(() => {
-    return q.r.db(q.db).table(q.name)
-      .group({index: 'status'}).count()
+    return q.r.db(q.db)
+    .table(q.name)
+    .group({index: 'status'}).count()
   }).then((reduction) => {
     const summary = {
       waiting: 0,

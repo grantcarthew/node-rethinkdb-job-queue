@@ -23,8 +23,10 @@ module.exports = function queueAddJob (q, job) {
     return oneJob.getCleanCopy()
   }).then((cleanJobs) => {
     logger(`cleanJobs`, cleanJobs)
-    return q.r.db(q.db).table(q.name)
-    .insert(cleanJobs, {returnChanges: true}).run()
+    return q.r.db(q.db)
+    .table(q.name)
+    .insert(cleanJobs, {returnChanges: true})
+    .run()
   }).then((saveResult) => {
     logger(`saveResult`, saveResult)
     queueProcess.restart(q)

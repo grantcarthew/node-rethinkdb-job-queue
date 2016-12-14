@@ -50,7 +50,8 @@ module.exports = function failed (job, err) {
     ? err.stack : enums.message.noErrorStack
 
   return Promise.resolve().then(() => {
-    return job.q.r.db(job.q.db).table(job.q.name)
+    return job.q.r.db(job.q.db)
+    .table(job.q.name)
     .get(job.id)
     .update({
       status: job.status,
