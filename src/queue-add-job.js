@@ -26,7 +26,7 @@ module.exports = function queueAddJob (q, job) {
     return q.r.db(q.db)
     .table(q.name)
     .insert(cleanJobs, {returnChanges: true})
-    .run()
+    .run(q.queryRunOptions)
   }).then((saveResult) => {
     logger(`saveResult`, saveResult)
     queueProcess.restart(q)

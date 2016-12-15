@@ -28,7 +28,7 @@ module.exports = function cancelJob (q, jobOrId, reason) {
       }),
       queueId: q.id
     }, {returnChanges: true})
-    .run()
+    .run(q.queryRunOptions)
   }).then((updateResult) => {
     logger('updateResult', updateResult)
     return dbResult.toIds(updateResult)

@@ -9,7 +9,7 @@ module.exports = function queueFindJob (q, predicate, raw) {
     .db(q.db)
     .table(q.name)
     .filter(predicate)
-    .run()
+    .run(q.queryRunOptions)
   }).then((jobsData) => {
     logger('jobsData', jobsData)
     if (raw) { return jobsData }

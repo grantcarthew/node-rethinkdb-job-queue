@@ -26,7 +26,7 @@ module.exports = function jobUpdate (job) {
       cleanJob,
       {returnChanges: false}
     )
-    .run()
+    .run(job.q.queryRunOptions)
   }).then((updateResult) => {
     logger(`updateResult`, updateResult)
     logger(`Event: updated`, job.q.id, job.id)

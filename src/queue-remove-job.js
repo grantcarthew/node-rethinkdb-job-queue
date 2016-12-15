@@ -15,7 +15,7 @@ module.exports = function removeJob (q, jobOrId) {
       .table(q.name)
       .getAll(...jobIds)
       .delete()
-      .run()
+      .run(q.queryRunOptions)
     })
   }).then((result) => {
     for (let id of result.jobIds) {

@@ -13,7 +13,7 @@ module.exports = function assertDatabase (q) {
           q.r.dbCreate(q.db)
         )
       })
-      .run()
+      .run(q.queryRunOptions)
   }).then((dbCreateResult) => {
     dbCreateResult.dbs_created > 0
     ? logger('Database created: ' + q.db)

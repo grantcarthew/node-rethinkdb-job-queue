@@ -15,7 +15,7 @@ module.exports = function assertTable (q) {
           .tableCreate(q.name)
         )
       })
-      .run()
+      .run(q.queryRunOptions)
   }).then((tableCreateResult) => {
     tableCreateResult.tables_created > 0
       ? logger('Table created: ' + q.name)
@@ -24,7 +24,7 @@ module.exports = function assertTable (q) {
     return q.r.db(q.db)
     .table(q.name)
     .wait()
-    .run()
+    .run(q.queryRunOptions)
   }).then(() => {
     logger('Table ready.')
     return true

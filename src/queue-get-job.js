@@ -12,7 +12,7 @@ module.exports = function queueGetJob (q, jobOrId) {
     .db(q.db)
     .table(q.name)
     .getAll(...ids)
-    .run()
+    .run(q.queryRunOptions)
   }).then((jobsData) => {
     logger('jobsData', jobsData)
     return dbResult.toJob(q, jobsData)

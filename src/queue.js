@@ -38,6 +38,8 @@ class Queue extends EventEmitter {
     this._id = ''
     this._ready = false
 
+    this._queryRunOptions = options.queryRunOptions == null
+      ? enums.options.queryRunOptions : options.queryRunOptions
     this._masterInterval = options.masterInterval == null
       ? enums.options.masterInterval : options.masterInterval
     this._databaseInitDelay = options.databaseInitDelay == null

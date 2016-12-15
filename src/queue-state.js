@@ -12,7 +12,7 @@ module.exports = function queueState (q, newState) {
       dateChange: q.r.now(),
       state: newState
     }, { conflict: 'replace' })
-    .run()
+    .run(q.queryRunOptions)
   }).then((insertResult) => {
     logger('insertResult', insertResult)
     return true

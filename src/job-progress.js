@@ -19,7 +19,7 @@ module.exports = function jobProgress (job, percent) {
     .table(job.q.name)
     .get(job.id)
     .pluck('progress')
-    .run()
+    .run(job.q.queryRunOptions)
   }).then((pluck) => {
     return jobLog.createLogObject(job,
       pluck.progress,
@@ -41,7 +41,7 @@ module.exports = function jobProgress (job, percent) {
       )),
       log: job.q.r.row('log').append(newLog)
     }, { returnChanges: true })
-    .run()
+    .run(job.q.queryRunOptions)
   }).then((updateResult) => {
     return dbResult.toJob(job.q, updateResult)
   }).then((updateResult) => {

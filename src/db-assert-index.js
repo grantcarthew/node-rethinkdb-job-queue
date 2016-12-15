@@ -10,7 +10,7 @@ function createIndexActiveDateEnable (q) {
     .table(q.name)
     .indexList()
     .contains(indexName)
-    .run()
+    .run(q.queryRunOptions)
   }).then((exists) => {
     if (exists) {
       return exists
@@ -24,7 +24,7 @@ function createIndexActiveDateEnable (q) {
         null
       )
     })
-    .run()
+    .run(q.queryRunOptions)
   })
 }
 
@@ -36,7 +36,7 @@ function createIndexInactivePriorityDateCreated (q) {
     .table(q.name)
     .indexList()
     .contains(indexName)
-    .run()
+    .run(q.queryRunOptions)
   }).then((exists) => {
     if (exists) {
       return exists
@@ -60,7 +60,7 @@ function createIndexInactivePriorityDateCreated (q) {
         null
       )
     })
-    .run()
+    .run(q.queryRunOptions)
   })
 }
 
@@ -72,7 +72,7 @@ function createIndexFinishedDateFinished (q) {
     .table(q.name)
     .indexList()
     .contains(indexName)
-    .run()
+    .run(q.queryRunOptions)
   }).then((exists) => {
     if (exists) {
       return exists
@@ -90,7 +90,7 @@ function createIndexFinishedDateFinished (q) {
         null
       )
     })
-    .run()
+    .run(q.queryRunOptions)
   })
 }
 
@@ -102,7 +102,7 @@ function createIndexStatus (q) {
     .table(q.name)
     .indexList()
     .contains(indexName)
-    .run()
+    .run(q.queryRunOptions)
   }).then((exists) => {
     if (exists) {
       return exists
@@ -110,7 +110,7 @@ function createIndexStatus (q) {
     return q.r.db(q.db)
     .table(q.name)
     .indexCreate(indexName)
-    .run()
+    .run(q.queryRunOptions)
   })
 }
 
@@ -126,7 +126,7 @@ module.exports = function assertIndex (q) {
     return q.r.db(q.db)
     .table(q.name)
     .indexWait()
-    .run()
+    .run(q.queryRunOptions)
   }).then(() => {
     logger('Indexes ready.')
     return true

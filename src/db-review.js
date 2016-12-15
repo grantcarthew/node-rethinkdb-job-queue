@@ -50,7 +50,7 @@ function updateFailedJobs (q) {
       }),
       queueId: q.id
     })
-    .run()
+    .run(q.queryRunOptions)
   }).then((updateResult) => {
     logger(`updateResult`, updateResult)
     return dbResult.status(updateResult, enums.dbResult.replaced)
@@ -68,7 +68,7 @@ function removeFinishedJobsBasedOnTime (q) {
     ).lt(q.r.now())
   )
   .delete()
-  .run()
+  .run(q.queryRunOptions)
 }
 
 function removeFinishedJobsBasedOnNow (q) {
@@ -80,7 +80,7 @@ function removeFinishedJobsBasedOnNow (q) {
     q.r.row('dateFinished').lt(q.r.now())
   )
   .delete()
-  .run()
+  .run(q.queryRunOptions)
 }
 
 function removeFinishedJobs (q) {

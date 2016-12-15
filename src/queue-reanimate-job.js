@@ -31,7 +31,7 @@ module.exports = function queueReanimateJob (q,
       retryCount: 0,
       status: enums.status.waiting
     }, {returnChanges: true})
-    .run()
+    .run(q.queryRunOptions)
   }).then((jobsResult) => {
     logger('jobsResult', jobsResult)
     return dbResult.toIds(jobsResult)

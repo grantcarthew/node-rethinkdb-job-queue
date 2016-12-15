@@ -42,7 +42,7 @@ module.exports = function queueGetNextJob (q) {
       })
     }, {returnChanges: true})
     .default({})
-    .run()
+    .run(q.queryRunOptions)
   }).then((updateResult) => {
     logger('updateResult', updateResult)
     return dbResult.toJob(q, updateResult)

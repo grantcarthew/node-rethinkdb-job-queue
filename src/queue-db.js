@@ -26,7 +26,7 @@ module.exports.attach = function dbAttach (q, cxn) {
       return q.r.db(q.db)
       .table(q.name)
       .changes()
-      .run()
+      .run(q.queryRunOptions)
       .then((changeFeed) => {
         q._changeFeedCursor = changeFeed
         return q._changeFeedCursor.each((err, change) => {

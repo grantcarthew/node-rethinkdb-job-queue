@@ -12,7 +12,7 @@ module.exports = function queueDrop (q) {
   }).then(() => {
     return q.r.db(q.db)
     .tableDrop(q.name)
-    .run()
+    .run(q.queryRunOptions)
   }).then(() => {
     logger(`Event: dropped [${q.id}]`)
     q.emit(enums.status.dropped, q.id)

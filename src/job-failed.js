@@ -62,7 +62,7 @@ module.exports = function failed (job, err) {
       log: job.q.r.row('log').append(log),
       queueId: job.q.id
     }, {returnChanges: true})
-    .run()
+    .run(job.q.queryRunOptions)
   }).then((updateResult) => {
     logger(`updateResult`, updateResult)
     return dbResult.toIds(updateResult)
