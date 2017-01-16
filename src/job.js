@@ -16,7 +16,7 @@ class Job {
     this.q = q
 
     if (is.job(jobData)) {
-      logger('Creating job from database object')
+      logger('Creating job from data')
       Object.assign(this, jobData)
       this.priority = enums.priorityFromValue(this.priority)
     } else {
