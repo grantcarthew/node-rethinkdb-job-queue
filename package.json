@@ -54,20 +54,20 @@
     "ignore": "dist"
   },
   "dependencies": {
-    "bluebird": "^3.4.6",
-    "debug": "^2.3.3",
+    "bluebird": "^3.4.7",
+    "debug": "^2.6.0",
     "rethinkdbdash": "^2.3.27",
     "serialize-error": "^2.1.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.18.0",
-    "babel-preset-latest": "^6.16.0",
+    "babel-cli": "^6.22.2",
+    "babel-preset-latest": "^6.22.0",
     "istanbul": "0.4.5",
-    "npm-check-updates": "^2.8.8",
-    "proxyquire": "^1.7.10",
+    "npm-check-updates": "^2.8.9",
+    "proxyquire": "^1.7.11",
     "standard": "^8.6.0",
     "tap-spec": "^4.1.1",
-    "tap": "^8.0.1"
+    "tap": "^9.0.3"
   }
 }
