@@ -19,28 +19,7 @@ module.exports = function queueGetNextJob (q) {
     .filter(
       q.r.row('dateEnable').le(q.r.now())
     )
-    .update({
-      status: enums.status.active,
-      dateStarted: q.r.now(),
-      dateEnable: q.r.now()
-      .add(
-        q.r.row('timeout').div(1000)
-      )
-      .add(
-        q.r.row('retryDelay').div(1000).mul(q.r.row('retryCount'))
-      ),
-      queueId: q.id,
-      processCount: q.r.row('processCount').add(1),
-      log: q.r.row('log').append({
-        date: q.r.now(),
-        queueId: q.id,
-        type: enums.log.information,
-        status: enums.status.active,
-        retryCount: q.r.row('retryCount'),
-        processCount: q.r.row('processCount'),
-        message: enums.message.active
-      })
-    }, {returnChanges: true})
+    .update(getJobUpdate(q), {returnChanges: true})
     .default({})
     .run(q.queryRunOptions)
   }).then((updateResult) => {
@@ -53,4 +32,35 @@ module.exports = function queueGetNextJob (q) {
     }
     return updatedJobs
   })
+}
+
+function getJobUpdate (q) {
+  return function (job) {
+    return q.r.branch(
+      job('status').ne(enums.status.active),
+      {
+        status: enums.status.active,
+        dateStarted: q.r.now(),
+        dateEnable: q.r.now()
+        .add(
+          job('timeout').div(1000)
+        )
+        .add(
+          job('retryDelay').div(1000).mul(job('retryCount'))
+        ),
+        queueId: q.id,
+        processCount: job('processCount').add(1),
+        log: job('log').append({
+          date: q.r.now(),
+          queueId: q.id,
+          type: enums.log.information,
+          status: enums.status.active,
+          retryCount: job('retryCount'),
+          processCount: job('processCount'),
+          message: enums.message.active
+        })
+      },
+      null
+    )
+  }
 }
