@@ -34,8 +34,8 @@
     "prepublish": "npm run build",
     "clean": "rm -Rf dist",
     "build": "npm run clean && babel src --presets babel-preset-latest --out-dir dist",
-    "test": "tap --timeout 1000 ./tests/test-runner.js",
-    "tv": "tap --timeout 1000 --reporter tap ./tests/test-runner.js",
+    "test": "tap --timeout 10000 ./tests/test-runner.js",
+    "tv": "tap --timeout 10000 --reporter tap ./tests/test-runner.js",
     "tc": "node ./tests/test-current.js",
     "tcd": "node --inspect --debug-brk ./tests/test-current.js",
     "lint": "standard",
@@ -64,10 +64,10 @@
     "babel-cli": "^6.22.2",
     "babel-preset-latest": "^6.22.0",
     "istanbul": "0.4.5",
-    "npm-check-updates": "^2.8.9",
+    "npm-check-updates": "^2.8.10",
     "proxyquire": "^1.7.11",
     "standard": "^8.6.0",
     "tap-spec": "^4.1.1",
-    "tap": "^9.0.3"
+    "tap": "^10.0.2"
   }
 }
