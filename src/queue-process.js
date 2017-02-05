@@ -5,6 +5,7 @@ const is = require('./is')
 const dbReview = require('./db-review')
 const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
+const jobUpdate = require('./job-update')
 const queueCancelJob = require('./queue-cancel-job')
 const jobFailed = require('./job-failed')
 const jobTimeouts = new Map()
@@ -82,18 +83,21 @@ function jobRun (job) {
 
     removeJobTimeoutAndOnCancelHandler(job.id)
 
-    let returnPromise
-    if (err) {
+    function errAction (err) {
       logger('jobResult is an error')
-      if (err.cancelJob) {
-        returnPromise = queueCancelJob(job.q, job, err.cancelJob)
-      } else {
-        returnPromise = jobFailed(job, err)
-      }
-    } else {
-      logger('jobResult processed successfully')
-      returnPromise = jobCompleted(job, jobResult)
+      err.cancelJob && logger('Job is being cancelled')
+      return err.cancelJob ? queueCancelJob(job.q, job, err.cancelJob)
+        : jobFailed(job, err)
     }
+
+    function resultAction (result) {
+      logger('jobResult is valid')
+      let resultIsJob = is.job(result) && is.object(result.q)
+      resultIsJob && logger('Job is being updated')
+      return resultIsJob ? jobUpdate(result) : jobCompleted(job, result)
+    }
+
+    let returnPromise = err ? errAction(err) : resultAction(jobResult)
 
     return returnPromise.then((finalResult) => {
       job.q._running--
