@@ -15,7 +15,7 @@ const testName = 'queue-process'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, { timeout: 200000 }, (t) => {
-      t.plan(409)
+      t.plan(417)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default())
@@ -40,12 +40,12 @@ module.exports = function () {
         testName,
         enabled: false,
         ready: 0,
-        processing: 48,
+        processing: 49,
         progress: 1,
         pausing: 14,
         paused: 14,
         resumed: 14,
-        removed: 0,
+        removed: 1,
         idle: 12,
         reset: 0,
         error: 0,
@@ -54,16 +54,16 @@ module.exports = function () {
         stopping: 0,
         stopped: 0,
         dropped: 0,
-        added: 37,
+        added: 38,
         waiting: 0,
-        active: 48,
+        active: 49,
         completed: 42,
         cancelled: 3,
         failed: 3,
         terminated: 1,
         reanimated: 0,
         log: 0,
-        updated: 0
+        updated: 1
       }
 
       // idle event testing is not part of the test-event-handlers module
@@ -81,6 +81,7 @@ module.exports = function () {
       let tryCount = 0
       let updateProgress = false
       let testCancel = false
+      let updateJob = false
       let jobProcessTimeoutId = false
 
       function testHandler (job, next, onCancel) {
@@ -96,6 +97,9 @@ module.exports = function () {
           const cancelErr = new Error(tData)
           cancelErr.cancelJob = tData
           next(cancelErr)
+        } else if (updateJob) {
+          job.updateNote = tData
+          next(null, job)
         } else {
           if (updateProgress) {
             setTimeout(function () {
@@ -233,8 +237,21 @@ module.exports = function () {
         t.equal(completedJobs[0].log.length, 11, 'repeat job log count valid')
         return q.resume()
       }).then(() => {
-        // // TODO - Remove below to run all tests.
-        // return q.stop().then(() => Promise.reject())
+        //
+        // ---------- Processing with Job Update Test ----------
+        t.comment('queue-process: Processing with Job Update')
+        updateJob = true
+        jobs = q.createJob()
+        return q.addJob(jobs)
+      }).delay(1000).then(() => {
+        return q.getJob(jobs)
+      }).then((updatedJob) => {
+        t.equal(updatedJob[0].updateNote, tData, 'Job updated in next() call successfully')
+        t.equal(updatedJob[0].getLastLog().message, enums.message.jobUpdated, 'Job updated log entry valid')
+        return q.removeJob(updatedJob[0])
+      }).then(() => {
+        updateJob = false
+        //
         // ---------- Processing Restart on Job Add Test ----------
         t.comment('queue-process: Process Restart on Job Add')
         jobs = []
