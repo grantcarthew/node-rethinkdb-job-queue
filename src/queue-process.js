@@ -83,6 +83,12 @@ function jobRun (job) {
 
     removeJobTimeoutAndOnCancelHandler(job.id)
 
+    function setJobStatusToWaiting () {
+      logger('Invalid job status', job.status)
+      logger('Setting job status to: ' + enums.status.waiting)
+      job.status = enums.status.waiting
+    }
+
     function errAction (err) {
       logger('jobResult is an error')
       err.cancelJob && logger('Job is being cancelled')
@@ -93,6 +99,7 @@ function jobRun (job) {
     function resultAction (result) {
       logger('jobResult is valid')
       let resultIsJob = is.job(result) && is.object(result.q)
+      result.status === enums.status.active && setJobStatusToWaiting()
       resultIsJob && logger('Job is being updated')
       return resultIsJob ? jobUpdate(result) : jobCompleted(job, result)
     }
