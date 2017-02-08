@@ -13,7 +13,7 @@ const testName = 'job'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(114)
+      t.plan(117)
 
       const q = new Queue(tOpts.cxn(), tOpts.default())
 
@@ -72,7 +72,11 @@ module.exports = function () {
 
       // ---------- Change Options Tests ----------
       t.comment('job: Change Options')
-      t.throws(() => { newJob.setPriority('not valid') }, 'Job setPriority thows if invalid')
+      t.equal(newJob.name, newJob.id, 'New job name is the same as job id')
+      t.throws(() => { newJob.setName([]) }, 'Job setName throws if invalid')
+      newJob.setName('test name')
+      t.equal(newJob.name, 'test name', 'Job setName successfully changed value')
+      t.throws(() => { newJob.setPriority('not valid') }, 'Job setPriority throws if invalid')
       newJob.setPriority('highest')
       t.equal(newJob.priority, 'highest', 'Job setPriority successfully changed value')
       t.throws(() => { newJob.setTimeout('not valid') }, 'Job setTimeout thows if invalid')
@@ -104,7 +108,7 @@ module.exports = function () {
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
       let cleanJob = newJob.getCleanCopy()
-      t.equal(Object.keys(cleanJob).length, 16, 'Clean job has valid number of properties')
+      t.equal(Object.keys(cleanJob).length, 17, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
       t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
       t.equal(cleanJob.priority, enums.priority[newJob.priority], 'Clean job priority is valid')

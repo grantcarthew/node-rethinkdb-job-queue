@@ -24,7 +24,9 @@ class Job {
 
       const options = jobOptions()
       const now = new Date()
-      this.id = uuid.v4()
+      const newId = uuid.v4()
+      this.id = newId
+      this.name = options.name || newId
       this.priority = options.priority
       this.timeout = options.timeout
       this.retryDelay = options.retryDelay
@@ -51,6 +53,14 @@ class Job {
         Object.assign(this, jobData)
       }
     }
+  }
+
+  setName (newName) {
+    if (is.string(newName)) {
+      this.name = newName
+      return this
+    }
+    throw new Error(enums.message.nameInvalid)
   }
 
   setPriority (newPriority) {

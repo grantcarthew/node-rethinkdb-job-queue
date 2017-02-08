@@ -6,12 +6,17 @@ module.exports = function jobOptions (newOptions = {}, oldOptions = {}) {
   logger('jobOptions', newOptions, oldOptions)
 
   const finalOptions = {}
+  finalOptions.name = null
   finalOptions.priority = enums.options.priority
   finalOptions.timeout = enums.options.timeout
   finalOptions.retryMax = enums.options.retryMax
   finalOptions.retryDelay = enums.options.retryDelay
   finalOptions.repeat = enums.options.repeat
   finalOptions.repeatDelay = enums.options.repeatDelay
+
+  if (is.string(oldOptions.name)) {
+    finalOptions.name = oldOptions.name
+  }
 
   if (Object.keys(enums.priority).includes(oldOptions.priority)) {
     finalOptions.priority = oldOptions.priority
@@ -37,6 +42,10 @@ module.exports = function jobOptions (newOptions = {}, oldOptions = {}) {
 
   if (is.integer(oldOptions.repeatDelay) && oldOptions.repeatDelay >= 0) {
     finalOptions.repeatDelay = oldOptions.repeatDelay
+  }
+
+  if (is.string(newOptions.name)) {
+    finalOptions.name = newOptions.name
   }
 
   if (Object.keys(enums.priority).includes(newOptions.priority)) {

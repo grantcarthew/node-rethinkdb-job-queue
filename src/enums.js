@@ -94,6 +94,7 @@ const message = Object.freeze({
   jobReanimated: 'Job has been reanimated',
   processTwice: 'Cannot call queue process twice',
   idInvalid: 'The job id is invalid',
+  nameInvalid: 'The job name must be a string',
   priorityInvalid: 'The job priority value is invalid',
   timeoutInvalid: 'The job timeout value is invalid',
   retryMaxIvalid: 'The job retryMax value is invalid',

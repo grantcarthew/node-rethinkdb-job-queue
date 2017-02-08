@@ -12,7 +12,7 @@ const testName = 'queue'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(147)
+      t.plan(149)
 
       // ---------- Test Setup ----------
       let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
@@ -25,6 +25,7 @@ module.exports = function () {
 
       let job
       let customJobOptions = {
+        name: 'custom job name',
         priority: 'high',
         timeout: 200,
         retryMax: 5,
@@ -145,20 +146,23 @@ module.exports = function () {
         t.comment('queue: Create Job')
         job = qMain.createJob()
         t.ok(is.job(job), 'Queue createJob created a job object')
+        t.equal(job.name, customJobOptions.name, 'Queue created job with new default name')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with new default priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with new default timeout')
         t.equal(job.retryMax, customJobOptions.retryMax, 'Queue created job with new default retryMax')
         t.equal(job.retryDelay, customJobOptions.retryDelay, 'Queue created job with new default retryDelay')
 
         customJobOptions = {
+          name: 'aaa',
           priority: 'low',
           timeout: 400,
           retryMax: 2,
           retryDelay: 900,
           repeat: 0
         }
-        job = qMain.createJob().setPriority('low').setTimeout(400).setRetryMax(2).setRetryDelay(900)
+        job = qMain.createJob().setName('aaa').setPriority('low').setTimeout(400).setRetryMax(2).setRetryDelay(900)
         t.ok(is.job(job), 'Queue createJob created a job object')
+        t.equal(job.name, customJobOptions.name, 'Queue created job with custom name')
         t.equal(job.priority, customJobOptions.priority, 'Queue created job with custom priority')
         t.equal(job.timeout, customJobOptions.timeout, 'Queue created job with custom timeout')
         t.equal(job.retryMax, customJobOptions.retryMax, 'Queue created job with custom retryMax')

@@ -5,10 +5,11 @@ const jobOptions = require('../src/job-options')
 
 module.exports = function () {
   test('job-options', (t) => {
-    t.plan(54)
+    t.plan(70)
 
     try {
       let to = jobOptions()
+      t.equal(to.name, null, 'Job default name option is null')
       t.equal(to.priority, 'normal', 'Job default priority option is normal')
       t.equal(to.timeout, enums.options.timeout, 'Job default timeout option is valid')
       t.equal(to.retryMax, enums.options.retryMax, 'Job default retryMax option is valid')
@@ -16,6 +17,7 @@ module.exports = function () {
       t.equal(to.repeat, enums.options.repeat, 'Job default repeat option is valid')
       t.equal(to.repeatDelay, enums.options.repeatDelay, 'Job default repeatDelay option is valid')
       to = jobOptions({
+        name: 'one',
         priority: 'high',
         timeout: 100000,
         retryMax: 8,
@@ -23,6 +25,7 @@ module.exports = function () {
         repeat: 4,
         repeatDelay: 1000
       }, to)
+      t.equal(to.name, 'one', 'Job custom name option is valid')
       t.equal(to.priority, 'high', 'Job custom priority option is valid')
       t.equal(to.timeout, 100000, 'Job custom timeout option is valid')
       t.equal(to.retryMax, 8, 'Job custom retryMax option is valid')
@@ -30,7 +33,17 @@ module.exports = function () {
       t.equal(to.repeat, 4, 'Job custom repeat option is valid')
       t.equal(to.repeatDelay, 1000, 'Job custom repeatDelay option is valid')
 
+      to = jobOptions({ name: 'two' }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
+      t.equal(to.priority, 'high', 'Job priority custom priority option is valid')
+      t.equal(to.timeout, 100000, 'Job priority custom timeout option is valid')
+      t.equal(to.retryMax, 8, 'Job priority custom retryMax option is valid')
+      t.equal(to.retryDelay, 200000, 'Job priority custom retryDelay option is valid')
+      t.equal(to.repeat, 4, 'Job priority custom repeat option is valid')
+      t.equal(to.repeatDelay, 1000, 'Job priority custom repeatDelay option is valid')
+
       to = jobOptions({ priority: 'lowest' }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
       t.equal(to.priority, 'lowest', 'Job priority custom priority option is valid')
       t.equal(to.timeout, 100000, 'Job priority custom timeout option is valid')
       t.equal(to.retryMax, 8, 'Job priority custom retryMax option is valid')
@@ -39,6 +52,7 @@ module.exports = function () {
       t.equal(to.repeatDelay, 1000, 'Job priority custom repeatDelay option is valid')
 
       to = jobOptions({ timeout: 700000 }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
       t.equal(to.priority, 'lowest', 'Job timeout custom priority option is valid')
       t.equal(to.timeout, 700000, 'Job timeout custom timeout option is valid')
       t.equal(to.retryMax, 8, 'Job timeout custom retryMax option is valid')
@@ -47,6 +61,7 @@ module.exports = function () {
       t.equal(to.repeatDelay, 1000, 'Job timeout custom repeatDelay option is valid')
 
       to = jobOptions({ retryMax: 2 }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
       t.equal(to.priority, 'lowest', 'Job retryMax custom priority option is valid')
       t.equal(to.timeout, 700000, 'Job retryMax custom timeout option is valid')
       t.equal(to.retryMax, 2, 'Job retryMax custom retryMax option is valid')
@@ -55,6 +70,7 @@ module.exports = function () {
       t.equal(to.repeatDelay, 1000, 'Job retryMax custom repeatDelay option is valid')
 
       to = jobOptions({ retryDelay: 800000 }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
       t.equal(to.priority, 'lowest', 'Job retryDelay custom priority option is valid')
       t.equal(to.timeout, 700000, 'Job retryDelay custom timeout option is valid')
       t.equal(to.retryMax, 2, 'Job retryDelay custom retryMax option is valid')
@@ -63,6 +79,7 @@ module.exports = function () {
       t.equal(to.repeatDelay, 1000, 'Job retryDelay custom repeatDelay option is valid')
 
       to = jobOptions({ repeat: false }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
       t.equal(to.priority, 'lowest', 'Job repeat custom priority option is valid')
       t.equal(to.timeout, 700000, 'Job repeat custom timeout option is valid')
       t.equal(to.retryMax, 2, 'Job repeat custom retryMax option is valid')
@@ -71,6 +88,7 @@ module.exports = function () {
       t.equal(to.repeatDelay, 1000, 'Job repeat custom repeatDelay option is valid')
 
       to = jobOptions({ repeatDelay: 2000 }, to)
+      t.equal(to.name, 'two', 'Job name custom name option is valid')
       t.equal(to.priority, 'lowest', 'Job repeatDelay custom priority option is valid')
       t.equal(to.timeout, 700000, 'Job repeatDelay custom timeout option is valid')
       t.equal(to.retryMax, 2, 'Job repeatDelay custom retryMax option is valid')
@@ -79,6 +97,7 @@ module.exports = function () {
       t.equal(to.repeatDelay, 2000, 'Job repeatDelay custom repeatDelay option is valid')
 
       to = jobOptions({
+        name: true,
         priority: 'oops',
         timeout: -20,
         retryMax: -30,
@@ -86,6 +105,7 @@ module.exports = function () {
         repeat: -50,
         repeatDelay: -60
       }, to)
+      t.equal(to.name, 'two', 'Job invalid name option is reverted')
       t.equal(to.priority, 'lowest', 'Job invalid priority option is reverted')
       t.equal(to.timeout, 700000, 'Job invalid timeout option is reverted')
       t.equal(to.retryMax, 2, 'Job invalid retryMax option is reverted')
