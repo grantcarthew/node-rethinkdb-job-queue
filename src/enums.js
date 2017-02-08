@@ -63,6 +63,7 @@ const index = Object.freeze({
   indexActiveDateEnable: 'indexActiveDateEnable',
   indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',
   indexFinishedDateFinished: 'indexFinishedDateFinished',
+  indexName: 'name',
   indexStatus: 'status'
 })
 const dbResult = Object.freeze({
