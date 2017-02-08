@@ -199,6 +199,8 @@ This project exists because there were no functional job queues built on the Ret
 
 Everything I do in open source is done in my own time and as a contribution to the open source community.
 
+See my [other projects on NPM](https://www.npmjs.com/~grantcarthew).
+
 ## Contributing
 
 1.  Fork it!
