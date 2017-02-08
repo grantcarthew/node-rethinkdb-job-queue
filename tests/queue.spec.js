@@ -12,7 +12,7 @@ const testName = 'queue'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(149)
+      t.plan(154)
 
       // ---------- Test Setup ----------
       let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
@@ -24,8 +24,9 @@ module.exports = function () {
       let qPub
 
       let job
+      let jobName = 'rjqTestJob'
       let customJobOptions = {
-        name: 'custom job name',
+        name: jobName,
         priority: 'high',
         timeout: 200,
         retryMax: 5,
@@ -198,9 +199,20 @@ module.exports = function () {
         t.equal(savedJobs3[0].id, job.id, 'Job id is valid')
         t.equal(savedJobs3[0].status, enums.status.waiting, 'Job status is valid')
 
+
+        // ---------- Find Job By Name Tests ----------
+        t.comment('queue: Find Job By Name')
+        return qMain.findJobByName(jobName)
+      }).then((savedJobs4) => {
+        t.ok(is.array(savedJobs4), 'Find job returns an array')
+        t.ok(is.job(savedJobs4[0]), 'Job retrieved successfully')
+        t.equal(savedJobs4[0].id, job.id, 'Job id is valid')
+        t.equal(savedJobs4[0].name, jobName, 'Job name is valid')
+        t.equal(savedJobs4[0].status, enums.status.waiting, 'Job status is valid')
+
         // ---------- Cancel Job Tests ----------
         t.comment('queue: Cancel Job')
-        return qMain.cancelJob(savedJobs3[0].id)
+        return qMain.cancelJob(savedJobs4[0].id)
       }).then((cancelledJobs) => {
         t.ok(is.array(cancelledJobs), 'Cancel job returns an array')
         t.ok(is.uuid(cancelledJobs[0]), 'Cancel job returns ids')

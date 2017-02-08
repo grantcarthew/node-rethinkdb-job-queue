@@ -1,14 +1,15 @@
 const logger = require('./logger')(module)
 const Promise = require('bluebird')
+const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function queueFindJob (q, predicate, raw) {
-  logger('queueFindJob: ', predicate)
+module.exports = function queueFindJob (q, name, raw) {
+  logger('queueFindJob: ', name, raw)
   return Promise.resolve().then(() => {
     return q.r
     .db(q.db)
     .table(q.name)
-    .filter(predicate)
+    .getAll(name, { index: enums.index.indexName })
     .orderBy('dateCreated')
     .run(q.queryRunOptions)
   }).then((jobsData) => {

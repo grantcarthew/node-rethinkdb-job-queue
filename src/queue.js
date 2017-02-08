@@ -10,6 +10,7 @@ const queueProcess = require('./queue-process')
 const queueAddJob = require('./queue-add-job')
 const queueGetJob = require('./queue-get-job')
 const queueFindJob = require('./queue-find-job')
+const queueFindJobByName = require('./queue-find-job-by-name')
 const queueInterruption = require('./queue-interruption')
 const queueCancelJob = require('./queue-cancel-job')
 const queueReanimateJob = require('./queue-reanimate-job')
@@ -119,11 +120,22 @@ class Queue extends EventEmitter {
   }
 
   findJob (predicate, raw) {
-    logger('findJob', predicate)
+    logger('findJob', predicate, raw)
     return this.ready().then(() => {
       return queueFindJob(this, predicate, raw)
     }).catch((err) => {
       logger('Event: findJob error', this.id, err)
+      this.emit(enums.status.error, this.id, err)
+      return Promise.reject(err)
+    })
+  }
+
+  findJobByName (name, raw) {
+    logger('findJobByName', name, raw)
+    return this.ready().then(() => {
+      return queueFindJobByName(this, name, raw)
+    }).catch((err) => {
+      logger('Event: findJobByName error', this.id, err)
       this.emit(enums.status.error, this.id, err)
       return Promise.reject(err)
     })
