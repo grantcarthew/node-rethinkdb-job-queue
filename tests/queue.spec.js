@@ -12,7 +12,7 @@ const testName = 'queue'
 module.exports = function () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(154)
+      t.plan(156)
 
       // ---------- Test Setup ----------
       let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
@@ -199,12 +199,20 @@ module.exports = function () {
         t.equal(savedJobs3[0].id, job.id, 'Job id is valid')
         t.equal(savedJobs3[0].status, enums.status.waiting, 'Job status is valid')
 
+        // ---------- Contains Job By Name Tests ----------
+        t.comment('queue: Contains Job By Name')
+        return qMain.containsJobByName(jobName)
+      }).then((exists) => {
+        t.ok(is.true(exists), 'Contains job by name returns true')
+        return qMain.containsJobByName('not a valid name!')
+      }).then((exists) => {
+        t.ok(is.false(exists), 'Contains job by name returns false')
 
         // ---------- Find Job By Name Tests ----------
         t.comment('queue: Find Job By Name')
         return qMain.findJobByName(jobName)
       }).then((savedJobs4) => {
-        t.ok(is.array(savedJobs4), 'Find job returns an array')
+        t.ok(is.array(savedJobs4), 'Find job by name returns an array')
         t.ok(is.job(savedJobs4[0]), 'Job retrieved successfully')
         t.equal(savedJobs4[0].id, job.id, 'Job id is valid')
         t.equal(savedJobs4[0].name, jobName, 'Job name is valid')

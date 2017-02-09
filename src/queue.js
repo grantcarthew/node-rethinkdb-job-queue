@@ -141,6 +141,19 @@ class Queue extends EventEmitter {
     })
   }
 
+  containsJobByName (name) {
+    logger('containsJobByName', name)
+    return this.ready().then(() => {
+      return queueFindJobByName(this, name, true)
+    }).then((namedJobs) => {
+      return namedJobs.length > 0
+    }).catch((err) => {
+      logger('Event: containsJobByName error', this.id, err)
+      this.emit(enums.status.error, this.id, err)
+      return Promise.reject(err)
+    })
+  }
+
   cancelJob (jobOrId, reason) {
     logger('cancelJob', jobOrId, reason)
     return this.ready().then(() => {
