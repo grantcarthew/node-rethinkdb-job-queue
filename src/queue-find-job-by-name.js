@@ -3,8 +3,8 @@ const Promise = require('bluebird')
 const enums = require('./enums')
 const dbResult = require('./db-result')
 
-module.exports = function queueFindJob (q, name, raw) {
-  logger('queueFindJob: ', name, raw)
+module.exports = function queueFindJobByName (q, name, raw) {
+  logger('queueFindJobByName: ', name, raw)
   return Promise.resolve().then(() => {
     return q.r
     .db(q.db)
