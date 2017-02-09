@@ -134,26 +134,6 @@ function createIndexStatus (q) {
   })
 }
 
-function createIndexDateCreated (q) {
-  logger('createIndexDateCreated')
-  const indexName = enums.index.indexDateCreated
-  return Promise.resolve().then(() => {
-    return q.r.db(q.db)
-    .table(q.name)
-    .indexList()
-    .contains(indexName)
-    .run(q.queryRunOptions)
-  }).then((exists) => {
-    if (exists) {
-      return exists
-    }
-    return q.r.db(q.db)
-    .table(q.name)
-    .indexCreate(indexName)
-    .run(q.queryRunOptions)
-  })
-}
-
 module.exports = function assertIndex (q) {
   logger('assertIndex')
   return Promise.all([
@@ -161,8 +141,7 @@ module.exports = function assertIndex (q) {
     createIndexInactivePriorityDateCreated(q),
     createIndexFinishedDateFinished(q),
     createIndexName(q),
-    createIndexStatus(q),
-    createIndexDateCreated(q)
+    createIndexStatus(q)
   ]).then((indexCreateResult) => {
     logger('Waiting for index...')
     return q.r.db(q.db)

@@ -63,7 +63,6 @@ const index = Object.freeze({
   indexActiveDateEnable: 'indexActiveDateEnable',
   indexInactivePriorityDateCreated: 'indexInactivePriorityDateCreated',
   indexFinishedDateFinished: 'indexFinishedDateFinished',
-  indexDateCreated: 'dateCreated',
   indexName: 'name',
   indexStatus: 'status'
 })
