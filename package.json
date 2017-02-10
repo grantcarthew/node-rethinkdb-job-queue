@@ -1,6 +1,6 @@
 {
   "name": "rethinkdb-job-queue",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {
@@ -56,7 +56,7 @@
   "dependencies": {
     "bluebird": "^3.4.7",
     "debug": "^2.6.0",
-    "rethinkdbdash": "^2.3.27",
+    "rethinkdbdash": "^2.3.28",
     "serialize-error": "^2.1.0",
     "uuid": "^3.0.1"
   },
@@ -64,10 +64,10 @@
     "babel-cli": "^6.22.2",
     "babel-preset-latest": "^6.22.0",
     "istanbul": "0.4.5",
-    "npm-check-updates": "^2.8.10",
+    "npm-check-updates": "^2.10.2",
     "proxyquire": "^1.7.11",
     "standard": "^8.6.0",
     "tap-spec": "^4.1.1",
-    "tap": "^10.0.2"
+    "tap": "^10.1.0"
   }
 }
