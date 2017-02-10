@@ -2,5 +2,10 @@
   "critics": {
     "lint": { "engine": "standard" },
     "wc": { "limit": 5000 }
-  }
+  },
+  "ignore": [
+    "**/coverage/**",
+    "**/dist/**",
+    "**/node_modules/**"
+  ]
 }
