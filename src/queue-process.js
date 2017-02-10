@@ -2,7 +2,6 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const is = require('./is')
-const dbReview = require('./db-review')
 const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
 const jobUpdate = require('./job-update')
@@ -196,7 +195,7 @@ module.exports.addHandler = function queueProcessAddHandler (q, handler) {
   // after the dbReview process. The Promise can be ignored.
   return Promise.resolve().then(() => {
     if (q.master) { return true }
-    return dbReview.runOnce(q)
+    return q.review()
   }).then(() => {
     setImmediate(jobTick, q)
     return true
