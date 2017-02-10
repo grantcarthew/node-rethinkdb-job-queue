@@ -6,6 +6,7 @@ const queueStop = require('../src/queue-stop')
 const queueDb = require('../src/queue-db')
 const dbReview = require('../src/db-review')
 const Queue = require('../src/queue')
+const simulateJobProcessing = require('./test-utils').simulateJobProcessing
 const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-stop'
@@ -47,13 +48,6 @@ module.exports = function () {
         updated: 0
       }
 
-      function simulateJobProcessing () {
-        q._running = 1
-        setTimeout(function setRunningToZero () {
-          q._running = 0
-        }, 500)
-      }
-
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.ready()
@@ -66,7 +60,7 @@ module.exports = function () {
 
         // ---------- Stop with Drain ----------
         t.comment('queue-stop: Stop with Drain')
-        simulateJobProcessing()
+        simulateJobProcessing(q)
         return queueStop(q)
       }).then((stopped) => {
         return queueDb.drain(q)
@@ -92,7 +86,7 @@ module.exports = function () {
         t.ok(dbReview.isEnabled(q), 'Review is enabled')
         t.ok(q._changeFeedCursor.connection.open, 'Change feed is connected')
         t.notOk(q.paused, 'Queue is not paused')
-        simulateJobProcessing()
+        simulateJobProcessing(q)
         return queueStop(q)
       }).then((stopped2) => {
         t.ok(stopped2, 'Queue stopped without pool drain')

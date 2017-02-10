@@ -4,6 +4,7 @@ const is = require('../src/is')
 const tError = require('./test-error')
 const queueDrop = require('../src/queue-drop')
 const Queue = require('../src/queue')
+const simulateJobProcessing = require('./test-utils').simulateJobProcessing
 const tOpts = require('./test-options')
 const rethinkdbdash = require('rethinkdbdash')
 const eventHandlers = require('./test-event-handlers')
@@ -53,20 +54,13 @@ module.exports = function () {
         updated: 0
       }
 
-      function simulateJobProcessing () {
-        q._running = 1
-        setTimeout(function setRunningToZero () {
-          q._running = 0
-        }, 500)
-      }
-
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
 
         // ---------- Drop Queue Test ----------
         t.comment('queue-drop: Drop Queue')
         eventHandlers.add(t, q, state)
-        simulateJobProcessing()
+        simulateJobProcessing(q)
         return queueDrop(q)
       }).then((removeResult) => {
         t.ok(removeResult, 'Queue dropped')
