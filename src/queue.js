@@ -59,6 +59,16 @@ class Queue extends EventEmitter {
     queueDb.attach(this, cxn)
   }
 
+  _raiseQueueError (name) {
+    const self = this
+    return function raiseQueueErrorInternal (errObj) {
+      const message = `Event: ${name} error`
+      logger('Event: ' + message, self.id, errObj)
+      self.emit(enums.status.error, self.id, errObj)
+      return Promise.reject(errObj)
+    }
+  }
+
   get name () { return this._name }
   get id () { return this._id }
   get host () { return this._host }
@@ -84,7 +94,7 @@ class Queue extends EventEmitter {
     logger('set concurrency', value)
     if (!is.integer(value) || value < 1) {
       const err = new Error(enums.message.concurrencyInvalid)
-      logger('Event: concurrency error', this.id, err)
+      logger('concurrency', this.id, err)
       this.emit(enums.status.error, this.id, err)
       return
     }
@@ -101,44 +111,28 @@ class Queue extends EventEmitter {
     logger('addJob', job)
     return this.ready().then(() => {
       return queueAddJob(this, job)
-    }).catch((err) => {
-      logger('Event: addJob error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('addJob'))
   }
 
   getJob (jobOrId) {
     logger('getJob', jobOrId)
     return this.ready().then(() => {
       return queueGetJob(this, jobOrId)
-    }).catch((err) => {
-      logger('Event: getJob error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('getJob'))
   }
 
   findJob (predicate, raw) {
     logger('findJob', predicate, raw)
     return this.ready().then(() => {
       return queueFindJob(this, predicate, raw)
-    }).catch((err) => {
-      logger('Event: findJob error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('findJob'))
   }
 
   findJobByName (name, raw) {
     logger('findJobByName', name, raw)
     return this.ready().then(() => {
       return queueFindJobByName(this, name, raw)
-    }).catch((err) => {
-      logger('Event: findJobByName error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('findJobByName'))
   }
 
   containsJobByName (name) {
@@ -147,77 +141,49 @@ class Queue extends EventEmitter {
       return queueFindJobByName(this, name, true)
     }).then((namedJobs) => {
       return namedJobs.length > 0
-    }).catch((err) => {
-      logger('Event: containsJobByName error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('containsJobByName'))
   }
 
   cancelJob (jobOrId, reason) {
     logger('cancelJob', jobOrId, reason)
     return this.ready().then(() => {
       return queueCancelJob(this, jobOrId, reason)
-    }).catch((err) => {
-      logger('Event: cancelJob error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('cancelJob'))
   }
 
   reanimateJob (jobOrId, dateEnable) {
     logger('reanimateJob', jobOrId, dateEnable)
     return this.ready().then(() => {
       return queueReanimateJob(this, jobOrId, dateEnable)
-    }).catch((err) => {
-      logger('Event: reanimateJob error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('reanimateJob'))
   }
 
   removeJob (jobOrId) {
     logger('removeJob', jobOrId)
     return this.ready().then(() => {
       return queueRemoveJob(this, jobOrId)
-    }).catch((err) => {
-      logger('Event: removeJob error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('removeJob'))
   }
 
   process (handler) {
     logger('process', handler)
     return this.ready().then(() => {
       return queueProcess.addHandler(this, handler)
-    }).catch((err) => {
-      logger('Event: process error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('process'))
   }
 
   review () {
     logger('review')
     return this.ready().then(() => {
       return dbReview.runOnce(this)
-    }).catch((err) => {
-      logger('Event: review error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('review'))
   }
 
   summary () {
     logger('summary')
     return this.ready().then(() => {
       return queueSummary(this)
-    }).catch((err) => {
-      logger('Event: summary error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('summary'))
   }
 
   ready () {
@@ -229,53 +195,34 @@ class Queue extends EventEmitter {
     logger(`pause`)
     return this.ready().then(() => {
       return queueInterruption.pause(this, global)
-    }).catch((err) => {
-      logger('Event: pause error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('pause'))
   }
 
   resume (global) {
     logger(`resume`)
     return this.ready().then(() => {
       return queueInterruption.resume(this, global)
-    }).catch((err) => {
-      logger('Event: resume error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('resume'))
   }
 
   reset () {
     logger('reset')
     return this.ready().then(() => {
       return queueReset(this)
-    }).catch((err) => {
-      logger('Event: reset error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('reset'))
   }
 
   stop () {
     logger('stop')
     return queueStop(this).then(() => {
       return queueDb.drain(this)
-    }).catch((err) => {
-      logger('Event: stop error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(this._raiseQueueError('stop'))
   }
 
   drop () {
     logger('drop')
-    return queueDrop(this).catch((err) => {
-      logger('Event: drop error', this.id, err)
-      this.emit(enums.status.error, this.id, err)
-      return Promise.reject(err)
-    })
+    return queueDrop(this)
+    .catch(this._raiseQueueError('drop'))
   }
 }
 
