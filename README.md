@@ -30,7 +30,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   [Job progress updates][job-progress-url]
 *   [Delayed job start][job-delayed-url]
 *   [Find jobs in the queue][find-job-url]
-*   [Determine job uniqueness][find-job-url]
+*   [Determine job uniqueness][find-job-by-name-url]
 *   [Job timeout][job-timeout-url]
 *   [Retrying failed jobs][job-retry-url]
 *   [Repeatable jobs][job-repeat-url]
@@ -47,6 +47,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 [job-progress-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job.updateProgress
 [job-delayed-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Delayed-Job
 [find-job-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.findJob
+[find-job-by-name-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.findJobByName
 [job-cancel-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.process#failed-job-with-cancel
 [queue-pause-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue.pause
 [job-timeout-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Job-Options#job-timeout-option
