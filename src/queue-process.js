@@ -82,25 +82,36 @@ function jobRun (job) {
 
     removeJobTimeoutAndOnCancelHandler(job.id)
 
+    function cancelJobAction () {
+      logger('Job is being cancelled')
+      return queueCancelJob(job.q, job, err.cancelJob)
+    }
+
+    function errAction (err) {
+      logger('jobResult is an error')
+      const isCancelJob = is.object(err) || is.error(err) && err.cancelJob
+      return isCancelJob ? cancelJobAction()
+        : jobFailed(job, err)
+    }
+
     function setJobStatusToWaiting () {
       logger('Invalid job status', job.status)
       logger('Setting job status to: ' + enums.status.waiting)
       job.status = enums.status.waiting
     }
 
-    function errAction (err) {
-      logger('jobResult is an error')
-      err.cancelJob && logger('Job is being cancelled')
-      return err.cancelJob ? queueCancelJob(job.q, job, err.cancelJob)
-        : jobFailed(job, err)
+    function updateJobAction (jobToUpdate) {
+      logger('Job is being updated')
+      jobToUpdate.status === enums.status.active && setJobStatusToWaiting()
+      return jobUpdate(jobToUpdate)
     }
 
-    function resultAction (result) {
+    function resultAction (validJobResult) {
       logger('jobResult is valid')
-      let resultIsJob = is.job(result) && is.object(result.q)
-      result.status === enums.status.active && setJobStatusToWaiting()
-      resultIsJob && logger('Job is being updated')
-      return resultIsJob ? jobUpdate(result) : jobCompleted(job, result)
+      let resultIsJob = is.job(validJobResult) && is.object(validJobResult.q)
+      return resultIsJob
+        ? updateJobAction(validJobResult)
+        : jobCompleted(job, validJobResult)
     }
 
     let returnPromise = err ? errAction(err) : resultAction(jobResult)

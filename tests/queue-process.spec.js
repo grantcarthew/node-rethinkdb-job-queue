@@ -81,6 +81,7 @@ module.exports = function () {
       let tryCount = 0
       let updateProgress = false
       let testCancel = false
+      let testUndefined = false
       let updateJob = false
       let jobProcessTimeoutId = false
 
@@ -111,7 +112,8 @@ module.exports = function () {
 
           jobProcessTimeoutId = setTimeout(function () {
             jobProcessTimeoutId = false
-            next(null, 'Job Completed: ' + job.id)
+            testUndefined && t.pass('next() with undefined arguments tested')
+            testUndefined ? next() : next(null, 'Job Completed: ' + job.id)
             .then((runningJobs) => {
               t.ok(is.integer(runningJobs), `Next call returns running jobs [${runningJobs}]`)
             })
@@ -180,10 +182,12 @@ module.exports = function () {
       }).then((repeatJob) => {
         t.equal(repeatJob[0].processCount, 1, 'Repeat job processed once')
         t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        testUndefined = true
         return resumeProcessPauseGet()
       }).then((repeatJob) => {
         t.equal(repeatJob[0].processCount, 2, 'Repeat job processed twice')
         t.equal(repeatJob[0].status, enums.status.waiting, 'Repeat job is waiting')
+        testUndefined = false
         return resumeProcessPauseGet()
       }).then((repeatJob) => {
         t.equal(repeatJob[0].processCount, 3, 'Repeat job processed three times')
