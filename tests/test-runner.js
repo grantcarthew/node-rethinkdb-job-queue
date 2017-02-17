@@ -1,4 +1,5 @@
 const Promise = require('bluebird')
+const logger = require('./logger.spec')
 const enums = require('./enums.spec')
 const is = require('./is.spec')
 const datetime = require('./datetime.spec')
@@ -47,6 +48,7 @@ dbAssertDatabase().then(() => {
   return queueReset()
 }).then(() => {
   return Promise.all([
+    logger(),
     dbDriver(),
     enums(),
     is(),

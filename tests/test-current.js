@@ -1,4 +1,5 @@
 const tests = new Map()
+tests.set('logger', require('./logger.spec'))
 tests.set('enums', require('./enums.spec'))
 tests.set('is', require('./is.spec'))
 tests.set('datetime', require('./datetime.spec'))
