@@ -43,7 +43,7 @@
     "coverage:cover": "istanbul cover ./tests/test-runner.js",
     "coverage:rm": "rm -Rf coverage",
     "coverage:report": "istanbul report",
-    "coverage:check": "istanbul check-coverage ./coverage/coverage.json",
+    "coverage:check": "istanbul check-coverage ../site-rjq-coverage/coverage.json",
     "upgrade": "npm run upgrade:rm && npm run upgrade:ncu && npm run upgrade:install && npm run upgrade:finish",
     "upgrade:rm": "rm -Rf node_modules",
     "upgrade:ncu": "npm-check-updates --upgradeAll",
