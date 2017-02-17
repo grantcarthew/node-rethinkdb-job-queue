@@ -63,7 +63,7 @@ class Queue extends EventEmitter {
     const self = this
     return function raiseQueueErrorInternal (errObj) {
       const message = `Event: ${name} error`
-      logger('Event: ' + message, self.id, errObj)
+      logger(message, self.id, errObj)
       self.emit(enums.status.error, self.id, errObj)
       return Promise.reject(errObj)
     }
