@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 const is = require('./is')
+const errorBooster = require('./error-booster')
 const queueGetNextJob = require('./queue-get-next-job')
 const jobCompleted = require('./job-completed')
 const jobUpdate = require('./job-update')
@@ -27,8 +28,9 @@ function addOnCancelHandler (job, cancellationCallback) {
     jobOnCancelHandlers.set(job.id, cancellationCallback)
   } else {
     let err = new Error(enums.message.cancelCallbackInvalid)
+    err.queueId = job.q.id
     logger(`Event: addOnCancelHandler error`, err, job.q.id)
-    job.q.emit(enums.status.error, job.q.id, err)
+    job.q.emit(enums.status.error, err)
     throw err
   }
 }
@@ -120,11 +122,7 @@ function jobRun (job) {
       job.q._running--
       setImmediate(jobTick, job.q)
       return job.q.running
-    }).catch((err) => {
-      logger('Event: next() Promise error', err, job.q.id)
-      job.q.emit(enums.status.error, job.q.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(errorBooster(job.q, logger, 'next() Promise'))
   }
 
   function timeoutHandler () {
@@ -184,9 +182,7 @@ const jobTick = function jobTick (q) {
     return null
   }).catch((err) => {
     getNextJobCleanup(q._getNextJobCalled)
-    logger('Event: queueGetNextJob error:', err, q.id)
-    q.emit(enums.status.error, q.id, err)
-    return Promise.reject(err)
+    return errorBooster(q, logger, 'queueGetNextJob')(err)
   })
 }
 

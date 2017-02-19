@@ -1,5 +1,7 @@
 const tests = new Map()
+const serializeError = require('serialize-error')
 tests.set('logger', require('./logger.spec'))
+tests.set('errorBooster', require('./error-booster.spec'))
 tests.set('enums', require('./enums.spec'))
 tests.set('is', require('./is.spec'))
 tests.set('datetime', require('./datetime.spec'))
@@ -40,6 +42,8 @@ tests.set('queueSummary', require('./queue-summary.spec'))
 if (tests.has(process.argv[2])) {
   tests.get('dbAssert')().then(() => {
     return tests.get(process.argv[2])()
+  }).catch(err => {
+    console.log(serializeError(err))
   })
 } else {
   const line = '=============================================='

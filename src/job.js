@@ -2,6 +2,7 @@ const logger = require('./logger')(module)
 const uuid = require('uuid')
 const enums = require('./enums')
 const is = require('./is')
+const errorBooster = require('./error-booster')
 const jobOptions = require('./job-options')
 const jobProgress = require('./job-progress')
 const jobUpdate = require('./job-update')
@@ -127,22 +128,14 @@ class Job {
     logger(`updateProgress [${percent}]`)
     return this.q.ready().then(() => {
       return jobProgress(this, percent)
-    }).catch((err) => {
-      logger('Event: updateProgress error', err, this.q.id)
-      this.q.emit(enums.status.error, this.q.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(errorBooster(this, logger, 'updateProgress'))
   }
 
   update () {
     logger(`update`)
     return this.q.ready().then(() => {
       return jobUpdate(this)
-    }).catch((err) => {
-      logger('Event: update error', err, this.q.id)
-      this.q.emit(enums.status.error, this.q.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(errorBooster(this, logger, 'update'))
   }
 
   getCleanCopy (priorityAsString) {
@@ -162,11 +155,7 @@ class Job {
     logger('addLog', data, message, type, status)
     return this.q.ready().then(() => {
       return jobLog.commitLog(this, data, message, type, status)
-    }).catch((err) => {
-      logger('Event: addLog error', err, this.q.id)
-      this.q.emit(enums.status.error, this.q.id, err)
-      return Promise.reject(err)
-    })
+    }).catch(errorBooster(this, logger, 'addLog'))
   }
 
   getLastLog () {

@@ -1,5 +1,7 @@
 const Promise = require('bluebird')
+const serializeError = require('serialize-error')
 const logger = require('./logger.spec')
+const errorBooster = require('./error-booster.spec')
 const enums = require('./enums.spec')
 const is = require('./is.spec')
 const datetime = require('./datetime.spec')
@@ -50,6 +52,7 @@ dbAssertDatabase().then(() => {
   return Promise.all([
     logger(),
     dbDriver(),
+    // errorBooster(),
     enums(),
     is(),
     datetime(),
@@ -96,4 +99,6 @@ dbAssertDatabase().then(() => {
   return queueStop()
 }).then(() => {
   return queueDrop()
+}).catch(err => {
+  console.log(serializeError(err))
 })

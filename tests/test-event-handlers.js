@@ -217,10 +217,10 @@ module.exports.add = function eventHandlersAdd (t, q, state) {
   }
   state.handler.set(enums.status.updated, updatedEventHandler)
 
-  function errorEventHandler (qid, err) {
+  function errorEventHandler (err) {
     if (state.enabled) {
       let total = incCount(enums.status.error)
-      t.ok(is.string(qid) && is.error(err),
+      t.ok(is.string(err.queueId) && is.error(err),
         `Event: error [${total} of ${state.error}] Error: [${err.message}]`)
     }
   }

@@ -1,8 +1,8 @@
 const logger = require('./logger')(module)
 const EventEmitter = require('events').EventEmitter
-const Promise = require('bluebird')
 const is = require('./is')
 const enums = require('./enums')
+const errorBooster = require('./error-booster')
 const Job = require('./job')
 const dbReview = require('./db-review')
 const queueDb = require('./queue-db')
@@ -59,16 +59,6 @@ class Queue extends EventEmitter {
     queueDb.attach(this, cxn)
   }
 
-  _raiseQueueError (name) {
-    const self = this
-    return function raiseQueueErrorInternal (errObj) {
-      const message = `Event: ${name} error`
-      logger(message, self.id, errObj)
-      self.emit(enums.status.error, self.id, errObj)
-      return Promise.reject(errObj)
-    }
-  }
-
   get name () { return this._name }
   get id () { return this._id }
   get host () { return this._host }
@@ -94,8 +84,9 @@ class Queue extends EventEmitter {
     logger('set concurrency', value)
     if (!is.integer(value) || value < 1) {
       const err = new Error(enums.message.concurrencyInvalid)
+      err.queueId = this.id
       logger('concurrency', this.id, err)
-      this.emit(enums.status.error, this.id, err)
+      this.emit(enums.status.error, err)
       return
     }
     this._concurrency = value
@@ -111,28 +102,28 @@ class Queue extends EventEmitter {
     logger('addJob', job)
     return this.ready().then(() => {
       return queueAddJob(this, job)
-    }).catch(this._raiseQueueError('addJob'))
+    }).catch(errorBooster(this, logger, 'addJob'))
   }
 
   getJob (jobOrId) {
     logger('getJob', jobOrId)
     return this.ready().then(() => {
       return queueGetJob(this, jobOrId)
-    }).catch(this._raiseQueueError('getJob'))
+    }).catch(errorBooster(this, logger, 'getJob'))
   }
 
   findJob (predicate, raw) {
     logger('findJob', predicate, raw)
     return this.ready().then(() => {
       return queueFindJob(this, predicate, raw)
-    }).catch(this._raiseQueueError('findJob'))
+    }).catch(errorBooster(this, logger, 'findJob'))
   }
 
   findJobByName (name, raw) {
     logger('findJobByName', name, raw)
     return this.ready().then(() => {
       return queueFindJobByName(this, name, raw)
-    }).catch(this._raiseQueueError('findJobByName'))
+    }).catch(errorBooster(this, logger, 'findJobByName'))
   }
 
   containsJobByName (name) {
@@ -141,49 +132,49 @@ class Queue extends EventEmitter {
       return queueFindJobByName(this, name, true)
     }).then((namedJobs) => {
       return namedJobs.length > 0
-    }).catch(this._raiseQueueError('containsJobByName'))
+    }).catch(errorBooster(this, logger, 'containsJobByName'))
   }
 
   cancelJob (jobOrId, reason) {
     logger('cancelJob', jobOrId, reason)
     return this.ready().then(() => {
       return queueCancelJob(this, jobOrId, reason)
-    }).catch(this._raiseQueueError('cancelJob'))
+    }).catch(errorBooster(this, logger, 'cancelJob'))
   }
 
   reanimateJob (jobOrId, dateEnable) {
     logger('reanimateJob', jobOrId, dateEnable)
     return this.ready().then(() => {
       return queueReanimateJob(this, jobOrId, dateEnable)
-    }).catch(this._raiseQueueError('reanimateJob'))
+    }).catch(errorBooster(this, logger, 'reanimateJob'))
   }
 
   removeJob (jobOrId) {
     logger('removeJob', jobOrId)
     return this.ready().then(() => {
       return queueRemoveJob(this, jobOrId)
-    }).catch(this._raiseQueueError('removeJob'))
+    }).catch(errorBooster(this, logger, 'removeJob'))
   }
 
   process (handler) {
     logger('process', handler)
     return this.ready().then(() => {
       return queueProcess.addHandler(this, handler)
-    }).catch(this._raiseQueueError('process'))
+    }).catch(errorBooster(this, logger, 'process'))
   }
 
   review () {
     logger('review')
     return this.ready().then(() => {
       return dbReview.runOnce(this)
-    }).catch(this._raiseQueueError('review'))
+    }).catch(errorBooster(this, logger, 'review'))
   }
 
   summary () {
     logger('summary')
     return this.ready().then(() => {
       return queueSummary(this)
-    }).catch(this._raiseQueueError('summary'))
+    }).catch(errorBooster(this, logger, 'summary'))
   }
 
   ready () {
@@ -195,34 +186,34 @@ class Queue extends EventEmitter {
     logger(`pause`)
     return this.ready().then(() => {
       return queueInterruption.pause(this, global)
-    }).catch(this._raiseQueueError('pause'))
+    }).catch(errorBooster(this, logger, 'pause'))
   }
 
   resume (global) {
     logger(`resume`)
     return this.ready().then(() => {
       return queueInterruption.resume(this, global)
-    }).catch(this._raiseQueueError('resume'))
+    }).catch(errorBooster(this, logger, 'resume'))
   }
 
   reset () {
     logger('reset')
     return this.ready().then(() => {
       return queueReset(this)
-    }).catch(this._raiseQueueError('reset'))
+    }).catch(errorBooster(this, logger, 'reset'))
   }
 
   stop () {
     logger('stop')
     return queueStop(this).then(() => {
       return queueDb.drain(this)
-    }).catch(this._raiseQueueError('stop'))
+    }).catch(errorBooster(this, logger, 'stop'))
   }
 
   drop () {
     logger('drop')
     return queueDrop(this)
-    .catch(this._raiseQueueError('drop'))
+    .catch(errorBooster(this, logger, 'drop'))
   }
 }
 
