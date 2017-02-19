@@ -34,6 +34,8 @@ module.exports = function () {
         t.fail('This should never be reached!')
       }).catch(err => {
         t.ok(err === mockError, 'Error object is passed to the catch')
+      }).then(() => {
+        return resolve(t.end())
       })
     })
   })

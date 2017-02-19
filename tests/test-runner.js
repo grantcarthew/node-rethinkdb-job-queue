@@ -52,7 +52,7 @@ dbAssertDatabase().then(() => {
   return Promise.all([
     logger(),
     dbDriver(),
-    // errorBooster(),
+    errorBooster(),
     enums(),
     is(),
     datetime(),
