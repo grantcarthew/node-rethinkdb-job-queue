@@ -8,7 +8,7 @@ reporting:
     print: summary
     reports:
         - lcov
-    dir: ./coverage
+    dir: ../site-rjq-coverage
     watermarks:
         statements: [50, 80]
         lines: [50, 80]
