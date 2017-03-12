@@ -54,8 +54,8 @@
     "ignore": "dist"
   },
   "dependencies": {
-    "bluebird": "^3.4.7",
-    "debug": "^2.6.1",
+    "bluebird": "^3.5.0",
+    "debug": "^2.6.2",
     "rethinkdbdash": "^2.3.28",
     "serialize-error": "^2.1.0",
     "uuid": "^3.0.1"
@@ -66,8 +66,8 @@
     "istanbul": "0.4.5",
     "npm-check-updates": "^2.10.3",
     "proxyquire": "^1.7.11",
-    "standard": "^8.6.0",
+    "standard": "^9.0.1",
     "tap-spec": "^4.1.1",
-    "tap": "^10.2.0"
+    "tap": "^10.3.0"
   }
 }
