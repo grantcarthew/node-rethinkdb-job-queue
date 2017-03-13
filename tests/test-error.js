@@ -17,6 +17,7 @@ module.exports = function (err, callingModule, t) {
     `
   }
 
+  t.throw(err)
   t.fail(errorTitle)
   console.error(errorMessage)
   return errorMessage

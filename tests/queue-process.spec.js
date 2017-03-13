@@ -15,8 +15,8 @@ const testName = 'queue-process'
 queueProcessTests()
 function queueProcessTests () {
   return new Promise((resolve, reject) => {
-    test(testName, { timeout: 200000 }, (t) => {
-      t.plan(418)
+    test(testName, { timeout: 200000000 }, (t) => {
+      t.plan(419)
 
       // ---------- Test Setup ----------
       const q = new Queue(tOpts.cxn(), tOpts.default('queueProcess'))
@@ -60,7 +60,7 @@ function queueProcessTests () {
         active: 49,
         completed: 42,
         cancelled: 3,
-        failed: 3,
+        failed: 4,
         terminated: 1,
         reanimated: 0,
         log: 0,
@@ -81,6 +81,7 @@ function queueProcessTests () {
       let testTimes = false
       let tryCount = 0
       let updateProgress = false
+      let testError = false
       let testCancel = false
       let testUndefined = false
       let updateJob = false
@@ -95,7 +96,10 @@ function queueProcessTests () {
         }
 
         t.pass(`Job Started: Delay: [${jobDelay}] ID: [${job.id}]`)
-        if (testCancel) {
+        if (testError) {
+          const errObj = new Error(tData)
+          next(errObj)
+        } else if (testCancel) {
           const cancelErr = new Error(tData)
           cancelErr.cancelJob = tData
           next(cancelErr)
@@ -327,6 +331,19 @@ function queueProcessTests () {
         updateProgress = false
         // t.equal(tryCount, 4, 'Job failed and retried correctly')
       }).then(() => {
+        testError = true
+
+        // ---------- Processing with Error Test ----------
+        t.comment('queue-process: Processing with Error')
+        jobs = q.createJob()
+        return q.addJob(jobs)
+      }).delay(1000).then(() => {
+        return q.getJob(jobs)
+      }).then((errorJob) => {
+        t.equal(errorJob[0].status, enums.status.failed, 'Job failed on error')
+        console.dir(errorJob[0])
+      }).then(() => {
+        testError = false
         testCancel = true
 
         // ---------- Processing with Cancel Test ----------

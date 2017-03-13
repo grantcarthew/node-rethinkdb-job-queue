@@ -91,7 +91,7 @@ function jobRun (job) {
 
     function errAction (err) {
       logger('jobResult is an error')
-      const isCancelJob = is.object(err) || is.error(err) && err.cancelJob
+      const isCancelJob = (is.object(err) || is.error(err)) && err.cancelJob
       return isCancelJob ? cancelJobAction()
         : jobFailed(job, err)
     }

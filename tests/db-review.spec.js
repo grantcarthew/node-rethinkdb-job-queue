@@ -19,7 +19,7 @@ dbReviewTests()
 function dbReviewTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(86)
+      t.plan(87)
 
       let processRestart = 0
       processStub.restart = function (q) {
@@ -43,7 +43,7 @@ function dbReviewTests () {
         idle: 0,
         reset: 0,
         error: 0,
-        reviewed: 5,
+        reviewed: 6,
         detached: 0,
         stopping: 0,
         stopped: 0,
