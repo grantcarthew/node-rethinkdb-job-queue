@@ -4,9 +4,9 @@ const tError = require('./test-error')
 const dbAssertDatabase = require('../src/db-assert-database')
 const dbDriver = require('../src/db-driver')
 const tOpts = require('./test-options')
-const mut = 
 
-module.exports = function () {
+dbAssertDatabaseTests()
+function dbAssertDatabaseTests () {
   const q = {
     r: dbDriver(tOpts.cxn()),
     db: tOpts.dbName,

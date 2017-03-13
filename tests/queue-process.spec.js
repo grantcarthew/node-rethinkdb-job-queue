@@ -12,7 +12,8 @@ const Queue = require('../src/queue')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-process'
 
-module.exports = function () {
+queueProcessTests()
+function queueProcessTests () {
   return new Promise((resolve, reject) => {
     test(testName, { timeout: 200000 }, (t) => {
       t.plan(418)

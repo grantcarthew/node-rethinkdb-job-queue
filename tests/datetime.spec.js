@@ -3,7 +3,8 @@ const is = require('../src/is')
 const tError = require('./test-error')
 const datetime = require('../src/datetime')
 
-module.exports = function () {
+dateTimeTests()
+function dateTimeTests () {
   test('datetime', (t) => {
     t.plan(23)
 

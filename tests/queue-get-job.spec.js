@@ -7,7 +7,8 @@ const queueGetJob = require('../src/queue-get-job')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
-module.exports = function () {
+queueGetJobTests()
+function queueGetJobTests () {
   return new Promise((resolve, reject) => {
     test('queue-get-job', (t) => {
       t.plan(13)

@@ -10,7 +10,8 @@ const queueInterruption = proxyquire('../src/queue-interruption',
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-interruption'
 
-module.exports = function () {
+queueInterruptionTests()
+function queueInterruptionTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(33)

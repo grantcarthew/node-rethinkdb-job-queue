@@ -9,7 +9,8 @@ const Queue = require('../src/queue')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-reanimate'
 
-module.exports = function () {
+queueReanimateJobTests()
+function queueReanimateJobTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(49)

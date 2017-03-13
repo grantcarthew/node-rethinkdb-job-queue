@@ -10,7 +10,8 @@ const rethinkdbdash = require('rethinkdbdash')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-drop'
 
-module.exports = function () {
+queueDropTests()
+function queueDropTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(33)

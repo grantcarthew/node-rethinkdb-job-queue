@@ -9,7 +9,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-add-job'
 
-module.exports = function () {
+queueAddJobTests()
+function queueAddJobTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(51)

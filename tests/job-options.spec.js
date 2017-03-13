@@ -3,7 +3,8 @@ const tError = require('./test-error')
 const enums = require('../src/enums')
 const jobOptions = require('../src/job-options')
 
-module.exports = function () {
+jobOptionsTests()
+function jobOptionsTests () {
   test('job-options', (t) => {
     t.plan(70)
 

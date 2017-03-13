@@ -4,7 +4,8 @@ const tOpts = require('./test-options')
 const dbDriver = require('../src/db-driver')
 const rethinkdbdash = require('rethinkdbdash')
 
-module.exports = function () {
+dbDriverTests()
+function dbDriverTests () {
   test('db-driver', (t) => {
     t.plan(7)
 

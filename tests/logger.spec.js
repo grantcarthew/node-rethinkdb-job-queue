@@ -2,7 +2,8 @@ const test = require('tap').test
 const testName = 'logger'
 let logger = require('../src/logger')
 
-module.exports = function () {
+loggerTests()
+function loggerTests () {
   test(testName, (t) => {
     t.plan(1)
     t.comment('logger test')

@@ -5,7 +5,8 @@ const dbAssert = require('../src/db-assert')
 const dbDriver = require('../src/db-driver')
 const tOpts = require('./test-options')
 
-module.exports = function () {
+dbAssertTests()
+function dbAssertTests () {
   const q = {
     r: dbDriver(tOpts.cxn()),
     db: tOpts.dbName,

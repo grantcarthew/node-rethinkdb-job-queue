@@ -3,13 +3,15 @@ const Promise = require('bluebird')
 const tError = require('./test-error')
 const tData = require('./test-options').tData
 const tOpts = require('./test-options')
+const is = require('../src/is')
 const Queue = require('../src/queue')
 const queueFindJob = require('../src/queue-find-job')
 
-module.exports = function () {
+queueFindJobTests()
+function queueFindJobTests () {
   return new Promise((resolve, reject) => {
     test('queue-find-job', (t) => {
-      t.plan(14)
+      t.plan(15)
 
       const q = new Queue(tOpts.cxn(), tOpts.default('queueFindJob'))
       const titleText = 'Find Job Test'
@@ -17,7 +19,8 @@ module.exports = function () {
       job.data = tData
       job.title = titleText
 
-      return q.ready().then(() => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(job)
       }).then((savedJob1) => {
         t.equal(savedJob1[0].id, job.id, 'Job saved successfully')

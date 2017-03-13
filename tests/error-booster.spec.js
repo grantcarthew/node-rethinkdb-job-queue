@@ -4,7 +4,8 @@ const errorBooster = require('../src/error-booster')
 const EventEmitter = require('events')
 const is = require('../src/is')
 
-module.exports = function () {
+errorBoosterTests()
+function errorBoosterTests () {
   return new Promise((resolve, reject) => {
     test('error-booster', (t) => {
       t.plan(7)

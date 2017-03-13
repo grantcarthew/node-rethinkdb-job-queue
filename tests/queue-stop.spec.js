@@ -11,7 +11,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-stop'
 
-module.exports = function () {
+queueStopTests()
+function queueStopTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(79)

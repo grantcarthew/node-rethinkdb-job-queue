@@ -6,9 +6,9 @@ const dbAssertTable = require('../src/db-assert-table')
 const dbAssertIndex = require('../src/db-assert-index')
 const dbDriver = require('../src/db-driver')
 const tOpts = require('./test-options')
-const mut = 
 
-module.exports = function () {
+dbAssertIndexTests()
+function dbAssertIndexTests () {
   const q = {
     r: dbDriver(tOpts.cxn()),
     db: tOpts.dbName,

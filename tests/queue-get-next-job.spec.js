@@ -11,7 +11,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-get-next-job'
 
-module.exports = function () {
+queueGetNextJobTests()
+function queueGetNextJobTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(152)

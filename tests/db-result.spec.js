@@ -7,7 +7,8 @@ const tData = require('./test-options').tData
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
-module.exports = function () {
+dbResultTests()
+function dbResultTests () {
   return new Promise((resolve, reject) => {
     test('db-result', (t) => {
       t.plan(28)

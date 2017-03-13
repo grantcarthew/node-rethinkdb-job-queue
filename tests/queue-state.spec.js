@@ -9,7 +9,8 @@ const queueState = require('../src/queue-state')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-state'
 
-module.exports = function () {
+queueStateTests()
+function queueStateTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(29)

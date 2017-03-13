@@ -8,7 +8,8 @@ const queueAddJob = require('../src/queue-add-job')
 const Queue = require('../src/queue')
 const tOpts = require('./test-options')
 
-module.exports = function () {
+queueSummaryTests()
+function queueSummaryTests () {
   return new Promise((resolve, reject) => {
     test('queue-summary', (t) => {
       t.plan(9)

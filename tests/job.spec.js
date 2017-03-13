@@ -10,7 +10,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'job'
 
-module.exports = function () {
+jobTests()
+function jobTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(117)

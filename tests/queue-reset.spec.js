@@ -8,7 +8,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-reset'
 
-module.exports = function () {
+queueResetTests()
+function queueResetTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(32)

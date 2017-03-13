@@ -8,7 +8,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-change'
 
-module.exports = function () {
+queueChangeTests()
+function queueChangeTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(61)

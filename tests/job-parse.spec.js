@@ -4,7 +4,8 @@ const jobParse = require('../src/job-parse')
 const Job = require('../src/job')
 const uuid = require('uuid')
 
-module.exports = function () {
+jobParseTests()
+function jobParseTests () {
   test('job-parse', (t) => {
     t.plan(40)
 

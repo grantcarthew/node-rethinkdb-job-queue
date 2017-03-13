@@ -2,7 +2,8 @@ const test = require('tap').test
 const tError = require('./test-error')
 const enums = require('../src/enums')
 
-module.exports = function () {
+enumsTest()
+function enumsTest () {
   test('enums', (t) => {
     t.plan(13)
 

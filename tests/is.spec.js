@@ -3,7 +3,8 @@ const uuid = require('uuid')
 const is = require('../src/is')
 const enums = require('../src/enums')
 
-module.exports = function () {
+isTests()
+function isTests () {
   test('is', (t) => {
     t.plan(71)
 

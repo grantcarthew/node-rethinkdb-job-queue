@@ -9,7 +9,8 @@ const tOpts = require('./test-options')
 const eventHandlers = require('./test-event-handlers')
 const testName = 'queue-db'
 
-module.exports = function () {
+queueDbTests()
+function queueDbTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(75)

@@ -7,10 +7,11 @@ const is = require('../src/is')
 const Queue = require('../src/queue')
 const queueFindJobByName = require('../src/queue-find-job-by-name')
 
-module.exports = function () {
+queueFindJobByNameTests()
+function queueFindJobByNameTests () {
   return new Promise((resolve, reject) => {
     test('queue-find-job-by-name', (t) => {
-      t.plan(18)
+      t.plan(19)
 
       const q = new Queue(tOpts.cxn(), tOpts.default('queueFindJobByName'))
       const titleText = 'Find Job By Name Test'
@@ -19,7 +20,8 @@ module.exports = function () {
       job.data = tData
       job.title = titleText
 
-      return q.ready().then(() => {
+      return q.reset().then((resetResult) => {
+        t.ok(is.integer(resetResult), 'Queue reset')
         return q.addJob(job)
       }).then((savedJob1) => {
         t.equal(savedJob1[0].id, job.id, 'Job saved successfully')

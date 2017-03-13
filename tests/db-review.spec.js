@@ -15,7 +15,8 @@ const dbReview = proxyquire('../src/db-review',
 const eventHandlers = require('./test-event-handlers')
 const testName = 'db-review'
 
-module.exports = function () {
+dbReviewTests()
+function dbReviewTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
       t.plan(86)
