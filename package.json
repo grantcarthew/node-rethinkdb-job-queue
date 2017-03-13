@@ -1,6 +1,6 @@
 {
   "name": "rethinkdb-job-queue",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {
@@ -36,8 +36,6 @@
     "build": "npm run clean && babel src --presets babel-preset-latest --out-dir dist",
     "test": "tap --timeout 10000 ./tests/*.spec.js",
     "tv": "tap --timeout 10000 --reporter tap ./tests/*.spec.js",
-    "tc": "node ./tests/test-current.js",
-    "tcd": "node --inspect --debug-brk ./tests/test-current.js",
     "lint": "standard",
     "coverage": "npm run coverage:rm && npm run coverage:cover && npm run coverage:report && npm run coverage:check",
     "coverage:cover": "istanbul cover ./tests/test-runner.js",

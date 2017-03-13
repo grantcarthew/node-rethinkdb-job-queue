@@ -9,7 +9,6 @@ const jobUpdate = require('./job-update')
 const jobLog = require('./job-log')
 
 class Job {
-
   constructor (q, jobData) {
     logger('constructor')
     logger('queue id', q.id)
@@ -41,8 +40,8 @@ class Job {
       this.log = []
       this.dateCreated = now
       this.dateEnable = now
-      this.dateStarted
-      this.dateFinished
+      this.dateStarted = null
+      this.dateFinished = null
       this.queueId = q.id
       // Conflicting job options will be overwritten.
       if (is.function(jobData)) {

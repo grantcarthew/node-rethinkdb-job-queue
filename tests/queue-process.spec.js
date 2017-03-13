@@ -16,10 +16,11 @@ queueProcessTests()
 function queueProcessTests () {
   return new Promise((resolve, reject) => {
     test(testName, { timeout: 200000000 }, (t) => {
-      t.plan(419)
+      t.plan(428)
 
       // ---------- Test Setup ----------
-      const q = new Queue(tOpts.cxn(), tOpts.default('queueProcess'))
+      const tableName = 'queueProcess'
+      const q = new Queue(tOpts.cxn(), tOpts.default(tableName))
       let qGlobalCancel
 
       let jobs
@@ -29,9 +30,9 @@ function queueProcessTests () {
       const allJobsDelay = jobDelay * (noOfJobsToCreate + 2)
 
       function resumeProcessPauseGet () {
-        return q.resume().delay(jobDelay * 0.6).then(() => {
+        return q.resume().delay(jobDelay * 0.8).then(() => {
           return q.pause()
-        }).delay(jobDelay).then(() => {
+        }).delay(jobDelay * 2).then(() => {
           return q.getJob(jobs)
         }).delay(repeatDelay * 2)
       }
@@ -41,7 +42,7 @@ function queueProcessTests () {
         testName,
         enabled: false,
         ready: 0,
-        processing: 49,
+        processing: 51,
         progress: 1,
         pausing: 14,
         paused: 14,
@@ -55,12 +56,12 @@ function queueProcessTests () {
         stopping: 0,
         stopped: 0,
         dropped: 0,
-        added: 38,
+        added: 39,
         waiting: 0,
-        active: 49,
+        active: 51,
         completed: 42,
         cancelled: 3,
-        failed: 4,
+        failed: 5,
         terminated: 1,
         reanimated: 0,
         log: 0,
@@ -128,7 +129,6 @@ function queueProcessTests () {
             clearTimeout(jobProcessTimeoutId)
             jobProcessTimeoutId = false
             t.pass('onCancel invoked')
-            return
           })
         }
       }
@@ -141,7 +141,7 @@ function queueProcessTests () {
       return q.reset().then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
         return q.pause()
-      }).then(() => {
+      }).delay(1000).then(() => {
         eventHandlers.add(t, q, state)
 
         // ---------- Processing, Pause, and Concurrency Test ----------
@@ -160,14 +160,14 @@ function queueProcessTests () {
         }).catch((err) => {
           t.equal(err.message, enums.message.processTwice, 'Calling queue-process twice returns rejected Promise')
         })
-      }).delay(jobDelay / 2).then(() => {
+      }).delay(jobDelay * 0.9).then(() => {
         t.equal(q._running, q._concurrency, 'Queue is processing only one job')
         q._concurrency = 3
         return q.pause()
       }).then(() => {
         q.on(enums.status.idle, idleEventHandler)
         return q.resume()
-      }).delay(jobDelay / 2).then(() => {
+      }).delay(jobDelay * 0.9).then(() => {
         t.equal(q._running, q._concurrency, 'Queue is processing max concurrent jobs')
       }).delay(jobDelay * 8).then(() => {
         q.removeListener(enums.status.idle, idleEventHandler)
@@ -341,7 +341,6 @@ function queueProcessTests () {
         return q.getJob(jobs)
       }).then((errorJob) => {
         t.equal(errorJob[0].status, enums.status.failed, 'Job failed on error')
-        console.dir(errorJob[0])
       }).then(() => {
         testError = false
         testCancel = true
@@ -359,7 +358,7 @@ function queueProcessTests () {
 
         // ---------- Processing with Global Cancel Test ----------
         t.comment('queue-process: Processing with Global Cancel')
-        qGlobalCancel = new Queue(tOpts.cxn(), tOpts.default())
+        qGlobalCancel = new Queue(tOpts.cxn(), tOpts.default(tableName))
         jobDelay = 10000
         jobs = q.createJob()
         return q.addJob(jobs)

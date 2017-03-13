@@ -109,7 +109,7 @@ function jobTests () {
       // ---------- Clean Job Tests ----------
       t.comment('job: Clean Job')
       let cleanJob = newJob.getCleanCopy()
-      t.equal(Object.keys(cleanJob).length, 17, 'Clean job has valid number of properties')
+      t.equal(Object.keys(cleanJob).length, 19, 'Clean job has valid number of properties')
       t.equal(cleanJob.id, newJob.id, 'Clean job has valid id')
       t.equal(cleanJob.data, newJob.data, 'Clean job data is valid')
       t.equal(cleanJob.priority, enums.priority[newJob.priority], 'Clean job priority is valid')

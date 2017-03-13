@@ -14,7 +14,6 @@ module.exports.pause = function interruptionPause (q, source) {
     if (makeGlobal) {
       return queueState(q, enums.status.paused)
     }
-    return
   }).then(() => {
     return new Promise((resolve, reject) => {
       logger(`Event: pausing`, q.id, eventGlobal)
@@ -44,7 +43,6 @@ module.exports.resume = function interruptionResume (q, source) {
     if (makeGlobal) {
       return queueState(q, enums.status.active)
     }
-    return
   }).then(() => {
     queueProcess.restart(q)
     logger(`Event: resumed`, q.id, eventGlobal)

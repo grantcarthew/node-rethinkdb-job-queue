@@ -16,7 +16,7 @@ function queueDropTests () {
     test(testName, (t) => {
       t.plan(33)
 
-      tableName = 'queueDrop'
+      const tableName = 'queueDrop'
       const mockQueue = {
         r: rethinkdbdash(Object.assign(tOpts.cxn(), { silent: true })),
         db: tOpts.dbName,

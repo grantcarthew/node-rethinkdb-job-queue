@@ -22,7 +22,6 @@ const queueDrop = require('./queue-drop')
 const jobOptions = require('./job-options')
 
 class Queue extends EventEmitter {
-
   constructor (cxn, options) {
     super()
     logger('Queue Constructor', options)
