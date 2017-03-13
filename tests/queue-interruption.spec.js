@@ -15,7 +15,7 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(33)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueInterruption'))
       processStub.restart = function (q) {
         t.ok(q.id, 'Queue process restart called')
       }

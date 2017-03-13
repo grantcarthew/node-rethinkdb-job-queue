@@ -18,7 +18,7 @@ module.exports = function () {
       t.plan(418)
 
       // ---------- Test Setup ----------
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueProcess'))
       let qGlobalCancel
 
       let jobs

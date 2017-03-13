@@ -14,7 +14,8 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(75)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const tableName = 'queueDb'
+      const q = new Queue(tOpts.cxn(), tOpts.default(tableName))
 
       // ---------- Event Handler Setup ----------
       let state = {

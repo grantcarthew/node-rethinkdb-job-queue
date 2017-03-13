@@ -15,7 +15,7 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(47)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('jobProgress'))
       const job = q.createJob()
       job.timeout = enums.options.timeout
       job.retryDelay = enums.options.retryDelay

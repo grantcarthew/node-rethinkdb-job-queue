@@ -3,11 +3,10 @@ const Promise = require('bluebird')
 const errorBooster = require('../src/error-booster')
 const EventEmitter = require('events')
 const is = require('../src/is')
-const testName = 'error-booster'
 
 module.exports = function () {
   return new Promise((resolve, reject) => {
-    test(testName, (t) => {
+    test('error-booster', (t) => {
       t.plan(7)
 
       const testName = 'function name'

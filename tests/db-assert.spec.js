@@ -9,7 +9,7 @@ module.exports = function () {
   const q = {
     r: dbDriver(tOpts.cxn()),
     db: tOpts.dbName,
-    name: tOpts.queueName,
+    name: 'dbAssert',
     id: 'mock:queue:id'
   }
 

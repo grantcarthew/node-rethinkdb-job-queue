@@ -11,7 +11,7 @@ module.exports = function () {
     test('queue-find-job', (t) => {
       t.plan(14)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueFindJob'))
       const titleText = 'Find Job Test'
       let job = q.createJob()
       job.data = tData

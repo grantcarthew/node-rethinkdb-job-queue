@@ -12,7 +12,7 @@ module.exports = function () {
     test('queue-find-job-by-name', (t) => {
       t.plan(18)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueFindJobByName'))
       const titleText = 'Find Job By Name Test'
       const jobName = 'rjqTestJob'
       let job = q.createJob().setName(jobName)

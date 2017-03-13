@@ -16,7 +16,7 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(137)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('jobCompleted'))
       let job = q.createJob()
       job.data = tData
       let beforeDate

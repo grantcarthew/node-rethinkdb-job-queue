@@ -17,7 +17,7 @@ module.exports = function () {
       t.plan(152)
 
       // ---------- Creating Priority Test Jobs ----------
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueGetNextJob'))
       q._concurrency = 1
 
       const jobLowest = q.createJob().setPriority('lowest')

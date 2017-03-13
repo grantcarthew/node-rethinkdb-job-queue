@@ -13,7 +13,7 @@ module.exports = function () {
     test('queue-summary', (t) => {
       t.plan(9)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueSummary'))
       let jobs = []
       for (let i = 0; i < 6; i++) {
         jobs.push(q.createJob())

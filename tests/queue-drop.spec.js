@@ -15,14 +15,15 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(33)
 
+      tableName = 'queueDrop'
       const mockQueue = {
         r: rethinkdbdash(Object.assign(tOpts.cxn(), { silent: true })),
         db: tOpts.dbName,
-        name: tOpts.queueName,
+        name: tableName,
         id: 'mock:queue:id'
       }
 
-      let q = new Queue(tOpts.cxn(), tOpts.default())
+      let q = new Queue(tOpts.cxn(), tOpts.default(tableName))
 
       // ---------- Event Handler Setup ----------
       let state = {

@@ -14,7 +14,7 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(55)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueRemoveJob'))
       let jobs = []
       for (let i = 0; i < 3; i++) {
         jobs.push(q.createJob())

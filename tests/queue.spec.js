@@ -15,7 +15,8 @@ module.exports = function () {
       t.plan(156)
 
       // ---------- Test Setup ----------
-      let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+      const tableName = 'queue'
+      let qReady = new Queue(tOpts.cxn(), tOpts.queueNameOnly(tableName))
       let qNotMaster
       let qNumMaster
       let qMain
@@ -82,19 +83,19 @@ module.exports = function () {
       }).then(() => {
         // ---------- masterInterval Options Tests ----------
         t.comment('queue: masterInterval Options')
-        qNotMaster = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: false }))
+        qNotMaster = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(tableName), { masterInterval: false }))
         t.ok(is.false(qNotMaster.masterInterval), 'False masterInterval is false')
         return qNotMaster.ready()
       }).delay(stopDelay).then(() => {
         return qNotMaster.stop()
       }).then(() => {
-        qNumMaster = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(), { masterInterval: 12345 }))
+        qNumMaster = new Queue(tOpts.cxn(), Object.assign(tOpts.queueNameOnly(tableName), { masterInterval: 12345 }))
         t.equal(qNumMaster.masterInterval, 12345, 'Number masterInterval is number')
         return qNumMaster.ready()
       }).delay(stopDelay).then(() => {
         return qNumMaster.stop()
       }).then(() => {
-        qMain = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+        qMain = new Queue(tOpts.cxn(), tOpts.queueNameOnly(tableName))
 
         return qMain.ready()
       }).then(() => {
@@ -106,7 +107,7 @@ module.exports = function () {
         // ---------- Constructor with Default Options Tests ----------
         t.comment('queue: Constructor with Default Options')
         t.ok(qMain, 'Queue created with default options')
-        t.equal(qMain.name, tOpts.queueName, 'Default queue name valid')
+        t.equal(qMain.name, tableName, 'Default queue name valid')
         t.ok(is.string(qMain.id), 'Queue id is valid')
         t.equal(qMain.host, enums.options.host, 'Default host name is valid')
         t.equal(qMain.port, enums.options.port, 'Default port is valid')
@@ -326,7 +327,7 @@ module.exports = function () {
 
         // ---------- Drop Tests ----------
         t.comment('queue: Drop')
-        qDrop = new Queue(tOpts.cxn(), tOpts.queueNameOnly())
+        qDrop = new Queue(tOpts.cxn(), tOpts.queueNameOnly(tableName))
       }).then(() => {
         return qDrop.drop()
       }).then((dropped) => {
@@ -337,11 +338,11 @@ module.exports = function () {
 
         // ---------- Multi Queue Tests ----------
         t.comment('queue: Multi-Queue')
-        qSub = new Queue(tOpts.cxn(), tOpts.default())
+        qSub = new Queue(tOpts.cxn(), tOpts.default(tableName))
         return qSub.ready()
       }).then((subReady) => {
         t.ok(subReady, `Subscriber queue ready [${qSub.id}]`)
-        qPub = new Queue(tOpts.cxn(), tOpts.default())
+        qPub = new Queue(tOpts.cxn(), tOpts.default(tableName))
         return qPub.ready()
       }).then((pubReady) => {
         t.ok(pubReady, `Publisher queue ready [${qPub.id}]`)

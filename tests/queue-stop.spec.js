@@ -16,7 +16,8 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(79)
 
-      let q = new Queue(tOpts.cxn(), tOpts.master(999999))
+      const tableName = 'queueStop'
+      let q = new Queue(tOpts.cxn(), tOpts.master(tableName, 999999))
 
       // ---------- Event Handler Setup ----------
       let state = {
@@ -78,7 +79,7 @@ module.exports = function () {
 
         // ---------- Stop without Drain ----------
         t.comment('queue-stop: Stop without Drain')
-        q = new Queue(tOpts.cxn(), tOpts.master(999999))
+        q = new Queue(tOpts.cxn(), tOpts.master(tableName, 999999))
         return q.ready()
       }).then((ready) => {
         t.ok(ready, 'Queue in a ready state')

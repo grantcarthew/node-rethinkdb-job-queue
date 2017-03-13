@@ -12,7 +12,7 @@ module.exports = function () {
     test('db-result', (t) => {
       t.plan(28)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('dbResult'))
       const job1 = q.createJob()
       job1.data = tData
       const job2 = q.createJob()

@@ -15,7 +15,7 @@ module.exports = function () {
       t.plan(49)
 
       // ---------- Test Setup ----------
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('queueReanimateJob'))
 
       // ---------- Event Handler Setup ----------
       let state = {

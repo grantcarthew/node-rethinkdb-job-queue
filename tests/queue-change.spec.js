@@ -13,8 +13,9 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(61)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
-      const qPub = new Queue(tOpts.cxn(), tOpts.default())
+      const tableName = 'queueChange'
+      const q = new Queue(tOpts.cxn(), tOpts.default(tableName))
+      const qPub = new Queue(tOpts.cxn(), tOpts.default(tableName))
 
       // ---------- Event Handler Setup ----------
       let state = {

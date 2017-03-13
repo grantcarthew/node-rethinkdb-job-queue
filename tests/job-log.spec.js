@@ -15,7 +15,7 @@ module.exports = function () {
     test(testName, (t) => {
       t.plan(76)
 
-      const q = new Queue(tOpts.cxn(), tOpts.default())
+      const q = new Queue(tOpts.cxn(), tOpts.default('jobLog'))
       let job = q.createJob()
       job.detail = tData
       let logObject = { foo: 'bar' }
