@@ -39,66 +39,51 @@ const queueStop = require('./queue-stop.spec')
 const queueDrop = require('./queue-drop.spec')
 const queueSummary = require('./queue-summary.spec')
 
-dbAssertDatabase().then(() => {
-}).then(() => {
-  return dbAssertTable()
-}).then(() => {
-  return dbAssertIndex()
-}).then(() => {
-  return dbAssert()
-}).then(() => {
-  return queueReset()
-}).then(() => {
-  return Promise.all([
-    logger(),
-    dbDriver(),
-    errorBooster(),
-    enums(),
-    is(),
-    datetime(),
-    jobOptions(),
-    jobParse(),
-    job(),
-    jobProgress(),
-    jobLog(),
-    jobUpdate(),
-    queueGetJob(),
-    queueFindJob(),
-    queueFindJobByName(),
-    dbResult(),
-    queueAddJob(),
-    queueRemoveJob(),
-    jobCompleted(),
-    jobFailed()
-  ])
-}).then(() => {
-  return queueInterruption()
-}).then(() => {
-  return dbReview()
-}).then(() => {
-  return queueSummary()
-}).then(() => {
-  return queueReset()
-}).then(() => {
-  return queueGetNextJob()
-}).then(() => {
-  return queueReanimateJob()
-}).then(() => {
-  return queueCancelJob()
-}).then(() => {
-  return queueDb()
-}).then(() => {
-  return queueState()
-}).then(() => {
-  return queueProcess()
-}).then(() => {
-  return queueChange()
-}).then(() => {
-  return queue()
-}).then(() => {
-  return queueStop()
-}).then(() => {
-  return queueDrop()
-}).catch(err => {
-  console.log(serializeError(err))
-})
+testRunner()
+async function testRunner () {
+  try {
+    await dbAssertDatabase()
+    await dbAssertTable()
+    await dbAssertIndex()
+    await dbAssert()
+    await queueReset()
+    await Promise.all([
+        logger(),
+        dbDriver(),
+        errorBooster(),
+        enums(),
+        is(),
+        datetime(),
+        jobOptions(),
+        jobParse(),
+        job(),
+        jobProgress(),
+        jobLog(),
+        jobUpdate(),
+        queueGetJob(),
+        queueFindJob(),
+        queueFindJobByName(),
+        dbResult(),
+        queueAddJob(),
+        queueRemoveJob(),
+        jobCompleted(),
+        jobFailed()
+    ])
+    await queueInterruption()
+    await dbReview()
+    await queueSummary()
+    await queueReset()
+    await queueGetNextJob()
+    await queueReanimateJob()
+    await queueCancelJob()
+    await queueDb()
+    await queueState()
+    await queueProcess()
+    await queueChange()
+    await queue()
+    await queueStop()
+    await queueDrop()
+  } catch (err) {
+    console.log(serializeError(err))
+  }
+}

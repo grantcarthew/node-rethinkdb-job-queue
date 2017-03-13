@@ -39,22 +39,26 @@ tests.set('queueStop', require('./queue-stop.spec'))
 tests.set('queueDrop', require('./queue-drop.spec'))
 tests.set('queueSummary', require('./queue-summary.spec'))
 
-if (tests.has(process.argv[2])) {
-  tests.get('dbAssert')().then(() => {
-    return tests.get(process.argv[2])()
-  }).catch(err => {
-    console.log(serializeError(err))
-  })
-} else {
-  const line = '=============================================='
-  console.log('\x1b[32m', line, '\x1b[0m')
-  console.log('\x1b[36m', '  INVALID TEST NAME!', '\x1b[0m')
-  console.log('\x1b[36m', '  Use one of the test names below:', '\x1b[0m')
-  console.log('\x1b[32m', line, '\x1b[0m')
-  for (let test of tests.keys()) {
-    console.log('\x1b[34m', `  ${test}`, '\x1b[0m')
+testCurrent()
+
+async function testCurrent () {
+  if (tests.has(process.argv[2])) {
+    try {
+      await tests.get(process.argv[2])()
+    } catch (err) {
+      console.log(serializeError(err))
+    }
+  } else {
+    const line = '=============================================='
+    console.log('\x1b[32m', line, '\x1b[0m')
+    console.log('\x1b[36m', '  INVALID TEST NAME!', '\x1b[0m')
+    console.log('\x1b[36m', '  Use one of the test names below:', '\x1b[0m')
+    console.log('\x1b[32m', line, '\x1b[0m')
+    for (let test of tests.keys()) {
+      console.log('\x1b[34m', `  ${test}`, '\x1b[0m')
+    }
+    console.log('\x1b[32m', line, '\x1b[0m')
+    console.log('\x1b[36m', '  Example: npm run tc jobOptions', '\x1b[0m')
+    console.log('\x1b[32m', line, '\x1b[0m')
   }
-  console.log('\x1b[32m', line, '\x1b[0m')
-  console.log('\x1b[36m', '  Example: npm run tc jobOptions', '\x1b[0m')
-  console.log('\x1b[32m', line, '\x1b[0m')
 }
