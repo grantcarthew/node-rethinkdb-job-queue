@@ -2,6 +2,11 @@ const logger = require('./logger')(module)
 const Promise = require('bluebird')
 const enums = require('./enums')
 
+module.exports.createLogObject = createLogObject
+module.exports.commitLog = commitLog
+module.exports.getLastLog = getLastLog
+module.exports.truncateLog = truncateLog
+
 function createLogObject (job,
     data = {},
     message = enums.message.seeLogData,
@@ -19,9 +24,8 @@ function createLogObject (job,
     processCount: job.processCount
   }
 }
-module.exports.createLogObject = createLogObject
 
-module.exports.commitLog = function addLog (job,
+function commitLog (job,
   data = {},
   message = enums.message.seeLogData,
   type = enums.log.information,
@@ -43,20 +47,41 @@ module.exports.commitLog = function addLog (job,
     })
   }).then((updateResult) => {
     job.log.push(newLog)
+    job.log.sort(compareTime)
     logger(`Event: log`, job.q.id, job.id)
     job.q.emit(enums.status.log, job.q.id, job.id)
     return true
   })
 }
 
-module.exports.getLastLog = function (job) {
-  let logEntry = null
-  let lastTimestamp = 0
-  for (const i in job.log) {
-    if (job.log[i].date.getTime() >= lastTimestamp) {
-      lastTimestamp = job.log[i].date.getTime()
-      logEntry = job.log[i]
-    }
+function getLastLog (job) {
+  job.log.sort(compareTime)
+  return job.log.slice(-1)[0]
+}
+
+function compareTime (a, b) {
+  return a.date.getTime() >= b.date.getTime() ? 1 : -1
+}
+
+function truncateLog (job, noToRetain) {
+  logger('truncateLog', noToRetain)
+  if (job.log.length <= noToRetain) {
+    return Promise.resolve(true)
   }
-  return logEntry
+
+  return Promise.resolve().then(() => {
+    return job.q.r.db(job.q.db)
+    .table(job.q.name)
+    .get(job.id)
+    .update({
+      log: job.q.r.row('log').slice(-noToRetain),
+      queueId: job.q.id
+    })
+  }).then((updateResult) => {
+    job.log.sort(compareTime)
+    job.log = job.log.slice(-noToRetain)
+    logger(`Event: log`, job.q.id, job.id)
+    job.q.emit(enums.status.log, job.q.id, job.id)
+    return true
+  })
 }

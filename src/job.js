@@ -160,6 +160,10 @@ class Job {
   getLastLog () {
     return jobLog.getLastLog(this)
   }
+
+  truncateLogs (keepLastNo) {
+    
+  }
 }
 
 module.exports = Job

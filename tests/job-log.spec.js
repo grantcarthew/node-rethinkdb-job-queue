@@ -14,7 +14,7 @@ jogLogTests()
 function jogLogTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(76)
+      t.plan(82)
 
       const q = new Queue(tOpts.cxn(), tOpts.default('jobLog'))
       let job = q.createJob()
@@ -47,7 +47,7 @@ function jogLogTests () {
         failed: 0,
         terminated: 0,
         reanimated: 0,
-        log: 4,
+        log: 5,
         updated: 0
       }
 
@@ -131,6 +131,18 @@ function jogLogTests () {
         t.equal(jobWithLog4[0].log[4].data.foo, 'bar', 'Log 4 data object is valid')
         t.equal(jobWithLog4[0].getLastLog(), jobWithLog4[0].log[4], 'Last log entry is correctly retrieved')
 
+        // ---------- Truncate Log Tests ----------
+        t.comment('job-log: Truncate Log')
+        return jobLog.truncateLog(job, 3)
+      }).then((updateResult4) => {
+        t.ok(updateResult4, 'Logs truncated successfully')
+        t.equal(job.log.length, 3, 'Local job logs truncated successfully')
+        return q.getJob(job.id)
+      }).then((jobWithLog5) => {
+        // console.dir(jobWithLog5[0].getLastLog())
+        t.equal(jobWithLog5[0].log.length, 3, 'Logs truncated in database successfully')
+        t.equal(jobWithLog5[0].getLastLog().date.toString(), job.getLastLog().date.toString(), 'Last log equal local and database log')
+        t.equal(jobWithLog5[0].getLastLog().message, job.getLastLog().message, 'Last log message equal local and database')
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
