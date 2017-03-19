@@ -52,6 +52,8 @@ class Queue extends EventEmitter {
       ? true : options.changeFeed
     this._concurrency = options.concurrency > 1
       ? options.concurrency : enums.options.concurrency
+    this._limitJobLogs = options.limitJobLogs == null
+      ? enums.options.limitJobLogs : options.limitJobLogs
     this._removeFinishedJobs = options.removeFinishedJobs == null
       ? enums.options.removeFinishedJobs : options.removeFinishedJobs
     this._handler = false

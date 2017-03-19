@@ -5,7 +5,6 @@ const enums = require('./enums')
 module.exports.createLogObject = createLogObject
 module.exports.commitLog = commitLog
 module.exports.getLastLog = getLastLog
-module.exports.truncateLog = truncateLog
 
 function createLogObject (job,
     data = {},
@@ -63,25 +62,3 @@ function compareTime (a, b) {
   return a.date.getTime() >= b.date.getTime() ? 1 : -1
 }
 
-function truncateLog (job, noToRetain) {
-  logger('truncateLog', noToRetain)
-  if (job.log.length <= noToRetain) {
-    return Promise.resolve(true)
-  }
-
-  return Promise.resolve().then(() => {
-    return job.q.r.db(job.q.db)
-    .table(job.q.name)
-    .get(job.id)
-    .update({
-      log: job.q.r.row('log').slice(-noToRetain),
-      queueId: job.q.id
-    })
-  }).then((updateResult) => {
-    job.log.sort(compareTime)
-    job.log = job.log.slice(-noToRetain)
-    logger(`Event: log`, job.q.id, job.id)
-    job.q.emit(enums.status.log, job.q.id, job.id)
-    return true
-  })
-}

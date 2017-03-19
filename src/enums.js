@@ -57,6 +57,7 @@ const options = Object.freeze({
   repeat: false,
   repeatDelay: 300000, // 5 minutes
   concurrency: 1,
+  limitJobLogs: 1000,
   removeFinishedJobs: 15552000000 // 180 days
 })
 const index = Object.freeze({
@@ -93,6 +94,7 @@ const message = Object.freeze({
   jobNotAdded: 'Job not added to the queue',
   jobInvalid: 'Job object is invalid',
   jobReanimated: 'Job has been reanimated',
+  jobLogsTruncated: 'Job logs have been truncated',
   processTwice: 'Cannot call queue process twice',
   idInvalid: 'The job id is invalid',
   nameInvalid: 'The job name must be a string',
