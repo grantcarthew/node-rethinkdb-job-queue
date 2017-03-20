@@ -14,7 +14,7 @@ jobFailedTests()
 function jobFailedTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(155)
+      t.plan(160)
 
       const q = new Queue(tOpts.cxn(), tOpts.default('jobFailed'))
 
@@ -41,7 +41,7 @@ function jobFailedTests () {
         active: 0,
         completed: 0,
         cancelled: 0,
-        failed: 5,
+        failed: 6,
         terminated: 2,
         reanimated: 0,
         log: 0,
@@ -217,6 +217,7 @@ function jobFailedTests () {
 
         // ---------- Final Retry Job Repeat Failure Test ----------
         t.comment('job-failed: Final Retry Job Repeat Failure')
+        console.log(retry1[0].log.length)
         return jobFailed(retry1[0], err)
       }).then((retry2id) => {
         t.equal(retry2id.length, 1, 'Job failed successfully')
@@ -240,6 +241,26 @@ function jobFailedTests () {
         t.equal(retry2[0].log[2].errorMessage, err.message, 'Log error message is valid')
         t.equal(retry2[0].log[2].errorStack, err.stack, 'Log stack is valid')
         t.ok(retry2[0].log[2].duration >= 0, 'Log duration is >= 0')
+
+        // ---------- Job Repeat Failure Log Limit Test ----------
+        t.comment('job-failed: Job Repeat Failure Log Limit')
+        job.q._limitJobLogs = 2
+        t.equal(retry2[0].log.length, 3, 'Job has 3 log entries prior to log limiting')
+        return jobFailed(retry2[0], err)
+      }).then((limitLogsIds) => {
+        t.ok(is.uuid(limitLogsIds[0]), 'Job completed returns uuid')
+        return q.getJob(limitLogsIds[0])
+      }).then((limitLogsJobs) => {
+        t.equal(limitLogsJobs[0].log.length, 2, 'Job has 2 log entries after log limiting')
+        // have to loop through the logs because the timestamp is the same
+        // for the completed and truncated entries. Job.getLastLog() is indeterminate
+        let logValid = false
+        function setLogValid () { logValid = true }
+        for (let log of limitLogsJobs[0].log) {
+          log.message === enums.message.jobLogsTruncated && setLogValid()
+        }
+        t.ok(logValid, 'Job has logs truncated log entry')
+
         return q.reset()
       }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')

@@ -38,16 +38,23 @@ module.exports = function failed (job, err) {
 
   const errAsString = serializeError(err)
 
-  const log = jobLog.createLogObject(job,
+  const logFailed = jobLog.createLogObject(job,
     errAsString,
     enums.message.failed,
     logType,
     job.status)
-  log.duration = duration
-  log.errorMessage = err && err.message
+  logFailed.duration = duration
+  logFailed.errorMessage = err && err.message
     ? err.message : enums.message.noErrorMessage
-  log.errorStack = err && err.stack
+  logFailed.errorStack = err && err.stack
     ? err.stack : enums.message.noErrorStack
+
+  const sliceLogs = job.log.length >= job.q.limitJobLogs
+  const logTruncated = jobLog.createLogObject(job,
+    `Retaining ${job.q.limitJobLogs} log entries`,
+    enums.message.jobLogsTruncated,
+    enums.log.information,
+    job.status)
 
   return Promise.resolve().then(() => {
     return job.q.r.db(job.q.db)
@@ -59,7 +66,11 @@ module.exports = function failed (job, err) {
       progress: job.progress,
       dateFinished: job.dateFinished,
       dateEnable,
-      log: job.q.r.row('log').append(log),
+      log: job.q.r.branch(
+        sliceLogs,
+        job.q.r.row('log').append(logFailed).append(logTruncated).slice(-job.q.limitJobLogs),
+        job.q.r.row('log').append(logFailed)
+      ),
       queueId: job.q.id
     }, {returnChanges: true})
     .run(job.q.queryRunOptions)
