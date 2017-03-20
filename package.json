@@ -38,7 +38,7 @@
     "tv": "tap --timeout 10000 --reporter tap ./tests/*.spec.js",
     "lint": "standard",
     "coverage": "npm run coverage:rm && npm run coverage:cover && npm run coverage:report && npm run coverage:check",
-    "coverage:cover": "istanbul cover ./tests/test-runner.js",
+    "coverage:cover": "istanbul cover tap -- --timeout 10000 ./tests/*.spec.js",
     "coverage:rm": "rm -Rf coverage",
     "coverage:report": "istanbul report",
     "coverage:check": "istanbul check-coverage ../site-rjq-coverage/coverage.json",
