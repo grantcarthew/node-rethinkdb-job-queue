@@ -15,7 +15,7 @@ jobCompletedTests()
 function jobCompletedTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(137)
+      t.plan(142)
 
       const q = new Queue(tOpts.cxn(), tOpts.default('jobCompleted'))
       let job = q.createJob()
@@ -44,7 +44,7 @@ function jobCompletedTests () {
         added: 3,
         waiting: 0,
         active: 0,
-        completed: 7,
+        completed: 8,
         cancelled: 0,
         failed: 0,
         terminated: 0,
@@ -139,6 +139,27 @@ function jobCompletedTests () {
         t.equal(log.status, enums.status.waiting, 'Repeat log status is valid')
         t.equal(log.type, enums.log.information, 'Repeat log type is valid')
 
+        // ---------- Job Limit Logs Test ----------
+        t.comment('job-completed: Limit Logs')
+        repeatedJobs[0].setRepeat(false)
+        job.q._limitJobLogs = 3
+        t.equal(repeatedJobs[0].log.length, 5, 'Job has 5 log entries prior to log limiting')
+        return jobCompleted(repeatedJobs[0])
+      }).then((limitLogsIds) => {
+        t.ok(is.uuid(limitLogsIds[0]), 'Job completed returns uuid')
+        return q.getJob(limitLogsIds[0])
+      }).then((limitLogsJobs) => {
+        t.equal(limitLogsJobs[0].log.length, 3, 'Job has 3 log entries after log limiting')
+        // have to loop through the logs because the timestamp is the same
+        // for the completed and truncated entries. Job.getLastLog() is indeterminate
+        let logValid = false
+        function setLogValid () { logValid = true }
+        for (let log of limitLogsJobs[0].log) {
+          log.message === enums.message.jobLogsTruncated && setLogValid()
+        }
+        t.ok(logValid, 'Job has logs truncated log entry')
+
+        job.q._limitJobLogs = 1000
         // ---------- Job Repeat Number Test ----------
         t.comment('job-completed: Job Repeat Number')
         job = q.createJob().setRepeat(2)

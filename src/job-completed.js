@@ -14,8 +14,16 @@ module.exports = function completed (job, result) {
   let duration = job.dateFinished - job.dateStarted
   duration = duration >= 0 ? duration : 0
 
-  const log = jobLog.createLogObject(job, result, enums.status.completed)
-  log.duration = duration
+  const logCompleted = jobLog.createLogObject(job,
+    result, enums.status.completed)
+  logCompleted.duration = duration
+
+  const sliceLogs = job.log.length >= job.q.limitJobLogs
+  const logTruncated = jobLog.createLogObject(job,
+    `Retaining ${job.q.limitJobLogs} log entries`,
+    enums.message.jobLogsTruncated,
+    enums.log.information,
+    job.status)
 
   return Promise.resolve().then(() => {
     return job.q.r.db(job.q.db)
@@ -32,7 +40,11 @@ module.exports = function completed (job, result) {
       ),
       dateFinished: job.dateFinished,
       progress: job.progress,
-      log: job.q.r.row('log').append(log),
+      log: job.q.r.branch(
+        sliceLogs,
+        job.q.r.row('log').append(logCompleted).append(logTruncated).slice(-job.q.limitJobLogs),
+        job.q.r.row('log').append(logCompleted)
+      ),
       queueId: job.q.id
     }, { returnChanges: true })
     .run(job.q.queryRunOptions)

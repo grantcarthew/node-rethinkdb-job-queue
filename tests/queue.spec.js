@@ -13,7 +13,7 @@ queueTests()
 function queueTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(156)
+      t.plan(157)
 
       // ---------- Test Setup ----------
       const tableName = 'queue'
@@ -124,6 +124,7 @@ function queueTests () {
         t.equal(qMain.jobOptions.retryDelay, enums.options.retryDelay, 'Default job retryDelay is valid')
         t.equal(qMain.jobOptions.repeat, enums.options.repeat, 'Default job repeat is valid')
         t.equal(qMain.jobOptions.repeatDelay, enums.options.repeatDelay, 'Default job repeatDelay is valid')
+        t.equal(qMain.limitJobLogs, enums.options.limitJobLogs, 'Default limitJobLogs is valid')
         t.equal(qMain.removeFinishedJobs, enums.options.removeFinishedJobs, 'Default removeFinishedJobs is valid')
         t.equal(qMain.running, 0, 'Running jobs is zero')
         t.equal(qMain.concurrency, enums.options.concurrency, 'Default concurrency is valid')

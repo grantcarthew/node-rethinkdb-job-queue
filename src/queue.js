@@ -70,6 +70,7 @@ class Queue extends EventEmitter {
   get master () { return this._masterInterval > 0 }
   get masterInterval () { return this._masterInterval }
   get jobOptions () { return this._jobOptions }
+  get limitJobLogs () { return this._limitJobLogs }
   get removeFinishedJobs () { return this._removeFinishedJobs }
   get running () { return this._running }
   get concurrency () { return this._concurrency }

@@ -61,4 +61,3 @@ function getLastLog (job) {
 function compareTime (a, b) {
   return a.date.getTime() >= b.date.getTime() ? 1 : -1
 }
-

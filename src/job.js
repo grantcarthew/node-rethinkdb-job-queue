@@ -8,8 +8,6 @@ const jobProgress = require('./job-progress')
 const jobUpdate = require('./job-update')
 const jobLog = require('./job-log')
 
-module.exports = Job
-
 class Job {
   constructor (q, jobData) {
     logger('constructor')
@@ -163,3 +161,5 @@ class Job {
     return jobLog.getLastLog(this)
   }
 }
+
+module.exports = Job
