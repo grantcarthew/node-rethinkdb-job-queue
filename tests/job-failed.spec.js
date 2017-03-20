@@ -217,7 +217,6 @@ function jobFailedTests () {
 
         // ---------- Final Retry Job Repeat Failure Test ----------
         t.comment('job-failed: Final Retry Job Repeat Failure')
-        console.log(retry1[0].log.length)
         return jobFailed(retry1[0], err)
       }).then((retry2id) => {
         t.equal(retry2id.length, 1, 'Job failed successfully')
