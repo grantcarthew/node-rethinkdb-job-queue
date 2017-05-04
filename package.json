@@ -53,19 +53,19 @@
   },
   "dependencies": {
     "bluebird": "^3.5.0",
-    "debug": "^2.6.3",
+    "debug": "^2.6.6",
     "rethinkdbdash": "^2.3.28",
     "serialize-error": "^2.1.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.0",
-    "babel-preset-latest": "^6.24.0",
+    "babel-cli": "^6.24.1",
+    "babel-preset-latest": "^6.24.1",
     "istanbul": "0.4.5",
-    "npm-check-updates": "^2.10.3",
+    "npm-check-updates": "^2.11.0",
     "proxyquire": "^1.7.11",
-    "standard": "^9.0.2",
+    "standard": "^10.0.2",
     "tap-spec": "^4.1.1",
-    "tap": "^10.3.0"
+    "tap": "^10.3.2"
   }
 }
