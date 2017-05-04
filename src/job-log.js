@@ -11,7 +11,7 @@ function createLogObject (job,
     message = enums.message.seeLogData,
     type = enums.log.information,
     status = job.status) {
-  logger('commitLog', data, message, type, status)
+  logger('createLogObject', data, message, type, status)
   return {
     date: new Date(),
     queueId: job.q.id,

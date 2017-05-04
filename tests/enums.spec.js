@@ -20,7 +20,7 @@ function enumsTest () {
       t.equal(Object.keys(enums.options).length, 16, 'Enums options has correct number of keys')
       t.equal(Object.keys(enums.index).length, 5, 'Enums index has correct number of keys')
       t.equal(Object.keys(enums.log).length, 3, 'Enums log has correct number of keys')
-      t.equal(Object.keys(enums.message).length, 30, 'Enums message has correct number of keys')
+      t.equal(Object.keys(enums.message).length, 31, 'Enums message has correct number of keys')
     } catch (err) {
       tError(err, module, t)
     }

@@ -4,6 +4,7 @@ const enums = require('./enums')
 const is = require('./is')
 const errorBooster = require('./error-booster')
 const queueGetNextJob = require('./queue-get-next-job')
+const jobLog = require('./job-log')
 const jobCompleted = require('./job-completed')
 const jobUpdate = require('./job-update')
 const queueCancelJob = require('./queue-cancel-job')
@@ -105,6 +106,8 @@ function jobRun (job) {
     function updateJobAction (jobToUpdate) {
       logger('Job is being updated')
       jobToUpdate.status === enums.status.active && setJobStatusToWaiting()
+      let newLog = jobLog.createLogObject(job, {}, enums.message.jobPassBack)
+      job.log.push(newLog)
       return jobUpdate(jobToUpdate)
     }
 

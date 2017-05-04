@@ -16,7 +16,7 @@ queueProcessTests()
 function queueProcessTests () {
   return new Promise((resolve, reject) => {
     test(testName, { timeout: 200000000 }, (t) => {
-      t.plan(428)
+      t.plan(429)
 
       // ---------- Test Setup ----------
       const tableName = 'queueProcess'
@@ -257,6 +257,7 @@ function queueProcessTests () {
       }).then((updatedJob) => {
         t.equal(updatedJob[0].updateNote, tData, 'Job updated in next() call successfully')
         t.equal(updatedJob[0].status, enums.status.waiting, 'Job status is waiting')
+        t.equal(updatedJob[0].reverse()[1].message, enums.message.jobPassBack, 'Job pass back log entry valid')
         t.equal(updatedJob[0].getLastLog().message, enums.message.jobUpdated, 'Job updated log entry valid')
         return q.removeJob(updatedJob[0])
       }).then(() => {

@@ -89,6 +89,7 @@ const message = Object.freeze({
   cancel: 'Job cancelled by Queue process handler',
   seeLogData: 'See the data attached to this log entry',
   jobUpdated: 'Job updated. Old values in log data',
+  jobPassBack: 'Job has not been processed to completion and is being placed back into the queue',
   jobProgress: 'Job progress updated. Old value in log data',
   jobNotActive: 'Job is not at an active status',
   jobNotAdded: 'Job not added to the queue',
