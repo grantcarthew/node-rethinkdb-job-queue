@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "typeRoots": [ "node_modules/@types" ]
+  },
+  "include": [
+    "index.d.ts",
+    "src/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
