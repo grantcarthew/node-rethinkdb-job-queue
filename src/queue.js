@@ -219,6 +219,4 @@ class Queue extends EventEmitter {
   }
 }
 
-Queue.Job = Job; // Enable user classes to be derived from Job.
-
 module.exports = Queue

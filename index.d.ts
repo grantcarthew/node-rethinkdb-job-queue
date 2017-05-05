@@ -87,7 +87,7 @@ declare namespace Queue {
     dateEnable?: Date;
   }
 
-  export class Job {
+  export abstract class Job {
     public id?: string;
     public name?: string;
     public priority?: Priority;
@@ -119,8 +119,6 @@ declare namespace Queue {
     public getCleanCopy(priorityAsString?: boolean): object;
     public addLog(data?: object, message?: string, type?: string, status?: string): Promise<boolean>;
     public getLastLog(): LogEntry;
-
-    private constructor(); // Allow apps to inherit from this but not construct this.
   }
 
   export interface LogEntry {
