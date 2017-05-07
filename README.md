@@ -37,6 +37,7 @@ Please __Star__ on GitHub / NPM and __Watch__ for updates.
 *   [Job reanimation][job-reanimation-url]
 *   [Job Editing][job-editing-url]
 *   Rich job [history log][job-log-url]
+*   TypeScript definitions included
 *   Over 2000 [integration tests][testing-url]
 
 [queue-connection-url]: https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Queue-Connection
