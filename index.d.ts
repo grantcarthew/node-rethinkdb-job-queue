@@ -30,7 +30,7 @@ declare class Queue<P extends Queue.Job> extends EventEmitter {
   public readonly idle: boolean;
   constructor(cxOptions?: Queue.ConnectionOptions, qOptions?: Queue.QueueOptions);
   public addJob(job: P | P[]): Promise<P[]>;
-  public cancelJob(job: string | P | P[]): Promise<P[]>;
+  public cancelJob(job: string | P | P[]): Promise<string[]>;
   public containsJobByName(name: string, raw?: boolean): Promise<boolean>;
   public createJob(jobData?: object): P;
   public drop(): Promise<boolean>;
@@ -40,8 +40,8 @@ declare class Queue<P extends Queue.Job> extends EventEmitter {
   public pause(global: boolean): Promise<boolean>;
   public process(handler: ProcessCallback<P>): Promise<boolean>;
   public ready(): Promise<boolean>;
-  public reanimateJob(job: string | P | P[], dateEnable?: Date): Promise<P[]>;
-  public removeJob(job: string | P | P[]): Promise<P[]>;
+  public reanimateJob(job: string | P | P[], dateEnable?: Date): Promise<string[]>;
+  public removeJob(job: string | P | P[]): Promise<string[]>;
   public reset(): Promise<number>;
   public resume(global: boolean): Promise<boolean>;
   public review(): Promise<object>;
