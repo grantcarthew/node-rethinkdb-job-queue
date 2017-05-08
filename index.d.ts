@@ -6,12 +6,6 @@ interface PredicateFunction<P> {
   (job: P): boolean;
 }
 
-interface ProcessCallback<P> {
-  (job: P,
-   next: (error?: Error, jobResult?: P | string) => void,
-   onCancel: (job: P, cancellationCallback?: () => void) => void): void;
-}
-
 declare class Queue<P extends Queue.Job> extends EventEmitter {
   public readonly name: string;
   public readonly id: string;
@@ -38,7 +32,7 @@ declare class Queue<P extends Queue.Job> extends EventEmitter {
   public findJobByName(name: string, raw?: boolean): Promise<P[]>;
   public getJob(job: string | P | P[]): Promise<P[]>;
   public pause(global: boolean): Promise<boolean>;
-  public process(handler: ProcessCallback<P>): Promise<boolean>;
+  public process(handler: Queue.ProcessCallback<P>): Promise<boolean>;
   public ready(): Promise<boolean>;
   public reanimateJob(job: string | P | P[], dateEnable?: Date): Promise<string[]>;
   public removeJob(job: string | P | P[]): Promise<string[]>;
@@ -65,6 +59,16 @@ declare namespace Queue {
     masterInterval?: number;
     limitJobLogs?: number;
     removeFinishedJobs?: number | boolean;
+  }
+
+  export interface NextCallback<P> {
+    (error?: Error, jobResult?: P | string): void;
+  }
+
+  export interface ProcessCallback<P> {
+    (job: P,
+     next: NextCallback<P>,
+     onCancel: (job: P, cancellationCallback?: () => void) => void): void;
   }
 
   enum Priority {
