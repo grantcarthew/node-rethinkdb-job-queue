@@ -6,12 +6,6 @@ interface PredicateFunction<P> {
   (job: P): boolean;
 }
 
-interface ProcessCallback<P> {
-  (job: P,
-   next: (error?: Error, jobResult?: P | string) => void,
-   onCancel: (job: P, cancellationCallback?: () => void) => void): void;
-}
-
 declare class Queue<P extends Queue.Job> extends EventEmitter {
   public readonly name: string;
   public readonly id: string;
@@ -30,7 +24,7 @@ declare class Queue<P extends Queue.Job> extends EventEmitter {
   public readonly idle: boolean;
   constructor(cxOptions?: Queue.ConnectionOptions, qOptions?: Queue.QueueOptions);
   public addJob(job: P | P[]): Promise<P[]>;
-  public cancelJob(job: string | P | P[]): Promise<P[]>;
+  public cancelJob(job: string | P | P[]): Promise<string[]>;
   public containsJobByName(name: string, raw?: boolean): Promise<boolean>;
   public createJob(jobData?: object): P;
   public drop(): Promise<boolean>;
@@ -38,10 +32,10 @@ declare class Queue<P extends Queue.Job> extends EventEmitter {
   public findJobByName(name: string, raw?: boolean): Promise<P[]>;
   public getJob(job: string | P | P[]): Promise<P[]>;
   public pause(global: boolean): Promise<boolean>;
-  public process(handler: ProcessCallback<P>): Promise<boolean>;
+  public process(handler: Queue.ProcessCallback<P>): Promise<boolean>;
   public ready(): Promise<boolean>;
-  public reanimateJob(job: string | P | P[], dateEnable?: Date): Promise<P[]>;
-  public removeJob(job: string | P | P[]): Promise<P[]>;
+  public reanimateJob(job: string | P | P[], dateEnable?: Date): Promise<string[]>;
+  public removeJob(job: string | P | P[]): Promise<string[]>;
   public reset(): Promise<number>;
   public resume(global: boolean): Promise<boolean>;
   public review(): Promise<object>;
@@ -65,6 +59,16 @@ declare namespace Queue {
     masterInterval?: number;
     limitJobLogs?: number;
     removeFinishedJobs?: number | boolean;
+  }
+
+  export interface NextCallback<P> {
+    (error?: Error, jobResult?: P | string): void;
+  }
+
+  export interface ProcessCallback<P> {
+    (job: P,
+     next: NextCallback<P>,
+     onCancel: (job: P, cancellationCallback?: () => void) => void): void;
   }
 
   enum Priority {
