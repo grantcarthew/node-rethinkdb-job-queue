@@ -219,6 +219,7 @@ class Queue extends EventEmitter {
   }
 }
 
-Queue.Job = Job; // Make TypeScript compiler happy. Needed because Job is an abstract class.
+ // Make TypeScript compiler happy. Needed because Job is an abstract class.
+Queue.Job = Job
 
 module.exports = Queue
