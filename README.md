@@ -8,6 +8,7 @@ It has been built as an alternative to the many queues available on [NPM][npm-se
 [![bitHound Dependencies][bithound-code-image]][bithound-code-url]
 [![js-standard-style][js-standard-image]][js-standard-url]
 [![NSP Status][nsp-image]][nsp-url]
+[![Patreon Donation][patreon-image]][patreon-url]
 
 [![Thinker][thinker-image]][rjq-github-url]
 
@@ -201,6 +202,10 @@ This project exists because there were no functional job queues built on the Ret
 
 Everything I do in open source is done in my own time and as a contribution to the open source community.
 
+If you are using my projects and would like to thank me or support me, please click the Patreon link below.
+
+[![Patreon Donation][patreon-image]][patreon-url]
+
 See my [other projects on NPM](https://www.npmjs.com/~grantcarthew).
 
 ## Contributing
@@ -251,5 +256,7 @@ MIT
 [js-standard-url]: http://standardjs.com/
 [nsp-image]: https://nodesecurity.io/orgs/openjs/projects/3871d340-0ca9-471c-be9a-39df3871262d/badge
 [nsp-url]: https://nodesecurity.io/orgs/openjs/projects/3871d340-0ca9-471c-be9a-39df3871262d
+[patreon-image]: https://img.shields.io/badge/patreon-donate-yellow.svg
+[patreon-url]: https://www.patreon.com/grantcarthew
 [nodei-npm-image]: https://nodei.co/npm/rethinkdb-job-queue.png?downloads=true&downloadRank=true&stars=true
 [nodei-npm-url]: https://nodei.co/npm/rethinkdb-job-queue/
