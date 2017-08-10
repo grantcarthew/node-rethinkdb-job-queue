@@ -216,6 +216,8 @@ See my [other projects on NPM](https://www.npmjs.com/~grantcarthew).
 4.  Push to the branch: `git push origin my-new-feature`
 5.  Submit a pull request :D
 
+Want to help but not sure how? Checkout the [idea](/wiki/Ideas) page.
+
 Please see the [debugging](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Debugging) and [testing](https://github.com/grantcarthew/node-rethinkdb-job-queue/wiki/Testing) documents for more detail.
 
 ## Credits
