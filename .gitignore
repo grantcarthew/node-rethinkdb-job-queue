@@ -7,3 +7,4 @@ dist
 .DS_STORE
 .swp
 npm-debug.log
+package-lock.json
