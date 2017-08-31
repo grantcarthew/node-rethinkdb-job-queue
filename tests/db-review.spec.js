@@ -19,7 +19,7 @@ dbReviewTests()
 function dbReviewTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(87)
+      t.plan(83)
 
       let processRestart = 0
       processStub.restart = function (q) {
@@ -27,7 +27,7 @@ function dbReviewTests () {
         t.ok(q.id, `Queue process restart called [${processRestart} of 2]`)
       }
 
-      const q = new Queue(tOpts.cxn(), tOpts.master('dbReview', 1000))
+      const q = new Queue(tOpts.cxn(), tOpts.default('dbReview'))
 
       // ---------- Event Handler Setup ----------
       let state = {
@@ -43,7 +43,7 @@ function dbReviewTests () {
         idle: 0,
         reset: 0,
         error: 0,
-        reviewed: 6,
+        reviewed: 3,
         detached: 0,
         stopping: 0,
         stopped: 0,
@@ -232,6 +232,7 @@ function dbReviewTests () {
 
         //  ---------- enable Tests ----------
         t.comment('db-review: enable')
+        q._masterInterval = 30000
         return dbReview.enable(q)
       }).delay(1500).then(() => {
         t.ok(dbReview.isEnabled(q), 'Review isEnabled reports true')
