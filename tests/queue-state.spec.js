@@ -13,11 +13,11 @@ queueStateTests()
 function queueStateTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(29)
+      t.plan(30)
 
       const tableName = 'queueState'
       const q = new Queue(tOpts.cxn(), tOpts.default(tableName))
-      const q2 = new Queue(tOpts.cxn(), tOpts.default(tableName))
+      let q2
       const job = q.createJob()
       job.data = tData
 
@@ -51,10 +51,20 @@ function queueStateTests () {
         updated: 0
       }
 
-      q.reset().then((resetResult) => {
+      return Promise.resolve(
+        q.ready()
+      ).then(() => {
+        return q.r.table(tableName).wait()
+      }).then(() => {
+        return q.reset()
+      }).then((resetResult) => {
         t.ok(resetResult >= 0, 'Queue reset')
+        q2 = new Queue(tOpts.cxn(), tOpts.default(tableName))
+        return q2.r.table(tableName).wait()
+      }).then((waitResult) => {
+        t.ok(waitResult.ready === 1, 'Queue reset')
         eventHandlers.add(t, q, state)
-
+      }).then((ready) => {
         // ---------- Global Pause Test ----------
         t.comment('queue-state: Global Pause')
         return queueState(q2, enums.status.paused)

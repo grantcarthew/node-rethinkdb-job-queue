@@ -12,11 +12,11 @@ queueChangeTests()
 function queueChangeTests () {
   return new Promise((resolve, reject) => {
     test(testName, (t) => {
-      t.plan(61)
+      t.plan(62)
 
       const tableName = 'queueChange'
       const q = new Queue(tOpts.cxn(), tOpts.default(tableName))
-      const qPub = new Queue(tOpts.cxn(), tOpts.default(tableName))
+      let qPub
 
       // ---------- Event Handler Setup ----------
       let state = {
@@ -29,7 +29,7 @@ function queueChangeTests () {
         paused: 3,
         resumed: 2,
         removed: 1,
-        reset: 0,
+        reset: 1,
         error: 0,
         reviewed: 2,
         detached: 0,
@@ -48,13 +48,21 @@ function queueChangeTests () {
         updated: 0
       }
 
-      let job = qPub.createJob()
+      let job
       let processDelay = 500
 
       eventHandlers.add(t, q, state)
 
-      return qPub.reset().then((resetResult) => {
+      return Promise.resolve(
+        q.ready()
+      ).then((readyResult) => {
+        return q.reset()
+      }).then((resetResult) => {
         t.ok(is.integer(resetResult), 'Queue reset')
+        qPub = new Queue(tOpts.cxn(), tOpts.default(tableName))
+        return qPub.r.table(tableName).wait()
+      }).then((waitResult) => {
+        job = qPub.createJob()
         return q.pause()
       }).then(() => {
         q.process((j, next) => {
