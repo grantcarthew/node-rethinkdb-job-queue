@@ -256,8 +256,8 @@ MIT
 [bithound-code-url]: https://www.bithound.io/github/grantcarthew/node-rethinkdb-job-queue
 [js-standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [js-standard-url]: http://standardjs.com/
-[nsp-image]: https://nodesecurity.io/orgs/openjs/projects/3871d340-0ca9-471c-be9a-39df3871262d/badge
-[nsp-url]: https://nodesecurity.io/orgs/openjs/projects/3871d340-0ca9-471c-be9a-39df3871262d
+[nsp-image]: https://nodesecurity.io/orgs/openjs/projects/0244545a-bc28-4903-b639-ec5468d7146d/badge
+[nsp-url]: https://nodesecurity.io/orgs/openjs/projects/0244545a-bc28-4903-b639-ec5468d7146d
 [patreon-image]: https://img.shields.io/badge/patreon-donate-yellow.svg
 [patreon-url]: https://www.patreon.com/grantcarthew
 [nodei-npm-image]: https://nodei.co/npm/rethinkdb-job-queue.png?downloads=true&downloadRank=true&stars=true
