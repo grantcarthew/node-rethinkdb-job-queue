@@ -1,6 +1,6 @@
 {
   "name": "rethinkdb-job-queue",
-  "version": "3.1.6",
+  "version": "3.1.7",
   "description": "A persistent job or task queue backed by RethinkDB.",
   "main": "index.js",
   "repository": {
@@ -64,8 +64,8 @@
     "istanbul": "0.4.5",
     "npm-check-updates": "^2.14.0",
     "proxyquire": "^1.8.0",
-    "standard": "^10.0.3",
-    "tap": "^11.0.1",
+    "standard": "^11.0.0",
+    "tap": "^11.1.1",
     "tap-spec": "^4.1.1"
   }
 }
