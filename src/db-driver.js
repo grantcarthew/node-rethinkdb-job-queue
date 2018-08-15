@@ -1,12 +1,20 @@
 const logger = require('./logger')(module)
-const rethinkdbdash = require('rethinkdbdash')
+// const rethinkdbdash = require('rethinkdbdash')
+const rethinkdbdash = require('rethinkdb-changefeed-reconnect')
 const is = require('./is')
 const enums = require('./enums')
 
 module.exports = function dbDriver (cxn) {
   logger('dbDriver', cxn)
   cxn = cxn !== undefined ? cxn : {}
-  const cxnCopy = Object.assign({}, cxn)
+  let reconnectOptions = {
+    changefeedName: cxn._name || // not sure what
+    maxAttempts: 10,
+    attemptDelay: 10000,
+    silent: false,
+    logger: global.console,
+  }
+  const cxnCopy = Object.assign({}, reconnectOptions, cxn)
 
   if (Object.keys(cxn).length < 1 ||
       cxn.host != null ||
