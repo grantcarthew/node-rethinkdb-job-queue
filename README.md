@@ -194,6 +194,27 @@ return q.addJob(job).then((savedJobs) => {
 
 ```
 
+### Reconnection for the change feeds
+If `reconnect` options are supplied in the connection during the queue creation, change-feeds will automatically attempt reconnection based on the `maxAttempts`.
+
+````js
+const Queue = require('rethinkdb-job-queue')
+
+const cxnOptions = {
+  host: 'localhost',
+  port: 28015,
+  db  : 'JobQueue', // The name of the database in RethinkDB
+
+  'reconnect': {  // The reconnection options for change feeds
+    'pingInterval': 59,   // in seconds, same as rethinkdbdash `pingInterval` option
+    'maxAttempts': 99999, // maximum no. of times reconnect should be attempted
+    'attemptDelay': 5000  // delay factor in milli-seconds between attempts
+  }
+
+const q = new Queue(cxnOptions, { name: 'my-queue' })  
+````
+Note: This reconnection is applicable only for change-feeds and does not facilitate reconnection for other parts of the package (such as initial db-assertion, job update db writes etc.).
+
 ## About the Owner
 
 I, Grant Carthew, am a technologist, trainer, and Dad from Queensland, Australia. I work on code in a number of personal projects and when the need arises I build my own packages.

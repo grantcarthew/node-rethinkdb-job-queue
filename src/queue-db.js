@@ -7,6 +7,53 @@ const dbAssert = require('./db-assert')
 const dbReview = require('./db-review')
 const queueChange = require('./queue-change')
 const dbDriver = require('./db-driver')
+const { ReqlDriverError, ReqlServerError } = require('rethinkdbdash/lib/error')
+
+function _isConnectionError(err) {
+  // Credit: https://github.com/LearnersGuild/rethinkdb-changefeed-reconnect/blob/master/src/index.js#L82
+  // FIXME: I'm not terribly happy about this particular logic, but
+  // unfortunately, rethinkdbdash doesn't provide a consistent error type (or
+  // even message) when it's having trouble connecting to a changefeed,
+  // particularly if it is connecting via a rethinkdb proxy server.
+  return (err instanceof ReqlServerError) ||
+    (err instanceof ReqlDriverError) ||
+    (err.msg && err.msg.match(/Changefeed\saborted/)) ||
+    (err.msg && err.msg.match(/primary\sreplica.*not\savailable/));
+}
+
+function tryReconnect(q, error, maxAttempts, attemptDelay, nRetryAttempt) {
+  // if we are detaching (or detached), lets not crash the app with connection errors.
+  if (q._dbDetached) return error;
+  // if this is connection error, lets try reconnecting.
+  if (_isConnectionError(error)) {
+    // if no further attempts left, throw it as it is.
+    if (++nRetryAttempt > maxAttempts)
+      throw error;
+    // try reconnection after some linear delay.
+    logger(`connection error, retry after ${nRetryAttempt * attemptDelay / 1000} sec`);
+    return Promise.resolve().delay(nRetryAttempt * attemptDelay)
+      .then(() => monitorChangeFeed(q, { maxAttempts, attemptDelay }, nRetryAttempt));
+  }
+  throw error;
+}
+
+function monitorChangeFeed(q, {
+  maxAttempts = enums.options.reconnect.maxAttempts,
+  attemptDelay = enums.options.reconnect.attemptDelay } = {}, nRetryAttempt = 0) {
+
+  logger('monitorChangeFeed');
+
+  return q.r.db(q.db).table(q.name).changes().run(q.queryRunOptions).then(function (changeFeed) {
+    // we connected successfully, lets reset the counter
+    nRetryAttempt = 0;
+    // fetch each change and act on it
+    q._changeFeedCursor = changeFeed;
+    return q._changeFeedCursor.each(function (error, change) {
+      if (error) return tryReconnect(q, error, maxAttempts, attemptDelay, nRetryAttempt);
+      return queueChange(q, error, change);
+    });
+  }).catch(error => tryReconnect(q, error, maxAttempts, attemptDelay, nRetryAttempt));
+}
 
 module.exports.attach = function dbAttach (q, cxn) {
   logger('attach')
@@ -23,16 +70,7 @@ module.exports.attach = function dbAttach (q, cxn) {
   ].join(':')
   q._ready = dbAssert(q).then(() => {
     if (q.changeFeed) {
-      return q.r.db(q.db)
-      .table(q.name)
-      .changes()
-      .run(q.queryRunOptions)
-      .then((changeFeed) => {
-        q._changeFeedCursor = changeFeed
-        return q._changeFeedCursor.each((err, change) => {
-          return queueChange(q, err, change)
-        })
-      })
+      return monitorChangeFeed(q, cxn.reconnect);
     }
     q._changeFeedCursor = false
     return null
@@ -47,12 +85,14 @@ module.exports.attach = function dbAttach (q, cxn) {
     q.emit(enums.status.ready, q.id)
     return true
   })
+  q._dbDetached = false;
   return q._ready
 }
 
 module.exports.detach = function dbDetach (q) {
   logger('detach')
   return Promise.resolve().then(() => {
+    q._dbDetached = true;
     if (q._changeFeedCursor) {
       let feed = q._changeFeedCursor
       q._changeFeedCursor = false
