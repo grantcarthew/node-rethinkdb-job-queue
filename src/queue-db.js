@@ -50,7 +50,7 @@ function monitorChangeFeed(q, {
     q._changeFeedCursor = changeFeed;
     return q._changeFeedCursor.each(function (error, change) {
       if (error) return tryReconnect(q, error, maxAttempts, attemptDelay, nRetryAttempt);
-      return queueChange(q, err, change);
+      return queueChange(q, error, change);
     });
   }).catch(error => tryReconnect(q, error, maxAttempts, attemptDelay, nRetryAttempt));
 }
