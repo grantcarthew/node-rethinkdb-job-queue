@@ -13,7 +13,8 @@ module.exports = function dbDriver (cxn) {
       cxn.port != null ||
       is.string(cxn.db)) {
     logger('cxn is an options object')
-    cxnCopy.silent = true
+    cxnCopy.pingInterval = cxnCopy.reconnect?.pingInterval || enums.options.reconnect.pingInterval;
+    cxnCopy.silent = cxnCopy.reconnect?.silent || enums.options.reconnect.silent;
     cxnCopy.host = cxnCopy.host == null
       ? enums.options.host : cxnCopy.host
     cxnCopy.port = cxnCopy.port == null

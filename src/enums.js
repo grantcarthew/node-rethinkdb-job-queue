@@ -47,6 +47,7 @@ const options = Object.freeze({
   host: 'localhost',
   port: 28015,
   db: 'rjqJobQueue',
+  reconnect: { silent: true, pingInterval: -1, maxAttempts: 0, attemptDelay: 5000 },
   queryRunOptions: { readMode: 'majority' },
   databaseInitDelay: 1000,
   masterInterval: 310000, // 5 minutes and 10 seconds
